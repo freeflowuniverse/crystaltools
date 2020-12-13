@@ -10,7 +10,7 @@ struct PublTools {
 }
 
 
-pub fn (mut structure PublTools) load(name string, path string) {	
+pub fn (mut publtools PublTools) load(name string, path string) {	
 	// fpath := code_path_get()
     // configSites := os.read_file(fpath) or {return}
     // conf2 := json.decode(Application, configSites) or {
@@ -23,18 +23,18 @@ pub fn (mut structure PublTools) load(name string, path string) {
 	mut name_lower := name_fix(name)
 	mut path2 := path.replace("~",os.home_dir())
 	println("load publishingtools: $path2")
-	structure.sites[name_lower] = Site({path:path2, name:name_lower})
-	structure.sites[name_lower].process_files(path2)
+	publtools.sites[name_lower] = Site({path:path2, name:name_lower})
+	publtools.sites[name_lower].process_files(path2)
 }
 
 pub fn get() PublTools{
-	mut structure := PublTools{}
-	return structure
+	mut publtools := PublTools{}
+	return publtools
 }
 
-pub fn (mut structure PublTools) site_get(name string) Site{	
+pub fn (mut publtools PublTools) site_get(name string) Site{	
 	name_lower := name_fix(name)
-	return structure.sites[name_lower]
+	return publtools.sites[name_lower]
 }
 
 //make sure that the names are always normalized so its easy to find them back
@@ -53,7 +53,7 @@ fn name_fix(name string) string {
 
 
 //name in form: 'sitename:pagename' or 'pagename'
-pub fn (mut structure PublTools) page_get(name string) ?PageActor {	
+pub fn (mut publtools PublTools) page_get(name string) ?PageActor {	
 	mut name_lower := name_fix(name)
 	if ":" in name_lower {
 		splitted := name_lower.split(":")
@@ -62,14 +62,14 @@ pub fn (mut structure PublTools) page_get(name string) ?PageActor {
 		}
 		sitename := splitted[0]
 		name_lower = splitted[1]
-		mut site := structure.site_get(sitename)
-		pageactor := site.pageactor_get(name_lower, structure) or {return error(err)}
+		mut site := publtools.site_get(sitename)
+		pageactor := site.pageactor_get(name_lower, publtools) or {return error(err)}
 		return pageactor
 	}else{
 		mut res := []PageActor
-		for key in structure.sites.keys(){
-			mut site := structure.sites[key]
-			pageactor := site.pageactor_get(name_lower, structure) or {continue}
+		for key in publtools.sites.keys(){
+			mut site := publtools.sites[key]
+			pageactor := site.pageactor_get(name_lower, publtools) or {continue}
 			res << pageactor
 		}
 		if res.len==1 {
@@ -85,7 +85,7 @@ pub fn (mut structure PublTools) page_get(name string) ?PageActor {
 //CANT WE USE A GENERIC HERE???
 
 //name in form: 'sitename:imagename' or 'imagename'
-pub fn (mut structure PublTools) image_get(name string) ?ImageActor {	
+pub fn (mut publtools PublTools) image_get(name string) ?ImageActor {	
 	mut name_lower := name_fix(name)
 	if ":" in name_lower {
 		splitted := name_lower.split(":")
@@ -94,14 +94,14 @@ pub fn (mut structure PublTools) image_get(name string) ?ImageActor {
 		}
 		sitename := splitted[0]
 		name_lower = splitted[1]
-		mut site := structure.site_get(sitename)
-		imageresult := site.imageactor_get(name_lower,structure) or {return error(err)}
+		mut site := publtools.site_get(sitename)
+		imageresult := site.imageactor_get(name_lower,publtools) or {return error(err)}
 		return imageresult
 	}else{
 		mut res := []ImageActor
-		for key in structure.sites.keys(){
-			mut site := structure.sites[key]
-			imageresult := site.imageactor_get(name_lower,structure) or {continue}
+		for key in publtools.sites.keys(){
+			mut site := publtools.sites[key]
+			imageresult := site.imageactor_get(name_lower,publtools) or {continue}
 			res << imageresult
 		}
 		if res.len==1 {
@@ -115,19 +115,19 @@ pub fn (mut structure PublTools) image_get(name string) ?ImageActor {
 }
 
 
-pub fn (mut structure PublTools) process() {
-	for sitename in structure.sites.keys(){
-		mut site := structure.sites[sitename]
+pub fn (mut publtools PublTools) process() {
+	for sitename in publtools.sites.keys(){
+		mut site := publtools.sites[sitename]
 
 		for key in site.pages.keys(){
 			mut page := site.pages[key]
 			//not mutable
-			mut pageactor := PageActor{page:&page, site:&site, publtools:&structure}
+			mut pageactor := PageActor{page:&page, site:&site, publtools:&publtools}
 			pageactor.process()
 		}	
 		for key in site.images.keys(){
 			mut image := site.images[key]
-			mut imageactor := ImageActor{image:&image, site:&site, publtools:&structure}
+			mut imageactor := ImageActor{image:&image, site:&site, publtools:&publtools}
 			imageactor.process()
 		}		
 
