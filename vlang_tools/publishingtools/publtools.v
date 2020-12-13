@@ -87,14 +87,14 @@ pub fn (mut publtools PublTools) image_get(name string) ?ImageActor {
 		sitename := splitted[0]
 		name_lower = splitted[1]
 		mut site := publtools.site_get(sitename)
-		imageresult := site.imageactor_get(name_lower,publtools) or {return error(err)}
-		return imageresult
+		imageactor := site.imageactor_get(name_lower,publtools) or {return error(err)}
+		return imageactor
 	}else{
 		mut res := []ImageActor{}
 		for key in publtools.sites.keys(){
 			mut site := publtools.sites[key]
-			imageresult := site.imageactor_get(name_lower,publtools) or {continue}
-			res << imageresult
+			imageactor := site.imageactor_get(name_lower,publtools) or {continue}
+			res << imageactor
 		}
 		if res.len==1 {
 			return res[0]

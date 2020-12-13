@@ -1,21 +1,21 @@
 import publishingtools
 
 
-fn pageresults_test(mut f &publishingtools.PublTools){
+fn pageactors_test(mut f &publishingtools.PublTools){
 
 	// println(f.sites["test"])
 
 	//argument will be comeo lowercase and remove '.md' at end
-	pageresult1 := f.page_get("docker_Compatibility.md") or {println(err) return}
-	println(pageresult1)
+	pageactor1 := f.page_get("docker_Compatibility.md") or {println(err) return}
+	println(pageactor1) //THE CRASH IS HERE
 
-	// pageresult2 := f.page_get("docker_Compatibility") or {println(err) return}
-	// println(pageresult2) 
-	// pageresult3 := f.page_get("test:docker_Compatibility") or {println(err) return}
-	// println(pageresult3)
+	// pageactor2 := f.page_get("docker_Compatibility") or {println(err) return}
+	// println(pageactor2) 
+	// pageactor3 := f.page_get("test:docker_Compatibility") or {println(err) return}
+	// println(pageactor3)
 
-	// imageresult1 := f.image_get("network-connectivity.png") or {println(err) return}
-	// println(imageresult1) 	
+	// imageactor1 := f.image_get("network-connectivity.png") or {println(err) return}
+	// println(imageactor1) 	
 
 	
 
@@ -34,7 +34,7 @@ fn main() {
 
 	// f.process()
 
-	pageresults_test(mut f)
+	pageactors_test(mut f)
 
 
 }
