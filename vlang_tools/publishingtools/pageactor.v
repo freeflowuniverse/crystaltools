@@ -9,6 +9,16 @@ struct PageActor {
 	publtools &PublTools
 }
 
+//return fullpath,pageobject
+pub fn (site Site) pageactor_get(name string, publtools PublTools) ?PageActor{	
+	namelower := name_fix(name)
+	if namelower in site.pages {
+		mut page2 := site.pages[namelower]
+		return PageActor{page:&page2, publtools:&publtools, site:&site}
+	}
+	return error("Could not find page $namelower in site ${site.name}")
+}
+
 
 pub fn (mut pageactor PageActor) path_get() string{
 	return os.join_path(pageactor.site.path,pageactor.page.path)

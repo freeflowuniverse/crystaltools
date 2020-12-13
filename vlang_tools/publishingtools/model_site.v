@@ -20,3 +20,5 @@ struct SiteError {
 	error	string
 	cat 	SiteErrorCategory
 }
+
+

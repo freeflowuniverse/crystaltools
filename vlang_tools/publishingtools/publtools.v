@@ -52,9 +52,6 @@ fn name_fix(name string) string {
 }
 
 
-
-
-
 //name in form: 'sitename:pagename' or 'pagename'
 pub fn (mut structure PublTools) page_get(name string) ?PageActor {	
 	mut name_lower := name_fix(name)
@@ -66,13 +63,13 @@ pub fn (mut structure PublTools) page_get(name string) ?PageActor {
 		sitename := splitted[0]
 		name_lower = splitted[1]
 		mut site := structure.site_get(sitename)
-		pageactor := site.page_get(name_lower, structure) or {return error(err)}
+		pageactor := site.pageactor_get(name_lower, structure) or {return error(err)}
 		return pageactor
 	}else{
 		mut res := []PageActor
 		for key in structure.sites.keys(){
 			mut site := structure.sites[key]
-			pageactor := site.page_get(name_lower, structure) or {continue}
+			pageactor := site.pageactor_get(name_lower, structure) or {continue}
 			res << pageactor
 		}
 		if res.len==1 {
@@ -98,13 +95,13 @@ pub fn (mut structure PublTools) image_get(name string) ?ImageActor {
 		sitename := splitted[0]
 		name_lower = splitted[1]
 		mut site := structure.site_get(sitename)
-		imageresult := site.image_get(name_lower,structure) or {return error(err)}
+		imageresult := site.imageactor_get(name_lower,structure) or {return error(err)}
 		return imageresult
 	}else{
 		mut res := []ImageActor
 		for key in structure.sites.keys(){
 			mut site := structure.sites[key]
-			imageresult := site.image_get(name_lower,structure) or {continue}
+			imageresult := site.imageactor_get(name_lower,structure) or {continue}
 			res << imageresult
 		}
 		if res.len==1 {
@@ -139,29 +136,10 @@ pub fn (mut structure PublTools) process() {
 }
 
 
-pub fn (mut site Site) process(publtools PublTools) {
-}
+// pub fn (mut site Site) process(publtools PublTools) {
+// }
 
-pub fn (site Site) path_get(path string) string{	
-	return os.join_path(site.path,path)
-}
+// pub fn (site Site) path_get(path string) string{	
+// 	return os.join_path(site.path,path)
+// }
 
-//return fullpath,pageobject
-pub fn (site Site) page_get(name string, publtools PublTools) ?PageActor{	
-	namelower := name_fix(name)
-	if namelower in site.pages {
-		mut page2 := site.pages[namelower]
-		return PageActor{page:&page2, publtools:&publtools, site:&site}
-	}
-	return error("Could not find page $namelower in site ${site.name}")
-}
-
-//return fullpath,imageobject
-pub fn (site Site) image_get(name string, publtools PublTools) ?ImageActor{	
-	namelower := name_fix(name)
-	if namelower in site.images {
-		mut image2 := site.images[namelower]
-		return ImageActor{image:&image2, publtools:&publtools, site:&site}
-	}
-	return error("Could not find image $namelower in site ${site.name}")
-}

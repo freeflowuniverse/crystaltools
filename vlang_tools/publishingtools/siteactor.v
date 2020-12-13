@@ -43,6 +43,7 @@ fn (mut site Site) remember_page(path string, name string){
 }
 
 
+
 fn (mut site Site) process_files(path string) ? {
 	// mut ret_err := ''
 	items := os.ls(path)?
