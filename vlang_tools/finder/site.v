@@ -105,22 +105,35 @@ pub fn (mut site Site) path_get(path string) string{
 	return os.join_path(site.path,path)
 }
 
+struct PageResult {
+	path string
+	page Page
+}
+
+struct ImageResult {
+	path string
+	image Image
+}
+
+
 //return fullpath,pageobject
-pub fn (mut site Site) page_get(name string) ?(string, Page){	
+pub fn (mut site Site) page_get(name string) ?PageResult{	
 	mut namelower := name_fix(name)
 	if namelower in site.pages {
-		page := site.pages[namelower]
-		path := site.path_get(site.path)
-		return path, page
+		page2 := site.pages[namelower]
+		path2 := site.path_get(site.path)
+		return PageResult{path:path2, page:page2}
 	}
 	return error("Could not find page $namelower in site ${site.name}")
 }
 
 //return fullpath,imageobject
-pub fn (mut site Site) image_get(name string) ?(string,Image){	
+pub fn (mut site Site) image_get(name string) ?ImageResult{	
 	mut namelower := name_fix(name)
 	if namelower in site.images {
-		return site.path_get(site.images[namelower].path), site.images[namelower]
+		image2 := site.images[namelower]
+		path2 := site.path_get(site.path)
+		return ImageResult{path:path2, image:image2}
 	}
 	return error("Could not find image $namelower in site ${site.name}")
 }

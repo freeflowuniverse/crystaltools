@@ -37,16 +37,26 @@ pub fn (mut structure SiteStructure) site_get(name string) Site{
 	return structure.sites[name_lower]
 }
 
+//make sure that the names are always normalized so its easy to find them back
 fn name_fix(name string) string {	
 	mut name_lower := name.to_lower()
 	if name_lower.ends_with(".md"){
 		name_lower = name_lower[0..name_lower.len-3]
 	}
+	name_lower = name_lower.replace(" ","_")
+	name_lower = name_lower.replace("-","_")
+	name_lower = name_lower.replace("__","_")
+	name_lower = name_lower.replace("__","_") //needs to be 2x because can be 3 to 2 to 1
+	name_lower = name_lower.replace(";","_")
 	return name_lower
 }
 
+
+
+
+
 //name in form: 'sitename:pagename' or 'pagename'
-pub fn (mut structure SiteStructure) page_get(name string) ?(string,Page) {	
+pub fn (mut structure SiteStructure) page_get(name string) ?PageResult {	
 	mut name_lower := name_fix(name)
 	if ":" in name_lower {
 		splitted := name_lower.split(":")
@@ -56,24 +66,29 @@ pub fn (mut structure SiteStructure) page_get(name string) ?(string,Page) {
 		sitename := splitted[0]
 		name_lower = splitted[1]
 		mut site := structure.site_get(sitename)
-		mut path, mut page := site.page_get(name_lower) or {return error(err)}
-		return path, page
+		pageresult := site.page_get(name_lower) or {return error(err)}
+		return pageresult
 	}else{
-
+		mut res := []PageResult
 		for key in structure.sites.keys(){
 			mut site := structure.sites[key]
-			mut path, mut page :=  site.page_get(name_lower) or {continue}
-			return path, page
+			pageresult := site.page_get(name_lower) or {continue}
+			res << pageresult
 		}
-
-		return error ("Could not find page: '$name_lower'")
+		if res.len==1 {
+			return res[0]
+		} else if res.len>1 {
+			return error ("More than 1 page has name, cannot figure out which one: '$name_lower'")
+		}else{
+			return error ("Could not find page: '$name_lower'")
+		}
 	}	
 }
 
 //CANT WE USE A GENERIC HERE???
 
 //name in form: 'sitename:imagename' or 'imagename'
-pub fn (mut structure SiteStructure) image_get(name string) ?(string,Image) {	
+pub fn (mut structure SiteStructure) image_get(name string) ?ImageResult {	
 	mut name_lower := name_fix(name)
 	if ":" in name_lower {
 		splitted := name_lower.split(":")
@@ -83,17 +98,22 @@ pub fn (mut structure SiteStructure) image_get(name string) ?(string,Image) {
 		sitename := splitted[0]
 		name_lower = splitted[1]
 		mut site := structure.site_get(sitename)
-		mut path, mut page := site.image_get(name_lower) or {return error(err)}
-		return path, page
+		imageresult := site.image_get(name_lower) or {return error(err)}
+		return imageresult
 	}else{
-
+		mut res := []ImageResult
 		for key in structure.sites.keys(){
 			mut site := structure.sites[key]
-			mut path, mut page :=  site.image_get(name_lower) or {continue}
-			return path, page
+			imageresult := site.image_get(name_lower) or {continue}
+			res << imageresult
 		}
-
-		return error ("Could not find image: '$name_lower'")
+		if res.len==1 {
+			return res[0]
+		} else if res.len>1 {
+			return error ("More than 1 image has name, cannot figure out which one: '$name_lower'")
+		}else{
+			return error ("Could not find image: '$name_lower'")
+		}
 	}	
 }
 

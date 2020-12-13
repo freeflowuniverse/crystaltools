@@ -19,6 +19,7 @@ struct PageError {
 }
 
 
+
 //process the markdown content and include other files, find links, ...
 pub fn (mut page Page) process(site Site){
 	mut path := os.join_path(site.path,page.path)
