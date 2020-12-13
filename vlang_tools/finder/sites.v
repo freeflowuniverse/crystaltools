@@ -46,24 +46,24 @@ fn name_fix(name string) string {
 }
 
 //name in form: 'sitename:pagename' or 'pagename'
-pub fn (mut structure SiteStructure) page_get(name string) ?Page {	
+pub fn (mut structure SiteStructure) page_get(name string) ?(string,Page) {	
 	mut name_lower := name_fix(name)
 	if ":" in name_lower {
 		splitted := name_lower.split(":")
 		if splitted.len !=2 {
-			panic("name needs to be in format 'sitename:pagename' or 'pagename', now '$name_lower'")
+			return error("name needs to be in format 'sitename:pagename' or 'pagename', now '$name_lower'")
 		}
 		sitename := splitted[0]
 		name_lower = splitted[1]
 		mut site := structure.site_get(sitename)
-		page := site.page_get(name_lower) or {return error(err)}
-		return page
+		mut path, mut page := site.page_get(name_lower) or {return error(err)}
+		return path, page
 	}else{
 
 		for key in structure.sites.keys(){
 			mut site := structure.sites[key]
-			page :=  site.page_get(name_lower) or {continue}
-			return page
+			mut path, mut page :=  site.page_get(name_lower) or {continue}
+			return path, page
 		}
 
 		return error ("Could not find page: '$name_lower'")

@@ -34,7 +34,7 @@ fn (mut site Site) remember_image(path string, name string){
 		site.errors << SiteError{path:pathfull, error:"duplicate image $duplicatepath", cat:SiteErrorCategory.duplicateimage}
 	}else{
 		site.images[namelower] = Image({ path: pathfull})
-		image := site.images[namelower]
+		// image := site.images[namelower]
 		// println(image)
 	}
 }
@@ -52,7 +52,7 @@ fn (mut site Site) remember_page(path string, name string){
 		site.errors << SiteError{path:pathfull, error:"duplicate page $duplicatepath", cat:SiteErrorCategory.duplicatepage}
 	}else{
 		site.pages[namelower] = Page({ path: pathfull})
-		page := site.pages[namelower]
+		// page := site.pages[namelower]
 		// println(page)
 	}
 
@@ -101,18 +101,26 @@ pub fn (mut site Site) process() {
 	}		
 }
 
-pub fn (mut site Site) page_get(name string) ?Page{	
+pub fn (mut site Site) path_get(path string) string{	
+	return os.join_path(site.path,path)
+}
+
+//return fullpath,pageobject
+pub fn (mut site Site) page_get(name string) ?(string, Page){	
 	mut namelower := name_fix(name)
 	if namelower in site.pages {
-		return site.pages[namelower]
+		page := site.pages[namelower]
+		path := site.path_get(site.path)
+		return path, page
 	}
 	return error("Could not find page $namelower in site ${site.name}")
 }
 
-pub fn (mut site Site) image_get(name string) ?Image{	
+//return fullpath,imageobject
+pub fn (mut site Site) image_get(name string) ?(string,Image){	
 	mut namelower := name_fix(name)
 	if namelower in site.images {
-		return site.images[namelower]
+		return site.path_get(site.images[namelower].path), site.images[namelower]
 	}
 	return error("Could not find image $namelower in site ${site.name}")
 }
