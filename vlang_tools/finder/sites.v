@@ -50,10 +50,11 @@ pub fn (mut structure SiteStructure) page_get(name string) ?Page {
 	mut name_lower := name_fix(name)
 	if ":" in name_lower {
 		splitted := name_lower.split(":")
-		if splitted.len !=1 {
+		if splitted.len !=2 {
 			panic("name needs to be in format 'sitename:pagename' or 'pagename', now '$name_lower'")
 		}
 		sitename := splitted[0]
+		name_lower = splitted[1]
 		mut site := structure.site_get(sitename)
 		page := site.page_get(name_lower) or {return error(err)}
 		return page
@@ -65,7 +66,7 @@ pub fn (mut structure SiteStructure) page_get(name string) ?Page {
 			return page
 		}
 
-		return error ("Could not find page: '$name'")
+		return error ("Could not find page: '$name_lower'")
 	}	
 
 }
