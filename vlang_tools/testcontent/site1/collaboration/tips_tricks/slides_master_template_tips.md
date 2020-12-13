@@ -1,0 +1,1 @@
+!!!include:wiki:slides_master_template_tips

@@ -12,6 +12,6 @@ struct Image {
 }
 
 
-fn (mut image Image) process(){
+pub fn (mut image Image) process(site Site){
 
 }

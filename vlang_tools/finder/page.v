@@ -20,15 +20,15 @@ struct PageError {
 
 
 //process the markdown content and include other files, find links, ...
-fn (mut page Page) process(){
-
-	contents := os.read_file(page.path) or {
-		println('Failed to open ${page.path}')
+pub fn (mut page Page) process(site Site){
+	mut path := os.join_path(site.path,page.path)
+	contents := os.read_file(path) or {
+		println('Failed to open $path')
 		return
 	}
 
 	for line in contents.split_into_lines() {
-			println (line)
+			// println (line)
 		}	
 
 }

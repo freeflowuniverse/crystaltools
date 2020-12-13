@@ -1,0 +1,1 @@
+!!!include:wiki:iq_eq_sq

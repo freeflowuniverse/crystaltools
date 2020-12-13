@@ -75,6 +75,6 @@ thumbs.db
 
 _docs
 
-# ignore vs databases
+# ignore vs Sitesbases
 *.suo
 *.VC.db
