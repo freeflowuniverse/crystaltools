@@ -2,9 +2,10 @@ module publishingtools
 import os
 
 struct ImageActor {
-	site &Site
-	publtools &PublTools		
-	image &Image
+	pub:
+		site &Site
+		publtools &PublTools		
+		image &Image
 }
 
 //return fullpath,imageobject

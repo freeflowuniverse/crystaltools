@@ -4,9 +4,10 @@ import os
 
 //nothing kept in mem, just to process one iteration
 struct PageActor {
-	page &Page
-	site &Site
-	publtools &PublTools
+	pub:
+		page &Page
+		site &Site
+		publtools &PublTools
 }
 
 //return fullpath,pageobject
