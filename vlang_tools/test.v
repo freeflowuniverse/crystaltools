@@ -1,7 +1,7 @@
-import finder
+import publishingtools
 
 
-fn pageresults_test(mut f finder.SiteStructure){
+fn pageresults_test(mut f publishingtools.PublTools){
 
 	//argument will be comeo lowercase and remove '.md' at end
 	pageresult1 := f.page_get("docker_Compatibility.md") or {println(err) return}
@@ -20,14 +20,14 @@ fn pageresults_test(mut f finder.SiteStructure){
 
 fn main() {
 
-	mut f := finder.get()
+	mut f := publishingtools.get()
 
 	println("start")
 	// f.load("test","~/code/github/threefoldtech/info_tftech")
 	// f.load("/tmp")
 	f.load("test","testcontent/site1")
 
-	f.process()
+	// f.process()
 
 	// pageresults_test(f)
 

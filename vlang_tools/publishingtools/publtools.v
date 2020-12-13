@@ -1,16 +1,16 @@
-module finder
+module publishingtools
 
 import os
 // import json
 
 
-struct SiteStructure {
+struct PublTools {
 	pub mut:
 		sites map[string]Site
 }
 
 
-pub fn (mut structure SiteStructure) load(name string, path string) {	
+pub fn (mut structure PublTools) load(name string, path string) {	
 	// fpath := code_path_get()
     // configSites := os.read_file(fpath) or {return}
     // conf2 := json.decode(Application, configSites) or {
@@ -22,18 +22,18 @@ pub fn (mut structure SiteStructure) load(name string, path string) {
     // }
 	mut name_lower := name_fix(name)
 	mut path2 := path.replace("~",os.home_dir())
-	println("load finder: $path2")
+	println("load publishingtools: $path2")
 	structure.sites[name_lower] = Site({path:path2, name:name_lower})
 	structure.sites[name_lower].process_files(path2)
 }
 
-pub fn get() SiteStructure{
-	mut structure := SiteStructure{}
+pub fn get() PublTools{
+	mut structure := PublTools{}
 	return structure
 }
 
-pub fn (mut structure SiteStructure) site_get(name string) Site{	
-	mut name_lower := name_fix(name)
+pub fn (mut structure PublTools) site_get(name string) Site{	
+	name_lower := name_fix(name)
 	return structure.sites[name_lower]
 }
 
@@ -56,7 +56,7 @@ fn name_fix(name string) string {
 
 
 //name in form: 'sitename:pagename' or 'pagename'
-pub fn (mut structure SiteStructure) page_get(name string) ?PageResult {	
+pub fn (mut structure PublTools) page_get(name string) ?PageActor {	
 	mut name_lower := name_fix(name)
 	if ":" in name_lower {
 		splitted := name_lower.split(":")
@@ -66,14 +66,14 @@ pub fn (mut structure SiteStructure) page_get(name string) ?PageResult {
 		sitename := splitted[0]
 		name_lower = splitted[1]
 		mut site := structure.site_get(sitename)
-		pageresult := site.page_get(name_lower) or {return error(err)}
-		return pageresult
+		pageactor := site.page_get(name_lower, structure) or {return error(err)}
+		return pageactor
 	}else{
-		mut res := []PageResult
+		mut res := []PageActor
 		for key in structure.sites.keys(){
 			mut site := structure.sites[key]
-			pageresult := site.page_get(name_lower) or {continue}
-			res << pageresult
+			pageactor := site.page_get(name_lower, structure) or {continue}
+			res << pageactor
 		}
 		if res.len==1 {
 			return res[0]
@@ -88,7 +88,7 @@ pub fn (mut structure SiteStructure) page_get(name string) ?PageResult {
 //CANT WE USE A GENERIC HERE???
 
 //name in form: 'sitename:imagename' or 'imagename'
-pub fn (mut structure SiteStructure) image_get(name string) ?ImageResult {	
+pub fn (mut structure PublTools) image_get(name string) ?ImageActor {	
 	mut name_lower := name_fix(name)
 	if ":" in name_lower {
 		splitted := name_lower.split(":")
@@ -98,13 +98,13 @@ pub fn (mut structure SiteStructure) image_get(name string) ?ImageResult {
 		sitename := splitted[0]
 		name_lower = splitted[1]
 		mut site := structure.site_get(sitename)
-		imageresult := site.image_get(name_lower) or {return error(err)}
+		imageresult := site.image_get(name_lower,structure) or {return error(err)}
 		return imageresult
 	}else{
-		mut res := []ImageResult
+		mut res := []ImageActor
 		for key in structure.sites.keys(){
 			mut site := structure.sites[key]
-			imageresult := site.image_get(name_lower) or {continue}
+			imageresult := site.image_get(name_lower,structure) or {continue}
 			res << imageresult
 		}
 		if res.len==1 {
@@ -118,8 +118,50 @@ pub fn (mut structure SiteStructure) image_get(name string) ?ImageResult {
 }
 
 
-pub fn (mut structure SiteStructure) process() {
+pub fn (mut structure PublTools) process() {
 	for sitename in structure.sites.keys(){
-		structure.sites[sitename].process()
+		mut site := structure.sites[sitename]
+
+		for key in site.pages.keys(){
+			mut page := site.pages[key]
+			//not mutable
+			mut pageactor := PageActor{page:&page, site:&site, publtools:&structure}
+			pageactor.process()
+		}	
+		for key in site.images.keys(){
+			mut image := site.images[key]
+			mut imageactor := ImageActor{image:&image, site:&site, publtools:&structure}
+			imageactor.process()
+		}		
+
+		
 	}	
+}
+
+
+pub fn (mut site Site) process(publtools PublTools) {
+}
+
+pub fn (site Site) path_get(path string) string{	
+	return os.join_path(site.path,path)
+}
+
+//return fullpath,pageobject
+pub fn (site Site) page_get(name string, publtools PublTools) ?PageActor{	
+	namelower := name_fix(name)
+	if namelower in site.pages {
+		mut page2 := site.pages[namelower]
+		return PageActor{page:&page2, publtools:&publtools, site:&site}
+	}
+	return error("Could not find page $namelower in site ${site.name}")
+}
+
+//return fullpath,imageobject
+pub fn (site Site) image_get(name string, publtools PublTools) ?ImageActor{	
+	namelower := name_fix(name)
+	if namelower in site.images {
+		mut image2 := site.images[namelower]
+		return ImageActor{image:&image2, publtools:&publtools, site:&site}
+	}
+	return error("Could not find image $namelower in site ${site.name}")
 }

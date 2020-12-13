@@ -1,4 +1,4 @@
-module finder
+module publishingtools
 
 import os
 // import json
@@ -26,14 +26,15 @@ fn (mut site Site) remember_image(path string, name string){
 	mut namelower := name_fix(name)
 	mut pathfull := os.join_path(path, name)
 	// now remove the root path
-	pathfull = pathfull[site.path.len+1..]
+	pathrelative := pathfull[site.path.len+1..]
 	// println( " - Image $pathfull" )
 	if namelower in site.images {
 		//error there should be no duplicates
 		mut duplicatepath := site.images[namelower].path
-		site.errors << SiteError{path:pathfull, error:"duplicate image $duplicatepath", cat:SiteErrorCategory.duplicateimage}
+		site.errors << SiteError{path:pathrelative, error:"duplicate image $duplicatepath", 
+								cat:SiteErrorCategory.duplicateimage}
 	}else{
-		site.images[namelower] = Image({ path: pathfull})
+		site.images[namelower] = Image({ path: pathrelative})
 		// image := site.images[namelower]
 		// println(image)
 	}
@@ -42,16 +43,17 @@ fn (mut site Site) remember_image(path string, name string){
 fn (mut site Site) remember_page(path string, name string){
 
 	mut pathfull := os.join_path(path, name)
-	pathfull = pathfull[site.path.len+1..]
+	pathrelative := pathfull[site.path.len+1..]
 	mut namelower := name_fix(name)
 	// println( " - Page $pathfull" )
 
 	if namelower in site.pages {
 		//error there should be no duplicates
 		mut duplicatepath := site.pages[namelower].path
-		site.errors << SiteError{path:pathfull, error:"duplicate page $duplicatepath", cat:SiteErrorCategory.duplicatepage}
+		site.errors << SiteError{path:pathrelative, error:"duplicate page $duplicatepath", 
+								cat:SiteErrorCategory.duplicatepage}
 	}else{
-		site.pages[namelower] = Page({ path: pathfull})
+		site.pages[namelower] = Page({ path: pathrelative})
 		// page := site.pages[namelower]
 		// println(page)
 	}
@@ -92,48 +94,3 @@ fn (mut site Site) process_files(path string) ? {
 	}
 }
 
-pub fn (mut site Site) process() {
-	for key in site.pages.keys(){
-		site.pages[key].process(site)
-	}	
-	for key in site.images.keys(){
-		site.images[key].process(site)
-	}		
-}
-
-pub fn (site Site) path_get(path string) string{	
-	return os.join_path(site.path,path)
-}
-
-struct PageResult {
-	path string
-	page Page
-}
-
-struct ImageResult {
-	path string
-	image Image
-}
-
-
-//return fullpath,pageobject
-pub fn (site Site) page_get(name string) ?PageResult{	
-	namelower := name_fix(name)
-	if namelower in site.pages {
-		page2 := site.pages[namelower]
-		path2 := site.path_get(page2.path)
-		return PageResult{path:path2, page:page2}
-	}
-	return error("Could not find page $namelower in site ${site.name}")
-}
-
-//return fullpath,imageobject
-pub fn (site Site) image_get(name string) ?ImageResult{	
-	namelower := name_fix(name)
-	if namelower in site.images {
-		image2 := site.images[namelower]
-		path2 := site.path_get(image2.path)
-		return ImageResult{path:path2, image:image2}
-	}
-	return error("Could not find image $namelower in site ${site.name}")
-}

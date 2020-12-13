@@ -1,1 +1,1 @@
-./v run test.v
+./v -cg run test.v

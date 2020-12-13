@@ -1,8 +1,4 @@
-module finder
-
-// import os
-// import json
-
+module publishingtools
 
 pub enum ImageStatus { unknown ok error }
 struct Image {
@@ -11,7 +7,3 @@ struct Image {
 	nrtimes_used int
 }
 
-
-pub fn (mut image Image) process(site Site){
-
-}
