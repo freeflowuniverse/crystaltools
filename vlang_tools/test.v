@@ -21,8 +21,10 @@ fn main() {
 	println(page)
 	println(path)
 
-	// mut image := f.image_get("network_connectivity.png") or {println(err) return}
-	// println(image) 	
+	mut path2, mut image := f.image_get("network_connectivity.png") or {println(err) return}
+	println(path2) 	
+	println(image) 	
+
 
 	// image = f.image_get("network_cconnectivity.png") or {println(err) return}
 	// println(image) 		

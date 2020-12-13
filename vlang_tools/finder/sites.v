@@ -68,7 +68,33 @@ pub fn (mut structure SiteStructure) page_get(name string) ?(string,Page) {
 
 		return error ("Could not find page: '$name_lower'")
 	}	
+}
 
+//CANT WE USE A GENERIC HERE???
+
+//name in form: 'sitename:imagename' or 'imagename'
+pub fn (mut structure SiteStructure) image_get(name string) ?(string,Image) {	
+	mut name_lower := name_fix(name)
+	if ":" in name_lower {
+		splitted := name_lower.split(":")
+		if splitted.len !=2 {
+			return error("name needs to be in format 'sitename:imagename' or 'imagename', now '$name_lower'")
+		}
+		sitename := splitted[0]
+		name_lower = splitted[1]
+		mut site := structure.site_get(sitename)
+		mut path, mut page := site.image_get(name_lower) or {return error(err)}
+		return path, page
+	}else{
+
+		for key in structure.sites.keys(){
+			mut site := structure.sites[key]
+			mut path, mut page :=  site.image_get(name_lower) or {continue}
+			return path, page
+		}
+
+		return error ("Could not find image: '$name_lower'")
+	}	
 }
 
 // pub fn (mut structure SiteStructure) image_get(name string) Image{	
