@@ -117,11 +117,11 @@ pub fn (mut publtools PublTools) process() {
 			mut pageactor := PageActor{page:&page, site:&site, publtools:&publtools}
 			pageactor.process()
 		}	
-		for key in site.images.keys(){
-			mut image := site.images[key]
-			mut imageactor := ImageActor{image:&image, site:&site, publtools:&publtools}
-			imageactor.process()
-		}		
+		// for key in site.images.keys(){
+		// 	mut image := site.images[key]
+		// 	mut imageactor := ImageActor{image:&image, site:&site, publtools:&publtools}
+		// 	imageactor.process()
+		// }		
 
 		
 	}	

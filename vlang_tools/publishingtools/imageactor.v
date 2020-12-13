@@ -2,7 +2,7 @@ module publishingtools
 import os
 
 struct ImageActor {
-	pub:
+	pub mut:
 		site &Site
 		publtools &PublTools		
 		image &Image

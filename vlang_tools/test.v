@@ -32,9 +32,9 @@ fn main() {
 	f.load("test","testcontent/site1")
 
 
-	// f.process()
+	f.process()
 
-	pageactors_test(mut f)
+	// pageactors_test(mut f)
 
 
 }
