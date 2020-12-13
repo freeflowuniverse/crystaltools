@@ -117,10 +117,6 @@ pub fn (mut structure SiteStructure) image_get(name string) ?ImageResult {
 	}	
 }
 
-// pub fn (mut structure SiteStructure) image_get(name string) Image{	
-// 	site := structure.site_get(sitename)
-// 	return site.image_get(name)
-// }
 
 pub fn (mut structure SiteStructure) process() {
 	for sitename in structure.sites.keys(){
