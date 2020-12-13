@@ -26,6 +26,9 @@ pub fn new() PublTools{
 
 pub fn (mut publtools PublTools) site_get(name string) Site{	
 	name_lower := name_fix(name)
+	if name_lower !in publtools.sites {
+		publtools.sites[name_lower] = Site{}
+	}
 	return publtools.sites[name_lower]
 }
 
@@ -114,7 +117,7 @@ pub fn (mut publtools PublTools) process() {
 		for key in site.pages.keys(){
 			mut page := site.pages[key]
 			//not mutable
-			mut pageactor := PageActor{page:&page, site:&site, publtools:&publtools}
+			mut pageactor := PageActor{page: &page, site: &site, publtools: publtools}
 			pageactor.process()
 		}	
 		// for key in site.images.keys(){
