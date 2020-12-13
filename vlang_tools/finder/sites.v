@@ -55,12 +55,14 @@ pub fn (mut structure SiteStructure) page_get(name string) ?Page {
 		}
 		sitename := splitted[0]
 		mut site := structure.site_get(sitename)
-		return site.page_get(name_lower) or {return error("")}
+		page := site.page_get(name_lower) or {return error(err)}
+		return page
 	}else{
 
 		for key in structure.sites.keys(){
 			mut site := structure.sites[key]
-			return site.page_get(name_lower) or {continue}
+			page :=  site.page_get(name_lower) or {continue}
+			return page
 		}
 
 		return error ("Could not find page: '$name'")
