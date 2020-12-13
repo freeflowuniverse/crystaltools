@@ -11,23 +11,15 @@ struct PublTools {
 
 
 pub fn (mut publtools PublTools) load(name string, path string) {	
-	// fpath := code_path_get()
-    // configSites := os.read_file(fpath) or {return}
-    // conf2 := json.decode(Application, configSites) or {
-    //     panic('Failed to parse json for $fpath')
-    // }
-	// conf.platform = conf2.platform
-    // for lang in languages_arr {
-    //     l.m[lang.ext] = lang
-    // }
 	mut name_lower := name_fix(name)
 	mut path2 := path.replace("~",os.home_dir())
 	println("load publishingtools: $path2")
-	publtools.sites[name_lower] = Site({path:path2, name:name_lower})
+	publtools.sites[name_lower] = Site{path:path2, name:name_lower}
 	publtools.sites[name_lower].process_files(path2)
 }
 
-pub fn get() PublTools{
+//the factory, get your tools here
+pub fn new() PublTools{
 	mut publtools := PublTools{}
 	return publtools
 }
@@ -66,7 +58,7 @@ pub fn (mut publtools PublTools) page_get(name string) ?PageActor {
 		pageactor := site.pageactor_get(name_lower, publtools) or {return error(err)}
 		return pageactor
 	}else{
-		mut res := []PageActor
+		mut res := []PageActor{}
 		for key in publtools.sites.keys(){
 			mut site := publtools.sites[key]
 			pageactor := site.pageactor_get(name_lower, publtools) or {continue}
@@ -98,7 +90,7 @@ pub fn (mut publtools PublTools) image_get(name string) ?ImageActor {
 		imageresult := site.imageactor_get(name_lower,publtools) or {return error(err)}
 		return imageresult
 	}else{
-		mut res := []ImageActor
+		mut res := []ImageActor{}
 		for key in publtools.sites.keys(){
 			mut site := publtools.sites[key]
 			imageresult := site.imageactor_get(name_lower,publtools) or {continue}

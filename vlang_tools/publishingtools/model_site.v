@@ -1,9 +1,5 @@
 module publishingtools
 
-import os
-// import json
-
-
 struct Site{
 	name 	string
 	path 	string

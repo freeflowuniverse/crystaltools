@@ -31,7 +31,6 @@ pub fn (mut pageactor PageActor) process(){
 }
 
 pub fn (mut pageactor PageActor) content_get() ?string{
-	path := pageactor.path_get()
 	content := os.read_file(pageactor.path_get()) or {
 		println('Failed to open ${pageactor.path_get()}')
 		println(pageactor)
@@ -43,7 +42,7 @@ pub fn (mut pageactor PageActor) content_get() ?string{
 
 
 fn (mut pageactor PageActor) process_content(content string) string{	
-	mut lines:=[]string
+	// mut lines:=[]string{}
 	mut nr:=0
 	for line in content.split_into_lines() {
 			// println (line)
