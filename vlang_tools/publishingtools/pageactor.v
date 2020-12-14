@@ -20,7 +20,7 @@ pub fn (site Site) pageactor_get(name string, publtools PublTools) ?PageActor{
 }
 
 
-pub fn (mut pageactor PageActor) path_get() string{
+pub fn (pageactor PageActor) path_get() string{
 	return os.join_path(pageactor.site.path,pageactor.page.path)
 }
 
@@ -30,9 +30,13 @@ pub fn (mut pageactor PageActor) process(){
 	content2 := pageactor.process_content(content)
 }
 
-pub fn (mut pageactor PageActor) content_get() ?string{
+pub fn (pageactor PageActor) content_get() ?string{
+	path_source2 := pageactor.path_get()
+	println("------ $path_source2")
+	println(pageactor.page)
 	content := os.read_file(pageactor.path_get()) or {
-		println('Failed to open ${pageactor.path_get()}')
+		path_source := pageactor.path_get()
+		println('Failed to open ${path_source}')
 		println(pageactor.page)
 		return err
 	}	
@@ -54,14 +58,14 @@ fn (mut pageactor PageActor) process_content(content string) string{
 				name = name.replace(";",":")
 				mut ss := pageactor.publtools
 				mut pageobj_linked := ss.page_get(name) or { 
-					path2 := pageactor.path_get()
-					errormsg := "Cannot inlude '$name' on page: $path2"
+					path_source := pageactor.path_get()
+					errormsg := "Cannot inlude '$name' on page: $path_source"
 					println(errormsg)
 					page_error := PageError{line:line, linenr:nr, error:errormsg}
 					pageactor.page.errors << page_error
 					continue
 					}
-				// pageobj_linked.page.nrtimes_inluded ++
+				pageobj_linked.page.nrtimes_inluded ++
 				content_linked := pageobj_linked.content_get() or {return err}
 				println(pageobj_linked.page)
 			}	
