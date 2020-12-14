@@ -31,6 +31,8 @@ fn main() {
 	// f.load("wiki","~/code/github/threefoldfoundation/info_foundation/src")
 	// f.load("/tmp")
 	f.load("test","testcontent/site1")
+	//IT CRASHES WHEN 2x using the same name, otherwise not
+	// on a repo in my filesystem though it also crashed even with other name
 	f.load("test","testcontent/site2")
 
 
