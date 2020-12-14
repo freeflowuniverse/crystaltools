@@ -24,9 +24,14 @@ pub fn new() PublTools{
 	return publtools
 }
 
-pub fn (mut publtools PublTools) site_get(name string) Site{	
+pub fn (mut publtools PublTools) site_get(name string) ?Site{	
 	name_lower := name_fix(name)
-	return publtools.sites[name_lower]
+	if name_lower in publtools.sites {
+		return publtools.sites[name_lower]
+	}else{
+		return error("cannot find site: $name_lower")
+	}
+
 }
 
 //make sure that the names are always normalized so its easy to find them back
@@ -54,7 +59,7 @@ pub fn (mut publtools PublTools) page_get(name string) ?PageActor {
 		}
 		sitename := splitted[0]
 		name_lower = splitted[1]
-		mut site := publtools.site_get(sitename)
+		mut site := publtools.site_get(sitename) or {return error(err)}
 		pageactor := site.pageactor_get(name_lower, publtools) or {return error(err)}
 		return pageactor
 	}else{
@@ -86,7 +91,7 @@ pub fn (mut publtools PublTools) image_get(name string) ?ImageActor {
 		}
 		sitename := splitted[0]
 		name_lower = splitted[1]
-		mut site := publtools.site_get(sitename)
+		mut site := publtools.site_get(sitename) or {return error(err)}
 		imageactor := site.imageactor_get(name_lower,publtools) or {return error(err)}
 		return imageactor
 	}else{
@@ -114,7 +119,7 @@ pub fn (mut publtools PublTools) process() {
 		for key in site.pages.keys(){
 			mut page := site.pages[key]
 			//not mutable
-			mut pageactor := PageActor{page:&page, site:&site, publtools:&publtools}
+			mut pageactor := PageActor{page:&page, site:&site, publtools:publtools}
 			pageactor.process()
 		}	
 		// for key in site.images.keys(){

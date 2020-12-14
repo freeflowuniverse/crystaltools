@@ -27,9 +27,11 @@ fn main() {
 	mut f := publishingtools.new()
 
 	println("start")
-	// f.load("test","~/code/github/threefoldtech/info_tftech")
+	// f.load("tech","~/code/github/threefoldtech/info_tftech")
+	// f.load("wiki","~/code/github/threefoldfoundation/info_foundation/src")
 	// f.load("/tmp")
 	f.load("test","testcontent/site1")
+	f.load("test","testcontent/site2")
 
 
 	f.process()

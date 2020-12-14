@@ -42,7 +42,7 @@ pub fn (mut pageactor PageActor) content_get() ?string{
 
 
 
-fn (pageactor PageActor) process_content(content string) string{	
+fn (mut pageactor PageActor) process_content(content string) string{	
 	// mut lines:=[]string{}
 	mut nr:=0
 	for line in content.split_into_lines() {
@@ -54,17 +54,17 @@ fn (pageactor PageActor) process_content(content string) string{
 				name = name.replace("::",":")
 				name = name.replace(";",":")
 				mut ss := pageactor.publtools
-				pageobj_linked := ss.page_get(name) or { 
-					// errormsg := "Cannot inlude '$name' on page: ${pageactor.path_get()}"
-					// println(errormsg)
-					// page_error := PageError{line:line, linenr:nr, error:errormsg}
-					// pageobj_linked.errors << page_error
-					// continue
-					panic ("S")
+				mut pageobj_linked := ss.page_get(name) or { 
+					path2 := pageactor.path_get()
+					errormsg := "Cannot inlude '$name' on page: $path2"
+					println(errormsg)
+					page_error := PageError{line:line, linenr:nr, error:errormsg}
+					pageactor.page.errors << page_error
+					continue
 					}
-				// pageobj_linked.page.nrtimes_inluded ++
-				// content_linked := pageobj_linked.content_get() or {return}
-				// println(pageobj_linked.page)
+				pageobj_linked.page.nrtimes_inluded ++
+				content_linked := pageobj_linked.content_get() or {return err}
+				println(pageobj_linked.page)
 			}	
 		return ""
 	}
