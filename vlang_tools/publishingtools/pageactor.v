@@ -61,7 +61,7 @@ fn (mut pageactor PageActor) process_content(content string) string{
 					pageactor.page.errors << page_error
 					continue
 					}
-				pageobj_linked.page.nrtimes_inluded ++
+				// pageobj_linked.page.nrtimes_inluded ++
 				content_linked := pageobj_linked.content_get() or {return err}
 				println(pageobj_linked.page)
 			}	
