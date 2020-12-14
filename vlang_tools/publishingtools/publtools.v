@@ -11,10 +11,14 @@ struct PublTools {
 
 
 pub fn (mut publtools PublTools) load(name string, path string) {	
-	mut name_lower := name_fix(name)
-	mut path2 := path.replace("~",os.home_dir())
+	name_lower := name_fix(name)
+	path2 := path.replace("~",os.home_dir())
 	println("load publishingtools: $path2")
-	publtools.sites[name_lower] = Site{path:path2, name:name_lower}
+	if name_lower !in publtools.sites {
+ 	   publtools.sites[name_lower] = Site{path:path2, name:name_lower}
+	}else{
+	   panic("should not load on same name 2x: '$name_lower'")
+	}
 	publtools.sites[name_lower].process_files(path2)
 }
 
