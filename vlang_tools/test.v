@@ -1,5 +1,4 @@
 import publishingtools
-import regex
 
 fn pageactors_test(mut f &publishingtools.PublTools){
 
@@ -57,8 +56,8 @@ fn main() {
 
 	"
 
-	for line in text.split_lines() {
-		if "[" in line AND ")" in line {
+	for line in text.split_into_lines() {
+		if "[" in line && ")" in line {
 			println(line)
 		}
 	}

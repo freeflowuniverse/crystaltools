@@ -27,7 +27,7 @@ pub fn (pageactor PageActor) path_get() string{
 
 //will load the content, check everything, return true if ok
 pub fn (mut pageactor PageActor) check() bool{
-	content := pageactor.markdown_get()
+	//content := pageactor.markdown_get()
 	if pageactor.page.state == PageStatus.error{
 		return false
 	}
@@ -55,7 +55,7 @@ pub fn (mut pageactor PageActor) markdown_get() string{
 }
 
 pub fn (pageactor PageActor) markdown_load() ?string{
-	path_source2 := pageactor.path_get()
+	// path_surce2 := pageactor.path_get()
 	content := os.read_file(pageactor.path_get()) or {
 		path_source := pageactor.path_get()
 		println('Failed to open ${path_source}')
@@ -94,7 +94,7 @@ fn (mut pageactor PageActor) process_content(content string) string{
 				panic("recursive include: ${pageactor_linked.path_get()}")
 			}	
 			pageactor_linked.page.nrtimes_inluded ++
-			path11 := pageactor_linked.page
+			// path11 := pageactor_linked.page
 			content_linked := pageactor_linked.markdown_load() or {return err}
 			lines += content_linked+"\n"
 		}else{
@@ -102,7 +102,7 @@ fn (mut pageactor PageActor) process_content(content string) string{
 		}	
 
 		
-		query := r"\[(.*)\]\( *(\w*\:*\w*) *\)"
+		_ := r"\[(.*)\]\( *(\w*\:*\w*) *\)"
 
 	}
 	return lines
