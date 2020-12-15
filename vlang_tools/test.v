@@ -1,5 +1,4 @@
 import publishingtools
-import pcre
 
 fn pageactors_test(mut f &publishingtools.PublTools){
 
@@ -57,17 +56,11 @@ fn main() {
 
 	"
 
-	r := pcre.new_regex('\[(.*)\]\( *(\w*\:*\w*) *\)', 0) or {
-		println('An error occured!')
-		return
+	for line in text.split_into_lines() {
+		if "[" in line && ")" in line {
+			println(line)
+		}
 	}
-
-	m := r.match_str(text, 0, 0) or {
-		println('No match!')
-		return
-	}
-
-	println(m)
 
 	// mut re := regex.regex_opt(query) or { panic(err) }
 
