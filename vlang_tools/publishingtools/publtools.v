@@ -11,10 +11,14 @@ struct PublTools {
 
 
 pub fn (mut publtools PublTools) load(name string, path string) {	
-	mut name_lower := name_fix(name)
-	mut path2 := path.replace("~",os.home_dir())
+	name_lower := name_fix(name)
+	path2 := path.replace("~",os.home_dir())
 	println("load publishingtools: $path2")
-	publtools.sites[name_lower] = Site{path:path2, name:name_lower}
+	if name_lower !in publtools.sites {
+ 	   publtools.sites[name_lower] = Site{path:path2, name:name_lower}
+	}else{
+	   panic("should not load on same name 2x: '$name_lower'")
+	}
 	publtools.sites[name_lower].process_files(path2)
 }
 
@@ -24,9 +28,14 @@ pub fn new() PublTools{
 	return publtools
 }
 
-pub fn (mut publtools PublTools) site_get(name string) Site{	
+pub fn (mut publtools PublTools) site_get(name string) ?Site{	
 	name_lower := name_fix(name)
-	return publtools.sites[name_lower]
+	if name_lower in publtools.sites {
+		return publtools.sites[name_lower]
+	}else{
+		return error("cannot find site: $name_lower")
+	}
+
 }
 
 //make sure that the names are always normalized so its easy to find them back
@@ -46,6 +55,7 @@ fn name_fix(name string) string {
 
 //name in form: 'sitename:pagename' or 'pagename'
 pub fn (mut publtools PublTools) page_get(name string) ?PageActor {	
+	// println("page_get: $name")
 	mut name_lower := name_fix(name)
 	if ":" in name_lower {
 		splitted := name_lower.split(":")
@@ -53,11 +63,11 @@ pub fn (mut publtools PublTools) page_get(name string) ?PageActor {
 			return error("name needs to be in format 'sitename:pagename' or 'pagename', now '$name_lower'")
 		}
 		sitename := splitted[0]
-		name_lower = splitted[1]
-		mut site := publtools.site_get(sitename)
-		pageactor := site.pageactor_get(name_lower, publtools) or {return error(err)}
+		page_name := splitted[1]	
+		site := publtools.site_get(sitename) or {return error(err)}
+		pageactor := site.pageactor_get(page_name, publtools) or {return error(err)}
 		return pageactor
-	}else{
+	}else{		
 		mut res := []PageActor{}
 		for key in publtools.sites.keys(){
 			mut site := publtools.sites[key]
@@ -86,7 +96,7 @@ pub fn (mut publtools PublTools) image_get(name string) ?ImageActor {
 		}
 		sitename := splitted[0]
 		name_lower = splitted[1]
-		mut site := publtools.site_get(sitename)
+		mut site := publtools.site_get(sitename) or {return error(err)}
 		imageactor := site.imageactor_get(name_lower,publtools) or {return error(err)}
 		return imageactor
 	}else{
@@ -114,7 +124,7 @@ pub fn (mut publtools PublTools) process() {
 		for key in site.pages.keys(){
 			mut page := site.pages[key]
 			//not mutable
-			mut pageactor := PageActor{page:&page, site:&site, publtools:&publtools}
+			mut pageactor := PageActor{page:&page, site:&site, publtools:publtools}
 			pageactor.process()
 		}	
 		// for key in site.images.keys(){

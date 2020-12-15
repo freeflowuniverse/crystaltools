@@ -5,23 +5,23 @@ import os
 //nothing kept in mem, just to process one iteration
 struct PageActor {
 	pub mut:
-		page &Page
-		site &Site
-		publtools &PublTools
+		page Page
+		site Site
+		publtools PublTools
 }
 
 //return fullpath,pageobject
 pub fn (site Site) pageactor_get(name string, publtools PublTools) ?PageActor{	
 	namelower := name_fix(name)
 	if namelower in site.pages {
-		mut page2 := site.pages[namelower]
-		return PageActor{page:&page2, publtools:&publtools, site:&site}
+		page := &site.pages[namelower]
+		return PageActor{page:page, publtools:&publtools, site:&site}
 	}
 	return error("Could not find page $namelower in site ${site.name}")
 }
 
 
-pub fn (mut pageactor PageActor) path_get() string{
+pub fn (pageactor PageActor) path_get() string{
 	return os.join_path(pageactor.site.path,pageactor.page.path)
 }
 
@@ -31,10 +31,11 @@ pub fn (mut pageactor PageActor) process(){
 	content2 := pageactor.process_content(content)
 }
 
-pub fn (mut pageactor PageActor) content_get() ?string{
+pub fn (pageactor PageActor) content_get() ?string{
+	path_source2 := pageactor.path_get()
 	content := os.read_file(pageactor.path_get()) or {
-		println('Failed to open ${pageactor.path_get()}')
-		println(pageactor.page)
+		path_source := pageactor.path_get()
+		println('Failed to open ${path_source}')
 		return err
 	}	
 	return content
@@ -42,7 +43,7 @@ pub fn (mut pageactor PageActor) content_get() ?string{
 
 
 
-fn (pageactor PageActor) process_content(content string) string{	
+fn (mut pageactor PageActor) process_content(content string) string{	
 	// mut lines:=[]string{}
 	mut nr:=0
 	for line in content.split_into_lines() {
@@ -54,17 +55,20 @@ fn (pageactor PageActor) process_content(content string) string{
 				name = name.replace("::",":")
 				name = name.replace(";",":")
 				mut ss := pageactor.publtools
-				pageobj_linked := ss.page_get(name) or { 
-					// errormsg := "Cannot inlude '$name' on page: ${pageactor.path_get()}"
-					// println(errormsg)
-					// page_error := PageError{line:line, linenr:nr, error:errormsg}
-					// pageobj_linked.errors << page_error
-					// continue
-					panic ("S")
+				mut pageactor_linked := ss.page_get(name) or { 
+					path_source := pageactor.path_get()
+					errormsg := "Cannot inlude '$name' on page: $path_source"
+					println(errormsg)
+					page_error := PageError{line:line, linenr:nr, error:errormsg}
+					pageactor.page.errors << page_error
+					continue
 					}
-				// pageobj_linked.page.nrtimes_inluded ++
-				// content_linked := pageobj_linked.content_get() or {return}
-				// println(pageobj_linked.page)
+				if pageactor_linked.path_get() == pageactor.path_get() {
+					panic("recursive include: $pageactor_linked.path_get()")
+				}	
+				pageactor_linked.page.nrtimes_inluded ++
+				path11 := pageactor_linked.page
+				content_linked := pageactor_linked.content_get() or {return err}
 			}	
 		return ""
 	}
