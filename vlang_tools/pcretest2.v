@@ -33,10 +33,10 @@ fn main() {
 
 	println(m.get_all())
 
-  whole_match := m.get(0) or {
-    println('We matched nothing...')
-    return
-  }
+//   whole_match := m.get(0) or {
+//     println('We matched nothing...')
+//     return
+//   }
 
   // println(whole_match)
 
