@@ -2,7 +2,8 @@ module publishingtools
 
 pub enum PageStatus { unknown ok error }
 struct Page {
-	path 	string
+	pub:
+		path 	string
 	mut:
 		state 	PageStatus
 		errors []PageError
