@@ -102,7 +102,7 @@ fn (mut pageactor PageActor) process_content(content string) string{
 		}	
 
 		
-		_ := r"\[(.*)\]\( *(\w*\:*\w*) *\)"
+		// _ := r"\[(.*)\]\( *(\w*\:*\w*) *\)"
 
 	}
 	return lines

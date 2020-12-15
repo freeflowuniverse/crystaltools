@@ -28,52 +28,30 @@ fn main() {
 	println("start")
 	// f.load("tech","~/code/github/threefoldtech/info_tftech")
 	// f.load("/tmp")
-	f.load("test","testcontent/site1")
+	// f.load("test","testcontent/site1")
 	//IT CRASHES WHEN 2x using the same name, otherwise not
 	// on a repo in my filesystem though it also crashed even with other name
-	f.load("wiki","testcontent/site2")
-	// f.load("wiki","~/code/github/threefoldfoundation/info_foundation/src")
+	// f.load("wiki","testcontent/site2")
+
+	f.load("wiki","~/code/github/threefoldfoundation/info_foundation/src")
 
 
-	// f.check()
+	f.check()
+
+	imageobj := f.image_get("communication_header.jpg") or {panic(err)}
+	//this has enough info to serve the image back
+	println(imageobj.path_get())
+	println(imageobj.image)
+
+	//now serve the wiki server and /wiki/...communication_header.jpg should serve this file
+	//`...` means anything
+
+	pageobj := f.page_get("getinvolved.md") or {panic(err)}
+	//this has enough info to serve the image back
+	println(pageobj.path_get())	
+	println(pageobj.page)	
 
 	// pageactors_test(mut f)
-
-	// query := '\[(.*)\]\( *(\w*\:*\w*) *\)'
-	// query := '\[(.*)\]\( *(\w*\:*\w*) *\)'
-
-	// query := r'this (\w+) a'
-
-	// query := r'\[.*\]\( *\w*\:*\w+ *\)'
-	// query := '\[.*\]\( *\w*\:*\w+ *\)'
-
-	text := "[ an s. s! ]( wi4ki:something )
-	[ an s. s! ]( wi4ki:something )
-	[ an s. s! ](wiki:something)
-	[ an s. s! ](something)dd
-	d [ an s. s! ](something ) d
-	[  more text ]( something )  [ something b ](something)dd
-
-	"
-
-	for line in text.split_into_lines() {
-		if "[" in line && ")" in line {
-			println(line)
-		}
-	}
-
-	// mut re := regex.regex_opt(query) or { panic(err) }
-
-	// mut re := regex.new()
-	// re.compile_opt(query) or { panic(err) }
-
-	// re.debug = 1 // set debug on at minimum level
-	// println('#query parsed: $re.get_query()')
-	// re.debug = 0
-
-	// for x in re.find_all(text){
-	// 	println(x)
-	// }
 
 
 
