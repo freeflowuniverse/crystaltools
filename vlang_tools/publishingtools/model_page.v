@@ -13,6 +13,6 @@ struct Page {
 struct PageError {
 	line	string
 	linenr 	int
-	error	string
+	msg	string
 }
 

@@ -48,7 +48,8 @@ fn name_fix(name string) string {
 	name_lower = name_lower.replace("-","_")
 	name_lower = name_lower.replace("__","_")
 	name_lower = name_lower.replace("__","_") //needs to be 2x because can be 3 to 2 to 1
-	name_lower = name_lower.replace(";","_")
+	name_lower = name_lower.replace(";",":")
+	name_lower = name_lower.replace("::",":")
 	return name_lower
 }
 
@@ -117,7 +118,8 @@ pub fn (mut publtools PublTools) image_get(name string) ?ImageActor {
 }
 
 
-pub fn (mut publtools PublTools) process() {
+//check all pages, try to find errors
+pub fn (mut publtools PublTools) check() {
 	for sitename in publtools.sites.keys(){
 		mut site := publtools.sites[sitename]
 
@@ -125,7 +127,7 @@ pub fn (mut publtools PublTools) process() {
 			mut page := site.pages[key]
 			//not mutable
 			mut pageactor := PageActor{page:&page, site:&site, publtools:publtools}
-			pageactor.process()
+			pageactor.check()
 		}	
 		// for key in site.images.keys(){
 		// 	mut image := site.images[key]

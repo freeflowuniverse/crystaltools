@@ -36,7 +36,7 @@ fn main() {
 	// f.load("wiki","~/code/github/threefoldfoundation/info_foundation/src")
 
 
-	f.process()
+	f.check()
 
 	// pageactors_test(mut f)
 
