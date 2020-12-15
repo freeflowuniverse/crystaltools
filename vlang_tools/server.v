@@ -1,5 +1,6 @@
 module main
 
+import os
 import vweb
 
 const (
@@ -18,13 +19,26 @@ fn main() {
 	vweb.run<App>(port)
 }
 
+
 pub fn (mut app App) init_once() {
-	app.vweb.handle_static('./testcontent/site1')
+	
 }
 
+
 pub fn (mut app App) index() vweb.Result {
-	return app.vweb.json('{"a": 3}')
+	mut f := os.read_file('./testcontent/site1/index.html') or { panic(err) }
+	app.vweb.set_content_type("text/html")
+	return app.vweb.ok(f)
+}
+
+[get]
+['/:filename']
+pub fn (mut app App) get_md(filename string ) vweb.Result {
+	mut f := os.read_file('./testcontent/site1/' + filename) or { return app.vweb.not_found() }
+	app.vweb.set_content_type("text/html")
+	return app.vweb.ok(f)
 }
 
 pub fn (mut app App) init() {
 }
+
