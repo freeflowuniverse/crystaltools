@@ -1,5 +1,5 @@
 import publishingtools
-
+import regex
 
 fn pageactors_test(mut f &publishingtools.PublTools){
 
@@ -36,9 +36,46 @@ fn main() {
 	// f.load("wiki","~/code/github/threefoldfoundation/info_foundation/src")
 
 
-	f.check()
+	// f.check()
 
 	// pageactors_test(mut f)
+
+	// query := '\[(.*)\]\( *(\w*\:*\w*) *\)'
+	// query := '\[(.*)\]\( *(\w*\:*\w*) *\)'
+
+	// query := r'this (\w+) a'
+
+	// query := r'\[.*\]\( *\w*\:*\w+ *\)'
+	// query := '\[.*\]\( *\w*\:*\w+ *\)'
+
+	text := "[ an s. s! ]( wi4ki:something )
+	[ an s. s! ]( wi4ki:something )
+	[ an s. s! ](wiki:something)
+	[ an s. s! ](something)dd
+	d [ an s. s! ](something ) d
+	[  more text ]( something )  [ something b ](something)dd
+
+	"
+
+	for line in text.split_lines() {
+		if "[" in line AND ")" in line {
+			println(line)
+		}
+	}
+
+	// mut re := regex.regex_opt(query) or { panic(err) }
+
+	// mut re := regex.new()
+	// re.compile_opt(query) or { panic(err) }
+
+	// re.debug = 1 // set debug on at minimum level
+	// println('#query parsed: $re.get_query()')
+	// re.debug = 0
+
+	// for x in re.find_all(text){
+	// 	println(x)
+	// }
+
 
 
 }

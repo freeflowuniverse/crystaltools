@@ -100,6 +100,10 @@ fn (mut pageactor PageActor) process_content(content string) string{
 		}else{
 			lines += line+"\n"
 		}	
+
+		
+		query := r"\[(.*)\]\( *(\w*\:*\w*) *\)"
+
 	}
 	return lines
 
