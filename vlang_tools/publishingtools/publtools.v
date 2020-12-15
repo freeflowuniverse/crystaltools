@@ -55,7 +55,7 @@ fn name_fix(name string) string {
 
 //name in form: 'sitename:pagename' or 'pagename'
 pub fn (mut publtools PublTools) page_get(name string) ?PageActor {	
-	println("page_get: $name")
+	// println("page_get: $name")
 	mut name_lower := name_fix(name)
 	if ":" in name_lower {
 		splitted := name_lower.split(":")
@@ -64,14 +64,8 @@ pub fn (mut publtools PublTools) page_get(name string) ?PageActor {
 		}
 		sitename := splitted[0]
 		page_name := splitted[1]	
-		println("page_get2: $page_name")
 		site := publtools.site_get(sitename) or {return error(err)}
-		println("page_get3: ${site.name}")
 		pageactor := site.pageactor_get(page_name, publtools) or {return error(err)}
-		path11 := pageactor.site.path
-		println("page_get4: ${pageactor.page}")
-		println("page_get5: $path11")
-		println("page_get6: ${pageactor.site.path}")
 		return pageactor
 	}else{		
 		mut res := []PageActor{}

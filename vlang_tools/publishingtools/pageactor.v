@@ -5,16 +5,17 @@ import os
 //nothing kept in mem, just to process one iteration
 struct PageActor {
 	pub mut:
-		page &Page
-		site &Site
-		publtools &PublTools
+		page Page
+		site Site
+		publtools PublTools
 }
 
 //return fullpath,pageobject
 pub fn (site Site) pageactor_get(name string, publtools PublTools) ?PageActor{	
 	namelower := name_fix(name)
 	if namelower in site.pages {
-		return PageActor{page:&site.pages[namelower], publtools:&publtools, site:&site}
+		page := &site.pages[namelower]
+		return PageActor{page:page, publtools:&publtools, site:&site}
 	}
 	return error("Could not find page $namelower in site ${site.name}")
 }
@@ -32,12 +33,9 @@ pub fn (mut pageactor PageActor) process(){
 
 pub fn (pageactor PageActor) content_get() ?string{
 	path_source2 := pageactor.path_get()
-	println("------ $path_source2")
-	println(pageactor.page)
 	content := os.read_file(pageactor.path_get()) or {
 		path_source := pageactor.path_get()
 		println('Failed to open ${path_source}')
-		println(pageactor.page)
 		return err
 	}	
 	return content
@@ -57,7 +55,7 @@ fn (mut pageactor PageActor) process_content(content string) string{
 				name = name.replace("::",":")
 				name = name.replace(";",":")
 				mut ss := pageactor.publtools
-				mut pageobj_linked := ss.page_get(name) or { 
+				mut pageactor_linked := ss.page_get(name) or { 
 					path_source := pageactor.path_get()
 					errormsg := "Cannot inlude '$name' on page: $path_source"
 					println(errormsg)
@@ -65,9 +63,12 @@ fn (mut pageactor PageActor) process_content(content string) string{
 					pageactor.page.errors << page_error
 					continue
 					}
-				pageobj_linked.page.nrtimes_inluded ++
-				content_linked := pageobj_linked.content_get() or {return err}
-				println(pageobj_linked.page)
+				if pageactor_linked.path_get() == pageactor.path_get() {
+					panic("recursive include: $pageactor_linked.path_get()")
+				}	
+				pageactor_linked.page.nrtimes_inluded ++
+				path11 := pageactor_linked.page
+				content_linked := pageactor_linked.content_get() or {return err}
 			}	
 		return ""
 	}
