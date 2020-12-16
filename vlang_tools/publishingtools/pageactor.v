@@ -39,6 +39,7 @@ pub fn (mut pageactor PageActor) check() bool{
 pub fn (mut pageactor PageActor) markdown_get() string{
 
 	if pageactor.page.content!=""{
+		//means was already processed, if fast enough we can leave this away that way we know includes are dynamic
 		return pageactor.page.content
 	}
 
@@ -46,6 +47,9 @@ pub fn (mut pageactor PageActor) markdown_get() string{
 	for i in 0 .. 10 {
 		if i>9 {
 			panic ("too many level of includes in ${pageactor.path_get()}")
+		}
+		if i>3{
+			panic("s")
 		}
 		content = pageactor.process_includes(content)
 		if !content.contains("!!!include") {
