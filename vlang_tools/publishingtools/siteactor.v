@@ -25,7 +25,8 @@ fn (mut site Site) remember_image(path string, name string){
 fn (mut site Site) remember_page(path string, name string){
 
 	mut pathfull := os.join_path(path, name)
-	pathrelative := pathfull[site.path.len+1..]
+	pathrelative := pathfull[site.path.len..]
+
 	mut namelower := name_fix(name)
 	// println( " - Page $pathfull" )
 
@@ -52,7 +53,7 @@ fn (mut site Site) process_files(path string) ? {
 		if os.is_dir(os.join_path(path, item)) {
 			mut basedir := os.file_name(path)
 			if basedir.starts_with(".") {continue}
-			if basedir.starts_with("_") {continue}		
+			if basedir.starts_with("_") {continue}
 			site.process_files(os.join_path(path, item))
 			continue
 		} else {
