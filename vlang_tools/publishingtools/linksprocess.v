@@ -1,7 +1,6 @@
 module publishingtools
 
-//DO NOT CHANGE THE WAY HOW THIS WORKS, THIS HAS BEEN DONE AS A STATEFUL PARSER BY DESIGN
-// THIS ALLOWS FOR EASY ADOPTIONS TO DIFFERENT RELIALITIES
+
 
 enum ParseStatus { start linkopen link imageopen image comment}
 enum LinkType { image link}
@@ -96,7 +95,9 @@ pub fn (link mut Link) check_replace (lines string, mut pt PublTools, mut site S
 
 }
 
-pub fn text_links_process(text string) ParseResult {
+//DO NOT CHANGE THE WAY HOW THIS WORKS, THIS HAS BEEN DONE AS A STATEFUL PARSER BY DESIGN
+// THIS ALLOWS FOR EASY ADOPTIONS TO DIFFERENT RELIALITIES
+pub fn link_parser(text string) ParseResult {
 	mut charprev := ""
 	mut char := ""
 	mut state := ParseStatus.start

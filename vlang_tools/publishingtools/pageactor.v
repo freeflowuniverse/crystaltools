@@ -58,7 +58,7 @@ pub fn (mut pageactor PageActor) markdown_get() string{
 	}
 
 	// check for links
-	mut res:= text_links_process(content)
+	mut res:= link_parser(content)
 	// mut link:=Link{}
 	for mut link in res.links{
 		content = link.check_replace(content, pageactor.publtools, pageactor.site)
