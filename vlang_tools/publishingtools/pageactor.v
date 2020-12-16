@@ -45,20 +45,20 @@ pub fn (mut pageactor PageActor) markdown_get() string{
 
 	mut content := pageactor.markdown_load() or {panic(err)}
 
-	for i in 0 .. 10 {
-		if i>9 {
-			panic ("too many level of includes in ${pageactor.path_get()}")
-		}
-		if i>3{
-			panic("seems off, need to first find why the uncludes don't get replaced")
-		}		
-		content = pageactor.process_includes(content)
-		if !content.contains("!!!include") {
-			//means we got all the includes 
-			break
-		}
-		// println( content)
-	}
+	// for i in 0 .. 10 {
+	// 	if i>9 {
+	// 		panic ("too many level of includes in ${pageactor.path_get()}")
+	// 	}
+	// 	if i>3{
+	// 		panic("seems off, need to first find why the uncludes don't get replaced")
+	// 	}		
+	content = pageactor.process_includes(content)  //should be recursive now
+	// 	if !content.contains("!!!include") {
+	// 		//means we got all the includes 
+	// 		break
+	// 	}
+	// 	// println( content)
+	// }
 	if pageactor.page.errors.len > 0{
 		pageactor.page.state = PageStatus.error
 	}
@@ -129,7 +129,7 @@ fn (mut pageactor PageActor) process_includes(content string) string {
 			}	
 			pageactor_linked.page.nrtimes_inluded ++
 			// path11 := pageactor_linked.page
-			content_linked := pageactor_linked.markdown_load() or {return err}
+			content_linked := pageactor_linked.markdown_get() or {return err}
 			lines += content_linked+"\n"
 		}else{
 			lines += line+"\n"
