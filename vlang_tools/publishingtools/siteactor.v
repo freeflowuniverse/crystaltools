@@ -8,7 +8,7 @@ fn (mut site Site) remember_image(path string, name string){
 	mut namelower := name_fix(name)
 	mut pathfull := os.join_path(path, name)
 	// now remove the root path
-	pathrelative := pathfull[site.path.len+1..]
+	pathrelative := pathfull[site.path.len..]
 	// println( " - Image $pathfull" )
 	if namelower in site.images {
 		//error there should be no duplicates
