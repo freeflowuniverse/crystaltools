@@ -129,7 +129,7 @@ fn (mut pageactor PageActor) process_includes(content string) string {
 			}	
 			pageactor_linked.page.nrtimes_inluded ++
 			// path11 := pageactor_linked.page
-			content_linked := pageactor_linked.markdown_get() or {return err}
+			content_linked := pageactor_linked.markdown_get()
 			lines += content_linked+"\n"
 		}else{
 			lines += line+"\n"
