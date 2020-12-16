@@ -1,6 +1,7 @@
 module publishingtools
 
 import os
+import regex
 
 //nothing kept in mem, just to process one iteration
 struct PageActor {
@@ -27,7 +28,7 @@ pub fn (pageactor PageActor) path_get() string{
 
 //will load the content, check everything, return true if ok
 pub fn (mut pageactor PageActor) check() bool{
-	//content := pageactor.markdown_get()
+	content := pageactor.markdown_get()
 	if pageactor.page.state == PageStatus.error{
 		return false
 	}
@@ -74,9 +75,33 @@ pub fn (mut pageactor PageActor) error_add(error PageError){
 
 } 
 
+fn get_links(mut re regex.RE, text string) []string{
+	mut res := []string
+	if "](" in text {
+		println(text)
+		mut gi := 0
+		print(1)
+		all := re.find_all(text)
+		print(2)
+		for gi < all.len {
+			print(3)
+			// println(':${text[all[gi]..all[gi + 1]]}:')
+			res << '${text[all[gi]..all[gi + 1]]}'
+			gi += 2		
+		}
+	}
+	return res
+}
+
 fn (mut pageactor PageActor) process_content(content string) string{	
 	mut lines:=""
 	mut nr:=0
+
+	regex_link_query := r'(\[[\w\.\! ]*\]\( *[\w_]*\:*[\w_\.]* *\))'
+	mut regex_link := regex.new()
+	regex_link.compile_opt(regex_link_query) or { panic(err) }	
+
+
 	for line in content.split_into_lines() {
 		// println (line)
 		nr++
@@ -98,11 +123,15 @@ fn (mut pageactor PageActor) process_content(content string) string{
 			content_linked := pageactor_linked.markdown_load() or {return err}
 			lines += content_linked+"\n"
 		}else{
+
+			// check for links
+			for link in get_links(regex_link,line){
+				println(link)
+			}
+
 			lines += line+"\n"
 		}	
 
-		
-		// _ := r"\[(.*)\]\( *(\w*\:*\w*) *\)"
 
 	}
 	return lines

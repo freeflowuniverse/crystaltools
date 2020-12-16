@@ -15,18 +15,18 @@ d [ an s. s! ](something ) d
 [  more text ]( something )  [ something b ](something)dd
 
 "
-
-// mut re := regex.regex_opt(query) or { panic(err) }
+query := r'(\[[a-z\.\! ]*\]\( *\w*\:*\w* *\))'
 
 mut re := regex.new()
-re.compile_opt(query) or { println(err) }
+re.compile_opt(query) or { panic(err) }	
 
-for line in text.split_into_lines() {
-  start, end := re.match_string(line)
-  if start>0{
-    println(text[start..end])
-    // println(line)
-  }
-
+mut gi := 0
+all := re.find_all(text)
+for gi < all.len {
+  println(':${text[all[gi]..all[gi + 1]]}:')
+  gi += 2
 }
+println('')
+
+
 ```
