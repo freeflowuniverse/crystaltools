@@ -63,9 +63,17 @@ pub fn (mut app App) get_wiki_file(wiki string, filename string) vweb.Result {
 		app.vweb.set_content_type("text/html")
 		return app.vweb.ok(file)
 	}else{
-		pageobj := wiki_obj.pubtools.page_get(filename) or {return app.vweb.not_found()}
-		file := os.read_file(wiki_obj.path + pageobj.page.path) or { return app.vweb.not_found() }
-		app.vweb.set_content_type("text/html")
+		mut file := ""
+		if filename.ends_with(".md"){
+			pageobj := wiki_obj.pubtools.page_get(filename) or {return app.vweb.not_found()}
+			file = os.read_file(wiki_obj.path + pageobj.page.path) or { return app.vweb.not_found() }
+			app.vweb.set_content_type("text/html")
+		}else{
+			img := wiki_obj.pubtools.image_get(filename) or {return app.vweb.not_found()}
+			file = os.read_file(img.path_get()) or { return app.vweb.not_found() }
+			extension := filename.split(".")[1]
+			app.vweb.set_content_type("image/" + extension)
+		}
 		return app.vweb.ok(file)
 	}
 }
@@ -76,6 +84,7 @@ pub fn (mut app App) get_wiki_img(wiki string, filename string) vweb.Result {
 	mut wiki_obj := app.wikis[wiki]
 	img := wiki_obj.pubtools.image_get(filename) or {return app.vweb.not_found()}
 	file := os.read_file(img.path_get()) or { return app.vweb.not_found() }
-	app.vweb.set_content_type("image/png")
+	extension := filename.split(".")[1]
+	app.vweb.set_content_type("image/" + extension)
 	return app.vweb.ok(file)
 }
