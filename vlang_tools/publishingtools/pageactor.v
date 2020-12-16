@@ -1,7 +1,6 @@
 module publishingtools
 
 import os
-import regex
 
 //nothing kept in mem, just to process one iteration
 struct PageActor {
@@ -38,12 +37,17 @@ pub fn (mut pageactor PageActor) check() bool{
 //process the markdown content and include other files, find links, ...
 //the content is the processed 
 pub fn (mut pageactor PageActor) markdown_get() string{
+
+	if pageactor.page.content!=""{
+		return pageactor.page.content
+	}
+
 	mut content := pageactor.markdown_load() or {panic(err)}
 	for i in 0 .. 10 {
 		if i>9 {
 			panic ("too many level of includes in ${pageactor.path_get()}")
 		}
-		content = pageactor.process_content(content)
+		content = pageactor.process_includes(content)
 		if !content.contains("!!!include") {
 			//means we got all the includes 
 			break
@@ -52,7 +56,26 @@ pub fn (mut pageactor PageActor) markdown_get() string{
 	if pageactor.page.errors.len > 0{
 		pageactor.page.state = PageStatus.error
 	}
-	return content
+
+	// check for links
+	mut res:= text_links_process(content)
+	// mut link:=Link{}
+	for mut link in res.links{
+		content = link.check_replace(content, pageactor.publtools, pageactor.site)
+		// println("${replaceaction.original_text}->${replaceaction.new_text}")
+		if link.state == LinkState.notfound{
+			mut cat:=PageErrorCat.brokenlink
+			if link.cat == LinkType.image{
+				cat=PageErrorCat.brokenimage
+			}
+			page_error := PageError{line:"", linenr:0, msg:link.error_msg_get(), cat:cat}	
+			pageactor.error_add(page_error)		
+		}
+	}
+
+	pageactor.page.content = content
+
+	return pageactor.page.content
 }
 
 pub fn (pageactor PageActor) markdown_load() ?string{
@@ -75,32 +98,11 @@ pub fn (mut pageactor PageActor) error_add(error PageError){
 
 } 
 
-fn get_links(mut re regex.RE, text string) []string{
-	mut res := []string
-	if "](" in text {
-		println(text)
-		mut gi := 0
-		print(1)
-		all := re.find_all(text)
-		print(2)
-		for gi < all.len {
-			print(3)
-			// println(':${text[all[gi]..all[gi + 1]]}:')
-			res << '${text[all[gi]..all[gi + 1]]}'
-			gi += 2		
-		}
-	}
-	return res
-}
 
-fn (mut pageactor PageActor) process_content(content string) string{	
+fn (mut pageactor PageActor) process_includes(content string) string {	
+
 	mut lines:=""
 	mut nr:=0
-
-	regex_link_query := r'(\[[\w\.\! ]*\]\( *[\w_]*\:*[\w_\.]* *\))'
-	mut regex_link := regex.new()
-	regex_link.compile_opt(regex_link_query) or { panic(err) }	
-
 
 	for line in content.split_into_lines() {
 		// println (line)
@@ -110,7 +112,8 @@ fn (mut pageactor PageActor) process_content(content string) string{
 			name := linestrip["!!!include".len+1..]
 			mut pt := pageactor.publtools
 			mut pageactor_linked := pt.page_get(name) or { 
-				page_error := PageError{line:line, linenr:nr, msg:"Cannot inlude '$name'\n${err}"}
+				page_error := PageError{line:line, linenr:nr, msg:"Cannot inlude '$name'\n${err}", 
+													cat:PageErrorCat.brokeninclude }
 				pageactor.error_add(page_error)
 				lines += "> ERROR: ${page_error.msg}"
 				continue
@@ -122,18 +125,11 @@ fn (mut pageactor PageActor) process_content(content string) string{
 			// path11 := pageactor_linked.page
 			content_linked := pageactor_linked.markdown_load() or {return err}
 			lines += content_linked+"\n"
-		}else{
-
-			// check for links
-			for link in get_links(regex_link,line){
-				println(link)
-			}
-
-			lines += line+"\n"
-		}	
-
-
+		}
+		lines += line+"\n"
 	}
+
 	return lines
 
 }
+

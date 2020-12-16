@@ -53,6 +53,10 @@ fn name_fix(name string) string {
 	return name_lower
 }
 
+pub fn (mut publtools PublTools) page_exists(name string) bool {
+	publtools.page_get(name) or {return false}
+	return true
+}
 
 //name in form: 'sitename:pagename' or 'pagename'
 pub fn (mut publtools PublTools) page_get(name string) ?PageActor {	
@@ -117,6 +121,10 @@ pub fn (mut publtools PublTools) image_get(name string) ?ImageActor {
 	}	
 }
 
+pub fn (mut publtools PublTools) image_exists(name string) bool {
+	publtools.image_get(name) or {return false}
+	return true
+}
 
 //check all pages, try to find errors
 pub fn (mut publtools PublTools) check() {
