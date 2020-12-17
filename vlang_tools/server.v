@@ -36,10 +36,10 @@ pub fn (mut app App) init_once() {
 	mut pubtools :=  publishingtools.new() 
 	mut root := getenv('HOME') + "/" + "code/github/threefoldfoundation/info_foundation/src/"
 	mut index := root + "index.html"
-	pubtools.load("info_foundation", root)
+	pubtools.load("wiki", root)
 	pubtools.check()
-	mut wiki := Wiki{name: "info_foundation", path: root, index: index, pubtools: &pubtools}
-	app.wikis["info_foundation"] = wiki
+	mut wiki := Wiki{name: "wiki", path: root, index: index, pubtools: &pubtools}
+	app.wikis["wiki"] = wiki
 }
 
 pub fn (mut app App) init() {}
