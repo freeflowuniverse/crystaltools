@@ -69,7 +69,6 @@ pub fn (mut app App) index() vweb.Result {
 [get]
 ['/:wiki']
 pub fn (mut app App) get_wiki(wiki string) vweb.Result {
-	println(app.wikis[wiki].index)
 	mut index := os.read_file(app.wikis[wiki].index) or { return app.vweb.not_found() }
 	app.vweb.set_content_type("text/html")
 	return app.vweb.ok(index)
@@ -87,20 +86,19 @@ pub fn (mut app App) get_wiki_file(wiki string, filename string) vweb.Result {
 	}else{
 		mut file := ""
 		if filename.ends_with(".md"){
-			pageobj := wiki_obj.pubtools.page_get(filename) or {
+			pageobj := wiki_obj.pubtools.page_get("$wiki:$filename") or {
 				if filename == "README.md"{
-					// app.vweb.redirect('/$wiki/_sidebar.md')
 					file = os.read_file(os.join_path(wiki_obj.path, "_sidebar.md")) or { return app.vweb.not_found() }
 					app.vweb.set_content_type("text/html")
 					return app.vweb.ok("# $wiki\n" + file)
 				}
-				return app.vweb.not_found()
+				return app.vweb.not_found() 
 			}
 
 			file = os.read_file(os.join_path(wiki_obj.path, pageobj.page.path.trim_left("/"))) or { return app.vweb.not_found() }
 			app.vweb.set_content_type("text/html")
 		}else{
-			img := wiki_obj.pubtools.image_get(filename) or {return app.vweb.not_found()}
+			img := wiki_obj.pubtools.image_get("$wiki:$filename") or {return app.vweb.not_found()}
 			file = os.read_file(img.path_get()) or { return app.vweb.not_found() }
 			extension := filename.split(".")[1]
 			app.vweb.set_content_type("image/" + extension)

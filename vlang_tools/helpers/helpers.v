@@ -11,10 +11,14 @@ pub fn list_repos() map[string]map[string]string{
 	for org in organizations{
 		mut repos := os.ls(os.join_path(path, org)) or {[]}
 		for repo in repos{
+			mut name := repo
 			if ! repo.starts_with("info") && repo != "legal"{
 				continue
 			}
-			res[repo] =  {
+			if repo == "info_foundation"{
+				name = "wiki"
+			}
+			res[name] =  {
 				"path" : os.join_path(path, org, repo, "src")
 			}
 		}

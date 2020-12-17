@@ -63,7 +63,7 @@ pub fn (link mut Link) check_replace (lines string, mut pt PublTools, mut site S
 		linkstr = "${site.name}:$linkstr"
 	}
 
-	println(linkstr)
+	// println(linkstr)
 
 	new_text = "[${link.name.trim(" ")}]($linkstr)"
 	if link.state == LinkState.init {
