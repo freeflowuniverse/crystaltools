@@ -60,7 +60,7 @@ pub fn (mut publtools PublTools) page_exists(name string) bool {
 
 //name in form: 'sitename:pagename' or 'pagename'
 pub fn (mut publtools PublTools) page_get(name string) ?PageActor {	
-	// println("page_get: $name")
+	println("page_get: $name")
 	mut name_lower := name_fix(name)
 	if ":" in name_lower {
 		splitted := name_lower.split(":")

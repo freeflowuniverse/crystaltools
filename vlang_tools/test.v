@@ -47,7 +47,7 @@ fn main() {
 	//now serve the wiki server and /wiki/...communication_header.jpg should serve this file
 	//`...` means anything
 
-	pageobj := f.page_get("getinvolved.md") or {panic(err)}
+	pageobj := f.page_get("collaboration.md") or {panic(err)}
 	//this has enough info to serve the image back
 	println(pageobj.path_get())	
 	println(pageobj.page)	
