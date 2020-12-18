@@ -73,16 +73,15 @@ pub fn (mut app App) get_wiki_file(wiki string, filename string) vweb.Result {
 	}else{
 		mut file := ""
 		if filename.ends_with(".md"){
-			pageobj := app.pubtools.page_get("$wiki:$filename") or {
+			mut pageobj := app.pubtools.page_get("$wiki:$filename") or {
 				if filename == "README.md"{
-					file = os.read_file(os.join_path(root, "_sidebar.md")) or { return app.vweb.not_found() }
+					mut page := app.pubtools.page_get("$wiki:_sidebar.md") or { return app.vweb.not_found() }
 					app.vweb.set_content_type("text/html")
-					return app.vweb.ok("# $wiki\n" + file)
+					return app.vweb.ok("# $wiki\n" + page.markdown_get())
 				}
 				return app.vweb.not_found() 
 			}
-
-			file = os.read_file(os.join_path(root, pageobj.page.path.trim_left("/"))) or { return app.vweb.not_found() }
+			file = pageobj.markdown_get()
 			app.vweb.set_content_type("text/html")
 		}else{
 			img := app.pubtools.image_get("$wiki:$filename") or {return app.vweb.not_found()}
