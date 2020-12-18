@@ -29,12 +29,12 @@ fn main() {
 	println("start")
 	// f.load("tech","~/code/github/threefoldtech/info_tftech")
 	// f.load("/tmp")
-	// f.load("test","testcontent/site1")
+	f.load("test","testcontent/site1")
 	//IT CRASHES WHEN 2x using the same name, otherwise not
 	// on a repo in my filesystem though it also crashed even with other name
-	// f.load("wiki","testcontent/site2")
+	f.load("wiki","testcontent/site2")
 
-	f.load("wiki","~/code/github/threefoldfoundation/info_foundation/src")
+	// f.load("wiki","~/code/github/threefoldfoundation/info_foundation/src")
 
 
 	f.check()
