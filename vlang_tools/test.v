@@ -39,10 +39,10 @@ fn main() {
 
 	f.check()
 
-	imageobj := f.image_get("communication_header.jpg") or {panic(err)}
+	// imageobj := f.image_get("communication_header.jpg") or {panic(err)}
 	//this has enough info to serve the image back
-	println(imageobj.path_get())
-	println(imageobj.image)
+	// println(imageobj.path_get())
+	// println(imageobj.image)
 
 	//now serve the wiki server and /wiki/...communication_header.jpg should serve this file
 	//`...` means anything

@@ -16,7 +16,7 @@ fn (mut site Site) remember_image(path string, name string){
 		site.errors << SiteError{path:pathrelative, error:"duplicate image $duplicatepath", 
 								cat:SiteErrorCategory.duplicateimage}
 	}else{
-		site.images[namelower] = Image({ path: pathrelative})
+		site.images[namelower] = Image{ path: pathrelative}
 		// image := site.images[namelower]
 		// println(image)
 	}
@@ -36,7 +36,7 @@ fn (mut site Site) remember_page(path string, name string){
 		site.errors << SiteError{path:pathrelative, error:"duplicate page $duplicatepath", 
 								cat:SiteErrorCategory.duplicatepage}
 	}else{
-		site.pages[namelower] = Page({ path: pathrelative})
+		site.pages[namelower] = Page{ path: pathrelative}
 		// page := site.pages[namelower]
 		// println(page)
 	}
