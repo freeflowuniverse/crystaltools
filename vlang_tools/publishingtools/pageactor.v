@@ -6,6 +6,7 @@ import os
 struct PageActor {
 pub mut:
 	page      Page
+	page_errors map[string][]PageError // page_errors[page.path]
 	site      Site
 	publtools PublTools
 }
@@ -16,9 +17,9 @@ pub fn (site Site) pageactor_get(name string, publtools PublTools) ?PageActor {
 	if namelower in site.pages {
 		page := site.pages[namelower]
 		return PageActor{
-			page: &page
-			publtools: &publtools
-			site: &site
+			page: page // {page|errors:page.errors.clone()}
+			publtools: publtools
+			site: site
 		}
 	}
 	return error('Could not find page $namelower in site $site.name')
@@ -59,8 +60,9 @@ pub fn (mut pageactor PageActor) markdown_get() string {
 	// 	}
 	// 	// println( content)
 	// }
-	if pageactor.page.errors.len > 0 {
-		pageactor.page.state = PageStatus.error
+	//if pageactor.page.errors.len > 0 {
+	if pageactor.page_errors[pageactor.page.path].len > 0 {
+		pageactor.page.state = .error
 	}
 	// check for links
 	mut res := link_parser(content)
@@ -99,7 +101,8 @@ pub fn (pageactor PageActor) markdown_load() ?string {
 pub fn (mut pageactor PageActor) error_add(error PageError) {
 	if pageactor.page.state != PageStatus.error {
 		// only add when not in error mode yet, because means check was already done
-		pageactor.page.errors << error
+		//pageactor.page.errors << error
+		pageactor.page_errors[pageactor.page.path] << error
 	}
 	println(' ** ERROR: in file $pageactor.path_get()')
 	println(error)
