@@ -14,8 +14,8 @@ struct PageActor {
 pub fn (site Site) pageactor_get(name string, publtools PublTools) ?PageActor{	
 	namelower := name_fix(name)
 	if namelower in site.pages {
-		page := &site.pages[namelower]
-		return PageActor{page:page, publtools:&publtools, site:&site}
+		page := site.pages[namelower]
+		return PageActor{page:&page, publtools:&publtools, site:&site}
 	}
 	return error("Could not find page $namelower in site ${site.name}")
 }
