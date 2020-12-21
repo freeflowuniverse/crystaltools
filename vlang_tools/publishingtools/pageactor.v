@@ -31,7 +31,7 @@ pub fn (pageactor PageActor) path_get() string {
 
 // will load the content, check everything, return true if ok
 pub fn (mut pageactor PageActor) check() bool {
-	content := pageactor.markdown_get()
+	//content := pageactor.markdown_get()
 	if pageactor.page.state == PageStatus.error {
 		return false
 	}
@@ -68,7 +68,7 @@ pub fn (mut pageactor PageActor) markdown_get() string {
 	mut res := link_parser(content)
 	// mut link:=Link{}
 	for mut link in res.links {
-		content = link.check_replace(content, pageactor.publtools, pageactor.site)
+		content = link.check_replace(content, mut pageactor.publtools, mut pageactor.site)
 		// println("${replaceaction.original_text}->${replaceaction.new_text}")
 		if link.state == LinkState.notfound {
 			mut cat := PageErrorCat.brokenlink
