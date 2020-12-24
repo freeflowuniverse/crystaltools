@@ -6,6 +6,7 @@ import os
 struct PublTools {
 pub mut:
 	sites map[string]Site
+	domain string
 }
 
 pub fn (mut publtools PublTools) load(name string, path string) {
@@ -26,6 +27,10 @@ pub fn (mut publtools PublTools) load(name string, path string) {
 // the factory, get your tools here
 pub fn new() PublTools {
 	mut publtools := PublTools{}
+	domain := os.getenv("DOMAIN")
+	if domain != ""{
+		publtools.domain = domain
+	}
 	return publtools
 }
 

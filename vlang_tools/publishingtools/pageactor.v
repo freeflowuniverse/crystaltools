@@ -40,7 +40,8 @@ pub fn (mut pageactor PageActor) check() bool {
 
 // process the markdown content and include other files, find links, ...
 // the content is the processed 
-pub fn (mut pageactor PageActor) markdown_get() string {
+// originSite is the site that wants to include a markdown page
+pub fn (mut pageactor PageActor) markdown_get(originSite string) string {
 	if pageactor.page.content != '' {
 		// means was already processed, if fast enough we can leave this away that way we know includes are dynamic
 		return pageactor.page.content
@@ -68,7 +69,7 @@ pub fn (mut pageactor PageActor) markdown_get() string {
 	mut res := link_parser(content)
 	// mut link:=Link{}
 	for mut link in res.links {
-		content = link.check_replace(content, mut pageactor.publtools, mut pageactor.site)
+		content = link.check_replace(content, mut pageactor.publtools, mut pageactor.site, originSite)
 		// println("${replaceaction.original_text}->${replaceaction.new_text}")
 		if link.state == LinkState.notfound {
 			mut cat := PageErrorCat.brokenlink
@@ -134,7 +135,7 @@ fn (mut pageactor PageActor) process_includes(content string) string {
 			}
 			pageactor_linked.page.nrtimes_inluded++
 			// path11 := pageactor_linked.page
-			content_linked := pageactor_linked.markdown_get()
+			content_linked := pageactor_linked.markdown_get(pageactor.site.name)
 			lines += content_linked + '\n'
 		} else {
 			lines += line + '\n'

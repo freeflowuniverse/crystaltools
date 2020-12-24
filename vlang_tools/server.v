@@ -75,11 +75,11 @@ pub fn (mut app App) get_wiki_file(wiki string, filename string) vweb.Result {
 						return app.vweb.not_found()
 					}
 					app.vweb.set_content_type('text/html')
-					return app.vweb.ok('# $wiki\n' + page.markdown_get())
+					return app.vweb.ok('# $wiki\n' + page.markdown_get(""))
 				}
 				return app.vweb.not_found()
 			}
-			file = pageobj.markdown_get()
+			file = pageobj.markdown_get("")
 			app.vweb.set_content_type('text/html')
 		} else {
 			img := app.pubtools.image_get('$wiki:$filename') or { return app.vweb.not_found() }

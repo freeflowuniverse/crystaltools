@@ -48,7 +48,7 @@ pub fn (mut link Link) error_msg_get() string {
 }
 
 // will replace the links to be correct (see if they exist in the known sites, )
-pub fn (mut link Link) check_replace(lines string, mut pt PublTools, mut site Site) string {
+pub fn (mut link Link) check_replace(lines string, mut pt PublTools, mut site Site, originSite string) string {
 	if link.state == LinkState.external {
 		// no need to process are external links
 		return lines
@@ -73,8 +73,23 @@ pub fn (mut link Link) check_replace(lines string, mut pt PublTools, mut site Si
 	if !(':' in linkstr) {
 		linkstr = '$site.name:$linkstr'
 	}
-	// println(linkstr)
-	new_text = '[${link.name.trim(' ')}]($linkstr)'
+
+	mut new_link := ""
+	
+	if originSite == site.name{
+		new_link = linkstr.split(":")[1]
+	}else{
+		splitted := linkstr.split(":")
+		sitename := splitted[0]
+		item := splitted[1]
+		new_link = "/$sitename/$item"
+		if link.cat == LinkType.image{
+			domain := publishingtools.new().domain
+			new_link = "$domain$new_link"
+		}
+	}
+
+	new_text = ''
 	if link.state == LinkState.init {
 		// need to check if link exists
 		link.state = LinkState.ok
@@ -92,13 +107,14 @@ pub fn (mut link Link) check_replace(lines string, mut pt PublTools, mut site Si
 			}
 		}
 	}
+	new_text = '[${link.name.trim(' ')}]($new_link)'
 	if link.cat == LinkType.image {
 		// add the ! to be a link
 		new_text = '!$new_text'
 		original_text = '!$original_text'
 	}
 	lines_out = lines.replace(original_text, new_text)
-	link.dest = linkstr // so now we know the proper destination string, TODO: check it does not happen multiple times
+	link.dest = new_link // so now we know the proper destination string, TODO: check it does not happen multiple times
 	return lines_out
 }
 
