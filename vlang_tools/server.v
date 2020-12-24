@@ -78,7 +78,7 @@ pub fn (mut app App) get_wiki_file(wiki string, filename string) vweb.Result {
 				}
 				return app.vweb.not_found() 
 			}
-			file = pageobj.markdown_get("")
+			file = pageobj.markdown_get(wiki)
 		} else {
 			img := app.pubtools.image_get('$wiki:$filename') or { return app.vweb.not_found() }
 			file = os.read_file(img.path_get()) or { return app.vweb.not_found() }
