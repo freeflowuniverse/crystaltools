@@ -1,12 +1,27 @@
 module publishingtools
 
 import os
+import json
 
-// import json
 struct PublTools {
+mut:
+	gitlevel int
 pub mut:
-	sites map[string]Site
 	domain string
+	sites map[string]Site
+}
+
+
+// the factory, get your tools here
+pub fn new() PublTools {
+	mut publtools := PublTools{}
+	mut domain := os.getenv("DOMAIN")
+	if domain == "" {
+		domain = "http://localhost:8082"
+	}
+	publtools.domain = domain
+	publtools.gitlevel = 0
+	return publtools
 }
 
 pub fn (mut publtools PublTools) load(name string, path string) {
@@ -21,18 +36,10 @@ pub fn (mut publtools PublTools) load(name string, path string) {
 	} else {
 		panic("should not load on same name 2x: '$name_lower'")
 	}
-	publtools.sites[name_lower].process_files(path2)
+	// publtools.sites[name_lower].process_files(path2)
 }
 
-// the factory, get your tools here
-pub fn new() PublTools {
-	mut publtools := PublTools{}
-	domain := os.getenv("DOMAIN")
-	if domain != ""{
-		publtools.domain = domain
-	}
-	return publtools
-}
+
 
 pub fn (mut publtools PublTools) site_get(name string) ?Site {
 	name_lower := name_fix(name)
@@ -44,7 +51,7 @@ pub fn (mut publtools PublTools) site_get(name string) ?Site {
 }
 
 // make sure that the names are always normalized so its easy to find them back
-fn name_fix(name string) string {
+pub fn name_fix(name string) string {
 	mut name_lower := name.to_lower()
 	if name_lower.ends_with('.md') {
 		name_lower = name_lower[0..name_lower.len - 3]
@@ -152,8 +159,54 @@ pub fn (mut publtools PublTools) check() {
 	}
 }
 
-// pub fn (mut site Site) process(publtools PublTools) {
-// }
-// pub fn (site Site) path_get(path string) string{	
-// 	return os.join_path(site.path,path)
-// }
+
+pub fn (mut  publtools PublTools) load_all() {
+	publtools.gitlevel = -2 //we do this gitlevel to make sure we don't go too deep in the directory level
+	publtools.load_all_private("")
+}
+
+//find all wiki's, this goes very fast, no reason to cache
+fn (mut  publtools PublTools) load_all_private(path string) {
+	mut path1 := ""
+	// mut gitlevel1 := gitlevel
+	if path == "" {
+		path1 = "${os.home_dir()}/code/"
+	}else{
+		path1 = path
+	}
+	items := os.ls(path1) or { panic("cannot find $path1")}
+	publtools.gitlevel ++
+	for item in items {
+		pathnew := os.join_path(path1, item)
+		if os.is_dir(pathnew) {
+			// println(" - $pathnew '$item' ${publtools.gitlevel}")		
+			if os.is_link(pathnew){
+				continue
+			}
+			if os.exists(os.join_path(pathnew, "wikiconfig.json")){
+				content := os.read_file(os.join_path(pathnew, "wikiconfig.json")) or {panic('Failed to load json ${os.join_path(pathnew, "wikiconfig.json")}')}
+				config := json.decode(SiteConfig, content )or {
+					// eprintln()
+					panic('Failed to decode json ${os.join_path(pathnew, "wikiconfig.json")}')
+				}
+				publtools.load(config.name,pathnew)
+				continue
+			}
+			if item == '.git' {
+				publtools.gitlevel = 0 				
+				continue
+			}
+			if publtools.gitlevel > 1 {
+				continue
+			}
+			if item.starts_with('.') {				
+				continue
+			}
+			if item.starts_with('_') {
+				continue
+			}
+			publtools.load_all_private(pathnew)
+		}
+	}	
+	publtools.gitlevel --
+}

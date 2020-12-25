@@ -2,7 +2,14 @@ module publishingtools
 
 import os
 
-// import json
+struct SiteConfig {
+	//name of the wiki site
+	name	string
+	//depends on which other wiki sites
+	depends []string
+}
+
+
 // remember the image, so we know if we have duplicates
 fn (mut site Site) remember_image(path string, name string) {
 	mut namelower := name_fix(name)
@@ -47,6 +54,12 @@ fn (mut site Site) remember_page(path string, name string) {
 		// page := site.pages[namelower]
 		// println(page)
 	}
+}
+
+fn (mut site Site) check(){
+	// if site.pages
+	panic("S")
+
 }
 
 fn (mut site Site) process_files(path string) ? {

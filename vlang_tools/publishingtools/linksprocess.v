@@ -84,7 +84,7 @@ pub fn (mut link Link) check_replace(lines string, mut pt PublTools, mut site Si
 		item := splitted[1]
 		new_link = "/$sitename/$item"
 		if link.cat == LinkType.image{
-			domain := publishingtools.new().domain
+			domain := pt.domain
 			new_link = "$domain$new_link"
 		}
 	}

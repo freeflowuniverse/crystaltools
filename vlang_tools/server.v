@@ -2,8 +2,8 @@ module main
 
 import os
 import vweb
-import helpers
 import publishingtools
+import gittools
 
 const (
 	port = 8082
@@ -23,16 +23,12 @@ fn main() {
 
 // Initialize (load wikis) only once when server starts
 pub fn (mut app App) init_once() {
-	mut sites := helpers.list_repos()
+	// gitstructure := new()
+	// println(gitstructure)
 	app.pubtools = publishingtools.new()
-	for key, value in sites {
-		mut name := key
-		mut path := value['path']
-		mut index := path + '/index.html'
-		app.pubtools.load(name, path)
-		app.pubtools.check()
-	}
-	println('\nPublishing tools is running http://localhost:8082\n')
+	app.pubtools.load_all()//will find all wiki sites
+	// println(app.pubtools)
+	// println('\nPublishing tools is running http://localhost:8082\n')
 }
 
 // Initialization code goes here (with each request)
