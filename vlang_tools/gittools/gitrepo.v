@@ -30,17 +30,18 @@ fn (mut repo GitRepo) changes() bool {
 	}	
 	out := result.output
 	println(out)
-	if out.contains_any("Untracked files"){
+	if out.contains("Untracked files"){
 		return true
-	}else if out.contains_any("Your branch is ahead of"){
+	}else if out.contains("Your branch is ahead of"){
 		return true
-	}else if out.contains_any("Changes not staged for commit"){
+	}else if out.contains("Changes not staged for commit"){
 		return true
-	}else if out.contains_any("nothing to commit"){
+	}else if out.contains("nothing to commit"){
 		return false
 	}else{
 		return true
 	}
+	// println(out)
 	return true
 }
 
