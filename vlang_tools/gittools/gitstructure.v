@@ -25,7 +25,7 @@ pub fn new() GitStructure {
 // will return first found git repo
 // to use gitstructure.repo_get({account:"something",name:"myname"})
 // or gitstructure.repo_get({name:"myname"})
-fn (mut gitstructure GitStructure) repo_get(addr GitAddr) ?GitRepo {
+pub fn (mut gitstructure GitStructure) repo_get(addr GitAddr) ?GitRepo {
 
 	for repo_return in gitstructure.repos {
 		if repo_return.addr.repo == addr.repo {
@@ -38,7 +38,11 @@ fn (mut gitstructure GitStructure) repo_get(addr GitAddr) ?GitRepo {
 			}
 		}
 	}
-	return error("Could not find repo for account:'${addr.account}' name:'${addr.repo}'")
+
+	//means we did not find
+	return GitRepo{addr:addr}
+
+	// return error("Could not find repo for account:'${addr.account}' name:'${addr.repo}'")
 
 }
 

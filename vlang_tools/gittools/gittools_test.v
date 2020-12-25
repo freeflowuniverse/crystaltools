@@ -151,9 +151,19 @@ fn test_url7() {
 
 fn test_path1() {
 
+	mut s := gittools.new()
+
 	addr := addr_get_from_url("https://github.com/crystaluniverse/crystaltools")
-	r := repo_get(addr)
-	r.pull()
+	mut r := s.repo_get(addr) or {panic("cannot load gitaddr:\n$err\n$addr")}
+	r.pull({})
+
+	println(r.url_get())
+
+	if ssh_agent_loaded(){
+		assert r.url_get()=="git@github.com:crystaluniverse/crystaltools.git"
+	}else{
+		assert r.url_get()=="https://github.com/crystaluniverse/crystaltools"
+	}
 
 	path := "~/code/github/crystaluniverse/crystaltools"
 	obj := addr_get_from_path(path)
@@ -168,4 +178,18 @@ fn test_path1() {
 
 	assert json.encode(obj)== json.encode(tocompare)
 
+}
+
+fn test_changes() {
+
+	mut s := gittools.new()
+
+
+	addr := addr_get_from_url("https://github.com/crystaluniverse/crystaltools")
+	mut r := s.repo_get(addr) or {panic("cannot load git repo:\n$err\n$addr")}	
+
+	println(r.changes())
+
+	panic("s")
+	
 }

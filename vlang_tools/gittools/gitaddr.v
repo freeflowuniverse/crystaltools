@@ -137,6 +137,8 @@ pub fn addr_get_from_url(url string) GitAddr {
 // ```
 pub fn addr_get_from_path(path string) GitAddr {
 
+	//"cd #{@path} && git config --get remote.origin.url"
+
 	mut path2 := path.replace("~",os.home_dir())
 
 	if ! os.exists(os.join_path(path2, ".git")){
