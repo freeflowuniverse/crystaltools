@@ -64,7 +64,7 @@ This should be in the found block. Since
 !!taskcontext name:myproject1
 !!task id:a1 
   name:'need to do something 1'
-  description:{
+  description:
     ## markdown works in it
 
     description can be multiline
@@ -80,7 +80,6 @@ This should be in the found block. Since
     def test():
       print("test")
     ```
-    }
   priority:10
 
 #lets now create another task which depends on the previous one

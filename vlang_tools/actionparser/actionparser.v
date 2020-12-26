@@ -1,5 +1,6 @@
 module actionparser
 import os
+import texttools
 
 enum ParseBlockStatus {
 	start 
@@ -62,21 +63,6 @@ pub fn parse(path string) ?ParseResult {
 
 }
 
-//remove all leading spaces at same level
-fn deintend(text string){
-	mut pre:=999
-	mut pre_current:=0
-	mut line_strip:=""
-	for line in text.split_into_lines(){
-		line_strip = line
-		line_strip = line_strip.replace("\t","    ")
-		pre_current = line_strip.len-line_strip.trim_left().len
-		if pre>pre_current{
-			pre=pre_current
-		}
-	}
-
-}
 
 //each block is name of action and the full content behind
 fn parse_into_blocks(text string) ?Blocks {
@@ -85,32 +71,36 @@ fn parse_into_blocks(text string) ?Blocks {
 	mut block := Block{}
 	mut pos := 0
 	mut line_strip := ""
+	mut line2 := ""
 	// no need to process files which are not at least 2 chars
-	for line in text.split_into_lines() {
-		// println("line: '$line'")
-		line_strip = line.trim_space()
+	for line_ in text.split_into_lines() {
+		line2 = line_
+		line2 = line2.replace("\t","    ")
+		// println("line: '$line2'")
+		line_strip = line2.trim_space()
 		if state == ParseBlockStatus.action {
-			if line.starts_with(" ") || line.starts_with("\t") || line==""{
+			if line2.starts_with(" ") || line2==""{
 				//starts with tab or space, means block continues
 				block.content += "\n"
-				block.content += line
+				block.content += line2
 			} else{
 				//means block stops
 				state = ParseBlockStatus.start
 				//add found block
+				block.clean()
 				blocks.blocks << block
 				block = Block{} //new block
 			}
 		}		
 		if state == ParseBlockStatus.start {
-			if line.starts_with("!!") || line.starts_with("#!!") || line.starts_with("//!!") {
+			if line2.starts_with("!!") || line2.starts_with("#!!") || line2.starts_with("//!!") {
 				state = ParseBlockStatus.action
-				pos = line.index(" ") or {0}
+				pos = line2.index(" ") or {0}
 				if pos > 0 {
-					block.name = line[0..pos]
-					block.content = line[pos..]
+					block.name = line2[0..pos]
+					block.content = line2[pos..]
 				}else{
-					block.name = line.trim_space() //means no arguments
+					block.name = line2.trim_space() //means no arguments
 				}
 				block.name = block.name.trim_space().trim_left("#/!")
 			}
@@ -119,14 +109,22 @@ fn parse_into_blocks(text string) ?Blocks {
 	}
 	if block.name.len > 0 {
 		//add last block to it
+		block.clean()
 		blocks.blocks << block
 	}
 	println(blocks.blocks[13].content)
-	panic("7")
 	return blocks
 }
 
+fn (mut block Block) clean(){
+	block.name = block.name.trim_space().to_lower()
+	block.content = texttools.dedent(block.content) //remove leading space
+}
+
+
 fn (mut results ParseResult) parse_block(block Block){
+	println(block.content)
+	panic("ssss")
 
 	
 }
