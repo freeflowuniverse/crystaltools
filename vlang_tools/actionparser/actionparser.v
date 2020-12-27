@@ -23,13 +23,16 @@ mut:
 }
 
 struct ParseAction {
-	name  string
-	params []ParseParam
+	pub:
+		name  string
+	pub mut:		
+		params []ParseParam
 }
 
 struct ParseParam {
-	name string
-	value string
+	pub:
+		name string
+		value string
 }
 
 //first step is to get the blocks out
@@ -122,10 +125,17 @@ fn (mut block Block) clean(){
 }
 
 
-fn (mut results ParseResult) parse_block(block Block){
-	println(block.content)
-	panic("ssss")
+fn (mut result ParseResult) parse_block(block Block){
 
+	params:= texttools.text_to_params(block.content) or {panic(err)}
+
+	mut action := ParseAction{name:block.name}
+	
+	for param in params.params{
+		action.params << ParseParam{name:param.key, value:param.value}
+	}
+
+	result.actions << action
 	
 }
 

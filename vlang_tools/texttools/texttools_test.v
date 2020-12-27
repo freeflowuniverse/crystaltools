@@ -143,7 +143,4 @@ def test():
 	//need to replace /t because of the way how I put the expected result in code here
 	assert json.encode(params)== json.encode(expectedresult).replace("\\t","    ")
 
-	println(params)
-
-	panic("sss")
 }

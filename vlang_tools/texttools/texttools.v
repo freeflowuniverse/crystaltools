@@ -68,22 +68,6 @@ pub fn multiline_to_single(text string)?string{
 		line2 = line
         line2 = line2.replace("\t","    ")
         // println("'$line2' $state")
-        if state == MultiLineStatus.start{
-		    if line2.trim_space() == "" {continue}
-            if line2.trim_space().starts_with("#") {continue}
-            if line2.trim_space().starts_with("//"){continue}
-            if line2.trim_space().ends_with(":'") || line2.trim_space().ends_with(": '"){
-                return error("line cannot end with ': \'' or ':\'' in \n%text")
-            }
-            if line2.trim_space().ends_with(":"){
-                //means is multiline
-                state = MultiLineStatus.multiline
-                multiline_first = line2
-                continue
-            }else{
-                res << line2
-            }
-        }
         if state == MultiLineStatus.multiline{
             // println("LINE2:'$line2'")
             if line2.starts_with(" "){      
@@ -100,7 +84,24 @@ pub fn multiline_to_single(text string)?string{
                 multiline = ""
                 state = MultiLineStatus.start
             }
+        }        
+        if state == MultiLineStatus.start{
+		    if line2.trim_space() == "" {continue}
+            if line2.trim_space().starts_with("#") {continue}
+            if line2.trim_space().starts_with("//"){continue}
+            if line2.trim_space().ends_with(":'") || line2.trim_space().ends_with(": '"){
+                return error("line cannot end with ': \'' or ':\'' in \n%text")
+            }
+            if line2.trim_space().ends_with(":"){
+                //means is multiline
+                state = MultiLineStatus.multiline
+                multiline_first = line2
+                continue
+            }else{
+                res << line2
+            }
         }
+
     }
     //last one
     if state == MultiLineStatus.multiline{
@@ -122,22 +123,23 @@ fn multiline_end(multiline_first string, multiline string) string{
 
 
 struct TextParams{
-    mut:
+    pub mut:
         params []TextParam
 }
 
 struct TextParam{
-    key string
-    value string 
+    pub:
+        key string
+        value string 
 }
 
 
 enum TextParamStatus {
 	start
-    name 
-    value_wait
-	value
-    quote
+    name       //found name of the var
+    value_wait //wait for value to start (can be quote or end of spaces and first meaningful char)
+	value //value started, so was no quote
+    quote //quote found means value in between ''
 }
 
 
@@ -160,7 +162,7 @@ pub fn text_to_params(text string)?TextParams{
 
     for i in 0 .. text2.len {
         char = text2[i..i + 1]
-        println(" - $char ${state}")
+        // println(" - $char ${state}")
         // check for comments end
         if state == TextParamStatus.start {  
             if char == " " {continue}
