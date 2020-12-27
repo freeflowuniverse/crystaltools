@@ -15,7 +15,7 @@ struct NodeArguments{
 }
 
 //the factory which returns an node, based on the arguments will chose ssh executor or the local one
-fn get (args NodeArguments) Node {
+fn node_get (args NodeArguments) Node {
 	if args.ipaddr.addr == "" {
 		return Node{executor:ExecutorLocal{}}
 	}else{
