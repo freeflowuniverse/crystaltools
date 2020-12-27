@@ -4,6 +4,7 @@ import os
 
 struct ExecutorSSH{
 	ipaddr IPAddress
+	retry 5 //nr of times something will be retried before failing, need to check also what error is, only things which should be retried need to be done
 }
 
 
@@ -25,6 +26,7 @@ pub fn (mut executor ExecutorSSH) file_write(path string, text string) ? {
 pub fn (mut executor ExecutorSSH) file_read(path string) ?string {	
 	panic("implement")
 	return os.read_file(path) ?
+	//if file doesn't exist send back error("cannot find file...")
 }
 
 pub fn (mut executor ExecutorSSH) file_exists(path string) bool {	

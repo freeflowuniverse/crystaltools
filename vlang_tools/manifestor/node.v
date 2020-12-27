@@ -1,21 +1,20 @@
 module manifestor
 
 pub struct Node {
-	pub mut:
-		name string = "mymachine"	
-		executor 		executor.ExecutorLocal
+	name string = "mymachine"	
+	executor 		executor.ExecutorLocal
+	mut:
 		platformtype 	PlatformType	
-		todo			application.TodoData	
 }
 
 pub enum PlatformType { unknown osx ubuntu alpine }
 
-//get the builder instance
+//get the node instance
 pub fn new() Node{
-	mut builder := Node{}
+	mut node := Node{}
 	mut node.executor := ExecutorLocal{}
-	node.platform_load()
-	return builder
+	node.executor.platform_load()
+	return node
 }
 
 fn (mut node Node) config_path_get() string {
@@ -47,15 +46,15 @@ pub fn (mut node Node) reset() {
 
 pub fn (mut node Node) save() {	
 	fpath := node.config_path_get()
-	node.executor.file_write(fpath,json.encode(builder))	
+	node.executor.file_write(fpath,json.encode(node))	
 }
 
 // pub fn (mut node Node) check(name string) {	
 // 	node.
 // }
 
-pub fn get(key string) Node{
-	mut data := Node{key: key}
+pub fn node_get(name string) Node{
+	mut data := Node{name: name,executor:ExecutorLocal{}}
 	data.load()
 	return data
 }
