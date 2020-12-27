@@ -2,7 +2,7 @@ module manifestor
 import os
 
 struct ExecutorLocal{
-	retry 1 //nr of times something will be retried before failing, need to check also what error is, only things which should be retried need to be done, default 1 because is local
+	retry int = 1 //nr of times something will be retried before failing, need to check also what error is, only things which should be retried need to be done, default 1 because is local
 }
 
 pub fn (mut executor ExecutorLocal) exec(cmd string) ?string {	
@@ -25,10 +25,8 @@ pub fn (mut executor ExecutorLocal) file_read(path string) ?string {
 	return os.read_file(path) ?
 }
 
-pub fn (mut executor ExecutorLocal) file_exists(path string) ?bool {	
-	exists :=  os.file_exists(path)
-	if false {return error("can never happen")}
-	return exists
+pub fn (mut executor ExecutorLocal) file_exists(path string) bool {	
+	return os.file_exists(path)
 }
 
 //carefull removes everything
@@ -41,18 +39,18 @@ pub fn (mut executor ExecutorLocal) remove(path string) ? {
 }
 
 //upload from local FS to executor FS
-pub fn (mut executor ExecutorLocal) upload(source string, dest string) ? {	
+pub fn (mut executor ExecutorLocal) upload(source string, dest string) ?string {	
 	panic ("not implemented, suggest to use rsync")
 }
 
 //download from executor FS to local FS
-pub fn (mut executor ExecutorLocal) download(source string, dest string) ? {	
+pub fn (mut executor ExecutorLocal) download(source string, dest string) ?string {	
 	panic ("not implemented")
 }
 
 //get environment variables from the executor
 pub fn (mut executor ExecutorLocal) environ_get() ?map[string]string {	
-	env := os.environ_get()
+	env := os.environ()
 	if false {return error("can never happen")}
 	return env
 }

@@ -1,13 +1,12 @@
 module manifestor
 
-type Executor = ExecutorLocal | ExecutorSSH
 pub enum PlatformType { unknown osx ubuntu alpine }
 
 pub struct Node {
 	name string = "mymachine"	
-	executor Executor	
 	mut:
-		platformtype PlatformType
+		executor Executor
+		platform PlatformType
 }
 
 struct NodeArguments{
@@ -16,13 +15,18 @@ struct NodeArguments{
 
 //the factory which returns an node, based on the arguments will chose ssh executor or the local one
 fn node_get (args NodeArguments) Node {
-	if args.ipaddr.addr == "" {
-		return Node{executor:ExecutorLocal{}}
+	mut node := Node{}
+
+	if args.ipaddr.addr == "" || args.ipaddr.addr == "localhost" || args.ipaddr.addr == "127.0.0.1"{
+		node.executor = ExecutorLocal{} 
 	}else{
-		return Node{executor:ExecutorSSH{ipaddr:args.ipaddr}}
+		node.executor = ExecutorSSH{}
 	}
-	match executor {
-        ExecutorSSH {node.executor.platform_load()}
-        ExecutorLocal {node.executor.platform_load()}
-    }
+
+	return node
+
+	// match executor {
+    //     ExecutorSSH {node.executor.platform_load()}
+    //     ExecutorLocal {node.executor.platform_load()}
+    // }
 }

@@ -1,4 +1,4 @@
-module perfectuniverse
+module manifestor
 
 //the state how you want the universe to be
 
@@ -8,7 +8,7 @@ struct RetryPolicy{
 }
 
 struct WishList {
-	name string = ""
+	name string
 	retry_policies []RetryPolicy
 	startwish Wish
 	pub mut:

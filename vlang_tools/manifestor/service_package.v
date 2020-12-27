@@ -18,7 +18,7 @@ pub struct PackageAlias {
 }
 
 //get the right name depending the platform type
-pub fn (mut package Package) name_get(platformtype PlatformType) {
+pub fn (mut package Package) name_get(platformtype PlatformType) string {
 
 	for alias in package.aliases {
 		if alias.platformtype == platformtype {
@@ -29,7 +29,7 @@ pub fn (mut package Package) name_get(platformtype PlatformType) {
 }
 
 //get the right name depending the platform type
-pub fn (mut package Package) version_get(platformtype PlatformType) {
+pub fn (mut package Package) version_get(platformtype PlatformType) string{
 
 	for alias in package.aliases {
 		if alias.platformtype == platformtype {
@@ -45,24 +45,24 @@ pub fn (mut package Package) version_get(platformtype PlatformType) {
 //life cycle management things to code
 
 //is like install or prepare to start with a task
-pub fn (mut package Package) prepare(wish Wish) ?{
+pub fn (mut package Package) prepare(wish Wish) {
 
 }
 
 //not relevant
-pub fn (mut package Package) start(wish Wish) ?{
+pub fn (mut package Package) start(wish Wish) ? {
 }
 
 //check if it was done ok
-pub fn (mut package Package) check(wish Wish) ?{
-	
+pub fn (mut package Package) check(wish Wish) bool {
+	return true
 }
 
 //check if we are in right state if not lets try to recover
 pub fn (mut package Package) recover(wish Wish) ?{
-	if not package.check{
-		package.delete()
-		package.prepare()
+	if ! package.check(wish){
+		package.delete(wish)
+		package.prepare(wish)
 		// package.start()
 	}
 	

@@ -1,5 +1,9 @@
 module manifestor
 
+struct GitRepoState {
+	
+}
+
 struct GitRepo {
 	name	string
 	url		string

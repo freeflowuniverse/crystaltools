@@ -3,7 +3,7 @@ module manifestor
 
 pub struct IPAddress {
 	addr			string
-	port 			string
+	port 			int
 	cat				IpAddressType
 }
 
@@ -20,5 +20,7 @@ fn (mut ipaddr IPAddress) check() ?{
 	//TODO: check if well formed
 }
 
-
+fn (mut ipaddr IPAddress) address() string{
+	return "$ipaddr.addr:$ipaddr.port"
+}
 

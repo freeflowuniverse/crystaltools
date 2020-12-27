@@ -7,13 +7,13 @@ pub struct Process {
 	//timeout in seconds, default 5 min
 	timeout			int = 300
 	retry			int = 1
-	stdout_log		true
-	stderr_log		true
+	stdout_log		bool = true
+	stderr_log		bool = true
 	pub mut:
 		time_start int
 		time_stop int
-		stdout str
-		sterr str
+		stdout string
+		sterr string
 		state ProcessState
 }
 
@@ -29,6 +29,10 @@ pub fn (mut process Process) prepare(wish Wish) ?{
 
 //start the process
 pub fn (mut process Process) start(wish Wish) ?{
+}
+
+//stop the process
+pub fn (mut process Process) stop(wish Wish) ?{
 }
 
 //check if process is still running

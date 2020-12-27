@@ -1,61 +1,67 @@
 module manifestor
 import os
+import rand
 
 
 struct ExecutorSSH{
-	ipaddr IPAddress
-	retry 5 //nr of times something will be retried before failing, need to check also what error is, only things which should be retried need to be done
+	mut:
+		ipaddr IPAddress
+	retry  int = 5 //nr of times something will be retried before failing, need to check also what error is, only things which should be retried need to be done
 }
 
-
 pub fn (mut executor ExecutorSSH) exec(cmd string) ?string {	
-	println(cmd)
-	panic("implement")
-	if e.exit_code == 0 { 
-		return e.output
-	} else {
-		return error("could not execute: $cmd\n Error was:$e")
-	}
+	mut local_executor := ExecutorLocal{retry: executor.retry}
+	return local_executor.exec("ssh $executor.ipaddr.address() $cmd")
 }
 
 pub fn (mut executor ExecutorSSH) file_write(path string, text string) ? {	
-	panic("implement")
-	return os.write_file(path, text) ?
-}
+	local_path := "/tmp/$rand.uuid_v4()"
+	mut local_executor := ExecutorLocal{retry: executor.retry}
+	local_executor.file_write(local_path, text)
+	executor.upload(local_path, path)
+}	
 
 pub fn (mut executor ExecutorSSH) file_read(path string) ?string {	
-	panic("implement")
-	return os.read_file(path) ?
-	//if file doesn't exist send back error("cannot find file...")
+	local_path := "/tmp/$rand.uuid_v4()"
+	executor.download(path, local_path)
+	return os.read_file(local_path) ?
 }
 
 pub fn (mut executor ExecutorSSH) file_exists(path string) bool {	
-	panic("implement")
-	return os.file_exists(path)
+	output := executor.exec("test -f $path && echo found || echo not found") or {return false}
+	if output == "found"{
+		return true
+	}
+	return false
 }
 
 //carefull removes everything
 pub fn (mut executor ExecutorSSH) remove(path string) ? {	
-	panic("implement")
-	if os.is_file(path) || os.is_link(path){
-		return os.rm(path) ?
-	}else if os.is_dir(path) {
-		return os.rmdir_all(path) ?
-	}
+	executor.exec("rm -rf $path")
 }
 
 //upload from local FS to executor FS
-pub fn (mut executor ExecutorSSH) upload(source string, dest string) ? {		
-	panic ("not implemented, suggest to use rsync")
+pub fn (mut executor ExecutorSSH) download(source string, dest string) ?string {		
+	mut local_executor := ExecutorLocal{retry: executor.retry}
+	return local_executor.exec('rsync -avHPe "ssh -p$executor.ipaddr.port" $executor.ipaddr.addr:$source $dest')
 }
 
 //download from executor FS to local FS
-pub fn (mut executor ExecutorSSH) download(source string, dest string) ? {	
-	panic ("not implemented")
+pub fn (mut executor ExecutorSSH) upload(source string, dest string) ?string {	
+	mut local_executor := ExecutorLocal{retry: executor.retry}
+	return local_executor.exec('rsync -avHPe "ssh -p$executor.ipaddr.port" $source -e ssh $executor.ipaddr.addr:$dest')
 }
 
 //get environment variables from the executor
-pub fn (mut executor ExecutorSSH) environ_get() map[string]string {	
-	panic("implement")
-	return os.environ
+pub fn (mut executor ExecutorSSH) environ_get() ?map[string]string {	
+	env := executor.exec("env") or {return error("can not get environment")}
+	mut res := map[string]string
+
+	for line in env.split("\n") {
+		splitted := line.split("=")
+		key := splitted[0]
+		val := splitted[1]
+		res[key] = val
+	}
+	return res
 }
