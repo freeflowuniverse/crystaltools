@@ -1,4 +1,0 @@
-module manifestor
-import os
-
-
