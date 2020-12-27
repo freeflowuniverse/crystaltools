@@ -1,13 +1,14 @@
 module manifestor
 
-enum IpAddressType {ipv4 ipv6}
 
 pub struct IPAddress {
 	addr			string
 	port 			string
-	type	IpAddressType
+	cat				IpAddressType
 }
 
+
+pub enum IpAddressType {ipv4 ipv6}
 
 //get the right name depending the platform type
 pub fn (mut ipaddr IPAddress) ping(executor Executor) {

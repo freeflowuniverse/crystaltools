@@ -2,15 +2,15 @@ module perfectuniverse
 
 //the state how you want the universe to be
 
-struct RetryPolicy
-	name "default"
+struct RetryPolicy{
+	name string = "default"
 	retry []int = [1,1,1,1,10,30,60,90,180,300,300,300,600,600,600,600,600,3600,3600,3600,3600,3600,3600,3600,3600,3600,3600,3600,3600,3600,3600,3600,3600,3600,3600,3600,3600]
-
+}
 
 struct WishList {
-	name = ""
-	retry_policies = []RetryPolicy
-	startwish = Wish
+	name string = ""
+	retry_policies []RetryPolicy
+	startwish Wish
 	pub mut:
 		//what is the last known state when we did a last check
 		state StateEnum	
