@@ -24,7 +24,7 @@ pub fn (mut executor ExecutorSSH) file_write(path string, text string) ? {
 pub fn (mut executor ExecutorSSH) file_read(path string) ?string {	
 	local_path := "/tmp/$rand.uuid_v4()"
 	executor.download(path, local_path)
-	return os.read_file(local_path) ?
+	return os.read_file(local_path)
 }
 
 pub fn (mut executor ExecutorSSH) file_exists(path string) bool {	

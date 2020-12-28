@@ -3,13 +3,13 @@ module manifestor
 
 //check command exists on the platform, knows how to deal with different platforms
 pub fn (mut node Node) cmd_exists(cmd string) bool {	
-	e := node.executor.exec("which $cmd 2>&1 > /dev/null") or {return false}
+	node.executor.exec("which $cmd 2>&1 > /dev/null") or {return false}
 	return true
 }
 
 
 pub fn (mut node Node) exec_ok(cmd string) bool {	
-	e := node.executor.exec("$cmd 2> /dev/null") or { 
+	node.executor.exec("$cmd 2> /dev/null") or { 
 		//see if it executes ok, if cmd not found is false
         return false
     }
