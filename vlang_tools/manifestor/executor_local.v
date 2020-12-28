@@ -6,10 +6,10 @@ struct ExecutorLocal{
 }
 
 pub fn (mut executor ExecutorLocal) exec(cmd string) ?string {	
-	println(cmd)
 	e := os.exec("$cmd") or { 
         return error("could not find command: $cmd")
     }
+
 	if e.exit_code == 0 { 
 		return e.output
 	} else {
@@ -26,7 +26,7 @@ pub fn (mut executor ExecutorLocal) file_read(path string) ?string {
 }
 
 pub fn (mut executor ExecutorLocal) file_exists(path string) bool {	
-	return os.file_exists(path)
+	return os.exists(path)
 }
 
 //carefull removes everything
