@@ -1,79 +1,27 @@
 module docker
-// import manifestor
-
-struct ExecutorLocal {
-	pub mut:
-		name string = "local"
-}
-
-struct ExecutorSSH {
-	pub mut:
-		name string = "ssh"
-}
+import manifestor
 
 
-fn (e ExecutorLocal) images_list() string {
-	return e.name
-}
 
-fn (e ExecutorSSH) images_list() string {
-	return e.name
-}
-
-
-// type Executor = ExecutorLocal | ExecutorSSH
-
-struct DockerEngine<T> {
-	name string = "nothing"
+struct DockerEngine{
 	mut:
-		executor T
-}
-
-fn new<T>() DockerEngine<T> {
-    de := DockerEngine<T>{}
-	return de
-}
-
-fn (mut e DockerEngine<ExecutorLocal>) images_list() string {
-	return e.executor.images_list()
-}
-
-fn (mut e DockerEngine<ExecutorSSH>) images_list() string {
-	return e.executor.images_list()
-}
-
-fn (mut e DockerEngine<T>) images_list() string {
-	return e.executor.images_list()
+		executor Node
+		sshkeys_allowed []string //all keys here have access over ssh into the machine, when ssh enabled
 }
 
 
-// struct Docker {
-// 	name string
-// }
+//return list of images
+fn (mut e DockerEngine) images_get() []DockerImage {
+	//
+}
+
+//return list of images
+fn (mut e DockerEngine) containers_get() []DockerContainer {
+	//
+}
 
 
-// //list all image names
-// fn (mut engine DockerEngine) images_list() string {
-// 	 match engine.executor {
-//         ExecutorSSH { engine.executor.image_list() }
-//         ExecutorLocal { engine.executor.image_list() }
-//     }
-// 	// return engine.executor.name
-// }
-
-//list all image names
-
-
-
-// fn (engine DockerEngine<ExecutorLocal>) images_list() string {
-// 	return engine.executor.name
-// }
-
-// fn (engine DockerEngine<ExecutorSSH>) images_list() string {
-// 	return engine.executor.name
-// }
-
-// fn get (executor Executor) DockerEngine {
-// 	return DockerEngine{executor:executor}
-// }
-
+//factory class to get a container obj, which can then be filled in and started
+fn (mut e DockerEngine) container_new() DockerContainer {
+	//
+}
