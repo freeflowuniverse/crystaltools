@@ -1,5 +1,6 @@
 module docker
 
+import manifestor
 
 pub struct DockerImage{
 	pub mut:
@@ -8,11 +9,12 @@ pub struct DockerImage{
 		id string
 		size f64
 		created string
+		// node manifestor.Node
 }
 
 
 //delete docker image
-fn (mut image DockerImage) delete() ? {
+fn (mut image DockerImage) delete(id string) ? {
 	
 }
 

@@ -9,20 +9,48 @@ struct DockerEngine{
 		sshkeys_allowed []string //all keys here have access over ssh into the machine, when ssh enabled
 }
 
-fn  new_docker_ngine() DockerEngine{
+pub fn  new_docker_ngine() DockerEngine{
 	return DockerEngine{}
 }
 
+
+
 //return list of images
 fn (mut e DockerEngine) images_list() []DockerImage {
+
+	
+	mut res := []DockerImage{}
+
+	for _, image in e.images(){
+		res << image
+	}
+	return res
+}
+
+//return list of images
+fn (mut e DockerEngine) containers_list() []DockerContainer {
+	return []DockerContainer{}
+}
+
+
+//factory class to get a container obj, which can then be filled in and started
+fn (mut e DockerEngine) container_new() DockerContainer {
+	return DockerContainer{}
+}
+
+
+// helpers
+
+/* map of images */
+fn (mut e DockerEngine) images() map[string]DockerImage{
 	mut images := e.node.executor.exec("docker images") or {
 		println("could not retrieve images, error executing docker images")
-		return []DockerImage{}
+		return map[string]DockerImage{}
 	}
 
 	mut lines := images.split("\n")
 	
-	mut res := []DockerImage{}
+	mut res := map[string]DockerImage
 
 	for line in lines[1 .. lines.len-1]{
 		info := line.split_by_whitespace()
@@ -49,35 +77,8 @@ fn (mut e DockerEngine) images_list() []DockerImage {
 		mut created := e.node.executor.exec("docker inspect -f '{{ .Created }}' $id") or {
 			""
 		}
-		res << DockerImage{repo: repo, tag: tag, id: id, size: s, created: created}
+
+		res[id] = DockerImage{repo: repo, tag: tag, id: id, size: s, created: created}
 	}
-
-	return res
-}
-
-//return list of images
-fn (mut e DockerEngine) containers_list() []DockerContainer {
-	return []DockerContainer{}
-}
-
-
-//factory class to get a container obj, which can then be filled in and started
-fn (mut e DockerEngine) container_new() DockerContainer {
-	return DockerContainer{}
-}
-
-
-// helpers
-
-fn split(text string) []string{
-	mut splitted := text.split(" ")
-	mut res := []string{}
-
-	for item in splitted{
-		if item != ""{
-			res << item
-		}
-	}
-
 	return res
 }
