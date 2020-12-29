@@ -9,7 +9,7 @@ pub struct DockerImage{
 		id string
 		size f64
 		created string
-		// node manifestor.Node
+		node manifestor.Node
 }
 
 

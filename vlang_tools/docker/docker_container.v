@@ -1,12 +1,20 @@
 module docker
 import manifestor
 
+enum DockerContainerStatus {up down restarting paused dead created}
+
 //need to fill in what is relevant
 struct DockerContainer{
+	id string
 	name string
-	image_url string
+	created string
+	
 	ssh_enabled bool //if yes make sure ssh is enabled to the container
 	info DockerContainerInfo
+	ports []string
+	mut:
+		image DockerImage
+		status DockerContainerStatus
 }
 
 struct DockerContainerInfo{
