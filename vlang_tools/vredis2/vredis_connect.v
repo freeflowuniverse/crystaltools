@@ -10,6 +10,7 @@ import io
 struct Redis {
 	pub mut:
 		socket net.TcpConn
+		reader io.BufferedReader
 }
 
 struct SetOpts {
@@ -36,8 +37,10 @@ enum KeyType {
 // https://redis.io/topics/protocol
 pub fn connect(addr string) ?Redis {
 	mut socket := net.dial_tcp(addr)?
-	mut r := Redis{socket: socket}
-	return r
+	return Redis{
+			socket: &socket, 
+			reader: io.new_buffered_reader({reader: io.make_reader(&socket)})
+		}
 }
 
 // fn (mut  r Redis) read() ?[]byte {
@@ -47,8 +50,7 @@ pub fn connect(addr string) ?Redis {
 // }
 
 fn (mut r Redis) socket_read_line() ?string {
-	mut reader := io.new_buffered_reader({reader: io.make_reader(r.socket)})
-	mut res := reader.read_line() or {
+	mut res := r.reader.read_line() or {
 			if err=="" {
 				return error("no data in socket readline")
 			}else{}
@@ -72,6 +74,7 @@ pub fn (mut r Redis) disconnect() {
 }
 
 //implement protocol of redis how to send he data
+// https://redis.io/topics/protocol
 fn (mut r Redis) encode_send(items []string)?{
 	mut out := "*${items.len}\r\n"
 	for item in items{
@@ -103,9 +106,9 @@ pub fn (mut r Redis) send(items []string)? []string {
 	mut bulkstring_size := 0
 	mut line := ""
 
-	a := io.read_all(reader: r.socket) or {panic(err)}
-	println(a.bytestr())
-	panic("debug")
+	// a := io.read_all(reader: r.socket) or {panic(err)}
+	// println(a.bytestr())
+	// panic("debug")
 
 
 	for i in 0..100{
