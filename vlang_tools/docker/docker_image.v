@@ -7,7 +7,7 @@ pub struct DockerImage{
 		tag string
 		id string
 		size f64
-
+		created string
 }
 
 

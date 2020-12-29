@@ -16,7 +16,7 @@ fn  new_docker_ngine() DockerEngine{
 //return list of images
 fn (mut e DockerEngine) images_list() []DockerImage {
 	mut images := e.node.executor.exec("docker images") or {
-		println("could not retrieve images, error executing docker command")
+		println("could not retrieve images, error executing docker images")
 		return []DockerImage{}
 	}
 
@@ -46,14 +46,17 @@ fn (mut e DockerEngine) images_list() []DockerImage {
 		}else if size.ends_with("MB"){
 			s = size.replace("MB", "").f64() * 1024 * 1024
 		}
-		res << DockerImage{repo: repo, tag: tag, id: id, size: s}
+		mut created := e.node.executor.exec("docker inspect -f '{{ .Created }}' $id") or {
+			""
+		}
+		res << DockerImage{repo: repo, tag: tag, id: id, size: s, created: created}
 	}
 
 	return res
 }
 
 //return list of images
-fn (mut e DockerEngine) containers_get() []DockerContainer {
+fn (mut e DockerEngine) containers_list() []DockerContainer {
 	return []DockerContainer{}
 }
 

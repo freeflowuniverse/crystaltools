@@ -13,6 +13,8 @@ fn test_docker1() {
 
 	println(engine.images_list())
 
+	println(engine.containers_list())
+
 	// mut engine2 := DockerEngine<ExecutorLocal>{}
 	// engine2.executor.name = "aaa"
 	// println(engine2.images_list())
