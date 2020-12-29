@@ -20,7 +20,7 @@ fn (mut executor ExecutorSSH) init(retry int) ExecutorLocal{
 
 pub fn (mut executor ExecutorSSH) exec(cmd string) ?string {	
 	mut local_executor := executor.init(executor.retry)
-	return local_executor.exec("ssh $executor.ipaddr.addr -p $executor.ipaddr.port $cmd")
+	return local_executor.exec("ssh $executor.ipaddr.addr -p $executor.ipaddr.port.number $cmd")
 }
 
 pub fn (mut executor ExecutorSSH) file_write(path string, text string) ? {	
@@ -52,13 +52,15 @@ pub fn (mut executor ExecutorSSH) remove(path string) ? {
 //upload from local FS to executor FS
 pub fn (mut executor ExecutorSSH) download(source string, dest string) ?string {		
 	mut local_executor := executor.init(executor.retry)
-	return local_executor.exec('rsync -avHPe "ssh -p$executor.ipaddr.port" $executor.ipaddr.addr:$source $dest')
+	port := executor.ipaddr.port.number
+	return local_executor.exec('rsync -avHPe "ssh -p$port" $executor.ipaddr.addr:$source $dest')
 }
 
 //download from executor FS to local FS
 pub fn (mut executor ExecutorSSH) upload(source string, dest string) ?string {	
 	mut local_executor := executor.init(executor.retry)
-	return local_executor.exec('rsync -avHPe "ssh -p$executor.ipaddr.port" $source -e ssh $executor.ipaddr.addr:$dest')
+	port := executor.ipaddr.port.number
+	return local_executor.exec('rsync -avHPe "ssh -p$port" $source -e ssh $executor.ipaddr.addr:$dest')
 }
 
 //get environment variables from the executor

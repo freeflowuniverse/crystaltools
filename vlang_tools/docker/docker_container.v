@@ -10,7 +10,7 @@ struct DockerContainer{
 }
 
 struct DockerContainerInfo{
-	ipaddr manifestor.IpAddress
+	ipaddr manifestor.IPAddress
 
 	
 }
@@ -49,7 +49,7 @@ fn (mut container DockerContainer) export( path string) ? {
 
 
 //when importing docker get's restarted
-fn (mut container DockerContainer) import( path string) ? {
+fn (mut container DockerContainer) imports ( path string) ? {
 	//use docker_image.import...
 	
 }

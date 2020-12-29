@@ -1,9 +1,15 @@
 module manifestor
 
+enum PortType {tcp udp }
+
+pub struct Port{
+	number int
+	cat PortType
+}
 
 pub struct IPAddress {
 	addr			string
-	port 			int
+	port 			Port
 	cat				IpAddressType
 }
 

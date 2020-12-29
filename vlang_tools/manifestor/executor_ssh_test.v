@@ -16,7 +16,12 @@ fn test_exec(){
 	mut e := ExecutorSSH{sshkey: "~/.ssh/id_rsa_test"}
 	e.ipaddr = IPAddress{
 		addr: "127.0.0.1",
-		port: 22,
+		
+		port: Port{
+			number: 22,
+			cat: PortType.tcp
+		},
+
 		cat: IpAddressType.ipv4
 	}
 	res := e.exec("ls  /") or {panic("error execution")}
@@ -25,9 +30,13 @@ fn test_exec(){
 
 fn test_file_operations(){
 	mut e := ExecutorSSH{sshkey: "~/.ssh/id_rsa_test"}
+	
 	e.ipaddr = IPAddress{
 		addr: "127.0.0.1",
-		port: 22,
+		port: Port{
+			number: 22,
+			cat: PortType.tcp
+		},
 		cat: IpAddressType.ipv4
 	}
 
@@ -46,7 +55,11 @@ fn test_environ_get(){
 	mut e := ExecutorSSH{sshkey: "~/.ssh/id_rsa_test"}
 	e.ipaddr = IPAddress{
 		addr: "127.0.0.1",
-		port: 22,
+		port: Port{
+			number: 22,
+			cat: PortType.tcp
+		},
+
 		cat: IpAddressType.ipv4
 	}
 	mut env := e.environ_get() or {panic(err)}

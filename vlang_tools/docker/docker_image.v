@@ -1,13 +1,20 @@
 module docker
 
+import manifestor
 
-struct DockerImage{
-
+pub struct DockerImage{
+	pub mut:
+		repo string
+		tag string
+		id string
+		size f64
+		created string
+		// node manifestor.Node
 }
 
 
 //delete docker image
-fn (mut image DockerImage) delete() ? {
+fn (mut image DockerImage) delete(id string) ? {
 	
 }
 
@@ -18,6 +25,6 @@ fn (mut image DockerImage) export( path string) ? {
 }
 
 //import docker image back into the local env
-fn (mut image DockerImage) import( path string) ?DockerImage {
+fn (mut image DockerImage) imports( path string) ?DockerImage {
 	
 }
