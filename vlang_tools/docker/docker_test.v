@@ -11,7 +11,7 @@ fn test_docker1() {
 	mut node_args := manifestor.NodeArguments{name: "test", ipaddr: manifestor.IPAddress{addr: ""}, platform: manifestor.PlatformType.ubuntu}
 	engine.node = manifestor.node_get(node_args)
 
-	println(engine.images_list())
+	// println(engine.images_list())
 
 	println(engine.containers_list())
 

@@ -5,7 +5,7 @@ pub enum PlatformType { unknown osx ubuntu alpine }
 pub struct Node {
 	name string = "mymachine"	
 	pub mut:
-		executor Executor
+		executor Executor // = ExecutorLocal{}
 		platform PlatformType
 }
 
