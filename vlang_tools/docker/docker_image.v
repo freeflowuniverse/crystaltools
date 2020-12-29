@@ -14,17 +14,20 @@ pub struct DockerImage{
 
 
 //delete docker image
-fn (mut image DockerImage) delete(id string) ? {
-	
+fn (mut image DockerImage) delete(force bool) ?string {
+	if force{
+		return image.node.executor.exec("docker rmi -f $image.id")
+	}
+	return image.node.executor.exec("docker rmi $image.id")
 }
 
 
 //export docker image to tar.gz
-fn (mut image DockerImage) export( path string) ? {
-	
+fn (mut image DockerImage) export( path string) ?string {
+	return image.node.executor.exec("docker save $image.id > $path")
 }
 
 //import docker image back into the local env
-fn (mut image DockerImage) imports( path string) ?DockerImage {
-	
+fn (mut image DockerImage) load( path string) ?string {
+	return image.node.executor.exec("docker load < $path")
 }
