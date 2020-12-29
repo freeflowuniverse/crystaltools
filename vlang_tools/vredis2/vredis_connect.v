@@ -38,8 +38,8 @@ enum KeyType {
 pub fn connect(addr string) ?Redis {
 	mut socket := net.dial_tcp(addr)?
 	return Redis{
-			socket: &socket, 
-			reader: io.new_buffered_reader({reader: io.make_reader(&socket)})
+			socket: socket, 
+			reader: io.new_buffered_reader({reader: io.make_reader(socket)})
 		}
 }
 
@@ -49,7 +49,7 @@ pub fn connect(addr string) ?Redis {
 // 	return data
 // }
 
-fn (mut r Redis) socket_read_line() ?string {
+pub fn (mut r Redis) socket_read_line() ?string {
 	mut res := r.reader.read_line() or {
 			if err=="" {
 				return error("no data in socket readline")
