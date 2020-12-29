@@ -17,7 +17,7 @@ pub fn (mut executor ExecutorLocal) exec(cmd string) ?string {
 	}
 }
 
-pub fn (mut executor ExecutorLocal) file_write(path string, text string) ? {	
+pub fn (mut executor ExecutorLocal)   file_write(path string, text string) ? {	
 	return write_file(path, text)
 }
 
