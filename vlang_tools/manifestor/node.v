@@ -4,17 +4,19 @@ pub enum PlatformType { unknown osx ubuntu alpine }
 
 pub struct Node {
 	name string = "mymachine"	
-	mut:
+	pub mut:
 		executor Executor
 		platform PlatformType
 }
 
-struct NodeArguments{
+pub struct NodeArguments{
 	ipaddr IPAddress
+	name string
+	platform PlatformType
 }
 
 //the factory which returns an node, based on the arguments will chose ssh executor or the local one
-fn node_get (args NodeArguments) Node {
+pub fn node_get (args NodeArguments) Node {
 	mut node := Node{}
 
 	if args.ipaddr.addr == "" || args.ipaddr.addr == "localhost" || args.ipaddr.addr == "127.0.0.1"{

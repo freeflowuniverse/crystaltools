@@ -1,4 +1,4 @@
-// module manifestor
+module manifestor
 
 
 // pub fn (mut node Node) exec(cmd string) ?string {	

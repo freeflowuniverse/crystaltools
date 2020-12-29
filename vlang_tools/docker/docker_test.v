@@ -1,11 +1,16 @@
 module docker
+import manifestor
 
 fn test_docker1() {
 	// assert json.encode(obj)== json.encode(tocompare)
 
 
 
-	mut engine := new<ExecutorSSH>()
+	mut engine := new_docker_ngine()
+
+	mut node_args := manifestor.NodeArguments{name: "test", ipaddr: manifestor.IPAddress{addr: ""}, platform: manifestor.PlatformType.ubuntu}
+	engine.node = manifestor.node_get(node_args)
+
 	println(engine.images_list())
 
 	// mut engine2 := DockerEngine<ExecutorLocal>{}
