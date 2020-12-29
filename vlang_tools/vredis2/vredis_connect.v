@@ -2,15 +2,11 @@ module vredis2
 
 import net
 // import strconv
-import io
-// import time
-
-
+import time
 
 struct Redis {
 	pub mut:
 		socket net.TcpConn
-		reader io.BufferedReader
 }
 
 struct SetOpts {
@@ -37,10 +33,10 @@ enum KeyType {
 // https://redis.io/topics/protocol
 pub fn connect(addr string) ?Redis {
 	mut socket := net.dial_tcp(addr)?
+	socket.set_read_timeout(2 * time.second)
 	return Redis{
-			socket: socket, 
-			reader: io.new_buffered_reader({reader: io.make_reader(socket)})
-		}
+		socket: socket
+	}
 }
 
 // fn (mut  r Redis) read() ?[]byte {
@@ -50,14 +46,11 @@ pub fn connect(addr string) ?Redis {
 // }
 
 pub fn (mut r Redis) socket_read_line() ?string {
-	mut res := r.reader.read_line() or {
-			if err=="" {
-				return error("no data in socket readline")
-			}else{}
-				return error("other error in readline: '$err'")
-			}
+	res := r.socket.read_line()
+	if res == '' {
+		return error("no data in socket")
+	}
 	println("readline result:'$res'")
-	// reader.close() //IS THERE NO CLOSE WE NEED TO DO, NO MEMLEAK?
 	return res
 }
 
@@ -83,6 +76,7 @@ fn (mut r Redis) encode_send(items []string)?{
 	//for debug purposes
 	println("redisdata:${out.replace("\n","\\n").replace("\r","\\r")}")
 	r.socket_write(out)
+	time.sleep_ms(1) // this is needed, not sure why
 }
 
 
@@ -119,8 +113,9 @@ pub fn (mut r Redis) send(items []string)? []string {
 
 		//keep on reading untill no more data, hope this works
 		line = r.socket_read_line()?
+		line = line[..line.len-2] // ignore the \r\n at the end
 
-		if line.starts_with("+OK"){
+		if line == "+OK" {
 			return ["OK"]
 		}
 
@@ -158,8 +153,9 @@ pub fn (mut r Redis) send(items []string)? []string {
 			bulkstring_size = line[1..].int()
 			println("read next line, to complete the bulkstr")
 			line = r.socket_read_line()?
-			println("bulkstr:'$line'")
-			if line.len != bulkstring_size{
+			line = line[..line.len-2]
+			println("bulkstr:'$line' | \nline.len: $line.len | bulkstring_size: $bulkstring_size")
+			if line.len != bulkstring_size {
 				panic ("error in bulkstr")
 			}
 			result << line
