@@ -11,7 +11,7 @@ pub fn (mut executor ExecutorLocal) exec(cmd string) ?string {
     }
 
 	if e.exit_code == 0 { 
-		return e.output
+		return e.output.trim("\n")
 	} else {
 		return error("could not execute: $cmd\n Error was:$e")
 	}
