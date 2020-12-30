@@ -85,12 +85,12 @@ fn (mut e DockerEngine) containers_list() []DockerContainer {
 			println("could not retrieve container info")
 			return []DockerContainer{}
 		}
-		// {{.State}} {{.Path}} {{.Args}}
 		mut splitted := details.split(" ")
 		mut container := DockerContainer{
 			id: splitted[0]
 			created: splitted[1]
 			name: name
+			node: e.node
 		}
 
 		for image in images{

@@ -8,8 +8,9 @@ import rand
 fn test_init(){
 	mut e:=  ExecutorLocal{}
 	e.exec("yes '' | ssh-keygen -t rsa  -f ~/.ssh/id_rsa_test -N ''")
+	e.exec("chmod 0600 ~/.ssh/id_rsa_test && chmod 0644 ~/.ssh/id_rsa_test.pub")
 	e.exec('cat ~/.ssh/id_rsa_test.pub >> ~/.ssh/authorized_keys')
-	e.exec('chmod og-wx ~/.ssh/authorized_keys ')
+	e.exec('chmod og-wx ~/.ssh/authorized_keys')
 }
 
 fn test_exec(){
@@ -65,3 +66,21 @@ fn test_environ_get(){
 	mut env := e.environ_get() or {panic(err)}
 	println(env)
 }
+
+// fn test_remote_machine(){
+// 	mut e := ExecutorSSH{
+// 		sshkey: "~/.ssh/id_rsa_test",
+// 		user: "root",
+// 		ipaddr: IPAddress{
+// 			addr: "104.236.53.191",
+// 			port: Port{
+// 				number: 22,
+// 				cat: PortType.tcp
+// 			},
+// 			cat: IpAddressType.ipv4
+// 		}
+// 	}
+
+// 	res := e.exec("ls  /root") or {panic(err)}
+// 	println(res)
+// }
