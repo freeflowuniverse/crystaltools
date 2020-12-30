@@ -18,7 +18,7 @@ struct SetOpts {
 		keep_ttl bool
 }
 
-enum KeyType {	
+enum KeyType {
 	t_none
 	t_string
 	t_list
@@ -68,7 +68,16 @@ pub fn (mut r Redis) disconnect() {
 
 //implement protocol of redis how to send he data
 // https://redis.io/topics/protocol
-fn (mut r Redis) encode_send(items []string)?{
+fn (mut r Redis) encode_send_legacy(items []string)? {
+	mut root := RedisValue{datatype: RedisValTypes.list}
+
+	for item in items {
+		obj := RedisValue{datatype: RedisValTypes.str, str: item}
+		root.list << obj
+	}
+
+	return r.encode_send(root)
+	/*
 	mut out := "*${items.len}\r\n"
 	for item in items{
 		out+="\$${item.len}\r\n$item\r\n"
