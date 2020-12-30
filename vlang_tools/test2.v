@@ -2,108 +2,124 @@ import vredis2
 
 fn redistest() ? bool {
 	mut redis := vredis2.connect('localhost:6379')?
-	redis.set('test', 'some data')?
-	redis.set('hello', "bla\r\nbli\r\nblu")?
+
+	mut b := redis.selectdb(10)?
+	assert b == true
+
+	// WARNING: test will flush database
+	//          we move to database 10 to avoid flushing
+	//          default database 0
+	b = redis.flushdb()?
+	assert b == true
+
+	b = redis.set('test', 'some data')?
+	assert b == true
+
+	b = redis.set('hello', "bla\r\nbli\r\nblu")?
+	assert b == true
 
 	mut r := redis.get('test')?
-	eprintln(r)
+	assert r == "some data"
 
 	r = redis.get('hello')?
-	eprintln(r)
+	assert r == "bla\r\nbli\r\nblu"
 
-	redis.set('counter', "0")?
+	b = redis.set('counter', "0")?
+	assert b == true
 
 	mut i := redis.incrby('counter', 17)?
+	assert i == 17
+
 	r = redis.get('counter')?
-	println(i)
+	assert r == "17"
 
 	i = redis.incrby('counter', 10)?
-	println(i)
+	assert i == 27
 
 	i = redis.incr('counter')?
-	println(i)
+	assert i == 28
 
 	i = redis.decrby('counter', 5)?
-	println(i)
+	assert i == 23
 
 	i = redis.decr('counter')?
-	println(i)
+	assert i == 22
 
 	r = redis.get('counter')?
-	println(r)
+	assert r == "22"
 
 	mut f := redis.incrbyfloat('counter', 1.42)?
-	println(f)
+	assert f == 23.42
 
 	i = redis.append("test", ", added")?
-	println(i)
+	assert i == 16
 
 	r = redis.get('test')?
-	println(r)
+	assert r == "some data, added"
 
 	i = redis.rpush("push", "rpush")?
-	println(i)
+	assert i == 1
 
 	i = redis.lpush("push", "lpush")?
-	println(i)
+	assert i == 2
 
 	r = redis.getset("test", "newvalue")?
-	println(r)
+	assert r == "some data, added"
 
 	r = redis.get("test")?
-	println(r)
+	assert r == "newvalue"
 
 	r = redis.getrange("test", 1, 4)?
-	println(r)
+	assert r == "ewva"
 
 	r = redis.getrange("nonexist", 0, 42)?
-	println(r)
+	assert r == ""
 
 	r = redis.randomkey()?
 	println(r)
 
 	i = redis.strlen("test")?
-	println(i)
+	assert i == 8
 
 	// should fails wrong type
 	i = redis.strlen("push") or { 0 }
-	println(i)
 
 	i = redis.llen("push")?
-	println(i)
+	assert i == 2
 
 	r = redis.lpop("push")?
-	println(r)
+	assert r == "lpush"
 
 	r = redis.rpop("push")?
-	println(r)
+	assert r == "rpush"
 
 	i = redis.ttl("push")?
-	println(i)
+	assert i == -2
 
 	// should be nil
 	r = redis.rpop("push") or { if err == "(nil)" { true } else { false } "" }
 
 	i = redis.pttl("push")?
-	println(i)
+	assert i == -2
 
 	i = redis.del("push")?
-	println(i)
+	assert i == 0
 
 	i = redis.llen("push")?
-	println(i)
+	assert i == 0
 
 	// should fails
 	i = redis.llen("counter") or { 0 }
 
-	mut b := redis.rename("test", "newtest")?
-	println(b)
-
+	b = redis.rename("test", "newtest")?
+	assert b == true
 
 	// array example support
 	mut cursor, values := redis.scan(0)?
 	println(cursor)
 	println(values)
+
+	assert values.len == 3
 
 	return true
 }
