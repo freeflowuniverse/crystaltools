@@ -50,7 +50,7 @@ pub fn (mut r Redis) socket_read_line() ?string {
 	if res == '' {
 		return error("no data in socket")
 	}
-	println("readline result:'$res'")
+	// println("readline result:'$res'")
 	return res
 }
 
@@ -81,105 +81,158 @@ fn (mut r Redis) encode_send(items []string)?{
 
 
 enum ReceiveState {data error array}
+enum RedisValTypes { str num nil list unknown }
 
-//send command to redis, expects to have an OK back
-pub fn (mut r Redis) send_ok(items []string)?{
-	mut a:=r.send(items)?
-	if a[0]!="OK"{
-		return error("did not get ok result from server for cmd $items")
+struct RedisValue {
+	mut:
+		datatype RedisValTypes
+		str string
+		num int
+		list []RedisValue
+}
+
+pub fn (mut r Redis) get_response()? RedisValue {
+	mut result := RedisValue{}
+
+	mut line := r.socket_read_line()?
+	line = line[..line.len-2] // ignore the \r\n at the end
+
+	if line.starts_with("-") {
+		// error coming back from redis server
+		// strip the - and set error
+		return error(line[1..])
 	}
+
+	// parse integers
+	if line.starts_with(":") {
+		result.datatype = RedisValTypes.num
+		result.num = line[1..].int()
+		return result
+	}
+
+	if line.starts_with("+") {
+		// default simple string
+		// strip + and return value, works for OK aswell
+		result.datatype = RedisValTypes.str
+		result.str = line[1..]
+		return result
+	}
+
+	if line.starts_with("$") {
+		// bulk string value, extract length
+		mut bulkstring_size := line[1..].int()
+
+		if bulkstring_size == -1 {
+			// represents null
+			result.datatype = RedisValTypes.nil
+			return result
+		}
+
+		result.datatype = RedisValTypes.str
+		if bulkstring_size == 0 {
+			// extract final \r\n and not reading
+			// any payload
+			r.socket_read_line()
+			result.str = ""
+			return result
+		}
+
+		// read payload
+		// println("waiting for $bulkstring_size bytes")
+		mut buffer := []byte{len: bulkstring_size}
+
+		len := r.socket.read(mut buffer) or { panic(err) }
+		if len != bulkstring_size {
+			eprintln("could not read enough data, fixme")
+		}
+
+		// extract final \r\n
+		r.socket_read_line()
+
+		result.str = buffer.bytestr() // FIXME: won't support binary (afaik)
+		return result
+	}
+
+	if line.starts_with("*") {
+		result.datatype = RedisValTypes.list
+		items := line[1..].int()
+
+		// proceed each entries, they can be of any types
+		for _ in 0 .. items {
+			value := r.get_response()?
+			result.list << value
+		}
+
+		return result
+	}
+
+	return error("unsupported response type")
 }
 
 //return the int or string as string, if empty return then empty string
-pub fn (mut r Redis) send(items []string)? []string {
+pub fn (mut r Redis) send(items []string)? RedisValue {
 	r.encode_send(items)?
-	mut result := []string{}
-	mut state := ReceiveState.data //we don't know so we consider it to be data
-	mut array_nritems := 0
-	mut array_nritems_done := 0
-	mut bulkstring_size := 0
-	mut line := ""
-
-	// a := io.read_all(reader: r.socket) or {panic(err)}
-	// println(a.bytestr())
-	// panic("debug")
-
-
-	for i in 0..100{
-
-		if i>98{
-			panic ("should not get here, means I was not getting out of readline loop")
-		}
-
-		//keep on reading untill no more data, hope this works
-		line = r.socket_read_line()?
-		line = line[..line.len-2] // ignore the \r\n at the end
-
-		if line == "+OK" {
-			return ["OK"]
-		}
-
-		if line.starts_with("-"){
-			//error coming back from redis server
-			return error(line[1..])
-		}
-
-		if state == ReceiveState.array {
-			array_nritems_done ++
-			if array_nritems_done > array_nritems{
-				panic ("means more items than they should be in the return of redis")
-			}else if array_nritems_done == array_nritems{
-				//processed all
-				break			
-			}else{
-				result << line
-			}
-		}
-
-		//meaningfull data, now need to process
-		if line.starts_with(":"){
-			//integer, don't see how to do else than put as string
-			result << line[1..]
-		}else if line.starts_with("+"){			
-			//default string
-			result << line[1..]
-		}else if line.starts_with("$"){
-			println("bulkstr_start:'${line[1..]}'")
-			if line[1..]=="-1" {
-				//represents null
-				return none //will give error with empty string
-			}
-			//read next line
-			bulkstring_size = line[1..].int()
-			println("read next line, to complete the bulkstr")
-			line = r.socket_read_line()?
-			line = line[..line.len-2]
-			println("bulkstr:'$line' | \nline.len: $line.len | bulkstring_size: $bulkstring_size")
-			if line.len != bulkstring_size {
-				panic ("error in bulkstr")
-			}
-			result << line
-		}else if line.starts_with("*"){
-			if state == ReceiveState.array{
-				panic ("do not support nested arrays yet")
-			}
-			state = ReceiveState.array
-			array_nritems = line[1..].int()
-			array_nritems_done = 0
-			continue
-		}
-		
-		if state != ReceiveState.array{			
-			//means we did not find anything further to do, or it was single result or list
-			//if array we should not get here because means there are still more elements to process
-			break
-		}
-
-	}
-	if result.len ==0 {	panic("did not find result in data, should be always something")}
-	return result
+	return r.get_response()
 }
 
+pub fn (mut r Redis) send_ok(items []string) ? bool {
+	r.encode_send(items)?
+	res := r.get_response()?
+
+	if res.datatype != RedisValTypes.str {
+		return error("Wrong response, expected string")
+	}
+
+	return if res.str == "OK" { true } else { false }
+}
+
+pub fn (mut r Redis) send_int(items []string) ? int {
+	r.encode_send(items)?
+	res := r.get_response()?
+
+	if res.datatype != RedisValTypes.num {
+		return error("Wrong response, expected integer")
+	}
+
+	return res.num
+}
+
+pub fn (mut r Redis) send_str(items []string) ? string {
+	r.encode_send(items)?
+	res := r.get_response()?
+
+	if res.datatype != RedisValTypes.str {
+		return error("Wrong response, expected string")
+	}
+
+	return res.str
+}
+
+pub fn (mut r Redis) send_strnil(items []string) ? string {
+	r.encode_send(items)?
+	res := r.get_response()?
+
+	if res.datatype == RedisValTypes.nil {
+		return error("(nil)")
+	}
+
+	if res.datatype != RedisValTypes.str {
+		return error("Wrong response, expected string/nil")
+	}
+
+	return res.str
+}
+
+pub fn (mut r Redis) send_list(items []string) ?[]RedisValue {
+	r.encode_send(items)?
+	res := r.get_response()?
+
+	if res.datatype != RedisValTypes.list {
+		return error("Wrong response, expected array")
+	}
+
+	return res.list
+}
 
 // fn parse_int(res string) ?int {
 // 	sval := res[1..res.len - 2]
