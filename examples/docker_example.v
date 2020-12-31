@@ -30,14 +30,22 @@ fn docker2() {
 
 	// create new container
 	mut c := engine.container_create(args) or {panic(err)}
-	println(c.status)
+	assert c.status == docker.DockerContainerStatus.up
 	c.halt()
-	println(c.status)
+	assert c.status == docker.DockerContainerStatus.down
+	c.delete(false)
+	mut found := true
+	engine.container_get(name) or {found=false}
+	if found{
+		panic("container should have been deleted")
+	}
 
-
-	// mut containers := engine.containers_list()
-	// mut images := engine.images_list()
-	// println(images)
+	mut containers := engine.containers_list()
+	mut images := engine.images_list()
+	
+	println(containers)
+	println(images)
+	
 }
 fn main() {
 	// docker1()
