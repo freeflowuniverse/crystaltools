@@ -124,4 +124,6 @@ fn redistest() ? bool {
 	return true
 }
 
-redistest() or { panic('err: $err | errcode: $errcode') }
+fn main() {
+	redistest() or { panic('err: $err | errcode: $errcode') }
+}

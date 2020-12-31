@@ -94,6 +94,22 @@ fn command_get(input RedisValue, mut srv RedisInstance) RedisValue {
 	return value_str(srv.db[key])
 }
 
+
+fn command_del(input RedisValue, mut srv RedisInstance) RedisValue {
+	if input.list.len != 2 {
+		return value_error("Invalid arguments")
+	}
+
+	key := input.list[1].str
+
+	if key !in srv.db {
+		return value_nil()
+	}
+	panic("implement del")
+	return value_str(srv.db[key])
+}
+
+
 fn command_info(input RedisValue, mut srv RedisInstance) RedisValue {
 	mut lines := []string{}
 
@@ -172,6 +188,7 @@ pub fn process_input(mut client Redis, mut instance RedisInstance, value RedisVa
 	h << RedisHandler{command: "INFO", handler: command_info}
 	h << RedisHandler{command: "SET", handler: command_set}
 	h << RedisHandler{command: "GET", handler: command_get}
+	h << RedisHandler{command: "DEL", handler: command_del}
 
 	command := value.list[0].str.to_upper()
 

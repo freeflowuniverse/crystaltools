@@ -12,4 +12,6 @@ fn redis_server() {
 	}
 }
 
-redis_server()
+fn main(){
+	redis_server()
+}
