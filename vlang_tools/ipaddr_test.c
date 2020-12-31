@@ -54,22 +54,22 @@ typedef struct time__Time time__Time;
 typedef struct term__Coord term__Coord;
 typedef struct rand__wyrand__WyRandRNG rand__wyrand__WyRandRNG;
 typedef struct rand__PRNGConfigStruct rand__PRNGConfigStruct;
-typedef struct manifestor__ExecutorLocal manifestor__ExecutorLocal;
-typedef struct manifestor__ExecutorSSH manifestor__ExecutorSSH;
-typedef struct manifestor__IPAddress manifestor__IPAddress;
-typedef struct manifestor__RetryPolicy manifestor__RetryPolicy;
-typedef struct manifestor__WishList manifestor__WishList;
-typedef struct manifestor__Availability manifestor__Availability;
-typedef struct manifestor__Resource manifestor__Resource;
-typedef struct manifestor__Wish manifestor__Wish;
-typedef struct manifestor__Node manifestor__Node;
-typedef struct manifestor__NodeArguments manifestor__NodeArguments;
-typedef struct manifestor__DB manifestor__DB;
-typedef struct manifestor__GitRepoState manifestor__GitRepoState;
-typedef struct manifestor__GitRepo manifestor__GitRepo;
-typedef struct manifestor__Package manifestor__Package;
-typedef struct manifestor__PackageAlias manifestor__PackageAlias;
-typedef struct manifestor__Process manifestor__Process;
+typedef struct builder__ExecutorLocal builder__ExecutorLocal;
+typedef struct builder__ExecutorSSH builder__ExecutorSSH;
+typedef struct builder__IPAddress builder__IPAddress;
+typedef struct builder__RetryPolicy builder__RetryPolicy;
+typedef struct builder__WishList builder__WishList;
+typedef struct builder__Availability builder__Availability;
+typedef struct builder__Resource builder__Resource;
+typedef struct builder__Wish builder__Wish;
+typedef struct builder__Node builder__Node;
+typedef struct builder__NodeArguments builder__NodeArguments;
+typedef struct builder__DB builder__DB;
+typedef struct builder__GitRepoState builder__GitRepoState;
+typedef struct builder__GitRepo builder__GitRepo;
+typedef struct builder__Package builder__Package;
+typedef struct builder__PackageAlias builder__PackageAlias;
+typedef struct builder__Process builder__Process;
 typedef struct varg_voidptr varg_voidptr;
 typedef struct varg_string varg_string;
 typedef struct varg_int varg_int;
@@ -782,69 +782,69 @@ typedef enum {
 } time__FormatDelimiter;
 
 typedef enum {
-	manifestor__IpAddressType_ipv4, // 
-	manifestor__IpAddressType_ipv6, // +1
-} manifestor__IpAddressType;
+	builder__IpAddressType_ipv4, // 
+	builder__IpAddressType_ipv6, // +1
+} builder__IpAddressType;
 
 typedef enum {
-	manifestor__DayIdentifier_weekdays, // 
-	manifestor__DayIdentifier_weekend, // +1
-	manifestor__DayIdentifier_monday, // +2
-	manifestor__DayIdentifier_tuesday, // +3
-	manifestor__DayIdentifier_wednesday, // +4
-	manifestor__DayIdentifier_thursday, // +5
-	manifestor__DayIdentifier_friday, // +6
-	manifestor__DayIdentifier_saturday, // +7
-	manifestor__DayIdentifier_sunday, // +8
-	manifestor__DayIdentifier_sunday1, // +9
-	manifestor__DayIdentifier_sunday2, // +10
-	manifestor__DayIdentifier_sunday3, // +11
-	manifestor__DayIdentifier_sunday4, // +12
-	manifestor__DayIdentifier_firstmonthday, // +13
-	manifestor__DayIdentifier_lastmonthday, // +14
-} manifestor__DayIdentifier;
+	builder__DayIdentifier_weekdays, // 
+	builder__DayIdentifier_weekend, // +1
+	builder__DayIdentifier_monday, // +2
+	builder__DayIdentifier_tuesday, // +3
+	builder__DayIdentifier_wednesday, // +4
+	builder__DayIdentifier_thursday, // +5
+	builder__DayIdentifier_friday, // +6
+	builder__DayIdentifier_saturday, // +7
+	builder__DayIdentifier_sunday, // +8
+	builder__DayIdentifier_sunday1, // +9
+	builder__DayIdentifier_sunday2, // +10
+	builder__DayIdentifier_sunday3, // +11
+	builder__DayIdentifier_sunday4, // +12
+	builder__DayIdentifier_firstmonthday, // +13
+	builder__DayIdentifier_lastmonthday, // +14
+} builder__DayIdentifier;
 
 typedef enum {
-	manifestor__ResourceCategory_person, // 
-	manifestor__ResourceCategory_node, // +1
-} manifestor__ResourceCategory;
+	builder__ResourceCategory_person, // 
+	builder__ResourceCategory_node, // +1
+} builder__ResourceCategory;
 
 typedef enum {
-	manifestor__StateEnum_unknown, // 
-	manifestor__StateEnum_ok, // +1
-	manifestor__StateEnum_error, // +2
-} manifestor__StateEnum;
+	builder__StateEnum_unknown, // 
+	builder__StateEnum_ok, // +1
+	builder__StateEnum_error, // +2
+} builder__StateEnum;
 
 typedef enum {
-	manifestor__CategoryEnum_story, // 
-	manifestor__CategoryEnum_task, // +1
-	manifestor__CategoryEnum_package, // +2
-	manifestor__CategoryEnum_gitrepo, // +3
-	manifestor__CategoryEnum_app, // +4
-	manifestor__CategoryEnum_docker, // +5
-	manifestor__CategoryEnum_kubernetes, // +6
-	manifestor__CategoryEnum_network, // +7
-} manifestor__CategoryEnum;
+	builder__CategoryEnum_story, // 
+	builder__CategoryEnum_task, // +1
+	builder__CategoryEnum_package, // +2
+	builder__CategoryEnum_gitrepo, // +3
+	builder__CategoryEnum_app, // +4
+	builder__CategoryEnum_docker, // +5
+	builder__CategoryEnum_kubernetes, // +6
+	builder__CategoryEnum_network, // +7
+} builder__CategoryEnum;
 
 typedef enum {
-	manifestor__PlatformType_unknown, // 
-	manifestor__PlatformType_osx, // +1
-	manifestor__PlatformType_ubuntu, // +2
-	manifestor__PlatformType_alpine, // +3
-} manifestor__PlatformType;
+	builder__PlatformType_unknown, // 
+	builder__PlatformType_osx, // +1
+	builder__PlatformType_ubuntu, // +2
+	builder__PlatformType_alpine, // +3
+} builder__PlatformType;
 
 typedef enum {
-	manifestor__GitAction_commit, // 
-	manifestor__GitAction_pull, // +1
-	manifestor__GitAction_push, // +2
-	manifestor__GitAction_reset, // +3
-} manifestor__GitAction;
+	builder__GitAction_commit, // 
+	builder__GitAction_pull, // +1
+	builder__GitAction_push, // +2
+	builder__GitAction_reset, // +3
+} builder__GitAction;
 
 typedef enum {
-	manifestor__ProcessState_ok, // 
-	manifestor__ProcessState_error, // +1
-	manifestor__ProcessState_halted, // +2
-} manifestor__ProcessState;
+	builder__ProcessState_ok, // 
+	builder__ProcessState_error, // +1
+	builder__ProcessState_halted, // +2
+} builder__ProcessState;
 
 
 // V type definitions:
@@ -904,13 +904,13 @@ typedef array array_voidptr;
 typedef void (*FnExitCb)();
 typedef array array_MethodArgs;
 typedef array array_RepIndex;
-typedef _Interface manifestor__Executor;
+typedef _Interface builder__Executor;
 typedef map map_string_string;
-typedef array array_manifestor__RetryPolicy;
-typedef array array_manifestor__DayIdentifier;
-typedef array array_manifestor__Availability;
-typedef array array_manifestor__GitAction;
-typedef array array_manifestor__PackageAlias;
+typedef array array_builder__RetryPolicy;
+typedef array array_builder__DayIdentifier;
+typedef array array_builder__Availability;
+typedef array array_builder__GitAction;
+typedef array array_builder__PackageAlias;
 typedef map map_string_int;
 typedef _Interface hash__Hasher;
 typedef _Interface hash__Hash32er;
@@ -930,7 +930,7 @@ typedef array array_os__ProcessState;
 // builtin types:
 //------------------ #endbuiltin
 typedef string array_fixed_string_11 [11];
-struct manifestor__GitRepoState {
+struct builder__GitRepoState {
 EMPTY_STRUCT_DECLARATION;
 };
 
@@ -999,24 +999,24 @@ struct RepIndex {
 	int val_idx;
 };
 
-struct manifestor__IPAddress {
+struct builder__IPAddress {
 	string addr;
 	int port;
-	manifestor__IpAddressType cat;
+	builder__IpAddressType cat;
 };
 
-struct manifestor__ExecutorLocal {
+struct builder__ExecutorLocal {
 	int retry;
 };
 
-struct manifestor__RetryPolicy {
+struct builder__RetryPolicy {
 	string name;
 	array_int retry;
 };
 
-struct manifestor__Wish {
+struct builder__Wish {
 	string name;
-	manifestor__CategoryEnum category;
+	builder__CategoryEnum category;
 	string action;
 	array_string tags;
 	string description;
@@ -1026,55 +1026,55 @@ struct manifestor__Wish {
 	string deadline;
 	string start;
 	string effort;
-	manifestor__StateEnum state;
+	builder__StateEnum state;
 	int check_last;
 	int check_period;
 };
 
-struct manifestor__Availability {
-	array_manifestor__DayIdentifier days_recurring;
+struct builder__Availability {
+	array_builder__DayIdentifier days_recurring;
 	array_string days_onetime;
 	int hour_start;
 	int hour_stop;
 	i8 availability_percent;
 };
 
-struct manifestor__Resource {
+struct builder__Resource {
 	string name;
 	string description;
-	manifestor__ResourceCategory category;
-	array_manifestor__Availability availability;
+	builder__ResourceCategory category;
+	array_builder__Availability availability;
 	int twinid;
 };
 
-struct manifestor__Node {
+struct builder__Node {
 	string name;
-	manifestor__Executor executor;
-	manifestor__PlatformType platform;
+	builder__Executor executor;
+	builder__PlatformType platform;
 };
 
-struct manifestor__Package {
+struct builder__Package {
 	string name;
 	string description;
 	string version;
-	array_manifestor__PackageAlias aliases;
+	array_builder__PackageAlias aliases;
 };
 
-struct manifestor__GitRepo {
+struct builder__GitRepo {
 	string name;
 	string url;
 	string commit_message;
-	array_manifestor__GitAction actions;
-	manifestor__GitRepoState state;
+	array_builder__GitAction actions;
+	builder__GitRepoState state;
 };
 
-struct manifestor__PackageAlias {
+struct builder__PackageAlias {
 	string name;
-	manifestor__PlatformType platformtype;
+	builder__PlatformType platformtype;
 	string version;
 };
 
-struct manifestor__Process {
+struct builder__Process {
 	string cmd;
 	array_string arguments;
 	int timeout;
@@ -1085,7 +1085,7 @@ struct manifestor__Process {
 	int time_stop;
 	string stdout;
 	string sterr;
-	manifestor__ProcessState state;
+	builder__ProcessState state;
 };
 
 struct strings__Builder {
@@ -1222,25 +1222,25 @@ struct mapnode {
 	array_fixed_voidptr_11 values;
 };
 
-struct manifestor__ExecutorSSH {
-	manifestor__IPAddress ipaddr;
+struct builder__ExecutorSSH {
+	builder__IPAddress ipaddr;
 	int retry;
 };
 
-struct manifestor__WishList {
+struct builder__WishList {
 	string name;
-	array_manifestor__RetryPolicy retry_policies;
-	manifestor__Wish startwish;
-	manifestor__StateEnum state;
+	array_builder__RetryPolicy retry_policies;
+	builder__Wish startwish;
+	builder__StateEnum state;
 	int check_last;
 };
 
-struct manifestor__NodeArguments {
-	manifestor__IPAddress ipaddr;
+struct builder__NodeArguments {
+	builder__IPAddress ipaddr;
 };
 
-struct manifestor__DB {
-	manifestor__Node node;
+struct builder__DB {
+	builder__Node node;
 	map_string_string environment;
 };
 
@@ -2490,144 +2490,144 @@ string rand__ulid_at_millisecond(u64 unix_time_milli);
 int g_test_oks = 0;
 int g_test_fails = 0;
 jmp_buf g_jump_buffer;
-VV_LOCAL_SYMBOL void manifestor__test_ping();
-Option_string manifestor__ExecutorLocal_exec(manifestor__ExecutorLocal* executor, string cmd);
-Option_void manifestor__ExecutorLocal_file_write(manifestor__ExecutorLocal* executor, string path, string text);
-Option_string manifestor__ExecutorLocal_file_read(manifestor__ExecutorLocal* executor, string path);
-bool manifestor__ExecutorLocal_file_exists(manifestor__ExecutorLocal* executor, string path);
-Option_void manifestor__ExecutorLocal_remove(manifestor__ExecutorLocal* executor, string path);
-Option_string manifestor__ExecutorLocal_upload(manifestor__ExecutorLocal* executor, string source, string dest);
-Option_string manifestor__ExecutorLocal_download(manifestor__ExecutorLocal* executor, string source, string dest);
-Option_map_string_string manifestor__ExecutorLocal_environ_get(manifestor__ExecutorLocal* executor);
-Option_string manifestor__ExecutorSSH_exec(manifestor__ExecutorSSH* executor, string cmd);
-Option_void manifestor__ExecutorSSH_file_write(manifestor__ExecutorSSH* executor, string path, string text);
-Option_string manifestor__ExecutorSSH_file_read(manifestor__ExecutorSSH* executor, string path);
-bool manifestor__ExecutorSSH_file_exists(manifestor__ExecutorSSH* executor, string path);
-Option_void manifestor__ExecutorSSH_remove(manifestor__ExecutorSSH* executor, string path);
-Option_string manifestor__ExecutorSSH_download(manifestor__ExecutorSSH* executor, string source, string dest);
-Option_string manifestor__ExecutorSSH_upload(manifestor__ExecutorSSH* executor, string source, string dest);
-Option_map_string_string manifestor__ExecutorSSH_environ_get(manifestor__ExecutorSSH* executor);
-void manifestor__IPAddress_ping(manifestor__IPAddress* ipaddr, manifestor__Executor executor);
-VV_LOCAL_SYMBOL Option_void manifestor__IPAddress_check(manifestor__IPAddress* ipaddr);
-VV_LOCAL_SYMBOL string manifestor__IPAddress_address(manifestor__IPAddress* ipaddr);
-VV_LOCAL_SYMBOL manifestor__Node manifestor__node_get(manifestor__NodeArguments args);
-bool manifestor__Node_cmd_exists(manifestor__Node* node, string cmd);
-bool manifestor__Node_exec_ok(manifestor__Node* node, string cmd);
-VV_LOCAL_SYMBOL void manifestor__Node_platform_load(manifestor__Node* node);
-void manifestor__Node_package_install(manifestor__Node* node, manifestor__Package* package);
-manifestor__DB manifestor__Node_db_new(manifestor__Node* node);
-VV_LOCAL_SYMBOL string manifestor__DB_db_key_path_get(manifestor__DB* db, string key);
-VV_LOCAL_SYMBOL Option_void manifestor__DB_environment_load(manifestor__DB* db);
-Option_string manifestor__DB_get(manifestor__DB* db, string key);
-Option_void manifestor__DB_save(manifestor__DB* db, string key, string val);
-Option_void manifestor__DB_reset(manifestor__DB* db, string key);
-Option_void manifestor__GitRepo_prepare(manifestor__GitRepo* repo, manifestor__Wish wish);
-Option_void manifestor__GitRepo_start(manifestor__GitRepo* repo, manifestor__Wish wish);
-Option_void manifestor__GitRepo_check(manifestor__GitRepo* repo, manifestor__Wish wish);
-Option_void manifestor__GitRepo_recover(manifestor__GitRepo* repo, manifestor__Wish wish);
-Option_void manifestor__GitRepo_info(manifestor__GitRepo* repo, manifestor__Wish wish);
-Option_void manifestor__GitRepo_halt(manifestor__GitRepo* repo, manifestor__Wish wish);
-Option_void manifestor__GitRepo_delete(manifestor__GitRepo* repo, manifestor__Wish wish);
-string manifestor__Package_name_get(manifestor__Package* package, manifestor__PlatformType platformtype);
-string manifestor__Package_version_get(manifestor__Package* package, manifestor__PlatformType platformtype);
-void manifestor__Package_prepare(manifestor__Package* package, manifestor__Wish wish);
-Option_void manifestor__Package_start(manifestor__Package* package, manifestor__Wish wish);
-bool manifestor__Package_check(manifestor__Package* package, manifestor__Wish wish);
-Option_void manifestor__Package_recover(manifestor__Package* package, manifestor__Wish wish);
-Option_void manifestor__Package_info(manifestor__Package* package, manifestor__Wish wish);
-Option_void manifestor__Package_halt(manifestor__Package* package, manifestor__Wish wish);
-Option_void manifestor__Package_delete(manifestor__Package* package, manifestor__Wish wish);
-Option_void manifestor__Process_prepare(manifestor__Process* process, manifestor__Wish wish);
-Option_void manifestor__Process_start(manifestor__Process* process, manifestor__Wish wish);
-Option_void manifestor__Process_stop(manifestor__Process* process, manifestor__Wish wish);
-Option_void manifestor__Process_check(manifestor__Process* process, manifestor__Wish wish);
-Option_void manifestor__Process_recover(manifestor__Process* process, manifestor__Wish wish);
-Option_void manifestor__Process_info(manifestor__Process* process, manifestor__Wish wish);
-Option_void manifestor__Process_halt(manifestor__Process* process, manifestor__Wish wish);
-Option_void manifestor__Process_delete(manifestor__Process* process, manifestor__Wish wish);
+VV_LOCAL_SYMBOL void builder__test_ping();
+Option_string builder__ExecutorLocal_exec(builder__ExecutorLocal* executor, string cmd);
+Option_void builder__ExecutorLocal_file_write(builder__ExecutorLocal* executor, string path, string text);
+Option_string builder__ExecutorLocal_file_read(builder__ExecutorLocal* executor, string path);
+bool builder__ExecutorLocal_file_exists(builder__ExecutorLocal* executor, string path);
+Option_void builder__ExecutorLocal_remove(builder__ExecutorLocal* executor, string path);
+Option_string builder__ExecutorLocal_upload(builder__ExecutorLocal* executor, string source, string dest);
+Option_string builder__ExecutorLocal_download(builder__ExecutorLocal* executor, string source, string dest);
+Option_map_string_string builder__ExecutorLocal_environ_get(builder__ExecutorLocal* executor);
+Option_string builder__ExecutorSSH_exec(builder__ExecutorSSH* executor, string cmd);
+Option_void builder__ExecutorSSH_file_write(builder__ExecutorSSH* executor, string path, string text);
+Option_string builder__ExecutorSSH_file_read(builder__ExecutorSSH* executor, string path);
+bool builder__ExecutorSSH_file_exists(builder__ExecutorSSH* executor, string path);
+Option_void builder__ExecutorSSH_remove(builder__ExecutorSSH* executor, string path);
+Option_string builder__ExecutorSSH_download(builder__ExecutorSSH* executor, string source, string dest);
+Option_string builder__ExecutorSSH_upload(builder__ExecutorSSH* executor, string source, string dest);
+Option_map_string_string builder__ExecutorSSH_environ_get(builder__ExecutorSSH* executor);
+void builder__IPAddress_ping(builder__IPAddress* ipaddr, builder__Executor executor);
+VV_LOCAL_SYMBOL Option_void builder__IPAddress_check(builder__IPAddress* ipaddr);
+VV_LOCAL_SYMBOL string builder__IPAddress_address(builder__IPAddress* ipaddr);
+VV_LOCAL_SYMBOL builder__Node builder__node_get(builder__NodeArguments args);
+bool builder__Node_cmd_exists(builder__Node* node, string cmd);
+bool builder__Node_exec_ok(builder__Node* node, string cmd);
+VV_LOCAL_SYMBOL void builder__Node_platform_load(builder__Node* node);
+void builder__Node_package_install(builder__Node* node, builder__Package* package);
+builder__DB builder__Node_db_new(builder__Node* node);
+VV_LOCAL_SYMBOL string builder__DB_db_key_path_get(builder__DB* db, string key);
+VV_LOCAL_SYMBOL Option_void builder__DB_environment_load(builder__DB* db);
+Option_string builder__DB_get(builder__DB* db, string key);
+Option_void builder__DB_save(builder__DB* db, string key, string val);
+Option_void builder__DB_reset(builder__DB* db, string key);
+Option_void builder__GitRepo_prepare(builder__GitRepo* repo, builder__Wish wish);
+Option_void builder__GitRepo_start(builder__GitRepo* repo, builder__Wish wish);
+Option_void builder__GitRepo_check(builder__GitRepo* repo, builder__Wish wish);
+Option_void builder__GitRepo_recover(builder__GitRepo* repo, builder__Wish wish);
+Option_void builder__GitRepo_info(builder__GitRepo* repo, builder__Wish wish);
+Option_void builder__GitRepo_halt(builder__GitRepo* repo, builder__Wish wish);
+Option_void builder__GitRepo_delete(builder__GitRepo* repo, builder__Wish wish);
+string builder__Package_name_get(builder__Package* package, builder__PlatformType platformtype);
+string builder__Package_version_get(builder__Package* package, builder__PlatformType platformtype);
+void builder__Package_prepare(builder__Package* package, builder__Wish wish);
+Option_void builder__Package_start(builder__Package* package, builder__Wish wish);
+bool builder__Package_check(builder__Package* package, builder__Wish wish);
+Option_void builder__Package_recover(builder__Package* package, builder__Wish wish);
+Option_void builder__Package_info(builder__Package* package, builder__Wish wish);
+Option_void builder__Package_halt(builder__Package* package, builder__Wish wish);
+Option_void builder__Package_delete(builder__Package* package, builder__Wish wish);
+Option_void builder__Process_prepare(builder__Process* process, builder__Wish wish);
+Option_void builder__Process_start(builder__Process* process, builder__Wish wish);
+Option_void builder__Process_stop(builder__Process* process, builder__Wish wish);
+Option_void builder__Process_check(builder__Process* process, builder__Wish wish);
+Option_void builder__Process_recover(builder__Process* process, builder__Wish wish);
+Option_void builder__Process_info(builder__Process* process, builder__Wish wish);
+Option_void builder__Process_halt(builder__Process* process, builder__Wish wish);
+Option_void builder__Process_delete(builder__Process* process, builder__Wish wish);
 
 // V interface table:
-_Interface I_manifestor__ExecutorLocal_to_Interface_manifestor__Executor(manifestor__ExecutorLocal* x);
-_Interface* I_manifestor__ExecutorLocal_to_Interface_manifestor__Executor_ptr(manifestor__ExecutorLocal* x);
-int _manifestor__Executor_manifestor__ExecutorLocal_index = 0;
-_Interface I_manifestor__ExecutorSSH_to_Interface_manifestor__Executor(manifestor__ExecutorSSH* x);
-_Interface* I_manifestor__ExecutorSSH_to_Interface_manifestor__Executor_ptr(manifestor__ExecutorSSH* x);
-int _manifestor__Executor_manifestor__ExecutorSSH_index = 1;
-// ^^^ number of types for interface manifestor__Executor: 2
+_Interface I_builder__ExecutorLocal_to_Interface_builder__Executor(builder__ExecutorLocal* x);
+_Interface* I_builder__ExecutorLocal_to_Interface_builder__Executor_ptr(builder__ExecutorLocal* x);
+int _builder__Executor_builder__ExecutorLocal_index = 0;
+_Interface I_builder__ExecutorSSH_to_Interface_builder__Executor(builder__ExecutorSSH* x);
+_Interface* I_builder__ExecutorSSH_to_Interface_builder__Executor_ptr(builder__ExecutorSSH* x);
+int _builder__Executor_builder__ExecutorSSH_index = 1;
+// ^^^ number of types for interface builder__Executor: 2
 
-// Methods wrapper for interface "manifestor__Executor"
+// Methods wrapper for interface "builder__Executor"
 
-typedef Option_string (*_manifestor__Executor_exec_fn)(void* _, string cmd);
-typedef Option_void (*_manifestor__Executor_file_write_fn)(void* _, string path, string text);
-typedef Option_string (*_manifestor__Executor_file_read_fn)(void* _, string path);
-typedef bool (*_manifestor__Executor_file_exists_fn)(void* _, string path);
-typedef Option_void (*_manifestor__Executor_remove_fn)(void* _, string path);
-typedef Option_string (*_manifestor__Executor_download_fn)(void* _, string source, string dest);
-typedef Option_string (*_manifestor__Executor_upload_fn)(void* _, string source, string dest);
-typedef Option_map_string_string (*_manifestor__Executor_environ_get_fn)(void* _);
+typedef Option_string (*_builder__Executor_exec_fn)(void* _, string cmd);
+typedef Option_void (*_builder__Executor_file_write_fn)(void* _, string path, string text);
+typedef Option_string (*_builder__Executor_file_read_fn)(void* _, string path);
+typedef bool (*_builder__Executor_file_exists_fn)(void* _, string path);
+typedef Option_void (*_builder__Executor_remove_fn)(void* _, string path);
+typedef Option_string (*_builder__Executor_download_fn)(void* _, string source, string dest);
+typedef Option_string (*_builder__Executor_upload_fn)(void* _, string source, string dest);
+typedef Option_map_string_string (*_builder__Executor_environ_get_fn)(void* _);
 
-struct _manifestor__Executor_interface_methods {
-	_manifestor__Executor_exec_fn exec;
-	_manifestor__Executor_file_write_fn file_write;
-	_manifestor__Executor_file_read_fn file_read;
-	_manifestor__Executor_file_exists_fn file_exists;
-	_manifestor__Executor_remove_fn remove;
-	_manifestor__Executor_download_fn download;
-	_manifestor__Executor_upload_fn upload;
-	_manifestor__Executor_environ_get_fn environ_get;
+struct _builder__Executor_interface_methods {
+	_builder__Executor_exec_fn exec;
+	_builder__Executor_file_write_fn file_write;
+	_builder__Executor_file_read_fn file_read;
+	_builder__Executor_file_exists_fn file_exists;
+	_builder__Executor_remove_fn remove;
+	_builder__Executor_download_fn download;
+	_builder__Executor_upload_fn upload;
+	_builder__Executor_environ_get_fn environ_get;
 };
 
-static struct _manifestor__Executor_interface_methods manifestor__Executor_name_table[2] = {
+static struct _builder__Executor_interface_methods builder__Executor_name_table[2] = {
 	{
-		.exec = manifestor__ExecutorLocal_exec,
-		.file_write = manifestor__ExecutorLocal_file_write,
-		.file_read = manifestor__ExecutorLocal_file_read,
-		.file_exists = manifestor__ExecutorLocal_file_exists,
-		.remove = manifestor__ExecutorLocal_remove,
-		.download = manifestor__ExecutorLocal_download,
-		.upload = manifestor__ExecutorLocal_upload,
-		.environ_get = manifestor__ExecutorLocal_environ_get,
+		.exec = builder__ExecutorLocal_exec,
+		.file_write = builder__ExecutorLocal_file_write,
+		.file_read = builder__ExecutorLocal_file_read,
+		.file_exists = builder__ExecutorLocal_file_exists,
+		.remove = builder__ExecutorLocal_remove,
+		.download = builder__ExecutorLocal_download,
+		.upload = builder__ExecutorLocal_upload,
+		.environ_get = builder__ExecutorLocal_environ_get,
 	},
 	{
-		.exec = manifestor__ExecutorSSH_exec,
-		.file_write = manifestor__ExecutorSSH_file_write,
-		.file_read = manifestor__ExecutorSSH_file_read,
-		.file_exists = manifestor__ExecutorSSH_file_exists,
-		.remove = manifestor__ExecutorSSH_remove,
-		.download = manifestor__ExecutorSSH_download,
-		.upload = manifestor__ExecutorSSH_upload,
-		.environ_get = manifestor__ExecutorSSH_environ_get,
+		.exec = builder__ExecutorSSH_exec,
+		.file_write = builder__ExecutorSSH_file_write,
+		.file_read = builder__ExecutorSSH_file_read,
+		.file_exists = builder__ExecutorSSH_file_exists,
+		.remove = builder__ExecutorSSH_remove,
+		.download = builder__ExecutorSSH_download,
+		.upload = builder__ExecutorSSH_upload,
+		.environ_get = builder__ExecutorSSH_environ_get,
 	},
 };
 
-// Casting functions for interface "manifestor__Executor"
-_Interface I_manifestor__ExecutorLocal_to_Interface_manifestor__Executor(manifestor__ExecutorLocal* x) {
+// Casting functions for interface "builder__Executor"
+_Interface I_builder__ExecutorLocal_to_Interface_builder__Executor(builder__ExecutorLocal* x) {
 	return (_Interface) {
 		._object = (void*) (x),
-		._interface_idx = _manifestor__Executor_manifestor__ExecutorLocal_index
+		._interface_idx = _builder__Executor_builder__ExecutorLocal_index
 	};
 }
 
-_Interface* I_manifestor__ExecutorLocal_to_Interface_manifestor__Executor_ptr(manifestor__ExecutorLocal* x) {
+_Interface* I_builder__ExecutorLocal_to_Interface_builder__Executor_ptr(builder__ExecutorLocal* x) {
 	// TODO Remove memdup
 	return (_Interface*) memdup(&(_Interface) {
 		._object = (void*) (x),
-		._interface_idx = _manifestor__Executor_manifestor__ExecutorLocal_index
+		._interface_idx = _builder__Executor_builder__ExecutorLocal_index
 	}, sizeof(_Interface));
 }
 
-_Interface I_manifestor__ExecutorSSH_to_Interface_manifestor__Executor(manifestor__ExecutorSSH* x) {
+_Interface I_builder__ExecutorSSH_to_Interface_builder__Executor(builder__ExecutorSSH* x) {
 	return (_Interface) {
 		._object = (void*) (x),
-		._interface_idx = _manifestor__Executor_manifestor__ExecutorSSH_index
+		._interface_idx = _builder__Executor_builder__ExecutorSSH_index
 	};
 }
 
-_Interface* I_manifestor__ExecutorSSH_to_Interface_manifestor__Executor_ptr(manifestor__ExecutorSSH* x) {
+_Interface* I_builder__ExecutorSSH_to_Interface_builder__Executor_ptr(builder__ExecutorSSH* x) {
 	// TODO Remove memdup
 	return (_Interface*) memdup(&(_Interface) {
 		._object = (void*) (x),
-		._interface_idx = _manifestor__Executor_manifestor__ExecutorSSH_index
+		._interface_idx = _builder__Executor_builder__ExecutorSSH_index
 	}, sizeof(_Interface));
 }
 
@@ -13764,17 +13764,17 @@ int main(int ___argc, char** ___argv){
 	_vinit();
 
 
-	if (!setjmp(g_jump_buffer)) manifestor__test_ping();
+	if (!setjmp(g_jump_buffer)) builder__test_ping();
 
 
 	return g_test_fails > 0;
 }
-VV_LOCAL_SYMBOL void manifestor__test_ping() {
-	manifestor__IPAddress addr = (manifestor__IPAddress){.addr = _SLIT("127.0.0.1"),.port = 9001,.cat = manifestor__IpAddressType_ipv4,};
-	manifestor__IPAddress_ping(&addr, I_manifestor__ExecutorLocal_to_Interface_manifestor__Executor(&(manifestor__ExecutorLocal){.retry = 1,}));
+VV_LOCAL_SYMBOL void builder__test_ping() {
+	builder__IPAddress addr = (builder__IPAddress){.addr = _SLIT("127.0.0.1"),.port = 9001,.cat = builder__IpAddressType_ipv4,};
+	builder__IPAddress_ping(&addr, I_builder__ExecutorLocal_to_Interface_builder__Executor(&(builder__ExecutorLocal){.retry = 1,}));
 }
 
-Option_string manifestor__ExecutorLocal_exec(manifestor__ExecutorLocal* executor, string cmd) {
+Option_string builder__ExecutorLocal_exec(builder__ExecutorLocal* executor, string cmd) {
 	println(cmd);
 	Option_os__Result _t268 = os__exec(_STR("%.*s", 1, cmd));
 	if (!_t268.ok) {
@@ -13796,25 +13796,25 @@ Option_string manifestor__ExecutorLocal_exec(manifestor__ExecutorLocal* executor
 	return *(Option_string*)&_t272;
 }
 
-Option_void manifestor__ExecutorLocal_file_write(manifestor__ExecutorLocal* executor, string path, string text) {
+Option_void builder__ExecutorLocal_file_write(builder__ExecutorLocal* executor, string path, string text) {
 	return Option_void _t273 = os__write_file(path, text);
 	if (!_t273.ok && !_t273.is_none) {
 		return *(Option_void *)&_t273;
 	};
 }
 
-Option_string manifestor__ExecutorLocal_file_read(manifestor__ExecutorLocal* executor, string path) {
+Option_string builder__ExecutorLocal_file_read(builder__ExecutorLocal* executor, string path) {
 	return Option_string _t274 = os__read_file(path);
 	if (!_t274.ok) {
 		return *(Option_string *)&_t274;
 	};
 }
 
-bool manifestor__ExecutorLocal_file_exists(manifestor__ExecutorLocal* executor, string path) {
+bool builder__ExecutorLocal_file_exists(builder__ExecutorLocal* executor, string path) {
 	return os__file_exists(path);
 }
 
-Option_void manifestor__ExecutorLocal_remove(manifestor__ExecutorLocal* executor, string path) {
+Option_void builder__ExecutorLocal_remove(builder__ExecutorLocal* executor, string path) {
 	if (os__is_file(path) || os__is_link(path)) {
 		return Option_void _t275 = os__rm(path);
 		if (!_t275.ok && !_t275.is_none) {
@@ -13830,19 +13830,19 @@ Option_void manifestor__ExecutorLocal_remove(manifestor__ExecutorLocal* executor
 	return _t277;
 }
 
-Option_string manifestor__ExecutorLocal_upload(manifestor__ExecutorLocal* executor, string source, string dest) {
+Option_string builder__ExecutorLocal_upload(builder__ExecutorLocal* executor, string source, string dest) {
 	v_panic(_SLIT("not implemented, suggest to use rsync"));
 	Option _t278 = opt_none();
 	return *(Option_string*)&_t278;
 }
 
-Option_string manifestor__ExecutorLocal_download(manifestor__ExecutorLocal* executor, string source, string dest) {
+Option_string builder__ExecutorLocal_download(builder__ExecutorLocal* executor, string source, string dest) {
 	v_panic(_SLIT("not implemented"));
 	Option _t279 = opt_none();
 	return *(Option_string*)&_t279;
 }
 
-Option_map_string_string manifestor__ExecutorLocal_environ_get(manifestor__ExecutorLocal* executor) {
+Option_map_string_string builder__ExecutorLocal_environ_get(builder__ExecutorLocal* executor) {
 	map_string_string env = os__environ();
 	if (false) {
 		Option _t280 = v_error(_SLIT("can never happen"));
@@ -13853,31 +13853,31 @@ Option_map_string_string manifestor__ExecutorLocal_environ_get(manifestor__Execu
 	return _t281;
 }
 
-Option_string manifestor__ExecutorSSH_exec(manifestor__ExecutorSSH* executor, string cmd) {
-	manifestor__ExecutorLocal local_executor = (manifestor__ExecutorLocal){.retry = executor->retry,};
-	return manifestor__ExecutorLocal_exec(&local_executor, _STR("ssh %.*s\000 %.*s", 2, manifestor__IPAddress_address(&executor->ipaddr), cmd));
+Option_string builder__ExecutorSSH_exec(builder__ExecutorSSH* executor, string cmd) {
+	builder__ExecutorLocal local_executor = (builder__ExecutorLocal){.retry = executor->retry,};
+	return builder__ExecutorLocal_exec(&local_executor, _STR("ssh %.*s\000 %.*s", 2, builder__IPAddress_address(&executor->ipaddr), cmd));
 }
 
-Option_void manifestor__ExecutorSSH_file_write(manifestor__ExecutorSSH* executor, string path, string text) {
+Option_void builder__ExecutorSSH_file_write(builder__ExecutorSSH* executor, string path, string text) {
 	string local_path = _STR("/tmp/%.*s", 1, rand__uuid_v4());
-	manifestor__ExecutorLocal local_executor = (manifestor__ExecutorLocal){.retry = executor->retry,};
-	manifestor__ExecutorLocal_file_write(&local_executor, local_path, text);
-	manifestor__ExecutorSSH_upload(executor, local_path, path);
+	builder__ExecutorLocal local_executor = (builder__ExecutorLocal){.retry = executor->retry,};
+	builder__ExecutorLocal_file_write(&local_executor, local_path, text);
+	builder__ExecutorSSH_upload(executor, local_path, path);
 	Option_void _t282 = {.ok = true};
 	return _t282;
 }
 
-Option_string manifestor__ExecutorSSH_file_read(manifestor__ExecutorSSH* executor, string path) {
+Option_string builder__ExecutorSSH_file_read(builder__ExecutorSSH* executor, string path) {
 	string local_path = _STR("/tmp/%.*s", 1, rand__uuid_v4());
-	manifestor__ExecutorSSH_download(executor, path, local_path);
+	builder__ExecutorSSH_download(executor, path, local_path);
 	return Option_string _t283 = os__read_file(local_path);
 	if (!_t283.ok) {
 		return *(Option_string *)&_t283;
 	};
 }
 
-bool manifestor__ExecutorSSH_file_exists(manifestor__ExecutorSSH* executor, string path) {
-	Option_string _t284 = manifestor__ExecutorSSH_exec(executor, _STR("test -f %.*s\000 && echo found || echo not found", 2, path));
+bool builder__ExecutorSSH_file_exists(builder__ExecutorSSH* executor, string path) {
+	Option_string _t284 = builder__ExecutorSSH_exec(executor, _STR("test -f %.*s\000 && echo found || echo not found", 2, path));
 	if (!_t284.ok) {
 		string err = _t284.v_error;
 		int errcode = _t284.ecode;
@@ -13890,24 +13890,24 @@ bool manifestor__ExecutorSSH_file_exists(manifestor__ExecutorSSH* executor, stri
 	return false;
 }
 
-Option_void manifestor__ExecutorSSH_remove(manifestor__ExecutorSSH* executor, string path) {
-	manifestor__ExecutorSSH_exec(executor, _STR("rm -rf %.*s", 1, path));
+Option_void builder__ExecutorSSH_remove(builder__ExecutorSSH* executor, string path) {
+	builder__ExecutorSSH_exec(executor, _STR("rm -rf %.*s", 1, path));
 	Option_void _t285 = {.ok = true};
 	return _t285;
 }
 
-Option_string manifestor__ExecutorSSH_download(manifestor__ExecutorSSH* executor, string source, string dest) {
-	manifestor__ExecutorLocal local_executor = (manifestor__ExecutorLocal){.retry = executor->retry,};
-	return manifestor__ExecutorLocal_exec(&local_executor, _STR("rsync -avHPe \"ssh -p%"PRId32"\000\" %.*s\000:%.*s\000 %.*s", 4, executor->ipaddr.port, executor->ipaddr.addr, source, dest));
+Option_string builder__ExecutorSSH_download(builder__ExecutorSSH* executor, string source, string dest) {
+	builder__ExecutorLocal local_executor = (builder__ExecutorLocal){.retry = executor->retry,};
+	return builder__ExecutorLocal_exec(&local_executor, _STR("rsync -avHPe \"ssh -p%"PRId32"\000\" %.*s\000:%.*s\000 %.*s", 4, executor->ipaddr.port, executor->ipaddr.addr, source, dest));
 }
 
-Option_string manifestor__ExecutorSSH_upload(manifestor__ExecutorSSH* executor, string source, string dest) {
-	manifestor__ExecutorLocal local_executor = (manifestor__ExecutorLocal){.retry = executor->retry,};
-	return manifestor__ExecutorLocal_exec(&local_executor, _STR("rsync -avHPe \"ssh -p%"PRId32"\000\" %.*s\000 -e ssh %.*s\000:%.*s", 4, executor->ipaddr.port, source, executor->ipaddr.addr, dest));
+Option_string builder__ExecutorSSH_upload(builder__ExecutorSSH* executor, string source, string dest) {
+	builder__ExecutorLocal local_executor = (builder__ExecutorLocal){.retry = executor->retry,};
+	return builder__ExecutorLocal_exec(&local_executor, _STR("rsync -avHPe \"ssh -p%"PRId32"\000\" %.*s\000 -e ssh %.*s\000:%.*s", 4, executor->ipaddr.port, source, executor->ipaddr.addr, dest));
 }
 
-Option_map_string_string manifestor__ExecutorSSH_environ_get(manifestor__ExecutorSSH* executor) {
-	Option_string _t286 = manifestor__ExecutorSSH_exec(executor, _SLIT("env"));
+Option_map_string_string builder__ExecutorSSH_environ_get(builder__ExecutorSSH* executor) {
+	Option_string _t286 = builder__ExecutorSSH_exec(executor, _SLIT("env"));
 	if (!_t286.ok) {
 		string err = _t286.v_error;
 		int errcode = _t286.ecode;
@@ -13930,30 +13930,30 @@ Option_map_string_string manifestor__ExecutorSSH_environ_get(manifestor__Executo
 	return _t290;
 }
 
-void manifestor__IPAddress_ping(manifestor__IPAddress* ipaddr, manifestor__Executor executor) {
+void builder__IPAddress_ping(builder__IPAddress* ipaddr, builder__Executor executor) {
 }
 
-VV_LOCAL_SYMBOL Option_void manifestor__IPAddress_check(manifestor__IPAddress* ipaddr) {
+VV_LOCAL_SYMBOL Option_void builder__IPAddress_check(builder__IPAddress* ipaddr) {
 	Option_void _t291 = {.ok = true};
 	return _t291;
 }
 
-VV_LOCAL_SYMBOL string manifestor__IPAddress_address(manifestor__IPAddress* ipaddr) {
+VV_LOCAL_SYMBOL string builder__IPAddress_address(builder__IPAddress* ipaddr) {
 	return _STR("%.*s\000:%"PRId32"", 2, ipaddr->addr, ipaddr->port);
 }
 
-VV_LOCAL_SYMBOL manifestor__Node manifestor__node_get(manifestor__NodeArguments args) {
-	manifestor__Node node = (manifestor__Node){.name = _SLIT("mymachine"),.executor = {0},.platform = 0,};
+VV_LOCAL_SYMBOL builder__Node builder__node_get(builder__NodeArguments args) {
+	builder__Node node = (builder__Node){.name = _SLIT("mymachine"),.executor = {0},.platform = 0,};
 	if ((args.ipaddr.addr).len == 0 || string_eq(args.ipaddr.addr, _SLIT("localhost")) || string_eq(args.ipaddr.addr, _SLIT("127.0.0.1"))) {
-		node.executor = I_manifestor__ExecutorLocal_to_Interface_manifestor__Executor(&(manifestor__ExecutorLocal){.retry = 1,});
+		node.executor = I_builder__ExecutorLocal_to_Interface_builder__Executor(&(builder__ExecutorLocal){.retry = 1,});
 	} else {
-		node.executor = I_manifestor__ExecutorSSH_to_Interface_manifestor__Executor(&(manifestor__ExecutorSSH){.ipaddr = {0},.retry = 5,});
+		node.executor = I_builder__ExecutorSSH_to_Interface_builder__Executor(&(builder__ExecutorSSH){.ipaddr = {0},.retry = 5,});
 	}
 	return node;
 }
 
-bool manifestor__Node_cmd_exists(manifestor__Node* node, string cmd) {
-	Option_string _t292 = manifestor__Executor_name_table[node->executor._interface_idx].exec(node->executor._object, _STR("which %.*s\000 2>&1 > /dev/null", 2, cmd));
+bool builder__Node_cmd_exists(builder__Node* node, string cmd) {
+	Option_string _t292 = builder__Executor_name_table[node->executor._interface_idx].exec(node->executor._object, _STR("which %.*s\000 2>&1 > /dev/null", 2, cmd));
 	if (!_t292.ok) {
 		string err = _t292.v_error;
 		int errcode = _t292.ecode;
@@ -13963,8 +13963,8 @@ bool manifestor__Node_cmd_exists(manifestor__Node* node, string cmd) {
 	return true;
 }
 
-bool manifestor__Node_exec_ok(manifestor__Node* node, string cmd) {
-	Option_string _t293 = manifestor__Executor_name_table[node->executor._interface_idx].exec(node->executor._object, _STR("%.*s\000 2> /dev/null", 2, cmd));
+bool builder__Node_exec_ok(builder__Node* node, string cmd) {
+	Option_string _t293 = builder__Executor_name_table[node->executor._interface_idx].exec(node->executor._object, _STR("%.*s\000 2> /dev/null", 2, cmd));
 	if (!_t293.ok) {
 		string err = _t293.v_error;
 		int errcode = _t293.ecode;
@@ -13974,47 +13974,47 @@ bool manifestor__Node_exec_ok(manifestor__Node* node, string cmd) {
 	return true;
 }
 
-VV_LOCAL_SYMBOL void manifestor__Node_platform_load(manifestor__Node* node) {
-	if (node->platform == manifestor__PlatformType_unknown) {
-		if (manifestor__Node_cmd_exists(node, _SLIT("sw_vers"))) {
-			node->platform = manifestor__PlatformType_osx;
-		} else if (manifestor__Node_cmd_exists(node, _SLIT("apt"))) {
-			node->platform = manifestor__PlatformType_ubuntu;
-		} else if (manifestor__Node_cmd_exists(node, _SLIT("apk"))) {
-			node->platform = manifestor__PlatformType_alpine;
+VV_LOCAL_SYMBOL void builder__Node_platform_load(builder__Node* node) {
+	if (node->platform == builder__PlatformType_unknown) {
+		if (builder__Node_cmd_exists(node, _SLIT("sw_vers"))) {
+			node->platform = builder__PlatformType_osx;
+		} else if (builder__Node_cmd_exists(node, _SLIT("apt"))) {
+			node->platform = builder__PlatformType_ubuntu;
+		} else if (builder__Node_cmd_exists(node, _SLIT("apk"))) {
+			node->platform = builder__PlatformType_alpine;
 		} else {
 			v_panic(_SLIT("only ubuntu, alpine and osx supported for now"));
 		}
 	}
 }
 
-void manifestor__Node_package_install(manifestor__Node* node, manifestor__Package* package) {
+void builder__Node_package_install(builder__Node* node, builder__Package* package) {
 	string name = package->name;
-	manifestor__Node_platform_load(node);
-	if (node->platform == manifestor__PlatformType_osx) {
-		manifestor__Executor_name_table[node->executor._interface_idx].exec(node->executor._object, _STR("brew install %.*s", 1, name));
-	} else if (node->platform == manifestor__PlatformType_ubuntu) {
-		manifestor__Executor_name_table[node->executor._interface_idx].exec(node->executor._object, _STR("apt install %.*s\000 -y", 2, name));
-	} else if (node->platform == manifestor__PlatformType_alpine) {
-		manifestor__Executor_name_table[node->executor._interface_idx].exec(node->executor._object, _STR("apk install %.*s", 1, name));
+	builder__Node_platform_load(node);
+	if (node->platform == builder__PlatformType_osx) {
+		builder__Executor_name_table[node->executor._interface_idx].exec(node->executor._object, _STR("brew install %.*s", 1, name));
+	} else if (node->platform == builder__PlatformType_ubuntu) {
+		builder__Executor_name_table[node->executor._interface_idx].exec(node->executor._object, _STR("apt install %.*s\000 -y", 2, name));
+	} else if (node->platform == builder__PlatformType_alpine) {
+		builder__Executor_name_table[node->executor._interface_idx].exec(node->executor._object, _STR("apk install %.*s", 1, name));
 	} else {
 		v_panic(_SLIT("only ubuntu, alpine and osx supported for now"));
 	}
 }
 
-manifestor__DB manifestor__Node_db_new(manifestor__Node* node) {
-	manifestor__DB db = (manifestor__DB){.node = *node,.environment = new_map_2(sizeof(string), sizeof(string), &map_hash_string, &map_eq_string, &map_clone_string, &map_free_string),};
-	manifestor__DB_environment_load(&db);
-	manifestor__Executor_name_table[db.node.executor._interface_idx].exec(db.node.executor._object, _STR("mkdir -p %.*s\000/.config/manifestor", 2, (*(string*)map_get_1(ADDR(map, db.environment), &(string[]){_SLIT("HOME")}, &(string[]){ (string){.str=(byteptr)""} }))));
+builder__DB builder__Node_db_new(builder__Node* node) {
+	builder__DB db = (builder__DB){.node = *node,.environment = new_map_2(sizeof(string), sizeof(string), &map_hash_string, &map_eq_string, &map_clone_string, &map_free_string),};
+	builder__DB_environment_load(&db);
+	builder__Executor_name_table[db.node.executor._interface_idx].exec(db.node.executor._object, _STR("mkdir -p %.*s\000/.config/builder", 2, (*(string*)map_get_1(ADDR(map, db.environment), &(string[]){_SLIT("HOME")}, &(string[]){ (string){.str=(byteptr)""} }))));
 	return db;
 }
 
-VV_LOCAL_SYMBOL string manifestor__DB_db_key_path_get(manifestor__DB* db, string key) {
-	return string_add((*(string*)map_get_1(ADDR(map, db->environment), &(string[]){_SLIT("HOME")}, &(string[]){ (string){.str=(byteptr)""} })), _STR("/.config/manifestor/%.*s\000.json", 2, key));
+VV_LOCAL_SYMBOL string builder__DB_db_key_path_get(builder__DB* db, string key) {
+	return string_add((*(string*)map_get_1(ADDR(map, db->environment), &(string[]){_SLIT("HOME")}, &(string[]){ (string){.str=(byteptr)""} })), _STR("/.config/builder/%.*s\000.json", 2, key));
 }
 
-VV_LOCAL_SYMBOL Option_void manifestor__DB_environment_load(manifestor__DB* db) {
-	Option_map_string_string _t294 = manifestor__Executor_name_table[db->node.executor._interface_idx].environ_get(db->node.executor._object);
+VV_LOCAL_SYMBOL Option_void builder__DB_environment_load(builder__DB* db) {
+	Option_map_string_string _t294 = builder__Executor_name_table[db->node.executor._interface_idx].environ_get(db->node.executor._object);
 	if (!_t294.ok) {
 		string err = _t294.v_error;
 		int errcode = _t294.ecode;
@@ -14026,70 +14026,70 @@ VV_LOCAL_SYMBOL Option_void manifestor__DB_environment_load(manifestor__DB* db) 
 	return _t296;
 }
 
-Option_string manifestor__DB_get(manifestor__DB* db, string key) {
-	string fpath = manifestor__DB_db_key_path_get(db, key);
-	return manifestor__Executor_name_table[db->node.executor._interface_idx].file_read(db->node.executor._object, fpath);
+Option_string builder__DB_get(builder__DB* db, string key) {
+	string fpath = builder__DB_db_key_path_get(db, key);
+	return builder__Executor_name_table[db->node.executor._interface_idx].file_read(db->node.executor._object, fpath);
 }
 
-Option_void manifestor__DB_save(manifestor__DB* db, string key, string val) {
-	string fpath = manifestor__DB_db_key_path_get(db, key);
-	manifestor__Executor_name_table[db->node.executor._interface_idx].file_write(db->node.executor._object, fpath, val);
+Option_void builder__DB_save(builder__DB* db, string key, string val) {
+	string fpath = builder__DB_db_key_path_get(db, key);
+	builder__Executor_name_table[db->node.executor._interface_idx].file_write(db->node.executor._object, fpath, val);
 	Option_void _t297 = {.ok = true};
 	return _t297;
 }
 
-Option_void manifestor__DB_reset(manifestor__DB* db, string key) {
+Option_void builder__DB_reset(builder__DB* db, string key) {
 	if (string_eq(key, _SLIT("*"))) {
-		manifestor__Executor_name_table[db->node.executor._interface_idx].exec(db->node.executor._object, _STR(" rm -rf %.*s\000/.config/manifestor && mkdir %.*s\000/.config/manifestor", 3, (*(string*)map_get_1(ADDR(map, db->environment), &(string[]){_SLIT("HOME")}, &(string[]){ (string){.str=(byteptr)""} })), (*(string*)map_get_1(ADDR(map, db->environment), &(string[]){_SLIT("HOME")}, &(string[]){ (string){.str=(byteptr)""} }))));
+		builder__Executor_name_table[db->node.executor._interface_idx].exec(db->node.executor._object, _STR(" rm -rf %.*s\000/.config/builder && mkdir %.*s\000/.config/builder", 3, (*(string*)map_get_1(ADDR(map, db->environment), &(string[]){_SLIT("HOME")}, &(string[]){ (string){.str=(byteptr)""} })), (*(string*)map_get_1(ADDR(map, db->environment), &(string[]){_SLIT("HOME")}, &(string[]){ (string){.str=(byteptr)""} }))));
 	} else if (string_ends_with(key, _SLIT("*"))) {
 	} else {
-		string fpath = manifestor__DB_db_key_path_get(db, key);
-		manifestor__Executor_name_table[db->node.executor._interface_idx].remove(db->node.executor._object, fpath);
+		string fpath = builder__DB_db_key_path_get(db, key);
+		builder__Executor_name_table[db->node.executor._interface_idx].remove(db->node.executor._object, fpath);
 	}
 	Option_void _t298 = {.ok = true};
 	return _t298;
 }
 
-Option_void manifestor__GitRepo_prepare(manifestor__GitRepo* repo, manifestor__Wish wish) {
+Option_void builder__GitRepo_prepare(builder__GitRepo* repo, builder__Wish wish) {
 	Option_void _t299 = {.ok = true};
 	return _t299;
 }
 
-Option_void manifestor__GitRepo_start(manifestor__GitRepo* repo, manifestor__Wish wish) {
+Option_void builder__GitRepo_start(builder__GitRepo* repo, builder__Wish wish) {
 	Option_void _t300 = {.ok = true};
 	return _t300;
 }
 
-Option_void manifestor__GitRepo_check(manifestor__GitRepo* repo, manifestor__Wish wish) {
+Option_void builder__GitRepo_check(builder__GitRepo* repo, builder__Wish wish) {
 	Option_void _t301 = {.ok = true};
 	return _t301;
 }
 
-Option_void manifestor__GitRepo_recover(manifestor__GitRepo* repo, manifestor__Wish wish) {
+Option_void builder__GitRepo_recover(builder__GitRepo* repo, builder__Wish wish) {
 	Option_void _t302 = {.ok = true};
 	return _t302;
 }
 
-Option_void manifestor__GitRepo_info(manifestor__GitRepo* repo, manifestor__Wish wish) {
+Option_void builder__GitRepo_info(builder__GitRepo* repo, builder__Wish wish) {
 	Option_void _t303 = {.ok = true};
 	return _t303;
 }
 
-Option_void manifestor__GitRepo_halt(manifestor__GitRepo* repo, manifestor__Wish wish) {
+Option_void builder__GitRepo_halt(builder__GitRepo* repo, builder__Wish wish) {
 	Option_void _t304 = {.ok = true};
 	return _t304;
 }
 
-Option_void manifestor__GitRepo_delete(manifestor__GitRepo* repo, manifestor__Wish wish) {
+Option_void builder__GitRepo_delete(builder__GitRepo* repo, builder__Wish wish) {
 	Option_void _t305 = {.ok = true};
 	return _t305;
 }
 
-string manifestor__Package_name_get(manifestor__Package* package, manifestor__PlatformType platformtype) {
+string builder__Package_name_get(builder__Package* package, builder__PlatformType platformtype) {
 	// FOR IN array
 	array _t306 = package->aliases;
 	for (int _t307 = 0; _t307 < _t306.len; ++_t307) {
-		manifestor__PackageAlias alias = ((manifestor__PackageAlias*)_t306.data)[_t307];
+		builder__PackageAlias alias = ((builder__PackageAlias*)_t306.data)[_t307];
 		if (alias.platformtype == platformtype) {
 			return alias.name;
 		}
@@ -14097,11 +14097,11 @@ string manifestor__Package_name_get(manifestor__Package* package, manifestor__Pl
 	return package->name;
 }
 
-string manifestor__Package_version_get(manifestor__Package* package, manifestor__PlatformType platformtype) {
+string builder__Package_version_get(builder__Package* package, builder__PlatformType platformtype) {
 	// FOR IN array
 	array _t308 = package->aliases;
 	for (int _t309 = 0; _t309 < _t308.len; ++_t309) {
-		manifestor__PackageAlias alias = ((manifestor__PackageAlias*)_t308.data)[_t309];
+		builder__PackageAlias alias = ((builder__PackageAlias*)_t308.data)[_t309];
 		if (alias.platformtype == platformtype) {
 			if ((alias.version).len != 0) {
 				return alias.version;
@@ -14111,79 +14111,79 @@ string manifestor__Package_version_get(manifestor__Package* package, manifestor_
 	return package->version;
 }
 
-void manifestor__Package_prepare(manifestor__Package* package, manifestor__Wish wish) {
+void builder__Package_prepare(builder__Package* package, builder__Wish wish) {
 }
 
-Option_void manifestor__Package_start(manifestor__Package* package, manifestor__Wish wish) {
+Option_void builder__Package_start(builder__Package* package, builder__Wish wish) {
 	Option_void _t310 = {.ok = true};
 	return _t310;
 }
 
-bool manifestor__Package_check(manifestor__Package* package, manifestor__Wish wish) {
+bool builder__Package_check(builder__Package* package, builder__Wish wish) {
 	return true;
 }
 
-Option_void manifestor__Package_recover(manifestor__Package* package, manifestor__Wish wish) {
-	if (!manifestor__Package_check(package, wish)) {
-		manifestor__Package_delete(package, wish);
-		manifestor__Package_prepare(package, wish);
+Option_void builder__Package_recover(builder__Package* package, builder__Wish wish) {
+	if (!builder__Package_check(package, wish)) {
+		builder__Package_delete(package, wish);
+		builder__Package_prepare(package, wish);
 	}
 	Option_void _t311 = {.ok = true};
 	return _t311;
 }
 
-Option_void manifestor__Package_info(manifestor__Package* package, manifestor__Wish wish) {
+Option_void builder__Package_info(builder__Package* package, builder__Wish wish) {
 	Option_void _t312 = {.ok = true};
 	return _t312;
 }
 
-Option_void manifestor__Package_halt(manifestor__Package* package, manifestor__Wish wish) {
+Option_void builder__Package_halt(builder__Package* package, builder__Wish wish) {
 	Option_void _t313 = {.ok = true};
 	return _t313;
 }
 
-Option_void manifestor__Package_delete(manifestor__Package* package, manifestor__Wish wish) {
+Option_void builder__Package_delete(builder__Package* package, builder__Wish wish) {
 	Option_void _t314 = {.ok = true};
 	return _t314;
 }
 
-Option_void manifestor__Process_prepare(manifestor__Process* process, manifestor__Wish wish) {
+Option_void builder__Process_prepare(builder__Process* process, builder__Wish wish) {
 	Option_void _t315 = {.ok = true};
 	return _t315;
 }
 
-Option_void manifestor__Process_start(manifestor__Process* process, manifestor__Wish wish) {
+Option_void builder__Process_start(builder__Process* process, builder__Wish wish) {
 	Option_void _t316 = {.ok = true};
 	return _t316;
 }
 
-Option_void manifestor__Process_stop(manifestor__Process* process, manifestor__Wish wish) {
+Option_void builder__Process_stop(builder__Process* process, builder__Wish wish) {
 	Option_void _t317 = {.ok = true};
 	return _t317;
 }
 
-Option_void manifestor__Process_check(manifestor__Process* process, manifestor__Wish wish) {
+Option_void builder__Process_check(builder__Process* process, builder__Wish wish) {
 	Option_void _t318 = {.ok = true};
 	return _t318;
 }
 
-Option_void manifestor__Process_recover(manifestor__Process* process, manifestor__Wish wish) {
+Option_void builder__Process_recover(builder__Process* process, builder__Wish wish) {
 	Option_void _t319 = {.ok = true};
 	return _t319;
 }
 
-Option_void manifestor__Process_info(manifestor__Process* process, manifestor__Wish wish) {
+Option_void builder__Process_info(builder__Process* process, builder__Wish wish) {
 	Option_void _t320 = {.ok = true};
 	return _t320;
 }
 
-Option_void manifestor__Process_halt(manifestor__Process* process, manifestor__Wish wish) {
+Option_void builder__Process_halt(builder__Process* process, builder__Wish wish) {
 	Option_void _t321 = {.ok = true};
 	return _t321;
 }
 
-Option_void manifestor__Process_delete(manifestor__Process* process, manifestor__Wish wish) {
-	return manifestor__Process_stop(process, wish);
+Option_void builder__Process_delete(builder__Process* process, builder__Wish wish) {
+	return builder__Process_stop(process, wish);
 }
 
 void _vinit() {
@@ -14299,7 +14299,7 @@ void _vinit() {
 	_const_rand__wyrand__wyp1 = ((u64)(0xe7037ed1a0b428dbU));
 	// Initializations for module rand :
 	rand__init();
-	// Initializations for module manifestor :
+	// Initializations for module builder :
 }
 
 // THE END.
