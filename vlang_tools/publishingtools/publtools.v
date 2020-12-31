@@ -6,9 +6,11 @@ import json
 struct PublTools {
 mut:
 	gitlevel int
+	
 pub mut:
 	domain string
 	sites map[string]Site
+	lazy_loading bool = true
 }
 
 
@@ -36,7 +38,9 @@ pub fn (mut publtools PublTools) load(name string, path string) {
 	} else {
 		panic("should not load on same name 2x: '$name_lower'")
 	}
-	// publtools.sites[name_lower].process_files(path2)
+	if !publtools.lazy_loading{
+		publtools.sites[name_lower].process_files(path2)
+	}
 }
 
 

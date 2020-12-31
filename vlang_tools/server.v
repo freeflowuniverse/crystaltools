@@ -94,3 +94,24 @@ pub fn (mut app App) get_wiki_img(wiki string, filename string) vweb.Result {
 	app.vweb.set_content_type('image/' + extension)
 	return app.vweb.ok(file)
 }
+
+[get]
+['/:wiki/errors']
+pub fn (mut app App) errors(wiki string) vweb.Result {
+	site := wiki
+	mut f := publishingtools.new()
+	f.lazy_loading = false
+	f.load(wiki, app.pubtools.sites[wiki].path)
+	f.check()
+
+	site_errors := f.sites[wiki].errors
+	page_erros:= map[string]map[string]string
+	println(site_errors)
+	// for _, page in f.sites[wiki].pages{
+	// 	println(page)
+	// }
+	// println(app.pubtools.sites[wiki])
+	return $vweb.html()
+}
+
+// pageactor.page_errors
