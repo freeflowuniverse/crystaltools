@@ -25,7 +25,8 @@ pub fn node_get(args NodeArguments) ?Node {
 	if args.ipaddr == '' || args.ipaddr.starts_with('localhost') || args.ipaddr.starts_with('127.0.0.1') {
 		node.executor = ExecutorLocal{}
 	} else {
-		node.executor = ExecutorSSH{ipaddr:ipaddress_new(args.ipaddr)}
+		ipaddr := ipaddress_new(args.ipaddr) or {return error("can not initialize ip address")}
+		node.executor = ExecutorSSH{ipaddr: ipaddr}
 	}
 	return node
 }
