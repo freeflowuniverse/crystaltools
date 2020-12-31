@@ -1,1 +1,1 @@
-v -cg run test.v
+v run server.v
