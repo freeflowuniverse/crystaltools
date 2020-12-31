@@ -22,7 +22,8 @@ pub fn (site Site) pageactor_get(name string, publtools PublTools) ?PageActor {
 			site: site
 		}
 	}
-	return error('Could not find page $namelower in site $site.name')
+	return
+	error('Could not find page $namelower in site $site.name')
 }
 
 pub fn (pageactor PageActor) path_get() string {

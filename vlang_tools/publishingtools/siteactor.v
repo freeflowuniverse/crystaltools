@@ -63,8 +63,8 @@ fn (mut site Site) check(){
 }
 
 fn (mut site Site) process_files(path string) ? {
-	// mut ret_err := ''
 	items := os.ls(path) ?
+
 	for item in items {
 		if os.is_dir(os.join_path(path, item)) {
 			mut basedir := os.file_name(path)
