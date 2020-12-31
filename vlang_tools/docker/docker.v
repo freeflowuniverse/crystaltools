@@ -3,7 +3,7 @@ module docker
 import builder
 
 struct DockerEngine {
-mut:
+pub mut :
 	node            builder.Node
 	sshkeys_allowed []string // all keys here have access over ssh into the machine, when ssh enabled
 }
@@ -13,6 +13,7 @@ pub struct DockerNodeArguments {
 	sshkeys_allowed []string // all keys here have access over ssh into the machine, when ssh enabled
 	node_ipaddr   string
 	node_name     string
+	user	      string
 }
 
 //get a new docker image
@@ -28,7 +29,8 @@ pub fn new(args DockerNodeArguments) ?DockerEngine {
 			return error("node name cannot be empty if ipaddress is not localhost. ")
 		}
 	}
-	mut node := builder.node_get(ipaddr:args.node_ipaddr,name:node_name)?
+
+	mut node := builder.node_get(ipaddr:args.node_ipaddr,name:node_name, user: args.user)?
 	mut de := DockerEngine{node:node,sshkeys_allowed:args.sshkeys_allowed}
 	de.init()
 	return de
@@ -38,7 +40,7 @@ pub fn new(args DockerNodeArguments) ?DockerEngine {
 pub fn (mut e DockerEngine) images_list() []DockerImage {
 	mut res := []DockerImage{}
 	mut images := e.node.executor.exec('docker images') or {
-		println('could not retrieve images, error executing docker images')
+		println(err)
 		return []DockerImage{}
 	}
 	mut lines := images.split('\n')
@@ -97,11 +99,13 @@ pub fn (mut e DockerEngine) containers_list() []DockerContainer {
 		info := line.split_by_whitespace()
 		mut id := info[0]
 		mut name := info[info.len - 1]
+		
 		details := e.node.executor.exec("docker inspect -f  '{{.Id}} {{.Created }} {{.Image}}'  $id") or {
 			println('could not retrieve container info')
 			return []DockerContainer{}
 		}
 		mut splitted := details.split(' ')
+		
 		mut container := DockerContainer{
 			id: splitted[0]
 			created: splitted[1]
@@ -114,8 +118,9 @@ pub fn (mut e DockerEngine) containers_list() []DockerContainer {
 				break
 			}
 		}
+		
 		mut state := e.node.executor.exec("docker inspect -f  '{{.Id}} {{.State}}'  $id") or {
-			println('could not retrieve containers info')
+			println(err)
 			return []DockerContainer{}
 		}
 		splitted = state.split(' ')

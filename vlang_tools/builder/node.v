@@ -17,6 +17,7 @@ pub mut:
 pub struct NodeArguments {
 	ipaddr   string
 	name     string
+	user     string
 }
 
 // the factory which returns an node, based on the arguments will chose ssh executor or the local one
@@ -26,7 +27,7 @@ pub fn node_get(args NodeArguments) ?Node {
 		node.executor = ExecutorLocal{}
 	} else {
 		ipaddr := ipaddress_new(args.ipaddr) or {return error("can not initialize ip address")}
-		node.executor = ExecutorSSH{ipaddr: ipaddr}
+		node.executor = ExecutorSSH{ipaddr: ipaddr, user: args.user}
 	}
 	return node
 }
