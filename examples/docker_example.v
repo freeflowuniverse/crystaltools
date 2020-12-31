@@ -29,8 +29,12 @@ fn docker2() {
 	}
 
 	// create new container
-	c := engine.container_create(args) or {panic(err)}
-	println(c)
+	mut c := engine.container_create(args) or {panic(err)}
+	println(c.status)
+	c.halt()
+	println(c.status)
+
+
 	// mut containers := engine.containers_list()
 	// mut images := engine.images_list()
 	// println(images)

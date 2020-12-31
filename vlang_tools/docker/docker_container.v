@@ -23,11 +23,10 @@ struct DockerContainer {
 	ports       	[]string
 	forwarded_ports	[]string
 	mounted_volumes	[]DockerContainerVolume
-mut:
-	image       DockerImage
-	status      DockerContainerStatus
 pub mut:
 	node        builder.Node
+	image       DockerImage
+	status      DockerContainerStatus
 }
 
 struct DockerContainerInfo {
@@ -66,7 +65,9 @@ pub fn (mut container DockerContainer) start() ?string {
 
 // delete docker container
 pub fn (mut container DockerContainer) halt() ?string {
-	return container.node.executor.exec('docker stop $container.id')
+	x := container.node.executor.exec('docker stop $container.id') or {return err}
+	container.status = DockerContainerStatus.down
+	return x
 }
 
 // delete docker container
