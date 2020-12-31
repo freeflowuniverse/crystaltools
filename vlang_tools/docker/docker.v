@@ -13,7 +13,7 @@ pub fn new_docker_engine() DockerEngine {
 }
 
 // return list of images
-fn (mut e DockerEngine) images_list() []DockerImage {
+pub fn (mut e DockerEngine) images_list() []DockerImage {
 	mut res := []DockerImage{}
 	mut images := e.node.executor.exec('docker images') or {
 		println('could not retrieve images, error executing docker images')
@@ -55,7 +55,7 @@ fn (mut e DockerEngine) images_list() []DockerImage {
 }
 
 // return list of images
-fn (mut e DockerEngine) containers_list() []DockerContainer {
+pub fn (mut e DockerEngine) containers_list() []DockerContainer {
 	mut res := []DockerContainer{}
 	mut images := e.images_list()
 	mut containers := e.node.executor.exec('docker ps -a') or {
@@ -101,7 +101,7 @@ fn (mut e DockerEngine) containers_list() []DockerContainer {
 }
 
 // factory class to get a container obj, which can then be filled in and started
-fn (mut e DockerEngine) container_new() DockerContainer {
+pub fn (mut e DockerEngine) container_new() DockerContainer {
 	return DockerContainer{}
 }
 
