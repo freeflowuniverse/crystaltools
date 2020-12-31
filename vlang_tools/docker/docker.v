@@ -8,7 +8,7 @@ mut:
 	sshkeys_allowed []string // all keys here have access over ssh into the machine, when ssh enabled
 }
 
-pub fn new_docker_ngine() DockerEngine {
+pub fn new_docker_engine() DockerEngine {
 	return DockerEngine{}
 }
 
