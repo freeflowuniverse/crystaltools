@@ -107,11 +107,5 @@ pub fn (mut app App) errors(wiki string) vweb.Result {
 	site_errors := f.sites[wiki].errors
 	page_erros:= map[string]map[string]string
 	println(site_errors)
-	// for _, page in f.sites[wiki].pages{
-	// 	println(page)
-	// }
-	// println(app.pubtools.sites[wiki])
 	return $vweb.html()
 }
-
-// pageactor.page_errors
