@@ -15,7 +15,8 @@ pub enum SiteErrorCategory {
 }
 
 struct SiteError {
-	path  string
-	error string
-	cat   SiteErrorCategory
+	pub:
+		path  string
+		error string
+		cat   SiteErrorCategory
 }
