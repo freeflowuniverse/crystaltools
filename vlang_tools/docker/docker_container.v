@@ -1,5 +1,6 @@
 module docker
 import manifestor
+import rand
 
 enum DockerContainerStatus {up down restarting paused dead created}
 
@@ -26,9 +27,21 @@ struct DockerContainerInfo{
 }
 
 
+
 //create/start container (first need to get a dockercontainer before we can start)
 fn (mut container DockerContainer) start() ?string {
-	return container.node.executor.exec("docker start $container.id")
+	mut cmd := ""
+	if container.node.executor is manifestor.ExecutorSSH{
+		mut sshkey := container.node.executor.info()["sshkey"] + ".pub"
+		mut dest := "/tmp/$rand.uuid_v4()"
+		container.node.executor.upload(sshkey, dest)
+		cmd = cmd + "docker cp $dest $container.id:$dest && docker start $container.id && docker exec $container.id sh -c 'cat $dest >> ~/.ssh/authorized_keys'"
+	}else{
+		cmd = "docker start $container.id"
+	}
+	
+	println(cmd)
+	return container.node.executor.exec(cmd)
 }
 
 

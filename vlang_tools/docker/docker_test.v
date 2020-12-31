@@ -12,8 +12,39 @@ fn test_docker1() {
 	engine.node = manifestor.node_get(node_args)
 
 	println(engine.images_list())
-	println(engine.containers_list())
+	mut containers := engine.containers_list()
 
+	mut container := containers[0]
+	println(container)
+	container.start()
+
+
+	// node := manifestor.Node{
+	// 	name: "remote digitalocean",
+	// 	platform: manifestor.PlatformType.ubuntu,
+	// 	executor: manifestor.ExecutorSSH{
+	// 		sshkey: "~/.ssh/id_rsa_test",
+	// 		user: "root",
+	// 		ipaddr: manifestor.IPAddress{
+	// 			addr: "104.236.53.191",
+	// 			port: manifestor.Port{
+	// 				number: 22,
+	// 				cat: manifestor.PortType.tcp
+	// 			},
+	// 			cat: manifestor.IpAddressType.ipv4
+	// 		}
+	// 	}
+	// }
+
+	// engine.node = node
+
+	// // println(engine.images_list())
+	// mut containers := engine.containers_list()
+	// println(containers)
+	
+	// mut container := containers[0]
+	// println(container)
+	// container.start() or {panic(err)}
 
 	// mut engine2 := DockerEngine<ExecutorLocal>{}
 	// engine2.executor.name = "aaa"
@@ -26,5 +57,4 @@ fn test_docker1() {
 	// mut engine2 := get(ExecutorLocal{})
 	// println(engine2.images_list())
 
-	panic("a")
 }

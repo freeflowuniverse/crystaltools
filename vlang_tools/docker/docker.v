@@ -50,10 +50,7 @@ fn (mut e DockerEngine) images_list() []DockerImage {
 		}else if size.ends_with("MB"){
 			s = size.replace("MB", "").f64() * 1024 * 1024
 		}
-		mut details := e.node.executor.exec("docker inspect -f '{{ .Id }} {{ .Created }}' $id") or {
-			""
-		}
-
+		mut details := e.node.executor.exec("docker inspect -f '{{ .Id }} {{ .Created }}' $id") or {panic(err)}
 		splitted:= details.split(" ")
 		
 		res << DockerImage{repo: repo, tag: tag, id: splitted[0], size: s, created: splitted[1], node: e.node}

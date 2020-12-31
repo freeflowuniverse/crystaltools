@@ -55,3 +55,14 @@ pub fn (mut executor ExecutorLocal) environ_get() ?map[string]string {
 	if false {return error("can never happen")}
 	return env
 }
+
+/* 
+Executor info or meta data
+accessing type Executor won't allow to access the 
+fields of the struct, so this is workaround
+*/
+pub fn (mut executor ExecutorLocal) info() map[string]string{
+	return {
+		"category" : "local"
+	}
+}

@@ -3,7 +3,7 @@ import os
 import rand
 
 
-struct ExecutorSSH{
+pub struct ExecutorSSH{
 	mut:
 		ipaddr 		  IPAddress
 		sshkey        string = "~/.ssh/id_rsa" // path
@@ -38,9 +38,9 @@ pub fn (mut executor ExecutorSSH) exec(cmd string) ?string {
 	mut local_executor := executor.init(executor.retry)
 	
 	if executor.user != ""{
-		return local_executor.exec("ssh $executor.user@$executor.ipaddr.addr -p $executor.ipaddr.port.number $cmd")
+		return local_executor.exec('ssh $executor.user@$executor.ipaddr.addr -p $executor.ipaddr.port.number "$cmd"')
 	}
-	return local_executor.exec("ssh $executor.ipaddr.addr -p $executor.ipaddr.port.number $cmd")
+	return local_executor.exec('ssh $executor.ipaddr.addr -p $executor.ipaddr.port.number "$cmd"')
 }
 
 pub fn (mut executor ExecutorSSH) file_write(path string, text string) ? {	
@@ -101,4 +101,16 @@ pub fn (mut executor ExecutorSSH) environ_get() ?map[string]string {
 		res[key] = val
 	}
 	return res
+}
+
+/* 
+Executor info or meta data
+accessing type Executor won't allow to access the 
+fields of the struct, so this is workaround
+*/
+pub fn (mut executor ExecutorSSH) info() map[string]string{
+	return {
+		"category" : "ssh",
+		"sshkey": executor.sshkey
+	}
 }
