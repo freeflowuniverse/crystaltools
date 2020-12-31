@@ -1,7 +1,8 @@
 import docker
 
 fn docker1() {
-	mut engine := docker.new_docker_engine()
+	//get a local docker instance
+	mut engine := docker.new({node_ipaddr:"node_ipaddr192.168..10:2222",node_name:"myremoteserver"}) or {panic(err)}
 	println(engine.images_list())
 	mut containers := engine.containers_list()
 	mut container := containers[0]

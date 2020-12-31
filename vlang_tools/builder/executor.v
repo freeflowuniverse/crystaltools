@@ -11,3 +11,4 @@ interface Executor {
 	environ_get() ?map[string]string
 	info() map[string]string
 }
+

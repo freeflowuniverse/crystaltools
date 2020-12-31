@@ -15,22 +15,17 @@ pub mut:
 }
 
 pub struct NodeArguments {
-	ipaddr   IPAddress
+	ipaddr   string
 	name     string
-	platform PlatformType
 }
 
 // the factory which returns an node, based on the arguments will chose ssh executor or the local one
-pub fn node_get(args NodeArguments) Node {
+pub fn node_get(args NodeArguments) ?Node {
 	mut node := Node{}
-	if args.ipaddr.addr == '' || args.ipaddr.addr == 'localhost' || args.ipaddr.addr == '127.0.0.1' {
+	if args.ipaddr == '' || args.ipaddr.starts_with('localhost') || args.ipaddr.starts_with('127.0.0.1') {
 		node.executor = ExecutorLocal{}
 	} else {
-		node.executor = ExecutorSSH{}
+		node.executor = ExecutorSSH{ipaddr:ipaddress_new(args.ipaddr)}
 	}
 	return node
-	// match executor {
-	//     ExecutorSSH {node.executor.platform_load()}
-	//     ExecutorLocal {node.executor.platform_load()}
-	// }
 }

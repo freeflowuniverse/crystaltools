@@ -6,8 +6,9 @@ struct ExecutorLocal {
 	retry int = 1 // nr of times something will be retried before failing, need to check also what error is, only things which should be retried need to be done, default 1 because is local
 }
 
-pub fn (mut executor ExecutorLocal) exec(cmd string) ?string {
-	e := os.exec('$cmd') or { return error('could not find command: $cmd') }
+
+pub fn execute_cmd(cmd string)?string{
+	e := os.exec(cmd)?
 	if e.exit_code == 0 {
 		return e.output.trim('\n')
 	} else {
@@ -15,8 +16,13 @@ pub fn (mut executor ExecutorLocal) exec(cmd string) ?string {
 	}
 }
 
+
+pub fn (mut executor ExecutorLocal) exec(cmd string) ?string {
+	return execute_cmd(cmd)
+}
+
 pub fn (mut executor ExecutorLocal) file_write(path string, text string) ? {
-	return write_file(path, text)
+	return os.write_file(path, text)
 }
 
 pub fn (mut executor ExecutorLocal) file_read(path string) ?string {

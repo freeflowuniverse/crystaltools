@@ -8,8 +8,30 @@ mut:
 	sshkeys_allowed []string // all keys here have access over ssh into the machine, when ssh enabled
 }
 
-pub fn new_docker_engine() DockerEngine {
-	return DockerEngine{}
+
+pub struct DockerNodeArguments {
+	sshkeys_allowed []string // all keys here have access over ssh into the machine, when ssh enabled
+	node_ipaddr   string
+	node_name     string
+}
+
+//get a new docker image
+// to use docker.new() -> returns DockerEngine for local machine
+// to use docker.new(node_ipaddr:"node_ipaddr192.168..10:2222",node_name:"myremoteserver") -> returns DockerEngine for a remote machine, ssh-agent needs to be loaded
+// to use docker.new(node_ipaddr:"192.168..10",node_name:"myremoteserver") -> returns DockerEngine for a remote machine on default ssh port 22
+pub fn new(args DockerNodeArguments) ?DockerEngine {
+	mut node_name := args.node_ipaddr
+	if node_name==""{
+		if  args.node_ipaddr == ""{
+			node_name = "localnode"
+		}else{
+			return error("node name cannot be empty if ipaddress is not localhost. ")
+		}
+	}
+	mut node := builder.node_get(ipaddr:args.node_ipaddr,name:node_name)?
+	mut de := DockerEngine(node:node,sshkeys_allowed:sshkeys_allowed)
+	de.init()
+	return de
 }
 
 // return list of images
@@ -52,6 +74,11 @@ pub fn (mut e DockerEngine) images_list() []DockerImage {
 		}
 	}
 	return res
+}
+
+pub fn (mut e DockerEngine) init() {
+	// docker version
+
 }
 
 // return list of images
