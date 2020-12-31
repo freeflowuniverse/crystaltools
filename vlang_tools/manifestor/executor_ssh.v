@@ -19,7 +19,7 @@ fn (mut executor ExecutorSSH) init(retry int) ExecutorLocal{
 			// todo : don't load if already running
 			
 			local_executor.exec("pgrep -x ssh-agent || eval `ssh-agent -s`") or {panic(err)}
-			if executor.sshkey ~= "" {
+			if executor.sshkey != "" {
 				local_executor.exec("ssh-add $executor.sshkey")
 			}
 			

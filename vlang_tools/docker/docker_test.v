@@ -1,25 +1,8 @@
 module docker
 import manifestor
 
-fn test_docker1() {
-	// assert json.encode(obj)== json.encode(tocompare)
-
-
-
-	mut engine := new_docker_ngine()
-
-	mut node_args := manifestor.NodeArguments{name: "test", ipaddr: manifestor.IPAddress{addr: ""}, platform: manifestor.PlatformType.ubuntu}
-	engine.node = manifestor.node_get(node_args)
-
-	println(engine.images_list())
-	mut containers := engine.containers_list()
-
-	mut container := containers[0]
-	println(container)
-	container.start()
-
-
-	// node := manifestor.Node{
+fn test_remote_docker(){
+		// node := manifestor.Node{
 	// 	name: "remote digitalocean",
 	// 	platform: manifestor.PlatformType.ubuntu,
 	// 	executor: manifestor.ExecutorSSH{
@@ -45,6 +28,23 @@ fn test_docker1() {
 	// mut container := containers[0]
 	// println(container)
 	// container.start() or {panic(err)}
+}
+fn test_docker1() {
+
+	mut engine := new_docker_ngine()
+
+	mut node_args := manifestor.NodeArguments{name: "test", ipaddr: manifestor.IPAddress{addr: ""}, platform: manifestor.PlatformType.ubuntu}
+	engine.node = manifestor.node_get(node_args)
+
+	println(engine.images_list())
+	mut containers := engine.containers_list()
+
+	mut container := containers[0]
+	println(container)
+	container.start()
+
+
+
 
 	// mut engine2 := DockerEngine<ExecutorLocal>{}
 	// engine2.executor.name = "aaa"
