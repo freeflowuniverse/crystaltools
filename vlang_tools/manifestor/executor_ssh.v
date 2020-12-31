@@ -6,7 +6,7 @@ import rand
 pub struct ExecutorSSH{
 	mut:
 		ipaddr 		  IPAddress
-		sshkey        string = "~/.ssh/id_rsa" // path
+		sshkey        string
 		user		  string
 		initialized   bool
 
@@ -19,7 +19,9 @@ fn (mut executor ExecutorSSH) init(retry int) ExecutorLocal{
 			// todo : don't load if already running
 			
 			local_executor.exec("pgrep -x ssh-agent || eval `ssh-agent -s`") or {panic(err)}
-			local_executor.exec("ssh-add $executor.sshkey")
+			if executor.sshkey ~= "" {
+				local_executor.exec("ssh-add $executor.sshkey")
+			}
 			
 			mut addr := executor.ipaddr.addr
 			if addr == ""{
