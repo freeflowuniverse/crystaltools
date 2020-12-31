@@ -94,6 +94,7 @@ pub fn (mut e DockerEngine) containers_list() []DockerContainer {
 	if containers == '' {
 		return res
 	}
+	
 	mut lines := containers.split('\n')
 	for line in lines[1..lines.len] {
 		info := line.split_by_whitespace()
@@ -105,7 +106,6 @@ pub fn (mut e DockerEngine) containers_list() []DockerContainer {
 			return []DockerContainer{}
 		}
 		mut splitted := details.split(' ')
-		
 		mut container := DockerContainer{
 			id: splitted[0]
 			created: splitted[1]
@@ -119,6 +119,7 @@ pub fn (mut e DockerEngine) containers_list() []DockerContainer {
 			}
 		}
 		
+
 		mut state := e.node.executor.exec("docker inspect -f  '{{.Id}} {{.State}}'  $id") or {
 			println(err)
 			return []DockerContainer{}
@@ -154,4 +155,29 @@ fn (mut e DockerEngine) parse_container_state(state string) DockerContainerStatu
 		return DockerContainerStatus.created
 	}
 	return DockerContainerStatus.down
+}
+
+
+pub fn (mut e DockerEngine) container_create(args DockerContainerCreateArgs) ?DockerContainer {
+	mut ports := ""
+	mut mounts := ""
+
+	for port in args.forwarded_ports{
+		ports = ports + "-p $port "
+	}
+
+	for mount in args.mounted_volumes{
+		mounts += "-v $mount "
+	}
+	e.node.executor.exec('docker run --hostname $args.hostname --name $args.name $ports $mounts -d -t $args.image_repo ') or {println(err)}
+	return e.container_get(args.name)
+}
+
+pub fn (mut e DockerEngine) container_get(name_or_id string) ?DockerContainer {
+	for c in e.containers_list(){
+		if c.name == name_or_id || c.id == name_or_id{
+			return c
+		}
+	}
+	return error("")
 }
