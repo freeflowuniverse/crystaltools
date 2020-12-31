@@ -46,6 +46,10 @@ pub fn value_ok() RedisValue {
 	return value_success("OK")
 }
 
+pub fn value_int(value int) RedisValue {
+	return RedisValue{datatype: RedisValTypes.num, num: value}
+}
+
 pub fn value_error(value string) RedisValue {
 	return RedisValue{datatype: RedisValTypes.err, str: value}
 }
@@ -90,6 +94,70 @@ fn command_get(input RedisValue, mut srv RedisInstance) RedisValue {
 	return value_str(srv.db[key])
 }
 
+fn command_info(input RedisValue, mut srv RedisInstance) RedisValue {
+	mut lines := []string{}
+
+	lines << "# Server"
+	lines << "redis_version: vredis 0.1 custom"
+
+	lines << "# Keyspace"
+	lines << "db0:keys=${srv.db.len},expires=0,avg_ttl=0"
+
+	return value_str(lines.join("\r\n"))
+}
+
+fn command_select(input RedisValue, mut srv RedisInstance) RedisValue {
+	if input.list.len != 2 {
+		return value_error("Invalid arguments")
+	}
+
+	// only support db0
+	if input.list[1].str != "0" {
+		return value_error("Incorrect database")
+	}
+
+	return value_ok()
+}
+
+fn command_scan(input RedisValue, mut srv RedisInstance) RedisValue {
+	if input.list.len < 2 {
+		return value_error("Invalid arguments")
+	}
+
+	mut root := RedisValue{datatype: RedisValTypes.list}
+	root.list << RedisValue{datatype: RedisValTypes.str, str: "0"}
+
+	mut list := RedisValue{datatype: RedisValTypes.list}
+
+	// we ignore cursor and reply the full list
+	for k, _ in srv.db {
+		list.list << RedisValue{datatype: RedisValTypes.str, str: k}
+	}
+
+	root.list << list
+
+	return root
+}
+
+fn command_type(input RedisValue, mut srv RedisInstance) RedisValue {
+	if input.list.len != 2 {
+		return value_error("Invalid arguments")
+	}
+
+	key := input.list[1].str
+
+	if key !in srv.db {
+		return value_nil()
+	}
+
+	// only support string value
+	return value_success("string")
+}
+
+fn command_ttl(input RedisValue, mut srv RedisInstance) RedisValue {
+	return value_int(0)
+}
+
 //
 // socket management
 //
@@ -97,10 +165,15 @@ pub fn process_input(mut client Redis, mut instance RedisInstance, value RedisVa
 	mut h := []RedisHandler{}
 
 	h << RedisHandler{command: "PING", handler: command_ping}
+	h << RedisHandler{command: "SELECT", handler: command_select}
+	h << RedisHandler{command: "TYPE", handler: command_type}
+	h << RedisHandler{command: "TTL", handler: command_ttl}
+	h << RedisHandler{command: "SCAN", handler: command_scan}
+	h << RedisHandler{command: "INFO", handler: command_info}
 	h << RedisHandler{command: "SET", handler: command_set}
 	h << RedisHandler{command: "GET", handler: command_get}
 
-	command := value.list[0].str
+	command := value.list[0].str.to_upper()
 
 	for rh in h {
 		if command == rh.command {
@@ -111,7 +184,13 @@ pub fn process_input(mut client Redis, mut instance RedisInstance, value RedisVa
 		}
 	}
 
-	println("Error: unknown command: $command")
+	// debug
+	print("Error: unknown command: ")
+	for cmd in value.list {
+		print("$cmd.str ")
+	}
+	println("")
+
 	err := value_error("Unknown command")
 	client.encode_send(err)
 
