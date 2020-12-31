@@ -29,7 +29,7 @@ pub fn new(args DockerNodeArguments) ?DockerEngine {
 		}
 	}
 	mut node := builder.node_get(ipaddr:args.node_ipaddr,name:node_name)?
-	mut de := DockerEngine(node:node,sshkeys_allowed:sshkeys_allowed)
+	mut de := DockerEngine{node:node,sshkeys_allowed:args.sshkeys_allowed}
 	de.init()
 	return de
 }
