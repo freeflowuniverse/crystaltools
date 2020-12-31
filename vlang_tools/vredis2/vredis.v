@@ -1,8 +1,8 @@
 module vredis2
 
 
-pub fn (mut r Redis) set(key string, value string)? {
-	r.send_ok(['SET', key, value])?
+pub fn (mut r Redis) set(key string, value string) ?bool {
+	return r.send_ok(['SET', key, value])
 }
 
 pub fn (mut r Redis) get(key string) ?string {
@@ -135,6 +135,15 @@ pub fn (mut r Redis) renamenx(key string, newkey string) ?int {
 
 pub fn (mut r Redis) flushall() ?bool {
 	return r.send_ok(['FLUSHALL'])
+}
+
+pub fn (mut r Redis) flushdb() ?bool {
+	return r.send_ok(['FLUSHDB'])
+}
+
+// select is reserved
+pub fn (mut r Redis) selectdb(database int) ?bool {
+	return r.send_ok(['SELECT', database.str()])
 }
 
 pub fn (mut r Redis) scan(cursor int) ? (string, []string) {

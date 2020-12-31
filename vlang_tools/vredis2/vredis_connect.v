@@ -18,7 +18,7 @@ struct SetOpts {
 		keep_ttl bool
 }
 
-enum KeyType {	
+enum KeyType {
 	t_none
 	t_string
 	t_list
@@ -68,7 +68,16 @@ pub fn (mut r Redis) disconnect() {
 
 //implement protocol of redis how to send he data
 // https://redis.io/topics/protocol
-fn (mut r Redis) encode_send(items []string)?{
+fn (mut r Redis) encode_send_legacy(items []string)? {
+	mut root := RedisValue{datatype: RedisValTypes.list}
+
+	for item in items {
+		obj := RedisValue{datatype: RedisValTypes.str, str: item}
+		root.list << obj
+	}
+
+	return r.encode_send(root)
+	/*
 	mut out := "*${items.len}\r\n"
 	for item in items{
 		out+="\$${item.len}\r\n$item\r\n"
@@ -77,11 +86,54 @@ fn (mut r Redis) encode_send(items []string)?{
 	println("redisdata:${out.replace("\n","\\n").replace("\r","\\r")}")
 	r.socket_write(out)
 	time.sleep_ms(1) // this is needed, not sure why
+	*/
+}
+
+fn (mut r Redis) encode_value(value RedisValue) ?string {
+	if value.datatype == RedisValTypes.str {
+		return "\$${value.str.len}\r\n${value.str}\r\n"
+	}
+
+	if value.datatype == RedisValTypes.success {
+		return "+${value.str}\r\n"
+	}
+
+	if value.datatype == RedisValTypes.err {
+		return "-${value.str}\r\n"
+	}
+
+	if value.datatype == RedisValTypes.nil {
+		return "$-1\r\n"
+	}
+
+	if value.datatype == RedisValTypes.num {
+		return ":" + value.num.str() + "\r\n"
+	}
+
+	if value.datatype == RedisValTypes.list {
+		mut buffer := "*${value.list.len}\r\n"
+		for v in value.list {
+			response := r.encode_value(v)?
+			buffer = buffer + response
+		}
+
+		return buffer
+	}
+
+	// parsing error
+	println("Could not prepare response")
+	return "-Could not prepare response\r\n"
+}
+
+fn (mut r Redis) encode_send(value RedisValue)? {
+	buffer := r.encode_value(value)?
+	r.socket_write(buffer)
+	time.sleep_ms(10) // FIXME
 }
 
 
 enum ReceiveState {data error array}
-enum RedisValTypes { str num nil list unknown }
+enum RedisValTypes { str num nil list success err unknown }
 
 struct RedisValue {
 	mut:
@@ -171,12 +223,12 @@ pub fn (mut r Redis) get_response()? RedisValue {
 
 //return the int or string as string, if empty return then empty string
 pub fn (mut r Redis) send(items []string)? RedisValue {
-	r.encode_send(items)?
+	r.encode_send_legacy(items)?
 	return r.get_response()
 }
 
 pub fn (mut r Redis) send_ok(items []string) ? bool {
-	r.encode_send(items)?
+	r.encode_send_legacy(items)?
 	res := r.get_response()?
 
 	if res.datatype != RedisValTypes.str {
@@ -187,7 +239,7 @@ pub fn (mut r Redis) send_ok(items []string) ? bool {
 }
 
 pub fn (mut r Redis) send_int(items []string) ? int {
-	r.encode_send(items)?
+	r.encode_send_legacy(items)?
 	res := r.get_response()?
 
 	if res.datatype != RedisValTypes.num {
@@ -198,7 +250,7 @@ pub fn (mut r Redis) send_int(items []string) ? int {
 }
 
 pub fn (mut r Redis) send_str(items []string) ? string {
-	r.encode_send(items)?
+	r.encode_send_legacy(items)?
 	res := r.get_response()?
 
 	if res.datatype != RedisValTypes.str {
@@ -209,7 +261,7 @@ pub fn (mut r Redis) send_str(items []string) ? string {
 }
 
 pub fn (mut r Redis) send_strnil(items []string) ? string {
-	r.encode_send(items)?
+	r.encode_send_legacy(items)?
 	res := r.get_response()?
 
 	if res.datatype == RedisValTypes.nil {
@@ -224,7 +276,7 @@ pub fn (mut r Redis) send_strnil(items []string) ? string {
 }
 
 pub fn (mut r Redis) send_list(items []string) ?[]RedisValue {
-	r.encode_send(items)?
+	r.encode_send_legacy(items)?
 	res := r.get_response()?
 
 	if res.datatype != RedisValTypes.list {
