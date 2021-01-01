@@ -6,7 +6,8 @@ pub enum ImageStatus {
 	error
 }
 
-struct Image {
+pub struct Image {
+pub mut:
 	name         string
 	path         string
 	state        ImageStatus

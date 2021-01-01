@@ -28,7 +28,7 @@ pub fn (mut page Page) markdown_get(site &Site) string {
 	// check for links
 	mut links_parser_result := link_parser(content)
 	for mut link in links_parser_result.links {
-		content = link.check_replace(content, mut site)
+		content = link.check_replace(content, site)
 		// println("${replaceaction.original_text}->${replaceaction.new_text}")
 		if link.state == LinkState.notfound {
 			mut cat := PageErrorCat.brokenlink

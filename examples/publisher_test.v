@@ -1,30 +1,29 @@
 import publisher
 
-fn pages_test(mut f publisher.Publisher) {
-	// println(f.sites["test"])
-	// argument will be comeo lowercase and remove '.md' at end
-	page1 := f.page_get('docker_Compatibility.md') or {
-		println(err)
-		return
-	}
-	println(page1)
-	page2 := f.page_get('docker_Compatibility') or {
-		println(err)
-		return
-	}
-	println(page2)
-	page3 := f.page_get('test:docker_Compatibility') or {
-		println(err)
-		return
-	}
-	println(page3)
-	image1 := f.image_get('network-connectivity.png') or {
-		println(err)
-		return
-	}
-	println(image1)
-}
-
+// fn pages_test(mut f publisher.Publisher) {
+// 	// println(f.sites["test"])
+// 	// argument will be comeo lowercase and remove '.md' at end
+// 	page1 := f.page_get('docker_Compatibility.md') or {
+// 		println(err)
+// 		return
+// 	}
+// 	println(page1)
+// 	page2 := f.page_get('docker_Compatibility') or {
+// 		println(err)
+// 		return
+// 	}
+// 	println(page2)
+// 	page3 := f.page_get('test:docker_Compatibility') or {
+// 		println(err)
+// 		return
+// 	}
+// 	println(page3)
+// 	image1 := f.image_get('network-connectivity.png') or {
+// 		println(err)
+// 		return
+// 	}
+// 	println(image1)
+// }
 fn main() {
 	mut f := publisher.new()
 	println('start')

@@ -56,7 +56,8 @@ fn (mut site Site) image_remember(path string, name string) {
 	// println( " - Image $pathfull" )
 	if site.image_exists(namelower) {
 		// error there should be no duplicates
-		mut duplicatepath := site.image_get(namelower).path
+		image := site.image_get(namelower) or { panic('cannot find image with name $namelower') }
+		mut duplicatepath := image.path
 		site.errors << SiteError{
 			path: pathrelative
 			error: 'duplicate image $duplicatepath'
@@ -76,7 +77,8 @@ fn (mut site Site) page_remember(path string, name string) {
 	// println( " - Page $pathfull" )
 	if site.page_exists(namelower) {
 		// error there should be no duplicates
-		mut duplicatepath := site.page_get(namelower).path
+		page := site.page_get(namelower) or { panic('cannot find page with name $namelower') }
+		mut duplicatepath := page.path
 		site.errors << SiteError{
 			path: pathrelative
 			error: 'duplicate page $duplicatepath'

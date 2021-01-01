@@ -10,12 +10,11 @@ struct Page {
 	name            string
 pub:
 	path            string
-mut:
+pub mut:
 	state           PageStatus
 	errors          []PageError
 	nrtimes_inluded int
 	nrtimes_linked  int
-pub mut:
 	content         string
 }
 
