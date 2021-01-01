@@ -1,4 +1,4 @@
-module publishingtools
+module publisher
 
 pub enum PageStatus {
 	unknown
@@ -7,6 +7,7 @@ pub enum PageStatus {
 }
 
 struct Page {
+	name            string
 pub:
 	path            string
 mut:

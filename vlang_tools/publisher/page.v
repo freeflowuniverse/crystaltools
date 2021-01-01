@@ -1,7 +1,6 @@
-module publishingtools
+module publisher
 
 import os
-
 
 pub fn (page Page) path_get(site &Site) string {
 	return os.join_path(site.path, page.path)
@@ -9,7 +8,7 @@ pub fn (page Page) path_get(site &Site) string {
 
 // will load the content, check everything, return true if ok
 pub fn (mut page Page) check(site &Site) bool {
-	content := page.markdown_get(site &Site)
+	_ := page.markdown_get(site & Site)
 	if page.state == PageStatus.error {
 		return false
 	}
@@ -24,12 +23,12 @@ pub fn (mut page Page) markdown_get(site &Site) string {
 		// means was already processed, content is available
 		return page.content
 	}
-	mut content := page.markdown_load(site &Site) or { panic(err) }	
-	content = page.process_includes(content, site &Site) // should be recursive now
+	mut content := page.markdown_load(site & Site) or { panic(err) }
+	content = page.process_includes(content, site & Site) // should be recursive now
 	// check for links
 	mut links_parser_result := link_parser(content)
 	for mut link in links_parser_result.links {
-		content = link.check_replace(content, site &Site)
+		content = link.check_replace(content, site & Site)
 		// println("${replaceaction.original_text}->${replaceaction.new_text}")
 		if link.state == LinkState.notfound {
 			mut cat := PageErrorCat.brokenlink
@@ -50,8 +49,8 @@ pub fn (mut page Page) markdown_get(site &Site) string {
 }
 
 pub fn (page Page) markdown_load(site &Site) ?string {
-	path_source := page.path_get(site &Site)
-	content := os.read_file(path_source) or {		
+	path_source := page.path_get(site & Site)
+	content := os.read_file(path_source) or {
 		return error('Failed to open $path_source\nerror:$err')
 	}
 	return content
@@ -61,7 +60,7 @@ pub fn (mut page Page) error_add(error PageError) {
 	if page.state != PageStatus.error {
 		// only add when not in error mode yet, because means check was already done
 		page.errors << error
-	}else{
+	} else {
 		panic(' ** ERROR (2nd time): in file $page.path_get()')
 	}
 }
@@ -69,7 +68,7 @@ pub fn (mut page Page) error_add(error PageError) {
 fn (mut page Page) process_includes(content string, site &Site) string {
 	mut lines := ''
 	mut nr := 0
-	pt := site.publtools
+	mut pt := site.publisher
 	for line in content.split_into_lines() {
 		// println (line)
 		nr++
@@ -87,7 +86,7 @@ fn (mut page Page) process_includes(content string, site &Site) string {
 				lines += '> ERROR: $page_error.msg'
 				continue
 			}
-			if page_linked.path_get() == page.path_get(site &Site) {
+			if page_linked.path_get() == page.path_get(site & Site) {
 				panic('recursive include: $page_linked.path_get()')
 			}
 			page_linked.page.nrtimes_inluded++

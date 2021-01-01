@@ -1,38 +1,37 @@
-module publishingtools
+module publisher
 
 import os
 
 struct SiteConfig {
-	//name of the wiki site
-	name	string
-	//depends on which other wiki sites
+	// name of the wiki site
+	name    string
+	// depends on which other wiki sites
 	depends []string
 }
 
 fn (site Site) page_get(name string) ?Page {
 	mut namelower := name_fix(name)
-	for item in site.pages{
-		if item.name == namelower{
+	for item in site.pages {
+		if item.name == namelower {
 			return item
 		}
 	}
-	return error("cannot find page with name $name")
+	return error('cannot find page with name $name')
 }
-
 
 fn (site Site) image_get(name string) ?Image {
 	mut namelower := name_fix(name)
-	for item in site.images{
-		if item.name == namelower{
+	for item in site.images {
+		if item.name == namelower {
 			return item
 		}
 	}
-	return error("cannot find image with name $name")
+	return error('cannot find image with name $name')
 }
 
 fn (site Site) page_exists(name string) bool {
-	for item in site.pages{
-		if item.name == name{
+	for item in site.pages {
+		if item.name == name {
 			return true
 		}
 	}
@@ -40,8 +39,8 @@ fn (site Site) page_exists(name string) bool {
 }
 
 fn (site Site) image_exists(name string) bool {
-	for item in site.images{
-		if item.name == name{
+	for item in site.images {
+		if item.name == name {
 			return true
 		}
 	}
@@ -55,7 +54,7 @@ fn (mut site Site) image_remember(path string, name string) {
 	// now remove the root path
 	pathrelative := pathfull[site.path.len..]
 	// println( " - Image $pathfull" )
-	if site.image_exists(namelower){
+	if site.image_exists(namelower) {
 		// error there should be no duplicates
 		mut duplicatepath := site.image_get(namelower).path
 		site.errors << SiteError{
@@ -69,7 +68,6 @@ fn (mut site Site) image_remember(path string, name string) {
 		}
 	}
 }
-
 
 fn (mut site Site) page_remember(path string, name string) {
 	mut pathfull := os.join_path(path, name)
@@ -91,15 +89,13 @@ fn (mut site Site) page_remember(path string, name string) {
 	}
 }
 
-fn (mut site Site) check(){
+fn (mut site Site) check() {
 	// if site.pages
-	panic("S")
-
+	panic('S')
 }
 
 fn (mut site Site) files_process(path string) ? {
 	items := os.ls(path) ?
-
 	for item in items {
 		if os.is_dir(os.join_path(path, item)) {
 			mut basedir := os.file_name(path)

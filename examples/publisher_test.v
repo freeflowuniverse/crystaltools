@@ -1,6 +1,6 @@
-import publishingtools
+import publisher
 
-fn pageactors_test(mut f publishingtools.PublTools) {
+fn pageactors_test(mut f publisher.Publisher) {
 	// println(f.sites["test"])
 	// argument will be comeo lowercase and remove '.md' at end
 	pageactor1 := f.page_get('docker_Compatibility.md') or {
@@ -26,7 +26,7 @@ fn pageactors_test(mut f publishingtools.PublTools) {
 }
 
 fn main() {
-	mut f := publishingtools.new()
+	mut f := publisher.new()
 	println('start')
 	// f.load("tech","~/code/github/threefoldtech/info_tftech")
 	// f.load("/tmp")

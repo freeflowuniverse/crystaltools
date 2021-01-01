@@ -1,4 +1,4 @@
-module publishingtools
+module publisher
 
 import os
 
@@ -50,7 +50,8 @@ pub fn (mut link Link) error_msg_get() string {
 }
 
 // will replace the links to be correct (see if they exist in the known sites, )
-pub fn (mut link Link) check_replace(lines string, mut pt PublTools, mut site Site) string {
+pub fn (mut link Link) check_replace(lines string, mut site Site) string {
+	mut pt := site.pt
 	if link.state == LinkState.external {
 		// no need to process are external links
 		return lines
@@ -99,7 +100,7 @@ pub fn (mut link Link) check_replace(lines string, mut pt PublTools, mut site Si
 		}
 		link.state = LinkState.ok
 	}
-	new_text = '[${link.name.trim(' ')}]($new_link)'
+	new_text = '[${link.name.trim(' ')}]($linkstr)'
 	if link.cat == LinkType.image {
 		// add the ! to be a link
 		new_text = '!$new_text'

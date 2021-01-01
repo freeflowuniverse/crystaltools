@@ -18,11 +18,11 @@ It allows us to specify actions which need to be done, only !! at start of line 
 
 #a comment or any text should break it
 
-!!publishingtools.server.params port:8082
+!!publisher.server.params port:8082
 
 !!action.define name:server_start depends:download_git,get_content
 
-!!publishingtools.server.start
+!!publisher.server.start
 
 !!action.run name:server_start
 ```
