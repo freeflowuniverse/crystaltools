@@ -13,6 +13,7 @@ pub enum DockerContainerStatus {
 
 // need to fill in what is relevant
 struct DockerContainer {
+pub:
 	id          	string
 	name        	string
 	hostname    	string
@@ -44,9 +45,12 @@ pub struct DockerContainerCreateArgs{
 	hostname    	string
 	forwarded_ports	[]string // ["80:9000/tcp", "1000, 10000/udp"]
 	mounted_volumes	[]string // ["/root:/root", ]
-	image_repo      string
-}
+	pub mut:
+		image_repo      string
+		image_tag       string
+		command			string = "/bin/bash"
 
+}
 
 // create/start container (first need to get a dockercontainer before we can start)
 pub fn (mut container DockerContainer) start() ?string {
@@ -71,8 +75,11 @@ pub fn (mut container DockerContainer) delete(force bool) ?string {
 }
 
 // save the docker container to image
-pub fn (mut container DockerContainer) save2image(image_id string) ?string {
-	return container.node.executor.exec('docker commit $container.id $image_id')
+pub fn (mut container DockerContainer) save2image(image_repo string, image_tag string) ?string {
+	
+	id := container.node.executor.exec('docker commit $container.id $image_repo:$image_tag') or {panic(err)}
+	container.image.id = id
+	return id
 }
 
 // export docker to tgz
@@ -80,15 +87,8 @@ pub fn (mut container DockerContainer) export(path string) ?string {
 	return container.node.executor.exec('docker export $container.id > $path')
 }
 
-// import a container into an image, run docker container with it
-// if DockerContainerCreateArgs contains a name, container will be created and restarted
-pub fn (mut container DockerContainer) load(path string, image_repo_url string, args DockerContainerCreateArgs) ?string {
-	return container.node.executor.exec('docker import  $path $image_repo_url')
-}
-
 // open ssh shell to the cobtainer
-pub fn (mut container DockerContainer) ssh_shell() ? {
-}
+pub fn (mut container DockerContainer) ssh_shell() ? {}
 
 // return the builder.node class which allows to remove executed, ...
 pub fn (mut container DockerContainer) node_get() ?builder.Node {

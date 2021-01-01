@@ -170,7 +170,14 @@ pub fn (mut e DockerEngine) container_create(args DockerContainerCreateArgs) ?Do
 	for mount in args.mounted_volumes{
 		mounts += "-v $mount "
 	}
-	e.node.executor.exec('docker run --hostname $args.hostname --name $args.name $ports $mounts -d -t $args.image_repo ') or {panic(err)}
+	mut image := "$args.image_repo"
+	
+	if args.image_tag != ""{
+		image = image + ":$args.image_tag"
+	}
+
+	mut cmd := 'docker run --hostname $args.hostname --name $args.name $ports $mounts -d  -t $image $args.command'
+	e.node.executor.exec(cmd) or {panic(err)}
 
 	mut container := e.container_get(args.name) or {panic(err)}
 	
@@ -190,4 +197,22 @@ pub fn (mut e DockerEngine) container_get(name_or_id string) ?DockerContainer {
 		}
 	}
 	return error("")
+}
+
+
+// import a container into an image, run docker container with it
+// image_repo examples ['myimage', 'myimage:latest']
+// if DockerContainerCreateArgs contains a name, container will be created and restarted
+pub fn (mut e DockerEngine) container_load(path string, image_repo string, image_tag string, mut args DockerContainerCreateArgs) ?DockerContainer {
+	mut image := "$image_repo"
+	
+	if image_tag != "" {
+		image = image + ":$image_tag"
+	}
+	e.node.executor.exec('docker import  $path $image') or {panic(err)}
+	// make sure we start from loaded image
+	args.command = "/bin/bash"
+	args.image_repo = image_repo
+	args.image_tag = image_tag
+	return e.container_create(args)
 }
