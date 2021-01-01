@@ -36,6 +36,8 @@ fn (mut executor ExecutorSSH) init()?{
 
 pub fn (mut executor ExecutorSSH) exec(cmd string) ?string {
 	
+	println(executor.info())
+
 	if executor.user != '' {
 		return execute_cmd('ssh $executor.user@$executor.ipaddr.addr -p $executor.ipaddr.port "$cmd"')
 	}
@@ -113,6 +115,9 @@ fields of the struct, so this is workaround
 pub fn (mut executor ExecutorSSH) info() map[string]string {
 	return {
 		'category': 'ssh'
-		'sshkey':   executor.sshkey
+		'sshkey':   executor.sshkey,
+		'user': executor.user,
+		'ipaddress': executor.ipaddr.addr,
+		'port': "$executor.ipaddr.port",
 	}
 }
