@@ -75,7 +75,7 @@ fn (mut page Page) process_includes(content string, site &Site) string {
 		mut linestrip := line.trim(' ')
 		if linestrip.starts_with('!!!include') {
 			name := linestrip['!!!include'.len + 1..]
-			mut page_linked := pt.page_get(name) or {
+			mut site_linked, mut page_linked := pt.page_get(name) or {
 				page_error := PageError{
 					line: line
 					linenr: nr

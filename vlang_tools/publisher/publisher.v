@@ -33,6 +33,9 @@ pub fn (mut publisher Publisher) load(name string, path string) {
 	mut site := publisher.site_get(sitename) or { panic('cannot find site $sitename') }
 	if !publisher.lazy_loading {
 		site.files_process()
+		println('site:\n$site.images') // THIS IS NOT EMPTY !!!!!
+		mut site2 := publisher.site_get(sitename) or { panic('cannot find site $sitename') }
+		println('site:\n$site2.images') // THIS IS EMPTY !!!!!
 	}
 }
 
@@ -46,11 +49,11 @@ pub fn (mut publisher Publisher) site_exists(name string) bool {
 	return false
 }
 
-pub fn (mut publisher Publisher) site_get(name string) ?Site {
+pub fn (mut publisher Publisher) site_get(name string) ?&Site {
 	pagename := name_fix(name)
 	for site in publisher.sites {
 		if pagename == site.name {
-			return site
+			return &site
 		}
 	}
 	return error('cannot find site: $pagename')
@@ -91,50 +94,53 @@ pub fn (mut publisher Publisher) page_exists(name string) bool {
 }
 
 // name in form: 'sitename:pagename' or 'pagename'
-pub fn (mut publisher Publisher) page_get(name string) ?Page {
+pub fn (mut publisher Publisher) page_get(name string) ?(&Site, Page) {
 	// println('page_get: $name')
 	sitename, pagename := site_page_names_get(name) ?
 	if sitename != '' {
 		site := publisher.site_get(sitename) ?
+		// if site.pages.len == 0 {
+		// 	site.files_process()
+		// }
 		page := site.page_get(pagename) ?
-		return page
+		return site, page
 	} else {
-		mut res := []Page{}
 		for site in publisher.sites {
-			page := site.page_get(pagename) or { continue }
-			res << page
+			// if site.pages.len == 0 {
+			// 	site.files_process()
+			// }
+			page := site.page_get(pagename) or {
+				if err != '' {
+					panic(err)
+				}
+				continue
+			}
+			return site, page
 		}
-		if res.len == 1 {
-			return res[0]
-		} else if res.len > 1 {
-			return error("More than 1 page has name, cannot figure out which one: '$pagename'")
-		} else {
-			return error("Could not find page: '$pagename'")
-		}
+		return error("Could not find page: '$pagename'")
 	}
 }
 
 // CANT WE USE A GENERIC HERE???
 // name in form: 'sitename:imagename' or 'imagename'
-pub fn (mut publisher Publisher) image_get(name string) ?Image {
+pub fn (mut publisher Publisher) image_get(name string) ?(&Site, Image) {
 	sitename, imagename := site_page_names_get(name) ?
+	println('get sitename:$sitename and imagename:$imagename')
 	if sitename != '' {
 		site := publisher.site_get(sitename) ?
 		image := site.image_get(imagename) ?
-		return image
+		return site, image
 	} else {
-		mut res := []Image{}
 		for site in publisher.sites {
-			image := site.image_get(imagename) or { continue }
-			res << image
+			image := site.image_get(imagename) or {
+				if err != '' {
+					panic(err)
+				}
+				continue
+			}
+			return site, image
 		}
-		if res.len == 1 {
-			return res[0]
-		} else if res.len > 1 {
-			return error("More than 1 image has name, cannot figure out which one: '$imagename'")
-		} else {
-			return error("Could not find image: '$imagename'")
-		}
+		return error("Could not find image: '$imagename'")
 	}
 }
 

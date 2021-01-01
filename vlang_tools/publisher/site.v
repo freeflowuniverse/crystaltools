@@ -21,8 +21,11 @@ fn (site Site) page_get(name string) ?Page {
 
 fn (site Site) image_get(name string) ?Image {
 	mut namelower := name_fix(name)
+	println(site.images)
 	for item in site.images {
+		println('name search: $item.name $namelower')
 		if item.name == namelower {
+			println('FOUND')
 			return item
 		}
 	}
@@ -53,10 +56,12 @@ fn (mut site Site) image_remember(path string, name string) {
 	mut pathfull := os.join_path(path, name)
 	// now remove the root path
 	pathrelative := pathfull[site.path.len..]
-	// println( " - Image $pathfull" )
+	// println(' - Image $namelower <- $pathfull')
 	if site.image_exists(namelower) {
 		// error there should be no duplicates
-		image := site.image_get(namelower) or { panic('cannot find image with name $namelower') }
+		image := site.image_get(namelower) or {
+			panic('BUG: should have been able to find image $namelower')
+		}
 		mut duplicatepath := image.path
 		site.errors << SiteError{
 			path: pathrelative
@@ -65,8 +70,10 @@ fn (mut site Site) image_remember(path string, name string) {
 		}
 	} else {
 		site.images << Image{
+			name: namelower
 			path: pathrelative
 		}
+		// println(site.images)
 	}
 }
 
@@ -77,7 +84,9 @@ fn (mut site Site) page_remember(path string, name string) {
 	// println( " - Page $pathfull" )
 	if site.page_exists(namelower) {
 		// error there should be no duplicates
-		page := site.page_get(namelower) or { panic('cannot find page with name $namelower') }
+		page := site.page_get(namelower) or {
+			panic('BUG: should have been able to find page $namelower')
+		}
 		mut duplicatepath := page.path
 		site.errors << SiteError{
 			path: pathrelative
@@ -86,6 +95,7 @@ fn (mut site Site) page_remember(path string, name string) {
 		}
 	} else {
 		site.pages << Page{
+			name: namelower
 			path: pathrelative
 		}
 	}
@@ -98,6 +108,7 @@ fn (mut site Site) check() {
 
 // process files in the site
 fn (mut site Site) files_process() ? {
+	println('FILES LOAD FOR : $site.name')
 	return site.files_process_recursive(site.path)
 }
 

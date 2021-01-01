@@ -6,5 +6,5 @@ mut:
 pub mut:
 	domain       string
 	sites        []Site
-	lazy_loading bool = true
+	lazy_loading bool = false // leave on false for now
 }
