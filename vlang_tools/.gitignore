@@ -81,3 +81,5 @@ _docs
 # ignore vs Sitesbases
 *.suo
 *.VC.db
+
+htmldocs/

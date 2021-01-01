@@ -22,7 +22,7 @@ pub fn (mut publisher Publisher) load(name string, path string) {
 	path2 := path.replace('~', os.home_dir())
 	println('load publisher: $path2')
 	if !publisher.site_exists(sitename) {
-		publisher.sites << Site{
+		publisher.sites << &Site{
 			publisher: &publisher
 			path: path2
 			name: sitename
