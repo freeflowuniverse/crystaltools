@@ -19,11 +19,7 @@ fn test_exec() {
 	}
 	e.ipaddr = IPAddress{
 		addr: '127.0.0.1'
-		port: Port{
-			number: 22
-			cat: PortType.tcp
-		}
-		cat: IpAddressType.ipv4
+		port: 22
 	}
 	res := e.exec('ls  /') or { panic('error execution') }
 	println(res)
@@ -35,10 +31,7 @@ fn test_file_operations() {
 	}
 	e.ipaddr = IPAddress{
 		addr: '127.0.0.1'
-		port: Port{
-			number: 22
-			cat: PortType.tcp
-		}
+		port: 22
 		cat: IpAddressType.ipv4
 	}
 	mut filepath := '/tmp/$rand.uuid_v4()'
@@ -58,10 +51,7 @@ fn test_environ_get() {
 	}
 	e.ipaddr = IPAddress{
 		addr: '127.0.0.1'
-		port: Port{
-			number: 22
-			cat: PortType.tcp
-		}
+		port: 22
 		cat: IpAddressType.ipv4
 	}
 	mut env := e.environ_get() or { panic(err) }
