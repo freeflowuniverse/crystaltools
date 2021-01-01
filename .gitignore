@@ -1,4 +1,6 @@
 examples/builder
 examples/docker
-examples/publishingtools
+examples/publisher
 examples/texttools
+examples/publishingtools
+*dSYM/

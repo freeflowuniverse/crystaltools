@@ -2,7 +2,7 @@ module main
 
 import os
 import vweb
-import publishingtools
+import publisher
 import gittools
 
 const (
@@ -13,7 +13,7 @@ struct App {
 pub mut:
 	vweb     vweb.Context // TODO embed
 	cnt      int
-	pubtools publishingtools.PublTools
+	pubtools publisher.Publisher
 }
 
 // Run server
@@ -25,8 +25,8 @@ fn main() {
 pub fn (mut app App) init_once() {
 	// gitstructure := new()
 	// println(gitstructure)
-	app.pubtools = publishingtools.new()
-	app.pubtools.load_all()//will find all wiki sites
+	app.pubtools = publisher.new()
+	app.pubtools.load_all() // will find all wiki sites
 	// println(app.pubtools)
 	// println('\nPublishing tools is running http://localhost:8082\n')
 }
@@ -67,12 +67,14 @@ pub fn (mut app App) get_wiki_file(wiki string, filename string) vweb.Result {
 		if filename.ends_with('.md') {
 			app.vweb.set_content_type('text/html')
 			mut pageobj := app.pubtools.page_get('$wiki:$filename') or {
-				if filename == "README.md"{
-					file = os.read_file(os.join_path(root, "_sidebar.md")) or { return app.vweb.not_found() }
-					app.vweb.set_content_type("text/html")
-					return app.vweb.ok("# $wiki\n" + file)
+				if filename == 'README.md' {
+					file = os.read_file(os.join_path(root, '_sidebar.md')) or {
+						return app.vweb.not_found()
+					}
+					app.vweb.set_content_type('text/html')
+					return app.vweb.ok('# $wiki\n' + file)
 				}
-				return app.vweb.not_found() 
+				return app.vweb.not_found()
 			}
 			file = pageobj.markdown_get(wiki)
 		} else {
@@ -99,13 +101,12 @@ pub fn (mut app App) get_wiki_img(wiki string, filename string) vweb.Result {
 ['/:wiki/errors']
 pub fn (mut app App) errors(wiki string) vweb.Result {
 	site := wiki
-	mut f := publishingtools.new()
+	mut f := publisher.new()
 	f.lazy_loading = false
 	f.load(wiki, app.pubtools.sites[wiki].path)
 	f.check()
-
 	site_errors := f.sites[wiki].errors
-	page_erros:= map[string]map[string]string
+	page_erros := map[string]map[string]string{}
 	println(site_errors)
 	return $vweb.html()
 }
