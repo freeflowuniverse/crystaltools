@@ -9,7 +9,7 @@ struct SiteConfig {
 	depends []string
 }
 
-fn (site Site) page_get(name string) ?Page {
+fn (site Site) page_get(name string) ?&Page {
 	mut namelower := name_fix(name)
 	for item in site.pages {
 		if item.name == namelower {
@@ -19,7 +19,7 @@ fn (site Site) page_get(name string) ?Page {
 	return error('cannot find page with name $name')
 }
 
-fn (site Site) image_get(name string) ?Image {
+fn (site Site) image_get(name string) ?&Image {
 	mut namelower := name_fix(name)
 	println(site.images)
 	for item in site.images {
@@ -69,7 +69,7 @@ fn (mut site Site) image_remember(path string, name string) {
 			cat: SiteErrorCategory.duplicateimage
 		}
 	} else {
-		site.images << Image{
+		site.images << &Image{
 			name: namelower
 			path: pathrelative
 		}
@@ -94,7 +94,7 @@ fn (mut site Site) page_remember(path string, name string) {
 			cat: SiteErrorCategory.duplicatepage
 		}
 	} else {
-		site.pages << Page{
+		site.pages << &Page{
 			name: namelower
 			path: pathrelative
 		}

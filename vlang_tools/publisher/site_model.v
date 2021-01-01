@@ -1,12 +1,12 @@
 module publisher
 
 struct Site {
-	publisher &Publisher  [skip]
+	publisher &Publisher   [skip]
 pub mut:
 	// not in json if we would serialize	
-	images    []Image
-	pages     []Page
-	errors    []SiteError
+	images    []&Image
+	pages     []&Page
+	errors    []&SiteError
 	path      string
 	name      string
 }

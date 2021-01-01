@@ -33,9 +33,7 @@ pub fn (mut publisher Publisher) load(name string, path string) {
 	mut site := publisher.site_get(sitename) or { panic('cannot find site $sitename') }
 	if !publisher.lazy_loading {
 		site.files_process()
-		println('site:\n$site.images') // THIS IS NOT EMPTY !!!!!
 		mut site2 := publisher.site_get(sitename) or { panic('cannot find site $sitename') }
-		println('site:\n$site2.images') // THIS IS EMPTY !!!!!
 	}
 }
 
@@ -94,7 +92,7 @@ pub fn (mut publisher Publisher) page_exists(name string) bool {
 }
 
 // name in form: 'sitename:pagename' or 'pagename'
-pub fn (mut publisher Publisher) page_get(name string) ?(&Site, Page) {
+pub fn (mut publisher Publisher) page_get(name string) ?(&Site, &Page) {
 	// println('page_get: $name')
 	sitename, pagename := site_page_names_get(name) ?
 	if sitename != '' {
@@ -123,7 +121,7 @@ pub fn (mut publisher Publisher) page_get(name string) ?(&Site, Page) {
 
 // CANT WE USE A GENERIC HERE???
 // name in form: 'sitename:imagename' or 'imagename'
-pub fn (mut publisher Publisher) image_get(name string) ?(&Site, Image) {
+pub fn (mut publisher Publisher) image_get(name string) ?(&Site, &Image) {
 	sitename, imagename := site_page_names_get(name) ?
 	println('get sitename:$sitename and imagename:$imagename')
 	if sitename != '' {
