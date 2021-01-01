@@ -1,5 +1,7 @@
 module publishingtools
 
+import os
+
 enum ParseStatus {
 	start
 	linkopen
@@ -48,7 +50,7 @@ pub fn (mut link Link) error_msg_get() string {
 }
 
 // will replace the links to be correct (see if they exist in the known sites, )
-pub fn (mut link Link) check_replace(lines string, mut pt PublTools, mut site Site, originSite string) string {
+pub fn (mut link Link) check_replace(lines string, mut pt PublTools, mut site Site) string {
 	if link.state == LinkState.external {
 		// no need to process are external links
 		return lines
@@ -62,37 +64,26 @@ pub fn (mut link Link) check_replace(lines string, mut pt PublTools, mut site Si
 	mut original_text := '[$link.name]($link.link)'
 	mut linkstr := '' // will be the clean destination
 	// support for links like ./img/zero_db.png, needs to become $site:zero_db.png
-	if '/' in link.link {
-		splitted := link.link.split('/')
-		linkstr = splitted.pop() // is that always latest???
-	} else {
-		linkstr = link.link
-	}
-	linkstr = linkstr.trim(' ')
-	linkstr = linkstr.trim('.')
+	linkstr = os.file_name(linkstr)
 	if !(':' in linkstr) {
 		linkstr = '$site.name:$linkstr'
 	}
-
-	mut new_link := ""
-	
-	if originSite == site.name{
-		new_link = linkstr.split(":")[1]
-	}else{
-		splitted := linkstr.split(":")
-		sitename := splitted[0]
-		item := splitted[1]
-		new_link = "/$sitename/$item"
-		if link.cat == LinkType.image{
-			domain := pt.domain
-			new_link = "$domain$new_link"
-		}
-	}
-
+	// mut new_link := ""
+	// if originSite == site.name{
+	// 	new_link = linkstr.split(":")[1]
+	// }else{
+	// 	splitted := linkstr.split(":")
+	// 	sitename := splitted[0]
+	// 	item := splitted[1]
+	// 	new_link = "/$sitename/$item"
+	// 	if link.cat == LinkType.image{
+	// 		domain := pt.domain
+	// 		new_link = "$domain$new_link"
+	// 	}
+	// }
 	new_text = ''
 	if link.state == LinkState.init {
 		// need to check if link exists
-		link.state = LinkState.ok
 		if link.cat == LinkType.link {
 			if !pt.page_exists(linkstr) {
 				link.state = LinkState.notfound
@@ -106,6 +97,7 @@ pub fn (mut link Link) check_replace(lines string, mut pt PublTools, mut site Si
 				')}]($linkstr)'
 			}
 		}
+		link.state = LinkState.ok
 	}
 	new_text = '[${link.name.trim(' ')}]($new_link)'
 	if link.cat == LinkType.image {
@@ -119,7 +111,8 @@ pub fn (mut link Link) check_replace(lines string, mut pt PublTools, mut site Si
 }
 
 // DO NOT CHANGE THE WAY HOW THIS WORKS, THIS HAS BEEN DONE AS A STATEFUL PARSER BY DESIGN
-// THIS ALLOWS FOR EASY ADOPTIONS TO DIFFERENT RELIALITIES
+// THIS ALLOWS FOR EASY ADOPTIONS TO DIFFERENT REALITIES
+// returns all the links
 pub fn link_parser(text string) ParseResult {
 	mut charprev := ''
 	mut char := ''

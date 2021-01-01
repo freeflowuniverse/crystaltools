@@ -19,6 +19,9 @@ v
 a.out
 .noprefix.vrepl_temp
 
+*.dsym/*
+*dSYM/
+
 # ignore v build files
 /vc
 /v.c

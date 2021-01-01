@@ -19,6 +19,7 @@ fn (site Site) page_get(name string) ?Page {
 	return error("cannot find page with name $name")
 }
 
+
 fn (site Site) image_get(name string) ?Image {
 	mut namelower := name_fix(name)
 	for item in site.images{
@@ -38,7 +39,7 @@ fn (site Site) page_exists(name string) bool {
 	return false
 }
 
-fn (site Site) image_exists(name string) ?Image {
+fn (site Site) image_exists(name string) bool {
 	for item in site.images{
 		if item.name == name{
 			return true
@@ -46,7 +47,6 @@ fn (site Site) image_exists(name string) ?Image {
 	}
 	return false
 }
-
 
 // remember the image, so we know if we have duplicates
 fn (mut site Site) image_remember(path string, name string) {

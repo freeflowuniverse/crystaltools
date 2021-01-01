@@ -9,7 +9,7 @@ mut:
 	
 pub mut:
 	domain string
-	sites map[string]Site
+	sites[]Site
 	lazy_loading bool = true
 }
 
@@ -44,14 +44,21 @@ pub fn (mut publtools PublTools) load(name string, path string) {
 }
 
 
+pub fn (mut publtools PublTools) site_exists(name string) bool {
+	name_lower := name_fix(name)
+	for site in publtools.sites{
+		if name_lower == site.name{return true}
+	}
+	return false
+}
+
 
 pub fn (mut publtools PublTools) site_get(name string) ?Site {
 	name_lower := name_fix(name)
-	if name_lower in publtools.sites {
-		return publtools.sites[name_lower]
-	} else {
-		return error('cannot find site: $name_lower')
+	for site in publtools.sites{
+		if name_lower == site.name{return site}
 	}
+	return error('cannot find site: $name_lower')
 }
 
 // make sure that the names are always normalized so its easy to find them back
@@ -75,7 +82,7 @@ pub fn (mut publtools PublTools) page_exists(name string) bool {
 }
 
 // name in form: 'sitename:pagename' or 'pagename'
-pub fn (mut publtools PublTools) page_get(name string) ?PageActor {
+pub fn (mut publtools PublTools) page_get(name string) ?Page {
 	println('page_get: $name')
 	mut name_lower := name_fix(name)
 	if ':' in name_lower {
@@ -86,14 +93,14 @@ pub fn (mut publtools PublTools) page_get(name string) ?PageActor {
 		sitename := splitted[0]
 		page_name := splitted[1]
 		site := publtools.site_get(sitename) or { return error(err) }
-		pageactor := site.pageactor_get(page_name, publtools) or { return error(err) }
-		return pageactor
+		page := site.page_get(page_name, publtools) or { return error(err) }
+		return page
 	} else {
-		mut res := []PageActor{}
+		mut res := []Page{}
 		for key in publtools.sites.keys() {
 			mut site := publtools.sites[key]
-			pageactor := site.pageactor_get(name_lower, publtools) or { continue }
-			res << pageactor
+			page := site.page_get(name_lower, publtools) or { continue }
+			res << page
 		}
 		if res.len == 1 {
 			return res[0]
@@ -107,7 +114,7 @@ pub fn (mut publtools PublTools) page_get(name string) ?PageActor {
 
 // CANT WE USE A GENERIC HERE???
 // name in form: 'sitename:imagename' or 'imagename'
-pub fn (mut publtools PublTools) image_get(name string) ?ImageActor {
+pub fn (mut publtools PublTools) image_get(name string) ?Image {
 	mut name_lower := name_fix(name)
 	if ':' in name_lower {
 		splitted := name_lower.split(':')
@@ -117,14 +124,14 @@ pub fn (mut publtools PublTools) image_get(name string) ?ImageActor {
 		sitename := splitted[0]
 		name_lower = splitted[1]
 		mut site := publtools.site_get(sitename) or { return error(err) }
-		imageactor := site.imageactor_get(name_lower, publtools) or { return error(err) }
-		return imageactor
+		image := site.image_get(name_lower, publtools) or { return error(err) }
+		return image
 	} else {
-		mut res := []ImageActor{}
+		mut res := []Image{}
 		for key in publtools.sites.keys() {
 			mut site := publtools.sites[key]
-			imageactor := site.imageactor_get(name_lower, publtools) or { continue }
-			res << imageactor
+			image := site.image_get(name_lower, publtools) or { continue }
+			res << image
 		}
 		if res.len == 1 {
 			return res[0]
@@ -148,17 +155,17 @@ pub fn (mut publtools PublTools) check() {
 		for key in site.pages.keys() {
 			mut page := site.pages[key]
 			// not mutable
-			mut pageactor := PageActor{
+			mut page := Page{
 				page: &page
 				site: &site
 				publtools: publtools
 			}
-			pageactor.check()
+			page.check()
 		}
 		// for key in site.images.keys(){
 		// 	mut image := site.images[key]
-		// 	mut imageactor := ImageActor{image:&image, site:&site, publtools:&publtools}
-		// 	imageactor.process()
+		// 	mut image := Image{image:&image, site:&site, publtools:&publtools}
+		// 	image.process()
 		// }		
 	}
 }
