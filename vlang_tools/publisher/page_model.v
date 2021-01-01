@@ -7,8 +7,8 @@ pub enum PageStatus {
 }
 
 struct Page {
-	name            string
 pub:
+	name            string
 	path            string
 pub mut:
 	state           PageStatus

@@ -1,32 +1,44 @@
 import publisher
 
-fn test_get_content_basic(mut f publisher.Publisher) {
-	// println(f.sites["test"])
-	// argument will be comeo lowercase and remove '.md' at end
-	site1, page1 := f.page_get('docker_Compatibility.md') or {
-		println(err)
-		return
+fn test_get_content_basic() {
+	mut f := publisher.new()
+	f.load('test', 'testcontent/site1')
+	// IT CRASHES WHEN 2x using the same name, otherwise not
+	// on a repo in my filesystem though it also crashed even with other name
+	f.load('wiki', 'testcontent/site2')
+	println(f.sites[1].pages)
+	mut found := false
+	// means roadmap page is in the found elements
+	for page in f.sites[1].pages {
+		if page.name == 'roadmap' {
+			found = true
+		}
 	}
+	assert found == true
+	site5 := f.sites[1]
+	assert site5.page_exists('roadmap')
+	p := site5.page_get('roadmap') or { panic('cant find page') }
+	println(p)
+	site1, page1 := f.page_get('docker_Compatibility.md') or { panic('cannot find doc 1') }
 	println(page1)
-	site2, page2 := f.page_get('docker_Compatibility') or {
-		println(err)
-		return
-	}
+	site2, page2 := f.page_get('docker_Compatibility') or { panic('cannot find doc 2') }
 	println(page2)
-	site3, page3 := f.page_get('test:docker_Compatibility') or {
-		println(err)
+	site3, page3 := f.page_get('test:docker_Compatibility') or { panic('cannot find doc 3') }
+	assert site1.name == site2.name
+	assert site3.name == site2.name
+	assert page3.name == page2.name
+	assert page1.name == page2.name
+	mut a := 1
+	site4, page4 := f.page_get('test:docker_cCompatibility') or {
+		a = 2
 		return
 	}
-	println(page3)
-	site4, image1 := f.image_get('network-connectivity.png') or {
-		println(err)
-		return
-	}
-	println(image1)
-	panic('s')
+	assert a == 2
+	assert f.sites.len == 2
+	assert f.sites[1].name == 'wiki'
 }
 
-fn main() {
+fn test_get_content1() {
 	mut f := publisher.new()
 	println('start')
 	// f.load("tech","~/code/github/threefoldtech/info_tftech")

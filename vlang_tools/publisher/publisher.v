@@ -107,16 +107,14 @@ pub fn (mut publisher Publisher) page_get(name string) ?(&Site, &Page) {
 			// if site.pages.len == 0 {
 			// 	site.files_process()
 			// }
-			page := site.page_get(pagename) or {
-				if err != '' {
-					panic(err)
-				}
-				continue
+			println('SEARCH IN SITE: $site.name')
+			if site.page_exists(pagename) {
+				page2 := site.page_get(pagename) or { panic('BUG') }
+				return site, page2
 			}
-			return site, page
 		}
-		return error("Could not find page: '$pagename'")
 	}
+	return error("Could not find page: '$pagename'")
 }
 
 // CANT WE USE A GENERIC HERE???

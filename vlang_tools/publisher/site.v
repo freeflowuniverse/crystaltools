@@ -12,6 +12,7 @@ struct SiteConfig {
 fn (site Site) page_get(name string) ?&Page {
 	mut namelower := name_fix(name)
 	for item in site.pages {
+		println('pageget: $site.name $namelower $item.name')
 		if item.name == namelower {
 			return item
 		}
