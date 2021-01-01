@@ -5,10 +5,10 @@ import docker
 fn docker1() {
 	//get a local docker instance
 //	mut engine := docker.new({node_ipaddr:"node_ipaddr192.168..10:2222",node_name:"myremoteserver"}) or {panic(err)}
-	mut engine := docker.new({node_ipaddr:"104.236.53.191:22",node_name:"myremoteserver", user: "root"}) or {panic(err)}
-	mut containers := engine.containers_list()
-	mut images := engine.images_list()
-	println(images)
+	// mut engine := docker.new({node_ipaddr:"104.236.53.191:22",node_name:"myremoteserver", user: "root"}) or {panic(err)}
+	// mut containers := engine.containers_list()
+	// mut images := engine.images_list()
+	// println(images)
 
 	// mut container := containers[0]
 	// println(container)
@@ -33,6 +33,8 @@ fn docker2() {
 	assert c.status == docker.DockerContainerStatus.up
 	c.halt()
 	assert c.status == docker.DockerContainerStatus.down
+	export_path := "/tmp/$rand.uuid_v4()"
+	c.export(export_path)
 	c.delete(false)
 	mut found := true
 	engine.container_get(name) or {found=false}
@@ -40,12 +42,24 @@ fn docker2() {
 		panic("container should have been deleted")
 	}
 
-	mut containers := engine.containers_list()
+	c.load(export_path, "$name:test_image", docker.DockerContainerCreateArgs{})
+
+	// should be found again
+	found = false
 	mut images := engine.images_list()
-	
+	for image in images{
+		if "$image.repo:$image.tag" == "$name:test_image"{
+			found = true
+		}
+	}
+
+	if !found{
+		panic("container should have been exported")
+	}
+
+	mut containers := engine.containers_list()
 	println(containers)
-	println(images)
-	
+
 }
 fn main() {
 	// docker1()

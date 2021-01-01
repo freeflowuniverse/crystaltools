@@ -1,9 +1,8 @@
 module docker
 
 import builder
-import rand
 
-enum DockerContainerStatus {
+pub enum DockerContainerStatus {
 	up
 	down
 	restarting
@@ -23,6 +22,8 @@ struct DockerContainer {
 	ports       	[]string
 	forwarded_ports	[]string
 	mounted_volumes	[]DockerContainerVolume
+	engine			DockerEngine
+
 pub mut:
 	node        builder.Node
 	image       DockerImage
@@ -49,25 +50,16 @@ pub struct DockerContainerCreateArgs{
 
 // create/start container (first need to get a dockercontainer before we can start)
 pub fn (mut container DockerContainer) start() ?string {
-	mut cmd := ''
-	if container.node.executor is builder.ExecutorSSH {
-		mut sshkey := container.node.executor.info()['sshkey'] + '.pub'
-		mut dest := '/tmp/$rand.uuid_v4()'
-		container.node.executor.upload(sshkey, dest)
-		cmd = cmd +
-			"docker cp $dest $container.id:$dest && docker start $container.id && docker exec $container.id sh -c 'cat $dest >> ~/.ssh/authorized_keys'"
-	} else {
-		cmd = 'docker start $container.id'
-	}
-	println(cmd)
-	return container.node.executor.exec(cmd)
+	c := container.node.executor.exec('docker start $container.id') or {panic(err)}
+	container.status = DockerContainerStatus.up
+	return c
 }
 
 // delete docker container
 pub fn (mut container DockerContainer) halt() ?string {
-	x := container.node.executor.exec('docker stop $container.id') or {return err}
+	c := container.node.executor.exec('docker stop $container.id') or {panic(err)}
 	container.status = DockerContainerStatus.down
-	return x
+	return c
 }
 
 // delete docker container
@@ -88,9 +80,10 @@ pub fn (mut container DockerContainer) export(path string) ?string {
 	return container.node.executor.exec('docker export $container.id > $path')
 }
 
-// when importing docker get's restarted
-pub fn (mut container DockerContainer) load(path string) ?string {
-	return container.node.executor.exec('docker import  $path')
+// import a container into an image, run docker container with it
+// if DockerContainerCreateArgs contains a name, container will be created and restarted
+pub fn (mut container DockerContainer) load(path string, image_repo_url string, args DockerContainerCreateArgs) ?string {
+	return container.node.executor.exec('docker import  $path $image_repo_url')
 }
 
 // open ssh shell to the cobtainer

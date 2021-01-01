@@ -1,5 +1,7 @@
 module docker
 
+import rand
+
 import builder
 
 struct DockerEngine {
@@ -111,6 +113,7 @@ pub fn (mut e DockerEngine) containers_list() []DockerContainer {
 			created: splitted[1]
 			name: name
 			node: e.node
+			engine: e
 		}
 		for image in images {
 			if image.id == splitted[2] {
@@ -118,8 +121,6 @@ pub fn (mut e DockerEngine) containers_list() []DockerContainer {
 				break
 			}
 		}
-		
-
 		mut state := e.node.executor.exec("docker inspect -f  '{{.Id}} {{.State}}'  $id") or {
 			println(err)
 			return []DockerContainer{}
@@ -135,7 +136,7 @@ pub fn (mut e DockerEngine) containers_list() []DockerContainer {
 
 // factory class to get a container obj, which can then be filled in and started
 pub fn (mut e DockerEngine) container_new() DockerContainer {
-	return DockerContainer{}
+	return DockerContainer{engine: e}
 }
 
 fn (mut e DockerEngine) parse_container_state(state string) DockerContainerStatus {
@@ -169,8 +170,17 @@ pub fn (mut e DockerEngine) container_create(args DockerContainerCreateArgs) ?Do
 	for mount in args.mounted_volumes{
 		mounts += "-v $mount "
 	}
-	e.node.executor.exec('docker run --hostname $args.hostname --name $args.name $ports $mounts -d -t $args.image_repo ') or {println(err)}
-	return e.container_get(args.name)
+	e.node.executor.exec('docker run --hostname $args.hostname --name $args.name $ports $mounts -d -t $args.image_repo ') or {panic(err)}
+
+	mut container := e.container_get(args.name) or {panic(err)}
+	
+	if container.node.executor is builder.ExecutorSSH {
+		mut sshkey := container.node.executor.info()['sshkey'] + '.pub'
+		mut dest := '/tmp/$rand.uuid_v4()'
+		container.node.executor.upload(sshkey, dest)
+		container.node.executor.exec("docker cp $dest $container.id:$dest && docker start $container.id && docker exec $container.id sh -c 'cat $dest >> ~/.ssh/authorized_keys'")
+	}
+	return container
 }
 
 pub fn (mut e DockerEngine) container_get(name_or_id string) ?DockerContainer {
