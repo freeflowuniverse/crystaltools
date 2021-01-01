@@ -1,6 +1,6 @@
 import publisher
 
-fn pages_test(mut f publisher.Publisher) {
+fn test_get_content_basic(mut f publisher.Publisher) {
 	// println(f.sites["test"])
 	// argument will be comeo lowercase and remove '.md' at end
 	site1, page1 := f.page_get('docker_Compatibility.md') or {
@@ -23,6 +23,7 @@ fn pages_test(mut f publisher.Publisher) {
 		return
 	}
 	println(image1)
+	panic('s')
 }
 
 fn main() {

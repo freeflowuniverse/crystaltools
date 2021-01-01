@@ -21,11 +21,9 @@ fn (site Site) page_get(name string) ?&Page {
 
 fn (site Site) image_get(name string) ?&Image {
 	mut namelower := name_fix(name)
-	println(site.images)
 	for item in site.images {
-		println('name search: $item.name $namelower')
+		// println('name search: $item.name $namelower')
 		if item.name == namelower {
-			println('FOUND')
 			return item
 		}
 	}
@@ -73,7 +71,6 @@ fn (mut site Site) image_remember(path string, name string) {
 			name: namelower
 			path: pathrelative
 		}
-		// println(site.images)
 	}
 }
 
@@ -81,7 +78,6 @@ fn (mut site Site) page_remember(path string, name string) {
 	mut pathfull := os.join_path(path, name)
 	pathrelative := pathfull[site.path.len..]
 	mut namelower := name_fix(name)
-	// println( " - Page $pathfull" )
 	if site.page_exists(namelower) {
 		// error there should be no duplicates
 		page := site.page_get(namelower) or {
