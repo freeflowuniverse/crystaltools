@@ -6,24 +6,18 @@ import os
 struct PageActor {
 pub mut:
 	page      Page
-	page_errors map[string][]PageError // page_errors[page.path]
 	site      Site
 	publtools PublTools
 }
 
 // return fullpath,pageobject
 pub fn (site Site) pageactor_get(name string, publtools PublTools) ?PageActor {
-	namelower := name_fix(name)
-	if namelower in site.pages {
-		page := site.pages[namelower]
-		return PageActor{
-			page: page // {page|errors:page.errors.clone()}
-			publtools: publtools
-			site: site
-		}
+	mut page := site.page_get(name)?
+	return PageActor{
+		page: &page // {page|errors:page.errors.clone()}
+		publtools: publtools
+		site: &site
 	}
-	return
-	error('Could not find page $namelower in site $site.name')
 }
 
 pub fn (pageactor PageActor) path_get() string {
@@ -32,7 +26,7 @@ pub fn (pageactor PageActor) path_get() string {
 
 // will load the content, check everything, return true if ok
 pub fn (mut pageactor PageActor) check() bool {
-	//content := pageactor.markdown_get()
+	content := pageactor.markdown_get()
 	if pageactor.page.state == PageStatus.error {
 		return false
 	}
@@ -47,25 +41,8 @@ pub fn (mut pageactor PageActor) markdown_get(originSite string) string {
 		// means was already processed, if fast enough we can leave this away that way we know includes are dynamic
 		return pageactor.page.content
 	}
-	mut content := pageactor.markdown_load() or { panic(err) }
-	// for i in 0 .. 10 {
-	// 	if i>9 {
-	// 		panic ("too many level of includes in ${pageactor.path_get()}")
-	// 	}
-	// 	if i>3{
-	// 		panic("seems off, need to first find why the uncludes don't get replaced")
-	// 	}		
+	mut content := pageactor.markdown_load() or { panic(err) }	
 	content = pageactor.process_includes(content) // should be recursive now
-	// 	if !content.contains("!!!include") {
-	// 		//means we got all the includes 
-	// 		break
-	// 	}
-	// 	// println( content)
-	// }
-	//if pageactor.page.errors.len > 0 {
-	if pageactor.page_errors[pageactor.page.path].len > 0 {
-		pageactor.page.state = .error
-	}
 	// check for links
 	mut res := link_parser(content)
 	// mut link:=Link{}
@@ -91,7 +68,6 @@ pub fn (mut pageactor PageActor) markdown_get(originSite string) string {
 }
 
 pub fn (pageactor PageActor) markdown_load() ?string {
-	// path_surce2 := pageactor.path_get()
 	content := os.read_file(pageactor.path_get()) or {
 		path_source := pageactor.path_get()
 		println('Failed to open $path_source')
@@ -103,10 +79,10 @@ pub fn (pageactor PageActor) markdown_load() ?string {
 pub fn (mut pageactor PageActor) error_add(error PageError) {
 	if pageactor.page.state != PageStatus.error {
 		// only add when not in error mode yet, because means check was already done
-		//pageactor.page.errors << error
-		pageactor.page_errors[pageactor.page.path] << error
+		pageactor.page.errors << error
+
 	}
-	println(' ** ERROR: in file $pageactor.path_get()')
+	println(' ** ERROR (2nd time): in file $pageactor.path_get()')
 	println(error)
 }
 

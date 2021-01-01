@@ -39,7 +39,7 @@ pub fn (mut publtools PublTools) load(name string, path string) {
 		panic("should not load on same name 2x: '$name_lower'")
 	}
 	if !publtools.lazy_loading{
-		publtools.sites[name_lower].process_files(path2)
+		publtools.sites[name_lower].files_process(path2)
 	}
 }
 

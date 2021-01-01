@@ -2,8 +2,8 @@ module publishingtools
 
 struct Site {
 pub mut:
-	images map[string]Image
-	pages  map[string]Page
+	images []Image
+	pages  []Page
 	errors []SiteError
 	path   string
 	name   string

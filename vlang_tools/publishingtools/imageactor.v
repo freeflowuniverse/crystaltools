@@ -11,14 +11,11 @@ pub mut:
 
 // return fullpath,imageobject
 pub fn (site Site) imageactor_get(name string, publtools PublTools) ?ImageActor {
-	namelower := name_fix(name)
-	if namelower in site.images {
-		mut image2 := site.images[namelower]
-		return ImageActor{
-			image: &image2
-			publtools: &publtools
-			site: &site
-		}
+	mut image := site.image_get(name)?
+	return ImageActor{
+		image: &image
+		publtools: &publtools
+		site: &site
 	}
 	return error('Could not find image $namelower in site $site.name')
 }

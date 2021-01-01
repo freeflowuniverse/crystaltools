@@ -9,50 +9,85 @@ struct SiteConfig {
 	depends []string
 }
 
+fn (site Site) page_get(name string) ?Page {
+	mut namelower := name_fix(name)
+	for item in site.pages{
+		if item.name == namelower{
+			return item
+		}
+	}
+	return error("cannot find page with name $name")
+}
+
+fn (site Site) image_get(name string) ?Image {
+	mut namelower := name_fix(name)
+	for item in site.images{
+		if item.name == namelower{
+			return item
+		}
+	}
+	return error("cannot find image with name $name")
+}
+
+fn (site Site) page_exists(name string) bool {
+	for item in site.pages{
+		if item.name == name{
+			return true
+		}
+	}
+	return false
+}
+
+fn (site Site) image_exists(name string) ?Image {
+	for item in site.images{
+		if item.name == name{
+			return true
+		}
+	}
+	return false
+}
+
 
 // remember the image, so we know if we have duplicates
-fn (mut site Site) remember_image(path string, name string) {
+fn (mut site Site) image_remember(path string, name string) {
 	mut namelower := name_fix(name)
 	mut pathfull := os.join_path(path, name)
 	// now remove the root path
 	pathrelative := pathfull[site.path.len..]
 	// println( " - Image $pathfull" )
-	if namelower in site.images {
+	if site.image_exists(namelower){
 		// error there should be no duplicates
-		mut duplicatepath := site.images[namelower].path
+		mut duplicatepath := site.image_get(namelower).path
 		site.errors << SiteError{
 			path: pathrelative
 			error: 'duplicate image $duplicatepath'
 			cat: SiteErrorCategory.duplicateimage
 		}
 	} else {
-		site.images[namelower] = Image{
+		site.images << Image{
 			path: pathrelative
 		}
-		// image := site.images[namelower]
-		// println(image)
 	}
 }
 
-fn (mut site Site) remember_page(path string, name string) {
+
+fn (mut site Site) page_remember(path string, name string) {
 	mut pathfull := os.join_path(path, name)
 	pathrelative := pathfull[site.path.len..]
 	mut namelower := name_fix(name)
 	// println( " - Page $pathfull" )
-	if namelower in site.pages {
+	if site.page_exists(namelower) {
 		// error there should be no duplicates
-		mut duplicatepath := site.pages[namelower].path
+		mut duplicatepath := site.page_get(namelower).path
 		site.errors << SiteError{
 			path: pathrelative
 			error: 'duplicate page $duplicatepath'
 			cat: SiteErrorCategory.duplicatepage
 		}
 	} else {
-		site.pages[namelower] = Page{
+		site.pages << Page{
 			path: pathrelative
 		}
-		// page := site.pages[namelower]
-		// println(page)
 	}
 }
 
@@ -62,7 +97,7 @@ fn (mut site Site) check(){
 
 }
 
-fn (mut site Site) process_files(path string) ? {
+fn (mut site Site) files_process(path string) ? {
 	items := os.ls(path) ?
 
 	for item in items {
@@ -74,7 +109,7 @@ fn (mut site Site) process_files(path string) ? {
 			if basedir.starts_with('_') {
 				continue
 			}
-			site.process_files(os.join_path(path, item))
+			site.files_process(os.join_path(path, item))
 			continue
 		} else {
 			if item.starts_with('.') {
@@ -90,10 +125,10 @@ fn (mut site Site) process_files(path string) ? {
 				// only process files which do have extension
 				ext2 := ext[1..]
 				if ext2 == 'md' {
-					site.remember_page(path, item)
+					site.page_remember(path, item)
 				}
 				if ext2 in ['jpg', 'png'] {
-					site.remember_image(path, item)
+					site.image_remember(path, item)
 				}
 			}
 		}
