@@ -71,7 +71,7 @@ fn docker2() {
 	assert c.image.id == newimage_id
 
 	mut containers := engine.containers_list()
-	// println(containers)
+	println(containers)
 
 	// delete (clean)
 	println("deleting container : $name")
@@ -83,7 +83,6 @@ fn docker2() {
 	}
 
 	c.delete(true) or {panic(err)}
-	
 	c.image.delete(false) or {panic(err)}
 }
 

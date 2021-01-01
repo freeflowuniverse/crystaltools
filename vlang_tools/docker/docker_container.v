@@ -20,15 +20,17 @@ pub:
 	created    		string
 	ssh_enabled 	bool // if yes make sure ssh is enabled to the container
 	info        	DockerContainerInfo
-	ports       	[]string
-	forwarded_ports	[]string
-	mounted_volumes	[]DockerContainerVolume
+	
+	
 	engine			DockerEngine
 
 pub mut:
 	node        builder.Node
 	image       DockerImage
 	status      DockerContainerStatus
+	ports       	[]string
+	forwarded_ports	[]string
+	mounted_volumes	[]string
 }
 
 struct DockerContainerInfo {

@@ -129,6 +129,24 @@ pub fn (mut e DockerEngine) containers_list() []DockerContainer {
 		splitted.delete(0)
 		state = splitted.join(' ')
 		container.status = e.parse_container_state(state)
+		
+		mut ports := e.node.executor.exec("docker inspect -f  '{{.Id}} {{.HostConfig.PortBindings}}'  $id") or {
+			println(err)
+			return []DockerContainer{}
+		}
+		splitted = ports.split(' ')
+		splitted.delete(0)
+		ports = splitted.join(' ')
+		container.forwarded_ports = e.parse_container_ports(ports)
+
+		mut volumes := e.node.executor.exec("docker inspect -f  '{{.Id}} {{.HostConfig.Binds}}'  $id") or {
+			println(err)
+			return []DockerContainer{}
+		}
+		splitted = volumes.split(' ')
+		splitted.delete(0)
+		volumes = splitted.join(' ')
+		container.mounted_volumes = e.parse_container_volumes(volumes)
 		res << container
 	}
 	return res
@@ -138,26 +156,6 @@ pub fn (mut e DockerEngine) containers_list() []DockerContainer {
 pub fn (mut e DockerEngine) container_new() DockerContainer {
 	return DockerContainer{engine: e}
 }
-
-fn (mut e DockerEngine) parse_container_state(state string) DockerContainerStatus {
-	if 'Dead:true' in state {
-		return DockerContainerStatus.dead
-	}
-	if 'Paused:true' in state {
-		return DockerContainerStatus.paused
-	}
-	if 'Restarting:true' in state {
-		return DockerContainerStatus.restarting
-	}
-	if 'Running:true' in state {
-		return DockerContainerStatus.up
-	}
-	if 'Status:created' in state {
-		return DockerContainerStatus.created
-	}
-	return DockerContainerStatus.down
-}
-
 
 pub fn (mut e DockerEngine) container_create(args DockerContainerCreateArgs) ?DockerContainer {
 	mut ports := ""
@@ -199,7 +197,6 @@ pub fn (mut e DockerEngine) container_get(name_or_id string) ?DockerContainer {
 	return error("")
 }
 
-
 // import a container into an image, run docker container with it
 // image_repo examples ['myimage', 'myimage:latest']
 // if DockerContainerCreateArgs contains a name, container will be created and restarted
@@ -215,4 +212,50 @@ pub fn (mut e DockerEngine) container_load(path string, image_repo string, image
 	args.image_repo = image_repo
 	args.image_tag = image_tag
 	return e.container_create(args)
+}
+
+
+fn (mut e DockerEngine) parse_container_ports(ports string) []string {
+	mut str := ports.trim_right("]").trim_left("map[").trim(" ").replace("]] ", " ").replace("]]", " ").replace("[map[HostIp: HostPort:", "")
+	mut res := []string{}
+	if str == "" {
+		return res
+	}
+	splitted := str.split(" ")
+	for element in splitted{
+		ss := element.split(":")
+		dest := ss[1]
+		src_splitted := ss[0].split("/")
+		src := src_splitted[0]
+		protocol := src_splitted[1]
+		res << "$src:$dest/$protocol"
+	}
+	return res
+}
+
+fn (mut e DockerEngine) parse_container_volumes(volumes string) []string {
+	res := volumes.trim_right("]").trim_left("[").trim(" ").trim(" ")
+	if res == "" {
+		return []string{}
+	}
+	return res.split(" ")
+}
+
+fn (mut e DockerEngine) parse_container_state(state string) DockerContainerStatus {
+	if 'Dead:true' in state {
+		return DockerContainerStatus.dead
+	}
+	if 'Paused:true' in state {
+		return DockerContainerStatus.paused
+	}
+	if 'Restarting:true' in state {
+		return DockerContainerStatus.restarting
+	}
+	if 'Running:true' in state {
+		return DockerContainerStatus.up
+	}
+	if 'Status:created' in state {
+		return DockerContainerStatus.created
+	}
+	return DockerContainerStatus.down
 }
