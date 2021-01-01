@@ -18,19 +18,21 @@ pub fn new() Publisher {
 // load a site into the publishing tools
 // name of the site needs to be unique
 pub fn (mut publisher Publisher) load(name string, path string) {
-	pagename := name_fix(name)
+	sitename := name_fix(name)
 	path2 := path.replace('~', os.home_dir())
 	println('load publisher: $path2')
-	if pagename !in publisher.sites {
-		publisher.sites[pagename] = Site{
+	if !publisher.site_exists(sitename) {
+		publisher.sites << Site{
+			publisher: &publisher
 			path: path2
-			name: pagename
+			name: sitename
 		}
 	} else {
-		panic("should not load on same name 2x: '$pagename'")
+		panic("should not load on same name 2x: '$sitename'")
 	}
+	mut site := publisher.site_get(sitename) or { panic('cannot find site $sitename') }
 	if !publisher.lazy_loading {
-		publisher.sites[pagename].files_process(path2)
+		site.files_process()
 	}
 }
 
@@ -94,7 +96,7 @@ pub fn (mut publisher Publisher) page_get(name string) ?Page {
 	sitename, pagename := site_page_names_get(name) ?
 	if sitename != '' {
 		site := publisher.site_get(sitename) ?
-		page := site.page_get(page_name) ?
+		page := site.page_get(pagename) ?
 		return page
 	} else {
 		mut res := []Page{}
@@ -115,23 +117,23 @@ pub fn (mut publisher Publisher) page_get(name string) ?Page {
 // CANT WE USE A GENERIC HERE???
 // name in form: 'sitename:imagename' or 'imagename'
 pub fn (mut publisher Publisher) image_get(name string) ?Image {
-	sitename, pagename := site_page_names_get(name) ?
+	sitename, imagename := site_page_names_get(name) ?
 	if sitename != '' {
 		site := publisher.site_get(sitename) ?
-		image := site.image_get(pagename) ?
+		image := site.image_get(imagename) ?
 		return image
 	} else {
 		mut res := []Image{}
 		for site in publisher.sites {
-			image := site.image_get(pagename) or { continue }
+			image := site.image_get(imagename) or { continue }
 			res << image
 		}
 		if res.len == 1 {
 			return res[0]
 		} else if res.len > 1 {
-			return error("More than 1 image has name, cannot figure out which one: '$pagename'")
+			return error("More than 1 image has name, cannot figure out which one: '$imagename'")
 		} else {
-			return error("Could not find image: '$pagename'")
+			return error("Could not find image: '$imagename'")
 		}
 	}
 }
@@ -143,13 +145,12 @@ pub fn (mut publisher Publisher) image_exists(name string) bool {
 
 // check all pages, try to find errors
 pub fn (mut publisher Publisher) check() {
-	for sitename in publisher.sites.keys() {
-		mut site := publisher.sites[sitename]
-		for page in site.pages {
-			page.check()
+	for site in publisher.sites {
+		for mut page in site.pages {
+			page.check(site)
 		}
-		for image in site.images {
-			image.process()
+		for mut image in site.images {
+			image.process(site)
 		}
 	}
 }

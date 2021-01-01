@@ -1,28 +1,28 @@
 import publisher
 
-fn pageactors_test(mut f publisher.Publisher) {
+fn pages_test(mut f publisher.Publisher) {
 	// println(f.sites["test"])
 	// argument will be comeo lowercase and remove '.md' at end
-	pageactor1 := f.page_get('docker_Compatibility.md') or {
+	page1 := f.page_get('docker_Compatibility.md') or {
 		println(err)
 		return
 	}
-	println(pageactor1.page)
-	pageactor2 := f.page_get('docker_Compatibility') or {
+	println(page1)
+	page2 := f.page_get('docker_Compatibility') or {
 		println(err)
 		return
 	}
-	println(pageactor2.page)
-	pageactor3 := f.page_get('test:docker_Compatibility') or {
+	println(page2)
+	page3 := f.page_get('test:docker_Compatibility') or {
 		println(err)
 		return
 	}
-	println(pageactor3.page)
-	imageactor1 := f.image_get('network-connectivity.png') or {
+	println(page3)
+	image1 := f.image_get('network-connectivity.png') or {
 		println(err)
 		return
 	}
-	println(imageactor1.image)
+	println(image1)
 }
 
 fn main() {
@@ -46,5 +46,5 @@ fn main() {
 	// // this has enough info to serve the image back
 	// println(pageobj.path_get())
 	// println(pageobj.page)
-	// pageactors_test(mut f)
+	// pages_test(mut f)
 }

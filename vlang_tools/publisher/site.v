@@ -94,7 +94,12 @@ fn (mut site Site) check() {
 	panic('S')
 }
 
-fn (mut site Site) files_process(path string) ? {
+// process files in the site
+fn (mut site Site) files_process() ? {
+	return site.files_process_recursive(site.path)
+}
+
+fn (mut site Site) files_process_recursive(path string) ? {
 	items := os.ls(path) ?
 	for item in items {
 		if os.is_dir(os.join_path(path, item)) {
@@ -105,7 +110,7 @@ fn (mut site Site) files_process(path string) ? {
 			if basedir.starts_with('_') {
 				continue
 			}
-			site.files_process(os.join_path(path, item))
+			site.files_process_recursive(os.join_path(path, item))
 			continue
 		} else {
 			if item.starts_with('.') {
