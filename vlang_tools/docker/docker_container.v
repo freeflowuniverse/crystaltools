@@ -14,22 +14,38 @@ enum DockerContainerStatus {
 
 // need to fill in what is relevant
 struct DockerContainer {
-	id          string
-	name        string
-	created     string
-	ssh_enabled bool // if yes make sure ssh is enabled to the container
-	info        DockerContainerInfo
-	ports       []string
-mut:
-	image       DockerImage
-	status      DockerContainerStatus
+	id          	string
+	name        	string
+	hostname    	string
+	created    		string
+	ssh_enabled 	bool // if yes make sure ssh is enabled to the container
+	info        	DockerContainerInfo
+	ports       	[]string
+	forwarded_ports	[]string
+	mounted_volumes	[]DockerContainerVolume
 pub mut:
 	node        builder.Node
+	image       DockerImage
+	status      DockerContainerStatus
 }
 
 struct DockerContainerInfo {
 	ipaddr builder.IPAddress
 }
+
+struct DockerContainerVolume{
+	src 	string
+	dest	string
+}
+
+pub struct DockerContainerCreateArgs{
+	name        	string
+	hostname    	string
+	forwarded_ports	[]string // ["80:9000/tcp", "1000, 10000/udp"]
+	mounted_volumes	[]string // ["/root:/root", ]
+	image_repo      string
+}
+
 
 // create/start container (first need to get a dockercontainer before we can start)
 pub fn (mut container DockerContainer) start() ?string {
@@ -49,7 +65,9 @@ pub fn (mut container DockerContainer) start() ?string {
 
 // delete docker container
 pub fn (mut container DockerContainer) halt() ?string {
-	return container.node.executor.exec('docker stop $container.id')
+	x := container.node.executor.exec('docker stop $container.id') or {return err}
+	container.status = DockerContainerStatus.down
+	return x
 }
 
 // delete docker container
