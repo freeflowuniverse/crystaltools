@@ -42,7 +42,7 @@ pub fn ipaddress_new(addr_string string) ?IPAddress{
 		cat: cat
 	}
 
-	ip.check()
+	ip.check() or {return error("Invalid Ip address string")}
 
 	return ip
 }
@@ -57,7 +57,7 @@ pub fn (mut ipaddr IPAddress) ping(executor Executor) bool{
 }
 
 // check if ipaddress is well formed
-pub fn (mut ipaddr IPAddress) check() bool {
+pub fn (mut ipaddr IPAddress) check() ? {
 	mut query := r''
 	if ipaddr.cat == IpAddressType.ipv4{
 		query = r'^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
@@ -69,10 +69,8 @@ pub fn (mut ipaddr IPAddress) check() bool {
 	start, _ := re.match_string(ipaddr.addr)
 
 	if start < 0 {
-		return false
-	} else {
-		return true
-	} 
+		error("Invalid Ip address string")
+	}
 }
 
 fn (mut ipaddr IPAddress) address() string {
