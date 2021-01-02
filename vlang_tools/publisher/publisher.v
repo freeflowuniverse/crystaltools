@@ -10,7 +10,7 @@ pub fn new() Publisher {
 	if domain == '' {
 		domain = 'http://localhost:8082'
 	}
-	publisher.domain = domain
+	
 	publisher.gitlevel = 0
 	return publisher
 }
@@ -22,20 +22,16 @@ pub fn (mut publisher Publisher) load(name string, path string) {
 	path2 := path.replace('~', os.home_dir())
 	println('load publisher: $path2')
 	if !publisher.site_exists(sitename) {
-		publisher.sites << &Site{
-			id: publisher.sites.len + 1
+		mut site := Site{
+			id: publisher.sites.len 
 			publisher: &publisher
 			path: path2
 			name: sitename
 		}
+		site.files_process()
+		publisher.sites << site
 	} else {
 		panic("should not load on same name 2x: '$sitename'")
-	}
-	mut site := publisher.site_get(sitename) or { panic('cannot find site $sitename') }
-	if !publisher.lazy_loading {
-		// site.files_process()
-		publisher.process_site_files(site.id)
-		// mut site2 := publisher.site_get(sitename) or { panic('cannot find site $sitename') }
 	}
 }
 
@@ -49,12 +45,12 @@ pub fn (mut publisher Publisher) site_exists(name string) bool {
 	return false
 }
 
-pub fn (mut publisher Publisher) site_get(name string) ?Site {
+pub fn (mut publisher Publisher) site_get(name string) ?&Site {
 	pagename := name_fix(name)
 	for site in publisher.sites {
 		if pagename == site.name {
 			println('found site "$site.name"')
-			return site
+			return &publisher.sites[site.id]
 		}
 	}
 	return error('cannot find site: $pagename')
@@ -95,27 +91,19 @@ pub fn (mut publisher Publisher) page_exists(name string) bool {
 }
 
 // name in form: 'sitename:pagename' or 'pagename'
-pub fn (mut publisher Publisher) page_get(name string) ?(Site, Page) {
+pub fn (mut publisher Publisher) page_get(name string) ?(&Site, &Page) {
 	// println('page_get: $name')
 	sitename, pagename := site_page_names_get(name) ?
-	if sitename != '' {
-		site := publisher.site_get(sitename) ?
-		println('SEARCH IN SITE U: $site.name')
-		// if site.pages.len == 0 {
-		// 	site.files_process()
-		// }
-		page := site.page_get(pagename) ?
-		return site, page
-	} else {
-		// println('Publisher.page_get() nr sites=$publisher.sites.len')
-		for site in publisher.sites {
-			// if site.pages.len == 0 {
-			// 	site.files_process()
-			// }
-			println('SEARCH IN SITE: $site.name')
-			if site.page_exists(pagename) {
-				page2 := site.page_get(pagename) or { panic('BUG') }
-				return site, page2
+	println("find $name in nr sites ${publisher.sites.len}")
+	for site in publisher.sites {
+		println("find $name -> site:$site.name")
+		if (sitename != "" && site.name == sitename) || sitename==""{
+			for page in site.pages {
+				println("find $name -> page:$page.name")
+				if page.name == pagename {
+					println("find $name -> FOUND")
+					return &publisher.sites[site.id], &publisher.sites[site.id].pages[page.id]
+				}
 			}
 		}
 	}
@@ -123,25 +111,19 @@ pub fn (mut publisher Publisher) page_get(name string) ?(Site, Page) {
 }
 
 // name in form: 'sitename:imagename' or 'imagename'
-pub fn (mut publisher Publisher) image_get(name string) ?(Site, Image) {
+pub fn (mut publisher Publisher) image_get(name string) ?(&Site, &Image) {
 	sitename, imagename := site_page_names_get(name) ?
 	println('get sitename:$sitename and imagename:$imagename')
-	if sitename != '' {
-		site := publisher.site_get(sitename) ?
-		image := site.image_get(imagename) ?
-		return site, image
-	} else {
-		for site in publisher.sites {
-			image := site.image_get(imagename) or {
-				if err != '' {
-					panic(err)
+	for site in publisher.sites {
+		if (sitename != "" && site.name == sitename) || sitename==""{
+			for image in site.images {
+				if image.name == imagename {
+					return &publisher.sites[site.id], &publisher.sites[site.id].images[image.id]
 				}
-				continue
 			}
-			return site, image
 		}
-		return error("Could not find image: '$imagename'")
 	}
+	return error("Could not find image: '$imagename'")
 }
 
 pub fn (mut publisher Publisher) image_exists(name string) bool {
@@ -153,26 +135,16 @@ pub fn (mut publisher Publisher) image_exists(name string) bool {
 pub fn (mut publisher Publisher) check() {
 	for site in publisher.sites {
 		for mut page in site.pages {
+			page = &publisher.sites[site.id].pages[page.id]
 			page.check(site)
 		}
 		for mut image in site.images {
+			image = &publisher.sites[site.id].images[image.id]
 			image.process(site)
 		}
 	}
 }
 
-
-fn (mut p Publisher) process_site_files(site_id int) {
-	println('Publisher.process_site_files($site_id)')
-	println(p.sites)
-	if site_id < 0 || site_id >= p.sites.len {
-		panic('bad site id $site_id')
-	}
-	mut site := &p.sites[site_id]
-	site.files_process() or {
-		panic(err)
-	}
-}
 
 
 pub fn (mut publisher Publisher) load_all() {

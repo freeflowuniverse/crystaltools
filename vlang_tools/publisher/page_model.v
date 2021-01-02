@@ -7,6 +7,7 @@ pub enum PageStatus {
 }
 
 struct Page {
+id        int  [skip]
 pub:
 	name            string
 	path            string

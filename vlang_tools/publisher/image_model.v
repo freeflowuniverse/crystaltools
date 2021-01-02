@@ -7,6 +7,7 @@ pub enum ImageStatus {
 }
 
 pub struct Image {
+id        int 	[skip]
 pub mut:
 	name         string
 	path         string
