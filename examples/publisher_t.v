@@ -15,7 +15,7 @@ fn main() {
 	assert f.sites[1].name == 'wiki'
 	site2, mut pageobj := f.page_get('roadmap.md') or { panic(err) }
 	// // this has enough info to serve the image back
-	println(pageobj.path_get(site2))
-	println(pageobj.markdown_get(site2))
+	println(pageobj.path_get(&f))
+	println(pageobj.markdown_get(&f))
 	// pages_test(mut f)
 }

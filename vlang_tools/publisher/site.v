@@ -70,6 +70,7 @@ fn (mut site Site) image_remember(path string, name string) {
 	} else {
 		site.images << Image{
 			id: site.images.len
+			site_id: site.id
 			name: namelower
 			path: pathrelative
 		}
@@ -94,6 +95,7 @@ fn (mut site Site) page_remember(path string, name string) {
 	} else {
 		site.pages << Page{
 			id: site.pages.len
+			site_id: site.id
 			name: namelower
 			path: pathrelative
 		}

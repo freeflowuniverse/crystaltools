@@ -49,68 +49,7 @@ pub fn (mut link Link) error_msg_get() string {
 	return msg
 }
 
-// will replace the links to be correct (see if they exist in the known sites, )
-pub fn (mut link Link) check_replace(lines string, site &Site) string {
-	mut pt := site.publisher
-	if link.state == LinkState.external {
-		// no need to process are external links
-		return lines
-	}
-	// if not empty, we have already processed this so can return right away
-	if link.dest != '' {
-		return lines
-	}
-	mut lines_out := ''
-	mut new_text := ''
-	mut original_text := '[$link.name]($link.link)'
-	mut linkstr := '' // will be the clean destination
-	// support for links like ./img/zero_db.png, needs to become $site:zero_db.png
-	linkstr = os.file_name(linkstr)
-	if !(':' in linkstr) {
-		linkstr = '$site.name:$linkstr'
-	}
-	// mut new_link := ""
-	// if originSite == site.name{
-	// 	new_link = linkstr.split(":")[1]
-	// }else{
-	// 	splitted := linkstr.split(":")
-	// 	sitename := splitted[0]
-	// 	item := splitted[1]
-	// 	new_link = "/$sitename/$item"
-	// 	if link.cat == LinkType.image{
-	// 		domain := pt.domain
-	// 		new_link = "$domain$new_link"
-	// 	}
-	// }
-	new_text = ''
-	new_link := linkstr // need to check if ok TODO:
-	if link.state == LinkState.init {
-		// need to check if link exists
-		if link.cat == LinkType.link {
-			if !pt.page_exists(linkstr) {
-				link.state = LinkState.notfound
-				new_text = "[ERROR: CANNOT FIND LINK: '$linkstr' for ${link.name.trim("
-				')}]($linkstr)'
-			}
-		} else {
-			if !pt.image_exists(linkstr) {
-				link.state = LinkState.notfound
-				new_text = "[ERROR: CANNOT FIND IMAGE: '$linkstr' for ${link.name.trim("
-				')}]($linkstr)'
-			}
-		}
-		link.state = LinkState.ok
-	}
-	new_text = '[${link.name.trim(' ')}]($new_link)'
-	if link.cat == LinkType.image {
-		// add the ! to be a link
-		new_text = '!$new_text'
-		original_text = '!$original_text'
-	}
-	lines_out = lines.replace(original_text, new_text)
-	link.dest = new_link // so now we know the proper destination string, TODO: check it does not happen multiple times
-	return lines_out
-}
+
 
 // DO NOT CHANGE THE WAY HOW THIS WORKS, THIS HAS BEEN DONE AS A STATEFUL PARSER BY DESIGN
 // THIS ALLOWS FOR EASY ADOPTIONS TO DIFFERENT REALITIES

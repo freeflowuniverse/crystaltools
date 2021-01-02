@@ -24,7 +24,6 @@ pub fn (mut publisher Publisher) load(name string, path string) {
 	if !publisher.site_exists(sitename) {
 		mut site := Site{
 			id: publisher.sites.len 
-			publisher: &publisher
 			path: path2
 			name: sitename
 		}
@@ -136,11 +135,11 @@ pub fn (mut publisher Publisher) check() {
 	for site in publisher.sites {
 		for mut page in site.pages {
 			page = &publisher.sites[site.id].pages[page.id]
-			page.check(site)
+			page.check(publisher)
 		}
 		for mut image in site.images {
 			image = &publisher.sites[site.id].images[image.id]
-			image.process(site)
+			image.process(publisher)
 		}
 	}
 }

@@ -8,6 +8,7 @@ pub enum ImageStatus {
 
 pub struct Image {
 id        int 	[skip]
+site_id   int 	[skip]
 pub mut:
 	name         string
 	path         string
