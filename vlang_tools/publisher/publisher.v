@@ -98,9 +98,9 @@ pub fn (mut publisher Publisher) page_get(name string) ?(&Site, &Page) {
 		println("find $name -> site:$site.name")
 		if (sitename != "" && site.name == sitename) || sitename==""{
 			for page in site.pages {
-				println("find $name -> page:$page.name")
+				println("find $pagename -> page:$page.name")
 				if page.name == pagename {
-					println("find $name -> FOUND")
+					println("find $pagename -> FOUND")
 					return &publisher.sites[site.id], &publisher.sites[site.id].pages[page.id]
 				}
 			}

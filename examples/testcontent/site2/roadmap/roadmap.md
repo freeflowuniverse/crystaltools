@@ -8,4 +8,4 @@ We're working hard on the next generation of our TF Grid, find more details belo
 
 ## should also be there
 
-!!!include:test:tfgrid_release_2_2
+!!!include:wiki:tfgrid_release_2_2
