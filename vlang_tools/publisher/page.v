@@ -16,7 +16,7 @@ pub fn (mut page Page) check(site &Site) bool {
 }
 
 // process the markdown content and include other files, find links, ...
-// the content is the processed 
+// the content is the processed
 // originSite is the site that wants to include a markdown page
 pub fn (mut page Page) markdown_get(site &Site) string {
 	if page.content != '' {
@@ -75,7 +75,7 @@ fn (mut page Page) process_includes(content string, site &Site) string {
 		mut linestrip := line.trim(' ')
 		if linestrip.starts_with('!!!include') {
 			name := linestrip['!!!include'.len + 1..]
-			println("--- $name")
+			println('--- $name')
 			mut site_linked, mut page_linked := pt.page_get(name) or {
 				page_error := PageError{
 					line: line

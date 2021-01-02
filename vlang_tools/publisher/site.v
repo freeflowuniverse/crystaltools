@@ -9,7 +9,7 @@ struct SiteConfig {
 	depends []string
 }
 
-fn (site Site) page_get(name string) ?&Page {
+fn (site Site) page_get(name string) ?Page {
 	mut namelower := name_fix(name)
 	for item in site.pages {
 		println('pageget: $site.name $namelower $item.name')
@@ -20,7 +20,7 @@ fn (site Site) page_get(name string) ?&Page {
 	return error('cannot find page with name $name')
 }
 
-fn (site Site) image_get(name string) ?&Image {
+fn (site Site) image_get(name string) ?Image {
 	mut namelower := name_fix(name)
 	for item in site.images {
 		// println('name search: $item.name $namelower')
@@ -101,6 +101,20 @@ fn (mut site Site) page_remember(path string, name string) {
 fn (mut site Site) check() {
 	// if site.pages
 	panic('S')
+}
+
+fn (mut p Publisher) process_site_files(site_id int) {
+	println('Publisher.process_site_files($site_id)')
+	if site_id < 0 || site_id >= p.sites.len {
+		eprintln('bad site id $site_id')
+		// exit(0)
+		return
+	}
+	mut site := &p.sites[site_id]
+	site.files_process() or {
+		eprintln(err)
+		// exit(0)
+	}
 }
 
 // process files in the site
