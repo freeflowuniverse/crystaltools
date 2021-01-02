@@ -18,7 +18,6 @@ pub fn execute_cmd(cmd string)?string{
 
 
 pub fn (mut executor ExecutorLocal) exec(cmd string) ?string {
-	println(executor.info())
 	return execute_cmd(cmd)
 }
 

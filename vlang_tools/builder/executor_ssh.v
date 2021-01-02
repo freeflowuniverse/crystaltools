@@ -36,8 +36,6 @@ fn (mut executor ExecutorSSH) init()?{
 
 pub fn (mut executor ExecutorSSH) exec(cmd string) ?string {
 	
-	println(executor.info())
-
 	if executor.user != '' {
 		return execute_cmd('ssh $executor.user@$executor.ipaddr.addr -p $executor.ipaddr.port "$cmd"')
 	}
