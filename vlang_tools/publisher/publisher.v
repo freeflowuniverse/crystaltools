@@ -145,8 +145,6 @@ pub fn (mut publisher Publisher) check() {
 	}
 }
 
-
-
 pub fn (mut publisher Publisher) load_all() {
 	publisher.gitlevel = -2 // we do this gitlevel to make sure we don't go too deep in the directory level
 	publisher.load_all_private('')
