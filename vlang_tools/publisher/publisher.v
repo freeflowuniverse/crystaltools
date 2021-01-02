@@ -22,7 +22,7 @@ pub fn (mut publisher Publisher) load(name string, path string) {
 	path2 := path.replace('~', os.home_dir())
 	println('load publisher: $path2')
 	if !publisher.site_exists(sitename) {
-		publisher.sites << &Site{
+		publisher.sites << Site{
 			id: publisher.sites.len + 1
 			publisher: &publisher
 			path: path2
@@ -164,7 +164,7 @@ pub fn (mut publisher Publisher) check() {
 
 fn (mut p Publisher) process_site_files(site_id int) {
 	println('Publisher.process_site_files($site_id)')
-	println(p.sites)
+	println('number of sites=$p.sites.len')
 	if site_id < 0 || site_id >= p.sites.len {
 		panic('bad site id $site_id')
 	}
