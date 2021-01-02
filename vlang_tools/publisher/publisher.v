@@ -35,7 +35,7 @@ pub fn (mut publisher Publisher) load(name string, path string) {
 	if !publisher.lazy_loading {
 		// site.files_process()
 		publisher.process_site_files(site.id)
-		mut site2 := publisher.site_get(sitename) or { panic('cannot find site $sitename') }
+		// mut site2 := publisher.site_get(sitename) or { panic('cannot find site $sitename') }
 	}
 }
 
@@ -122,7 +122,6 @@ pub fn (mut publisher Publisher) page_get(name string) ?(Site, Page) {
 	return error("Could not find page: '$pagename'")
 }
 
-// CANT WE USE A GENERIC HERE???
 // name in form: 'sitename:imagename' or 'imagename'
 pub fn (mut publisher Publisher) image_get(name string) ?(Site, Image) {
 	sitename, imagename := site_page_names_get(name) ?
@@ -161,6 +160,20 @@ pub fn (mut publisher Publisher) check() {
 		}
 	}
 }
+
+
+fn (mut p Publisher) process_site_files(site_id int) {
+	println('Publisher.process_site_files($site_id)')
+	println(p.sites)
+	if site_id < 0 || site_id >= p.sites.len {
+		panic('bad site id $site_id')
+	}
+	mut site := &p.sites[site_id]
+	site.files_process() or {
+		panic(err)
+	}
+}
+
 
 pub fn (mut publisher Publisher) load_all() {
 	publisher.gitlevel = -2 // we do this gitlevel to make sure we don't go too deep in the directory level

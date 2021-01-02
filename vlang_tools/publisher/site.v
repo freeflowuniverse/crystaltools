@@ -103,20 +103,6 @@ fn (mut site Site) check() {
 	panic('S')
 }
 
-fn (mut p Publisher) process_site_files(site_id int) {
-	println('Publisher.process_site_files($site_id)')
-	if site_id < 0 || site_id >= p.sites.len {
-		eprintln('bad site id $site_id')
-		// exit(0)
-		return
-	}
-	mut site := &p.sites[site_id]
-	site.files_process() or {
-		eprintln(err)
-		// exit(0)
-	}
-}
-
 // process files in the site
 fn (mut site Site) files_process() ? {
 	println('FILES LOAD FOR : $site.name')
