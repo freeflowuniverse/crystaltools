@@ -97,6 +97,7 @@ pub fn (mut publisher Publisher) page_get(name string) ?(&Site, &Page) {
 	sitename, pagename := site_page_names_get(name) ?
 	if sitename != '' {
 		site := publisher.site_get(sitename) ?
+		println('SEARCH IN SITE U: $site.name')
 		// if site.pages.len == 0 {
 		// 	site.files_process()
 		// }
