@@ -3,9 +3,9 @@ module builder
 import regex
 
 pub struct IPAddress {
-	addr string
-	port int		
 	pub:
+		addr string
+		port int	
 		cat  IpAddressType = IpAddressType.ipv4
 }
 
@@ -14,27 +14,39 @@ pub enum IpAddressType {
 	ipv6
 }
 
-//ask for IPAddress 
-// format '192.168.3.3:33' or  '192.168.3.3'
-// TODO: for ipv6
+
 pub fn ipaddress_new(addr_string string) ?IPAddress{
-	if ":" in addr_string {
-		splitted:=addr_string.split(":")
-		if splitted.len==2 {
-			addr := splitted[0].trim_space()
-			port := splitted[1].int() 
-			ip:=IPAddress{addr:addr ,port:port}
-			return ip
-		}else{
-			return error("cannot parse ipaddr: needs to be of form '192.168.3.3:33' or  '192.168.3.3'")
-		}
+	mut cat := IpAddressType.ipv4
+	mut addr := addr_string
+	mut port := "0"
+
+	if "::" in addr_string && addr_string.count("::") == 1{
+		cat = IpAddressType.ipv6
+		s := addr_string.split("::")
+		addr, port = s[0], s[1]
+	} else if ":" in addr_string && addr_string.count(":") == 1{
+		cat = IpAddressType.ipv4
+		s := addr_string.split(":")
+		addr, port = s[0], s[1]
+	} else if ":" in addr_string && addr_string.count(":") > 1{
+		cat = IpAddressType.ipv6
+	} else if "." in addr_string && addr_string.count(".") == 3{
+		cat = IpAddressType.ipv4
 	}else{
-		ip :=IPAddress{addr: addr_string.trim_space()}
-		return ip
-	}		
+		return error("Invalid Ip address string")
+	}
+	
+	mut ip := IPAddress{
+		addr: addr.trim_space()
+		port: port.int()
+		cat: cat
+	}
+
+	ip.check()
+
+	return ip
 }
 
-// get the right name depending the platform type
 pub fn (mut ipaddr IPAddress) ping(executor Executor) bool{
 	if ipaddr.cat == IpAddressType.ipv4{
 		executor.exec('ping -c 3 $ipaddr.addr') or {return false}
