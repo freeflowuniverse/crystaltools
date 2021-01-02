@@ -16,6 +16,8 @@ fn main() {
 	site2, mut pageobj := f.page_get('roadmap.md') or { panic(err) }
 	// // this has enough info to serve the image back
 	println(pageobj.path_get(&f))
-	println(pageobj.markdown_get(&f))
+	e:=pageobj.markdown_get(&f)
+	println(e)
 	// pages_test(mut f)
+	println(1)
 }

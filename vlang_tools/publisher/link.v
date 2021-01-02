@@ -49,8 +49,6 @@ pub fn (mut link Link) error_msg_get() string {
 	return msg
 }
 
-
-
 // DO NOT CHANGE THE WAY HOW THIS WORKS, THIS HAS BEEN DONE AS A STATEFUL PARSER BY DESIGN
 // THIS ALLOWS FOR EASY ADOPTIONS TO DIFFERENT REALITIES
 // returns all the links

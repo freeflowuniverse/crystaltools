@@ -29,7 +29,7 @@ pub fn (mut page Page) markdown_get(publisher &Publisher) string {
 	// check for links
 	mut links_parser_result := link_parser(content)
 	for mut link in links_parser_result.links {
-		content = page.check_links(link, publisher)
+		content = page.check_links(content, link, publisher)
 		// println("${replaceaction.original_text}->${replaceaction.new_text}")
 		if link.state == LinkState.notfound {
 			mut cat := PageErrorCat.brokenlink
@@ -105,9 +105,8 @@ fn (mut page Page) process_includes(content string, mut publisher &Publisher) st
 
 
 // will replace the links to be correct (see if they exist in the known sites, )
-pub fn (mut page Page) check_links(mut link Link, mut publisher &Publisher) string {
+pub fn (mut page Page) check_links(lines string, mut link Link, mut publisher &Publisher) string {
 	site := &publisher.sites[page.site_id]
-	lines := page.content
 	if link.state == LinkState.external {
 		// no need to process are external links
 		return lines
