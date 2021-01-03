@@ -58,6 +58,14 @@ pub fn (mut app App) get_wiki(sitename string) vweb.Result {
 [get]
 ['/:sitename/:filename']
 pub fn (mut app App) get_wiki_file(sitename string, filename string) vweb.Result {
+	if filename.starts_with("file__"){
+		splitted := filename.split("__")
+		if splitted.len != 3{
+			return app.vweb.not_found() 
+		}
+		return app.get_wiki_img(splitted[1], splitted[2])
+	}
+	
 	mut site := app.publisher.site_get(sitename) or { return app.vweb.not_found() }
 	root := site.path
 	if filename.starts_with('_') {//why do we do this?
