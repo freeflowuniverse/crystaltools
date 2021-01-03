@@ -37,6 +37,7 @@ struct Link {
 	cat   LinkType
 	isimage bool
 	isexternal bool
+	pageid int
 mut:
 	state LinkState
 }
@@ -103,14 +104,19 @@ fn ( link Link) link_mdserver_clean_get(publisher &Publisher) ?string {
 	errors := []PageError{}
 
 	//only when local we need to check if we can find files/pages or not
-	if !link.isexternal{
+	if !link.isexternal && link.cat != LinkType.unknown{
+		site := publisher,site_get()
 		if link.cat == LinkType.page{
 			linkclean = os.file_name(linkclean)
 			if !publisher.page_exists(linkclean) {
 				return error( "- ERROR: CANNOT FIND LINK: '$linkclean' for ${link.name.trim()}")
 			}
 
-		} else link.cat != LinkType.unknown {
+			if ! linkclean.contains("__"){
+					linkclean = 'page__${site.name}__$linkclean'
+			}
+
+		} else {
 			// println("found image link:$linkstr")
 			linkclean = os.file_name(linkclean)
 			if !publisher.image_exists(linkclean) {
@@ -122,18 +128,12 @@ fn ( link Link) link_mdserver_clean_get(publisher &Publisher) ?string {
 					img.usedby<<page.name
 				}
 			}
-		}
 
-		if ! linkstr.contains("__"){
-			//only do when on local server
-			if link.cat == LinkType.page {
-				linkstr = 'page__${site.name}__$linkstr'
-			}else{
-				//works for image and other files
-				linkstr = 'file__${site.name}__$linkstr'
+			if ! linkclean.contains("__"){
+					linkclean = 'file__${site.name}__$linkclean'
 			}
-		}
 
+		}
 
 	} 
 
