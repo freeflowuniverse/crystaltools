@@ -31,7 +31,7 @@ fn (mut publisher Publisher) load(name string, path string) ? {
 			name: sitename
 		}
 		publisher.sites << site
-		publisher.site_name_id[sitename] = id
+		publisher.site_names[sitename] = id
 	} else {
 		return error("should not load on same name 2x: '$sitename'")
 	}

@@ -7,7 +7,7 @@ pub mut:
 	sites        []Site
 	pages 		 []Page	
 	files 		 []File
-	site_name_id map[string]int	
+	site_names map[string]int	
 }
 
 
@@ -36,21 +36,21 @@ pub fn (mut publisher Publisher) file_get_by_id(id int) ?&File {
 
 pub fn (mut publisher Publisher) site_exists(name string) bool {
 	pagename := name_fix(name)
-	return pagename in publisher.site_name_id
+	return pagename in publisher.site_names
 }
 
 pub fn (mut publisher Publisher) file_exists(name string) bool {
 	sitename,itemname = site_page_names_get(name)?
 	if sitename==""{
 		for site in publisher.sites {
-			if itemname in site.file_name_id{
+			if itemname in site.files{
 				return true
 			}
 		}
 		return false
 	}else{
 		site = publisher.site_get(sitename)?
-		return itemname in site.file_name_id
+		return itemname in site.files
 	}
 }
 
@@ -58,14 +58,14 @@ pub fn (mut publisher Publisher) page_exists(name string) bool {
 	sitename,itemname = site_page_names_get(name)?
 	if sitename==""{
 		for site in publisher.sites {
-			if itemname in site.page_name_id{
+			if itemname in site.pages{
 				return true
 			}
 		}
 		return false
 	}else{
 		site = publisher.site_get(sitename)?
-		return itemname in site.page_name_id
+		return itemname in site.pages
 	}
 }
 
@@ -75,8 +75,8 @@ pub fn (mut publisher Publisher) page_exists(name string) bool {
 
 pub fn (mut publisher Publisher) site_get(name string) ?&Site {
 	pagename := name_fix(name)
-	if pagename in publisher.site_name_id{
-		return publiser.site_get_by_id(publisher.site_name_id[pagename])
+	if pagename in publisher.site_names{
+		return publiser.site_get_by_id(publisher.site_names[pagename])
 	}
 	return error('cannot find site: $pagename')
 }
@@ -88,14 +88,14 @@ pub fn (mut publisher Publisher) file_get(name string) ?&File {
 	res = []int
 	if sitename==""{
 		for site in publisher.sites {
-			if itemname in site.page_name_id{
-				res << site.file_name_id[itemname]
+			if itemname in site.pages{
+				res << site.files[itemname]
 			}
 		}
 	}else{
 		site = publisher.site_get(sitename)?
-		if itemname in site.file_name_id{
-			return publisher.file_get_by_id(site.file_name_id[itemname])
+		if itemname in site.files{
+			return publisher.file_get_by_id(site.files[itemname])
 		}
 	}
 	if res.len==0{
@@ -113,14 +113,14 @@ pub fn (mut publisher Publisher) page_get(name string) ?&Page {
 	res = []int
 	if sitename==""{
 		for site in publisher.sites {
-			if itemname in site.page_name_id{
-				res << site.page_name_id[itemname]
+			if itemname in site.pages{
+				res << site.pages[itemname]
 			}
 		}
 	}else{
 		site = publisher.site_get(sitename)?
-		if itemname in site.page_name_id{
-			return publisher.page_get_by_id(site.page_name_id[itemname])
+		if itemname in site.pages{
+			return publisher.page_get_by_id(site.pages[itemname])
 		}
 	}
 	if res.len==0{

@@ -7,8 +7,8 @@ pub mut:
 	errors    []SiteError
 	path      string
 	name      string
-	file_name_id map[string]int
-	page_name_id map[string]int
+	files map[string]int
+	pages map[string]int
 }
 
 pub enum SiteErrorCategory {
@@ -25,26 +25,26 @@ pub:
 
 pub fn (site Site) page_get(name string, mut publisher &Publisher) ?&Page {
 	mut namelower := name_fix(name)
-	if namelower in site.page_name_id{
-		return publisher.page_get_by_id(site.page_name_id[namelower])
+	if namelower in site.pages{
+		return publisher.page_get_by_id(site.pages[namelower])
 	}
 	return error('cannot find page with name $name')
 }
 
 pub fn (site Site) file_get(name string, mut publisher &Publisher) ?&File {
 	mut namelower := name_fix(name)
-	if namelower in site.file_name_id{
-		return publisher.file_get_by_id(site.file_name_id[namelower])
+	if namelower in site.files{
+		return publisher.file_get_by_id(site.files[namelower])
 	}
 	return error('cannot find file with name $name')
 }
 
 pub fn (site Site) page_exists(name string) bool {
 	mut namelower := name_fix(name)
-	return namelower in site.page_name_id
+	return namelower in site.pages
 }
 
 pub fn (site Site) file_exists(name string) bool {
 	mut namelower := name_fix(name)
-	return namelower in site.file_name_id
+	return namelower in site.files
 }

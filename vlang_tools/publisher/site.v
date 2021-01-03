@@ -43,7 +43,7 @@ fn (mut site Site) file_remember(path string, name string, mut publisher &Publis
 		}
 		// println("remember site: $file.name")
 		publisher.files << file
-		site.file_name_id[namelower]=site.files.len
+		site.files[namelower]=site.files.len
 	}
 }
 
@@ -73,7 +73,7 @@ fn (mut site Site) page_remember(path string, name string, mut publisher &Publis
 			name: namelower
 			path: pathrelative
 		}
-		site.page_name_id[namelower]=site.pages.len
+		site.pages[namelower]=site.pages.len
 	}
 }
 
