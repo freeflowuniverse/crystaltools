@@ -9,10 +9,10 @@ struct SiteConfig {
 	depends []string
 }
 
-fn (site Site) page_get(name string) ?&Page {
+pub fn (site Site) page_get(name string) ?&Page {
 	mut namelower := name_fix(name)
 	for item in site.pages {
-		println('pageget: $site.name $namelower $item.name')
+		// println('pageget: $site.name $namelower $item.name')
 		if item.name == namelower {
 			return &site.pages[item.id]
 		}
@@ -20,7 +20,7 @@ fn (site Site) page_get(name string) ?&Page {
 	return error('cannot find page with name $name')
 }
 
-fn (site Site) image_get(name string) ?&Image {
+pub fn (site Site) image_get(name string) ?&Image {
 	mut namelower := name_fix(name)
 	for item in site.images {
 		// println('name search: $item.name $namelower')
@@ -31,7 +31,7 @@ fn (site Site) image_get(name string) ?&Image {
 	return error('cannot find image with name $name')
 }
 
-fn (site Site) page_exists(name string) bool {
+pub fn (site Site) page_exists(name string) bool {
 	for item in site.pages {
 		if item.name == name {
 			return true
@@ -40,7 +40,7 @@ fn (site Site) page_exists(name string) bool {
 	return false
 }
 
-fn (site Site) image_exists(name string) bool {
+pub fn (site Site) image_exists(name string) bool {
 	for item in site.images {
 		if item.name == name {
 			return true
@@ -68,12 +68,14 @@ fn (mut site Site) image_remember(path string, name string) {
 			cat: SiteErrorCategory.duplicateimage
 		}
 	} else {
-		site.images << Image{
+		image:= Image{
 			id: site.images.len
 			site_id: site.id
 			name: namelower
 			path: pathrelative
 		}
+		// println("remember site: $image.name")
+		site.images << image
 	}
 }
 
@@ -109,12 +111,14 @@ fn (mut site Site) check() {
 
 // process files in the site
 fn (mut site Site) files_process() ? {
-	println('FILES LOAD FOR : $site.name')
+	// println('FILES LOAD FOR : $site.name')
+	if ! os.exists(site.path){return error("cannot find site: $site.path")}
 	return site.files_process_recursive(site.path)
 }
 
 fn (mut site Site) files_process_recursive(path string) ? {
 	items := os.ls(path) ?
+	// println(items)
 	for item in items {
 		if os.is_dir(os.join_path(path, item)) {
 			mut basedir := os.file_name(path)

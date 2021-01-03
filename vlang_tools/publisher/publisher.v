@@ -17,7 +17,7 @@ pub fn new() Publisher {
 
 // load a site into the publishing tools
 // name of the site needs to be unique
-pub fn (mut publisher Publisher) load(name string, path string) {
+pub fn (mut publisher Publisher) load(name string, path string) ? {
 	sitename := name_fix(name)
 	path2 := path.replace('~', os.home_dir())
 	println('load publisher: $path2')
@@ -27,10 +27,10 @@ pub fn (mut publisher Publisher) load(name string, path string) {
 			path: path2
 			name: sitename
 		}
-		site.files_process()
+		site.files_process()?
 		publisher.sites << site
 	} else {
-		panic("should not load on same name 2x: '$sitename'")
+		return error("should not load on same name 2x: '$sitename'")
 	}
 }
 
@@ -48,7 +48,7 @@ pub fn (mut publisher Publisher) site_get(name string) ?&Site {
 	pagename := name_fix(name)
 	for site in publisher.sites {
 		if pagename == site.name {
-			println('found site "$site.name"')
+			// println('found site "$site.name"')
 			return &publisher.sites[site.id]
 		}
 	}
@@ -93,14 +93,14 @@ pub fn (mut publisher Publisher) page_exists(name string) bool {
 pub fn (mut publisher Publisher) page_get(name string) ?(&Site, &Page) {
 	// println('page_get: $name')
 	sitename, pagename := site_page_names_get(name) ?
-	println("find $name in nr sites ${publisher.sites.len}")
+	// println("find $name in nr sites ${publisher.sites.len}")
 	for site in publisher.sites {
-		println("find $name -> site:$site.name")
+		// println("find $name -> site:$site.name")
 		if (sitename != "" && site.name == sitename) || sitename==""{
 			for page in site.pages {
-				println("find $pagename -> page:$page.name")
+				// println("find $pagename -> page:$page.name")
 				if page.name == pagename {
-					println("find $pagename -> FOUND")
+					// println("find $pagename -> FOUND")
 					return &publisher.sites[site.id], &publisher.sites[site.id].pages[page.id]
 				}
 			}
@@ -112,11 +112,15 @@ pub fn (mut publisher Publisher) page_get(name string) ?(&Site, &Page) {
 // name in form: 'sitename:imagename' or 'imagename'
 pub fn (mut publisher Publisher) image_get(name string) ?(&Site, &Image) {
 	sitename, imagename := site_page_names_get(name) ?
-	println('get sitename:$sitename and imagename:$imagename')
+	// println('get sitename:$sitename and imagename:$imagename')
 	for site in publisher.sites {
+		// println("find $name -> site:$site.name")
 		if (sitename != "" && site.name == sitename) || sitename==""{
+			// println("sitename:$sitename $site.images")
 			for image in site.images {
+				// println("find $sitename -> page:$image.name")
 				if image.name == imagename {
+					// println("find $sitename -> FOUND")
 					return &publisher.sites[site.id], &publisher.sites[site.id].images[image.id]
 				}
 			}
@@ -135,29 +139,31 @@ pub fn (mut publisher Publisher) check() {
 	for site in publisher.sites {
 		for mut page in site.pages {
 			page = &publisher.sites[site.id].pages[page.id]
-			page.check(publisher)
+			page.check(mut publisher)
 		}
 		for mut image in site.images {
 			image = &publisher.sites[site.id].images[image.id]
-			image.process(publisher)
+			image.process(mut publisher)
 		}
 	}
 }
 
-pub fn (mut publisher Publisher) load_all() {
+//use path="" if you want to go from os.home_dir()/code/
+pub fn (mut publisher Publisher) load_all(path string) ? {
 	publisher.gitlevel = -2 // we do this gitlevel to make sure we don't go too deep in the directory level
-	publisher.load_all_private('')
+	publisher.load_all_private(path)?
 }
 
 // find all wiki's, this goes very fast, no reason to cache
-fn (mut publisher Publisher) load_all_private(path string) {
+fn (mut publisher Publisher) load_all_private(path string) ? {
 	mut path1 := ''
 	if path == '' {
 		path1 = '$os.home_dir()/code/'
 	} else {
 		path1 = path
 	}
-	items := os.ls(path1) or { panic('cannot find $path1') }
+
+	items := os.ls(path1) or { return error('cannot find $path1') }
 	publisher.gitlevel++
 	for item in items {
 		pathnew := os.join_path(path1, item)
@@ -166,13 +172,17 @@ fn (mut publisher Publisher) load_all_private(path string) {
 			if os.is_link(pathnew) {
 				continue
 			}
+			//is the template of vlangtools itself, should not go in there
+			if pathnew.contains("vlang_tools/templates"){
+				continue
+			}			
 			if os.exists(os.join_path(pathnew, 'wikiconfig.json')) {
 				content := os.read_file(os.join_path(pathnew, 'wikiconfig.json')) or {
-					panic('Failed to load json ${os.join_path(pathnew, 'wikiconfig.json')}')
+					return error('Failed to load json ${os.join_path(pathnew, 'wikiconfig.json')}')
 				}
 				config := json.decode(SiteConfig, content) or {
 					// eprintln()
-					panic('Failed to decode json ${os.join_path(pathnew, 'wikiconfig.json')}')
+					return error('Failed to decode json ${os.join_path(pathnew, 'wikiconfig.json')}')
 				}
 				publisher.load(config.name, pathnew)
 				continue

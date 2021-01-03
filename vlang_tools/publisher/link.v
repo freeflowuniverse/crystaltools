@@ -1,6 +1,6 @@
 module publisher
 
-import os
+// import os
 
 enum ParseStatus {
 	start
