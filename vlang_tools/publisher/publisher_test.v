@@ -55,5 +55,6 @@ fn test_get_content2() {
 	//check includes & links worked well
 	assert e.contains("TFGrid release 2.1")
 	assert e.contains("TFGrid release 2.2")
-	assert e.contains("![](wiki:roadmap.png)")
+	// println(e)
+	assert e.contains("![](file__wiki__roadmap.png)")
 }
