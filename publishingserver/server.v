@@ -46,7 +46,7 @@ pub fn (mut app App) index() vweb.Result {
 [get]
 ['/:sitename']
 pub fn (mut app App) get_wiki(sitename string) vweb.Result {
-	mut site := app.publisher.site_get(sitename) or {panic("cannot get site: $sitename")}
+	mut site := app.publisher.site_get(sitename) or { return app.vweb.not_found() }
 	path := site.path
 	mut index := os.read_file( path + '/index.html') or {
 		return app.vweb.not_found()
@@ -58,7 +58,7 @@ pub fn (mut app App) get_wiki(sitename string) vweb.Result {
 [get]
 ['/:sitename/:filename']
 pub fn (mut app App) get_wiki_file(sitename string, filename string) vweb.Result {
-	mut site := app.publisher.site_get(sitename) or {panic("cannot get site: $sitename")}
+	mut site := app.publisher.site_get(sitename) or { return app.vweb.not_found() }
 	root := site.path
 	if filename.starts_with('_') {//why do we do this?
 		mut file := os.read_file(os.join_path(root, filename)) or { return app.vweb.not_found() }
@@ -93,7 +93,7 @@ pub fn (mut app App) get_wiki_file(sitename string, filename string) vweb.Result
 [get]
 ['/:sitename/img/:filename']
 pub fn (mut app App) get_wiki_img(sitename string, filename string) vweb.Result {
-	mut site := app.publisher.site_get(sitename) or {panic("cannot get site: $sitename")}
+	mut site := app.publisher.site_get(sitename) or { return app.vweb.not_found() }
 	img := site.image_get(filename) or { return app.vweb.not_found() }
 	file := os.read_file(img.path_get(mut &app.publisher)) or { return app.vweb.not_found() }
 	extension := filename.split('.')[1]
@@ -104,13 +104,13 @@ pub fn (mut app App) get_wiki_img(sitename string, filename string) vweb.Result 
 [get]
 ['/:sitename/errors']
 pub fn (mut app App) errors(sitename string) vweb.Result {
-	mut site := app.publisher.site_get(sitename) or {panic("cannot get site: $sitename")}
+	mut site := app.publisher.site_get(sitename) or { return app.vweb.not_found() }
 	// mut f := publisher.new()
 	// f.lazy_loading = false
 	// f.load(sitename, app.publisher.sites[sitename].path)
 	app.publisher.check()
 	site_errors := site.errors
 	// page_erros := map[string]map[string]string{}
-	println(site_errors)
+	
 	return $vweb.html()
 }
