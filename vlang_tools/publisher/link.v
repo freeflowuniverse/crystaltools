@@ -1,28 +1,27 @@
 module publisher
 
-// import os
+import os
 
 enum ParseStatus {
 	start
 	linkopen
 	link
-	imageopen
-	image
 	comment
 }
 
 enum LinkType {
-	external //link to a http(s) resource not in the publisher server
-	file	//file on the local publisher
-	image	//image (jpg, jpeg, png, svg) on the local publisher
-	page	//another markdown file
+	file	
+	page
+	image
+	unknown
+	html
+	data
 }
 
 enum LinkState {
 	init
 	ok
 	notfound
-	external
 	error
 }
 
@@ -36,6 +35,8 @@ struct Link {
 	name  string  //has the spaces inside, so we can replace
 	link  string  //has the spaces inside
 	cat   LinkType
+	isimage bool
+	isexternal bool
 mut:
 	state LinkState
 }
@@ -43,7 +44,7 @@ mut:
 fn (link Link) error_msg_get() string {
 	mut msg := ''
 	if link.state == LinkState.notfound {
-		if link.cat == LinkType.image {
+		if link.isimage {
 			msg = 'Cannot find image: $link.link'
 		} else {
 			msg = 'Cannot find link: $link.link'
@@ -54,7 +55,7 @@ fn (link Link) error_msg_get() string {
 
 fn ( link Link) link_original_get() string {
 	mut original := ""
-	if link.cat == LinkType.image{
+	if link.isimage{
 		original = "![${link.name}](${link.link})"
 	}else{
 		original = "[${link.name}](${link.link})"
@@ -66,7 +67,7 @@ fn ( link Link) link_clean_get() string {
 	linkclean := name_fix(link.link.trim(" "))
 	nameclean := link.name.trim(" ")
 	mut clean := ""
-	if link.cat == LinkType.image{
+	if link.isimage{
 		clean = "![$nameclean]($linkclean)"
 	}else{
 		clean = "[$nameclean]($linkclean)"
@@ -100,6 +101,10 @@ pub fn link_parser(text string) ParseResult {
 	mut capturegroup_pre := '' // is in the []
 	mut capturegroup_post := '' // is in the ()
 	mut parseresult := ParseResult{}
+	mut linkcat := LinkType.unknown
+	mut isimage := false
+	mut isexternal := false
+	mut ext := ""
 	// mut original := ""
 	// no need to process files which are not at least 2 chars
 	if text.len > 2 {
@@ -119,17 +124,14 @@ pub fn link_parser(text string) ParseResult {
 				capturegroup_pre = ''
 				capturegroup_post = ''
 				// check for end in link or image			
-			} else if state == ParseStatus.imageopen || state == ParseStatus.linkopen {
+			} else if state == ParseStatus.linkopen {
 				// original += char
 				if charprev == ']' {
 					// end of capture group
 					// next char needs to be ( otherwise ignore the capturing
 					if char == '(' {
-						if state == ParseStatus.imageopen {
-							state = ParseStatus.image
+						if state == ParseStatus.linkopen {
 							// remove the last 2 chars: ](  not needed in the capturegroup
-							capturegroup_pre = capturegroup_pre[0..capturegroup_pre.len - 1]
-						} else if state == ParseStatus.linkopen {
 							state = ParseStatus.link
 							capturegroup_pre = capturegroup_pre[0..capturegroup_pre.len - 1]
 						} else {
@@ -148,44 +150,54 @@ pub fn link_parser(text string) ParseResult {
 			} else if state == ParseStatus.start {
 				if char == '[' {
 					if charprev == '!' {
-						state = ParseStatus.imageopen
-						// original = "!["
-					} else {
-						state = ParseStatus.linkopen
-						// original = "["
+						isimage = true //will remember this is an image (can be external or internal)
 					}
+					state = ParseStatus.linkopen
 				}
 				// check for the end of the link/image
-			} else if state == ParseStatus.image || state == ParseStatus.link {
+			} else if state == ParseStatus.link {
 				// original += char
 				if char == ')' {
 					// end of capture group
 					// see if its an external link or internal
 					mut linkstate := LinkState.init
 					if capturegroup_post.contains('://') {
-						linkstate = LinkState.external
+						linkstate = LinkState.ok
+						isexternal = true
 					}
-					if state == ParseStatus.image {
-						parseresult.links << Link{
-							name: capturegroup_pre
-							link: capturegroup_post
-							cat: LinkType.image
-							state: linkstate
-							// original: original
-						}
-					} else {
-						parseresult.links << Link{
-							name: capturegroup_pre
-							link: capturegroup_post
-							cat: LinkType.link
-							state: linkstate
-							// original: original
-						}
+					
+					//check which link type
+					ext = os.file_ext(os.base(capturegroup_post)).to_lower()
+					if ext[1..] in ["jpg","png","svg","jpeg","gif"]{
+						linkcat = LinkType.image
+					}else if ext[1..] in ["md"]{
+						linkcat = LinkType.page
+					}else if ext[1..] in ["html"]{
+						linkcat = LinkType.html							
+					}else if (! capturegroup_post.contains_any("./?&;")) && ! isexternal{
+						linkcat = LinkType.page
+					}else if ext[1..] in ["doc","docx","zip","xls","pdf","xlsx","ppt","pptx"]{
+						linkcat = LinkType.file		
+					}else if ext[1..] in ["json","yaml","yml","toml"]{
+						linkcat = LinkType.data											
+					}else{
+						linkcat = LinkType.unknown
+					}
+					
+					parseresult.links << Link{
+						name: capturegroup_pre
+						link: capturegroup_post
+						cat: linkcat
+						state: linkstate
+						isimage: isimage
+						isexternal: isexternal
+						// original: original
 					}
 					// original = ""
 					capturegroup_pre = ''
 					capturegroup_post = ''
 					state = ParseStatus.start
+					linkcat = LinkType.unknown //put back on unknown
 				} else {
 					capturegroup_post += char
 				}

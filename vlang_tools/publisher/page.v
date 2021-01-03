@@ -106,7 +106,7 @@ fn (mut page Page) process_includes(content string, mut publisher &Publisher) st
 // will replace the links to be correct (see if they exist in the known sites, )
 pub fn (mut page Page) check_links(lines string, mut link Link, mut publisher &Publisher) string {
 	site := &publisher.sites[page.site_id]
-	if link.state == LinkState.external {
+	if link.isexternal {
 		// no need to process are external links
 		return lines
 	}
@@ -122,11 +122,14 @@ pub fn (mut page Page) check_links(lines string, mut link Link, mut publisher &P
 	linkstr = os.file_name(linkstr)
 
 	if ! linkstr.contains("__"){
-		if link.cat == LinkType.link {
-			linkstr = 'page__${site.name}__$linkstr'
-		}else{
-			//works for image and other files
-			linkstr = 'file__${site.name}__$linkstr'
+		if ! link.isexternal{
+			//only do when on local server
+			if link.cat == LinkType.page {
+				linkstr = 'page__${site.name}__$linkstr'
+			}else{
+				//works for image and other files
+				linkstr = 'file__${site.name}__$linkstr'
+			}
 		}
 	}
 
