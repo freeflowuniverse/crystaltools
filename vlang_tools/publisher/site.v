@@ -50,7 +50,7 @@ pub fn (site Site) image_exists(name string) bool {
 }
 
 // remember the image, so we know if we have duplicates
-fn (mut site Site) image_remember(path string, name string) {
+fn (mut site Site) image_remember(path string, name string)? {
 	mut namelower := name_fix(name)
 	mut pathfull := os.join_path(path, name)
 	// now remove the root path
@@ -59,7 +59,7 @@ fn (mut site Site) image_remember(path string, name string) {
 	if site.image_exists(namelower) {
 		// error there should be no duplicates
 		image := site.image_get(namelower) or {
-			panic('BUG: should have been able to find image $namelower')
+			return error('BUG: should have been able to find image $namelower')
 		}
 		mut duplicatepath := image.path
 		site.errors << SiteError{
@@ -79,14 +79,14 @@ fn (mut site Site) image_remember(path string, name string) {
 	}
 }
 
-fn (mut site Site) page_remember(path string, name string) {
+fn (mut site Site) page_remember(path string, name string)? {
 	mut pathfull := os.join_path(path, name)
 	pathrelative := pathfull[site.path.len..]
 	mut namelower := name_fix(name)
 	if site.page_exists(namelower) {
 		// error there should be no duplicates
 		page := site.page_get(namelower) or {
-			panic('BUG: should have been able to find page $namelower')
+			return error('BUG: should have been able to find page $namelower')
 		}
 		mut duplicatepath := page.path
 		site.errors << SiteError{
@@ -104,15 +104,24 @@ fn (mut site Site) page_remember(path string, name string) {
 	}
 }
 
-fn (mut site Site) check() {
+pub fn (site Site) check( mut publisher &Publisher) {
 	// if site.pages
-	panic('S')
+	for mut page in site.pages {
+		page = &publisher.sites[site.id].pages[page.id]
+		page.check(mut publisher)
+	}
+	for mut image in site.images {
+		image = &publisher.sites[site.id].images[image.id]
+		image.process(mut publisher)
+	}
+
 }
 
 // process files in the site
 fn (mut site Site) files_process() ? {
 	// println('FILES LOAD FOR : $site.name')
-	if ! os.exists(site.path){return error("cannot find site: $site.path")}
+	// println("file path check: $site.path -> ${os.exists(site.path)}")
+	if ! os.exists(site.path){return error("cannot find site on path:'$site.path'")}
 	return site.files_process_recursive(site.path)
 }
 
@@ -144,10 +153,10 @@ fn (mut site Site) files_process_recursive(path string) ? {
 				// only process files which do have extension
 				ext2 := ext[1..]
 				if ext2 == 'md' {
-					site.page_remember(path, item)
+					site.page_remember(path, item)?
 				}
 				if ext2 in ['jpg', 'png'] {
-					site.image_remember(path, item)
+					site.image_remember(path, item)?
 				}
 			}
 		}

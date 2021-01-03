@@ -154,8 +154,7 @@ fn test_path1() {
 	mut s := gittools.new()
 
 	addr := addr_get_from_url("https://github.com/crystaluniverse/crystaltools")
-	mut r := s.repo_get(addr) or {panic("cannot load gitaddr:\n$err\n$addr")}
-	r.pull({})
+	mut r := s.repo_get(addr) or {panic("cannot load git ${addr.url}\n$err\n")}
 
 	println(r.url_get())
 

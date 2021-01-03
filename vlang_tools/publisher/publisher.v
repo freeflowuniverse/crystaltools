@@ -4,20 +4,22 @@ import os
 import json
 
 // the factory, get your tools here
-pub fn new() Publisher {
+//use path="" if you want to go from os.home_dir()/code/
+//will find all wiki's
+pub fn new(path string) ?Publisher {
 	mut publisher := Publisher{}
 	mut domain := os.getenv('DOMAIN')
 	if domain == '' {
 		domain = 'http://localhost:8082'
 	}
-	
 	publisher.gitlevel = 0
+	publisher.load_all(path)?
 	return publisher
 }
 
 // load a site into the publishing tools
 // name of the site needs to be unique
-pub fn (mut publisher Publisher) load(name string, path string) ? {
+fn (mut publisher Publisher) load(name string, path string) ? {
 	sitename := name_fix(name)
 	path2 := path.replace('~', os.home_dir())
 	println('load publisher: $path2')
@@ -27,7 +29,6 @@ pub fn (mut publisher Publisher) load(name string, path string) ? {
 			path: path2
 			name: sitename
 		}
-		site.files_process()?
 		publisher.sites << site
 	} else {
 		return error("should not load on same name 2x: '$sitename'")
@@ -49,7 +50,13 @@ pub fn (mut publisher Publisher) site_get(name string) ?&Site {
 	for site in publisher.sites {
 		if pagename == site.name {
 			// println('found site "$site.name"')
-			return &publisher.sites[site.id]
+			mut site2:= &publisher.sites[site.id]
+			if site2.pages.len == 0{
+				//this is to make sure we have read the files from the filesystem if that was not done yet
+				site2.files_process()?
+				
+			}
+			return site2
 		}
 	}
 	return error('cannot find site: $pagename')
@@ -137,19 +144,12 @@ pub fn (mut publisher Publisher) image_exists(name string) bool {
 // check all pages, try to find errors
 pub fn (mut publisher Publisher) check() {
 	for site in publisher.sites {
-		for mut page in site.pages {
-			page = &publisher.sites[site.id].pages[page.id]
-			page.check(mut publisher)
-		}
-		for mut image in site.images {
-			image = &publisher.sites[site.id].images[image.id]
-			image.process(mut publisher)
-		}
+		site.check(mut publisher)
 	}
 }
 
 //use path="" if you want to go from os.home_dir()/code/
-pub fn (mut publisher Publisher) load_all(path string) ? {
+fn (mut publisher Publisher) load_all(path string) ? {
 	publisher.gitlevel = -2 // we do this gitlevel to make sure we don't go too deep in the directory level
 	publisher.load_all_private(path)?
 }
@@ -204,4 +204,13 @@ fn (mut publisher Publisher) load_all_private(path string) ? {
 		}
 	}
 	publisher.gitlevel--
+}
+
+//returns the found locations for the sites, will return [[name,path]]
+pub fn (mut publisher Publisher) site_locations_get() [][]string {
+	mut res := [][]string{}
+	for site in publisher.sites {
+		res << [site.name, site.path]
+	}
+	return res
 }

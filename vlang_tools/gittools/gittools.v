@@ -11,3 +11,12 @@ pub fn ssh_agent_loaded() bool{
 		return false
 	}
 }
+
+
+// the factory for getting the gitstructure
+// git is checked uderneith $/code
+pub fn new() ?GitStructure {
+	mut gitstructure := GitStructure{}
+	gitstructure.load("")?
+	return gitstructure
+}

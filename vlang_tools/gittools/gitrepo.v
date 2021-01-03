@@ -1,11 +1,14 @@
 module gittools
-
+import builder
 import os
 
+
 struct GitRepo {
-path        string
-pub mut:
+id        int  [skip]	
+pub:
+	path        string
 	addr 		GitAddr
+pub mut:
 	state       GitStatus
 }
 
@@ -22,14 +25,12 @@ fn (mut repo GitRepo) url_get() string {
 }
 
 //if there are changes then will return 'true', otherwise 'false'
-fn (mut repo GitRepo) changes() bool {
+fn (mut repo GitRepo) changes() ?bool {
 	cmd := "cd ${repo.addr.path_get()} && git status"
-	result := os.exec(cmd) or {panic(err)}
-	if result.exit_code>0{
-		panic("cannot execute $cmd")
+	out := builder.execute_cmd(cmd) or {
+		return error("Could not execute command to check git status on $repo.path\ncannot execute $cmd")		
 	}	
-	out := result.output
-	println(out)
+	// println(out)
 	if out.contains("Untracked files"){
 		return true
 	}else if out.contains("Your branch is ahead of"){
@@ -53,12 +54,18 @@ struct PullArgs{
 
 //pulls remote content in, will fail if there are local changes
 // when using force:true it means we reset, overwrite all changes
-fn (mut repo GitRepo) pull(args PullArgs){
+fn (mut repo GitRepo) pull(args PullArgs) ?{
 
 	mut cmd := ""
 	
 	if os.exists(repo.path_get()){
-		if ssh_agent_loaded() {repo.change_to_ssh()}
+		if ssh_agent_loaded() {
+				repo.change_to_ssh() or {
+					if err != ""{
+						return error("cannot change to ssh for $repo.path")
+					} 
+				}
+			}
 
 		if args.force{
 			if repo.addr.branch =="" {
@@ -66,7 +73,9 @@ fn (mut repo GitRepo) pull(args PullArgs){
 			}else{
 				cmd = "cd ${repo.path_get()} && git clean -xfd && git checkout . && git checkout ${repo}"
 			}
-			os.exec(cmd) or {panic(err)}
+			builder.execute_cmd(cmd) or {
+				return error("Cannot pull repo: ${repo.path}. Error was $err")
+			}
 		}
 		cmd = "cd ${repo.addr.path_get()} && git pull"
 		
@@ -80,20 +89,17 @@ fn (mut repo GitRepo) pull(args PullArgs){
 			cmd += " -b $repo.addr.branch"
 		}
 
-		if repo.addr.depth != 0 {
-			cmd += " --depth= ${repo.addr.depth}  && cd ${repo.addr.repo} && git fetch"
-		}	
-		
-
+		// if repo.addr.depth != 0 {
+		// 	cmd += " --depth= ${repo.addr.depth}  && cd ${repo.addr.name} && git fetch"
+		// }
 	}
-
-	os.exec(cmd) or {panic(err)}
+	builder.execute_cmd(cmd) or {return error("Cannot pull repo: ${repo.path}. Error was $err")}
 }
 
-fn (mut repo GitRepo) commit(msg string){
+fn (mut repo GitRepo) commit(msg string)?{
 
 	// cmd := "cd ${repo.addr.path_get()} && git add . -A && git commit -m \"${msg}\""
-	// println(os.exec(cmd).output or {panic(err)})
+	// println(builder.execute_cmd(cmd).output or {return(err)})
 
 }
 
@@ -102,7 +108,7 @@ fn (mut repo GitRepo) commit(msg string){
 
 
 //make sure we use ssh instead of https in the config file
-fn (mut repo GitRepo) change_to_ssh(){
+fn (mut repo GitRepo) change_to_ssh()?{
 
 	path2 := repo.path_get()
 	if ! os.exists(path2){
@@ -112,9 +118,9 @@ fn (mut repo GitRepo) change_to_ssh(){
 
 	pathconfig := os.join_path(path2, ".git","config")
 	if ! os.exists(pathconfig){
-		panic("path: '$path2' is not a git dir, missed a .git/config file")
+		return error("path: '$path2' is not a git dir, missed a .git/config file. Could not change git to ssh repo.")
 	}
-	content := os.read_file(pathconfig) or {panic('Failed to load config $pathconfig')}
+	content := os.read_file(pathconfig) or {return error('Failed to load config $pathconfig for sshconfig')}
 
 	mut result := []string{}
 	mut line2 := ""
@@ -132,7 +138,7 @@ fn (mut repo GitRepo) change_to_ssh(){
 	}
 
 	if found {
-		os.write_file(pathconfig,result.join_lines()) or {panic('Failed to write config $pathconfig')}
+		os.write_file(pathconfig,result.join_lines()) or {return error('Failed to write config $pathconfig in change to ssh')}
 	}
 
 
