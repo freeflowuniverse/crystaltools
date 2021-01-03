@@ -49,7 +49,8 @@ pub fn (mut page Page) process(mut publisher &Publisher) ? {
 
 
 
-//walk over each line in the page
+//walk over each line in the page and do the link parsing on it
+//happens line per line
 fn ( page Page) process_links(linkparseresult &ParseResult, publisher &Publisher) ?string {	
 
 	mut nr := 0
@@ -63,6 +64,8 @@ fn ( page Page) process_links(linkparseresult &ParseResult, publisher &Publisher
 	mut sourceline := "" //what we will replace with on source
 	mut serverline := ""
 
+	mut link_description:= ""
+
 	//first we need to do the links, then the process_includes
 
 	mut site := &publisher.sites[page.site_id]
@@ -74,6 +77,12 @@ fn ( page Page) process_links(linkparseresult &ParseResult, publisher &Publisher
 
 	for line in page.content.split_into_lines() {
 		// println (line)
+
+		if line.trim().starts_with"> **ERROR"){
+			//these are error messages which will be rewritten if errors are still there
+			continue
+		}
+
 		nr++
 		errors = []""
 		
@@ -88,7 +97,7 @@ fn ( page Page) process_links(linkparseresult &ParseResult, publisher &Publisher
 			sourcelink = "" //the result for how it should be in the source file
 			serverlink = "" //result of how it needs to be on the server
 
-			link_description := link.name.trim(" ")
+			link_description = link.name.trim(" ")
 
 			//only when local we need to check if we can find files/pages or not
 			if !link.isexternal && link.cat != LinkType.unknown{
@@ -110,9 +119,8 @@ fn ( page Page) process_links(linkparseresult &ParseResult, publisher &Publisher
 				itemname = os.file_name(itemname)
 
 				if link.cat == LinkType.page{
-					if publisher.page_exists(link.link)) {
-						serverlink = 'page__${sitename}__${itemname}'
-					}else{
+					serverlink = '[${link_description}](page__${sitename}__${itemname}.md)'
+					if ! publisher.page_exists(link.link)) {
 						errormsg =  "ERROR: CANNOT FIND LINK: '${link.link}' for $link_description"
 						errors << errormsg
 						page.error_add({
@@ -121,12 +129,10 @@ fn ( page Page) process_links(linkparseresult &ParseResult, publisher &Publisher
 							msg: errormsg  
 							cat:    PageErrorCat.brokenlink
 						})
-						serverlink = "> $errormsg"
 					}
 				} else {
+					serverlink = '[${link_description}](file__${sitename}__${itemname})'
 					if publisher.file_exists(link.link)) {
-						serverlink = 'file__${sitename}__${itemname}'
-
 						//remember that the file has been used
 						_, mut img := publisher.file_get(link.link) or {panic("bug")}
 						if !(page.name in img.usedby){
@@ -142,7 +148,6 @@ fn ( page Page) process_links(linkparseresult &ParseResult, publisher &Publisher
 							msg:    errormsg
 							cat:    PageErrorCat.brokenlink
 						})
-						serverlink = "> $errormsg"
 					}					
 				}
 
@@ -183,8 +188,8 @@ fn ( page Page) process_links(linkparseresult &ParseResult, publisher &Publisher
 		//now we need to check if there were errors if yes lets put them in the source code
 		//this will make it easy to spot errors and fix, remember endusers will see it too
 		for err in errors{
-			lines_source += "> **ERROR: $err<br>\n"
-			lines_server += "> **ERROR: $err<br>\n"
+			lines_source += "> **ERROR: $err**<br>\n\n"
+			lines_server += "> **ERROR: $err**<br>\n\n"
 		}
 
 	}//end of the line walk
