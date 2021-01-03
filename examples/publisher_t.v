@@ -8,7 +8,7 @@ fn main() {
 
 	_ := gt.repo_get_from_url("https://github.com/threefoldtech/info_tftech") or {panic ("cannot load info_tftech:$err")}
 	_ := gt.repo_get_from_url("https://github.com/threefoldfoundation/info_foundation") or {panic ("cannot load repo:$err")}
-	mut gitrepo := gt.repo_get_from_url("https://github.com/threefoldfoundation/legal") or {panic ("cannot load repo:\n$err")}
+	_ := gt.repo_get_from_url("https://github.com/threefoldfoundation/legal") or {panic ("cannot load repo:\n$err")}
 
 
 	//now we know git repo is there so we can scan the filesystem
@@ -25,7 +25,6 @@ fn main() {
 
 	// println(site.pages)
 
-	server_run()
 	
 
 

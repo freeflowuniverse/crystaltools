@@ -145,14 +145,19 @@ pub fn (mut page Page) check_links(lines string, mut link Link, mut publisher &P
 		if link.cat == LinkType.link {
 			if !publisher.page_exists(linkstr) {
 				link.state = LinkState.notfound
-				new_text = "[ERROR: CANNOT FIND LINK: '$linkstr' for ${link.name.trim("
-				')}]($linkstr)'
+				new_text = "- ERROR: CANNOT FIND LINK: '$linkstr' for ${link.name.trim()}"
 			}
+
 		} else {
+			// println("found image link:$linkstr")
 			if !publisher.image_exists(linkstr) {
 				link.state = LinkState.notfound
-				new_text = "[ERROR: CANNOT FIND IMAGE: '$linkstr' for ${link.name.trim("
-				')}]($linkstr)'
+				new_text = "- ERROR: CANNOT FIND IMAGE: '$linkstr' for ${link.name.trim()}"
+			}else{
+				_, mut img := publisher.image_get(linkstr) or {panic("bug")}
+				if !(page.name in img.usedby){
+					img.usedby<<page.name
+				}
 			}
 		}
 		link.state = LinkState.ok

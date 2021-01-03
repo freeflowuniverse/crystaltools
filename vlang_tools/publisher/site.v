@@ -105,6 +105,17 @@ fn (mut site Site) page_remember(path string, name string)? {
 }
 
 pub fn (site Site) check( mut publisher &Publisher) {
+
+	imgnotusedpath := site.path+"/img_notused"
+	if ! os.exists(imgnotusedpath){
+		os.mkdir(imgnotusedpath)
+	}
+	imgdoubleusedpath := site.path+"/img_multiple_use"
+	if ! os.exists(imgdoubleusedpath){
+		os.mkdir(imgdoubleusedpath)
+	}
+
+
 	// if site.pages
 	for mut page in site.pages {
 		page = &publisher.sites[site.id].pages[page.id]
