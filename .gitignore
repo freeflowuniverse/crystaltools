@@ -2,4 +2,5 @@ examples/builder
 examples/docker
 examples/publisher
 examples/texttools
+examples/gittools
 *dSYM/
