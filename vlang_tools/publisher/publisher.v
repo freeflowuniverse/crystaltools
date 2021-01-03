@@ -24,42 +24,19 @@ fn (mut publisher Publisher) load(name string, path string) ? {
 	path2 := path.replace('~', os.home_dir())
 	println('load publisher: $path2')
 	if !publisher.site_exists(sitename) {
+		id := publisher.sites.len 
 		mut site := Site{
-			id: publisher.sites.len 
+			id: id
 			path: path2
 			name: sitename
 		}
 		publisher.sites << site
+		publisher.site_name_id[sitename] = id
 	} else {
 		return error("should not load on same name 2x: '$sitename'")
 	}
 }
 
-pub fn (mut publisher Publisher) site_exists(name string) bool {
-	pagename := name_fix(name)
-	for site in publisher.sites {
-		if pagename == site.name {
-			return true
-		}
-	}
-	return false
-}
-
-pub fn (mut publisher Publisher) site_get(name string) ?&Site {
-	pagename := name_fix(name)
-	for site in publisher.sites {
-		if pagename == site.name {
-			// println('found site "$site.name"')
-			mut site2:= &publisher.sites[site.id]
-			if site2.pages.len == 0{
-				//this is to make sure we have read the files from the filesystem if that was not done yet
-				site2.files_process()?	
-			}
-			return site2
-		}
-	}
-	return error('cannot find site: $pagename')
-}
 
 // make sure that the names are always normalized so its easy to find them back
 pub fn name_fix(name string) string {
@@ -97,64 +74,6 @@ pub fn site_page_names_get(name string) ?(string, string) {
 	}
 }
 
-pub fn (mut publisher Publisher) page_exists(name string) bool {
-	publisher.page_get(name) or { return false }
-	return true
-}
-
-// name in form: 'sitename:pagename' or 'pagename'
-pub fn (mut publisher Publisher) page_get(name string) ?(&Site, &Page) {
-	// println('page_get: $name')
-	sitename, pagename := site_page_names_get(name) ?
-	// println("find $name in nr sites ${publisher.sites.len}")
-	for site in publisher.sites {
-		if site.pages.len == 0{
-			//this is to make sure we have read the files from the filesystem if that was not done yet
-			publisher.sites[site.id].files_process()?	
-		}		
-		// println("find '$sitename':'$pagename'  -> site:$site.name")
-		// println(publisher.sites[site.id])
-		if (sitename != "" && site.name == sitename) || sitename==""{
-			for page in publisher.sites[site.id].pages {
-				// println("find $pagename -> page:$page.name")
-				if page.name == pagename {
-					// println("find $pagename -> FOUND")
-					return &publisher.sites[site.id], &publisher.sites[site.id].pages[page.id]
-				}
-			}
-		}
-	}
-	return error("Could not find page: '$pagename'")
-}
-
-// name in form: 'sitename:filename' or 'filename'
-pub fn (mut publisher Publisher) file_get(name string) ?(&Site, &File) {
-	sitename, filename := site_page_names_get(name) ?
-	// println('get sitename:$sitename and filename:$filename')
-	for site in publisher.sites {
-		// println("find $name -> site:$site.name")
-		if (sitename != "" && site.name == sitename) || sitename==""{
-			// println("sitename:$sitename $site.files")
-			if site.pages.len == 0{
-				//this is to make sure we have read the files from the filesystem if that was not done yet
-				publisher.sites[site.id].files_process()?	
-			}					
-			for file in publisher.sites[site.id].files {
-				// println("find $sitename -> page:$file.name")
-				if file.name == filename {
-					// println("find $sitename -> FOUND")
-					return &publisher.sites[site.id], &publisher.sites[site.id].files[file.id]
-				}
-			}
-		}
-	}
-	return error("Could not find file: '$filename'")
-}
-
-pub fn (mut publisher Publisher) file_exists(name string) bool {
-	publisher.file_get(name) or { return false }
-	return true
-}
 
 // check all pages, try to find errors
 pub fn (mut publisher Publisher) check() {

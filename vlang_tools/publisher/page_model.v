@@ -7,7 +7,7 @@ pub enum PageStatus {
 }
 
 struct Page {
-id        int  [skip]
+// id      int  [skip]
 site_id int [skip]
 pub:
 	name            string
@@ -15,8 +15,8 @@ pub:
 pub mut:
 	state           PageStatus
 	errors          []PageError
-	nrtimes_inluded int
-	nrtimes_linked  int
+	pages_included []int //links to pages
+	pages_linked  []int //links to pages
 	content         string
 }
 
@@ -33,3 +33,9 @@ struct PageError {
 	msg    string
 	cat    PageErrorCat
 }
+
+
+pub fn (page Page) site_get(mut publisher &Publisher) ?&Site {
+	return publisher.site_get_by_id(page.site_id)
+}
+

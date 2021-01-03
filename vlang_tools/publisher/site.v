@@ -9,48 +9,10 @@ struct SiteConfig {
 	depends []string
 }
 
-pub fn (site Site) page_get(name string) ?&Page {
-	mut namelower := name_fix(name)
-	for item in site.pages {
-		// println('pageget: $site.name $namelower $item.name')
-		if item.name == namelower {
-			return &site.pages[item.id]
-		}
-	}
-	return error('cannot find page with name $name')
-}
 
-pub fn (site Site) file_get(name string) ?&File {
-	mut namelower := name_fix(name)
-	for item in site.files {
-		// println('name search: $item.name $namelower')
-		if item.name == namelower {
-			return &site.files[item.id]
-		}
-	}
-	return error('cannot find file with name $name')
-}
-
-pub fn (site Site) page_exists(name string) bool {
-	for item in site.pages {
-		if item.name == name {
-			return true
-		}
-	}
-	return false
-}
-
-pub fn (site Site) file_exists(name string) bool {
-	for item in site.files {
-		if item.name == name {
-			return true
-		}
-	}
-	return false
-}
 
 // remember the file, so we know if we have duplicates
-fn (mut site Site) file_remember(path string, name string)? {
+fn (mut site Site) file_remember(path string, name string, mut publisher &Publisher)? {
 	mut namelower := name_fix(name)
 	mut pathfull_fixed := os.join_path(path, namelower)
 	mut pathfull := os.join_path(path, name)
@@ -74,17 +36,18 @@ fn (mut site Site) file_remember(path string, name string)? {
 		}
 	} else {
 		file:= File{
-			id: site.files.len
+			// id: site.files.len
 			site_id: site.id
 			name: namelower
 			path: pathrelative
 		}
 		// println("remember site: $file.name")
-		site.files << file
+		publisher.files << file
+		site.file_name_id[namelower]=site.files.len
 	}
 }
 
-fn (mut site Site) page_remember(path string, name string)? {
+fn (mut site Site) page_remember(path string, name string, mut publisher &Publisher)? {
 	mut namelower := name_fix(name)
 	mut pathfull := os.join_path(path, name)+".md"
 	mut pathfull_fixed := os.join_path(path, namelower)+".md"
@@ -95,7 +58,7 @@ fn (mut site Site) page_remember(path string, name string)? {
 	pathrelative := pathfull[site.path.len..]	
 	if site.page_exists(namelower) {
 		// error there should be no duplicates
-		page := site.page_get(namelower) or {
+		page := site.page_get(namelower,mut publisher) or {
 			return error('BUG: should have been able to find page $namelower')
 		}
 		mut duplicatepath := page.path
@@ -105,12 +68,12 @@ fn (mut site Site) page_remember(path string, name string)? {
 			cat: SiteErrorCategory.duplicatepage
 		}
 	} else {
-		site.pages << Page{
-			id: site.pages.len
+		publisher.pages << Page{
 			site_id: site.id
 			name: namelower
 			path: pathrelative
 		}
+		site.page_name_id[namelower]=site.pages.len
 	}
 }
 
@@ -139,14 +102,14 @@ pub fn (site Site) check( mut publisher &Publisher) {
 }
 
 // process files in the site
-fn (mut site Site) files_process() ? {
+fn (mut site Site) files_process(mut publisher &Publisher) ? {
 	// println('FILES LOAD FOR : $site.name')
 	// println("file path check: $site.path -> ${os.exists(site.path)}")
 	if ! os.exists(site.path){return error("cannot find site on path:'$site.path'")}
-	return site.files_process_recursive(site.path)
+	return site.files_process_recursive(site.path,mut publisher)
 }
 
-fn (mut site Site) files_process_recursive(path string) ? {
+fn (mut site Site) files_process_recursive(path string,mut publisher &Publisher) ? {
 	items := os.ls(path) ?
 	// println(items)
 	for item in items {
@@ -158,7 +121,7 @@ fn (mut site Site) files_process_recursive(path string) ? {
 			if basedir.starts_with('_') {
 				continue
 			}
-			site.files_process_recursive(os.join_path(path, item))
+			site.files_process_recursive(os.join_path(path, item),mut publisher)
 			continue
 		} else {
 			if item.starts_with('.') {
@@ -174,10 +137,10 @@ fn (mut site Site) files_process_recursive(path string) ? {
 				// only process files which do have extension
 				ext2 := ext[1..]
 				if ext2 == 'md' {
-					site.page_remember(path, item)?
+					site.page_remember(path, item, mut publisher)?
 				}
 				if ext2 in ['jpg', 'png'] {
-					site.file_remember(path, item)?
+					site.file_remember(path, item, mut publisher)?
 				}
 			}
 		}
