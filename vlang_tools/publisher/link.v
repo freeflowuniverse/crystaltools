@@ -37,7 +37,6 @@ struct Link {
 	cat   LinkType
 	isimage bool
 	isexternal bool
-	pageid int
 mut:
 	state LinkState
 }
@@ -65,10 +64,76 @@ fn ( link Link) link_original_get() string {
 }
 
 
-//////////////////////////////// REWRITE LINKS SOURCE
+//////////////////////////////// get clean link
+
+//make the link as clean as possible, if it cannot be found the it will return error message
+//return sourcelink, serverlink
+fn ( link Link) link_clean_get(mut page &Page, publisher &Publisher) ?(string,string) {	
+	mut sourcelink := "" //the result for how it should be in the source file
+	mut serverlink := "" //result of how it needs to be on the server
+
+	mut site := publisher.sites[page.site_id]
+
+	link_description := link.name.trim(" ")
+	sitename := site.name
+
+	//only when local we need to check if we can find files/pages or not
+	if !link.isexternal && link.cat != LinkType.unknown{
+
+		//parse the different variations of how we can mention a link
+		// supported:
+		//  site:name
+		//  page__sitename__itemname
+		//  file__sitename__itemname
+		sitename2,itemname := site_page_names_get(link.link)
+		if sitename2 != "" {
+			//means was specified in the link
+			//if not returned means its the site name from the site we are on
+			sitename = sitename2
+		}
+
+		//we only need the last name for local content
+		//can be for image, file & page
+		itemname = os.file_name(itemname)
+
+		if link.cat == LinkType.page{
+			if !publisher.page_exists(link.link)) {
+				return error( "- ERROR: CANNOT FIND LINK: '${link.link}' for $link_description")
+			}
+
+			if ! linkclean.contains("__"){
+					serverlink = 'page__${sitename}__${itemname}'
+			}
+
+		} else {
+			// println("found image link:$linkstr")
+			
+			if !publisher.image_exists(link.link)) {
+				return error("- ERROR: CANNOT FIND FILE: '${link.link}' for $link_description")
+			}else{
+				//remember that the image has been used
+				_, mut img := publisher.image_get(link.link) or {panic("bug")}
+				if !(page.name in img.usedby){
+					img.usedby<<page.name
+				}
+			}
+
+			if ! linkclean.contains("__"){
+					serverlink = 'file__${sitename}__${itemname}'
+			}
+
+		}
+
+	}
+}
+
 
 fn ( link Link) link_source_clean_get() string {	
-	linkclean := name_fix(link.link.trim(" "))
+	if !link.isexternal && link.cat != LinkType.unknown {
+		linkclean := name_fix(link.link.trim(" "))
+	}else{
+		linkclean := link.link.trim(" ") //can't do much because is not under our control
+	}
 	nameclean := link.name.trim(" ")
 	mut clean := ""
 	if link.isimage{
@@ -97,55 +162,11 @@ pub fn ( parseresult ParseResult) source_links_fix(content string) string {
 //////////////////////////////// REWRITE LINKS SERVER
 
 //rewrite the link on how it needs to be on the server
-fn ( link Link) link_mdserver_clean_get(publisher &Publisher) ?string {	
-	nameclean := link.name.trim(" ")
-	linkclean := name_fix(link.link.trim(" "))	
-	mut clean := "" //the result
-	errors := []PageError{}
-
-	//only when local we need to check if we can find files/pages or not
-	if !link.isexternal && link.cat != LinkType.unknown{
-		site := publisher,site_get()
-		if link.cat == LinkType.page{
-			linkclean = os.file_name(linkclean)
-			if !publisher.page_exists(linkclean) {
-				return error( "- ERROR: CANNOT FIND LINK: '$linkclean' for ${link.name.trim()}")
-			}
-
-			if ! linkclean.contains("__"){
-					linkclean = 'page__${site.name}__$linkclean'
-			}
-
-		} else {
-			// println("found image link:$linkstr")
-			linkclean = os.file_name(linkclean)
-			if !publisher.image_exists(linkclean) {
-				return error("- ERROR: CANNOT FIND FILE: '$linkclean' for ${link.name.trim()}")
-			}else{
-				//remember that the image has been used
-				_, mut img := publisher.image_get(linkstr) or {panic("bug")}
-				if !(page.name in img.usedby){
-					img.usedby<<page.name
-				}
-			}
-
-			if ! linkclean.contains("__"){
-					linkclean = 'file__${site.name}__$linkclean'
-			}
-
-		}
-
-	} 
 
 
-	if link.isimage{
-		clean = "!"
-	clean += "[$nameclean](image__$sitename__$itemname)"
-	return clean
-}
 
 //replace the markdown docs on the server
-pub fn ( parseresult ParseResult) mdserver_links_fix(content string, publisher &Publisher ) string {
+pub fn ( parseresult ParseResult) mdserver_links_fix(content string, mut site &Site, mut publisher &Publisher ) string {
 	println(parseresult.links)
 	mut tosearch := ""
 	mut toreplace := ""
@@ -156,6 +177,13 @@ pub fn ( parseresult ParseResult) mdserver_links_fix(content string, publisher &
 		println("replace server: $tosearch to $toreplace")
 		content2=content2.replace(tosearch,toreplace)
 	}
+
+	if link.isimage{
+		clean = "!"
+	clean += "[$nameclean](image__$sitename__$itemname)"
+	return clean
+}
+
 	return content2
 }
 
