@@ -53,8 +53,7 @@ pub fn (mut publisher Publisher) site_get(name string) ?&Site {
 			mut site2:= &publisher.sites[site.id]
 			if site2.pages.len == 0{
 				//this is to make sure we have read the files from the filesystem if that was not done yet
-				site2.files_process()?
-				
+				site2.files_process()?	
 			}
 			return site2
 		}

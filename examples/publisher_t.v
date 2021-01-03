@@ -5,7 +5,7 @@ fn main() {
 	//get publisher, check for all wiki's
 	mut gt := gittools.new() or {panic ("cannot load gittools:$err")}
 	//will only pull if it does not exists
-	
+
 	_ := gt.repo_get_from_url("https://github.com/threefoldtech/info_tftech") or {panic ("cannot load info_tftech:$err")}
 	_ := gt.repo_get_from_url("https://github.com/threefoldfoundation/info_foundation") or {panic ("cannot load repo:$err")}
 	mut gitrepo := gt.repo_get_from_url("https://github.com/threefoldfoundation/legal") or {panic ("cannot load repo:\n$err")}
@@ -24,6 +24,8 @@ fn main() {
 	site.check(mut f)
 
 	// println(site.pages)
+
+	server_run()
 	
 
 
