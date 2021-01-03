@@ -63,7 +63,10 @@ fn ( link Link) link_original_get() string {
 	return original
 }
 
-fn ( link Link) link_clean_get() string {	
+
+//////////////////////////////// REWRITE LINKS SOURCE
+
+fn ( link Link) link_source_clean_get() string {	
 	linkclean := name_fix(link.link.trim(" "))
 	nameclean := link.name.trim(" ")
 	mut clean := ""
@@ -75,21 +78,87 @@ fn ( link Link) link_clean_get() string {
 	return clean
 }
 
-
-//walk over text and replace links to proper names & links
-pub fn ( parseresult ParseResult) text_links_fix(content string) string {
+//walk over text and replace links to proper names & links for the source file
+pub fn ( parseresult ParseResult) source_links_fix(content string) string {
 	println(parseresult.links)
 	mut tosearch := ""
 	mut toreplace := ""
 	mut content2 := content
 	for link in parseresult.links{
 		tosearch = link.link_original_get()
-		toreplace = link.link_clean_get()
+		toreplace = link.link_source_clean_get()
 		println("replace: $tosearch to $toreplace")
 		content2=content2.replace(tosearch,toreplace)
 	}
 	return content2
 }
+
+//////////////////////////////// REWRITE LINKS SERVER
+
+//rewrite the link on how it needs to be on the server
+fn ( link Link) link_mdserver_clean_get(publisher &Publisher) ?string {	
+	nameclean := link.name.trim(" ")
+	linkclean := name_fix(link.link.trim(" "))	
+	mut clean := "" //the result
+	errors := []PageError{}
+
+	//only when local we need to check if we can find files/pages or not
+	if !link.isexternal{
+		if link.cat == LinkType.page{
+			linkclean = os.file_name(linkclean)
+			if !publisher.page_exists(linkclean) {
+				return error( "- ERROR: CANNOT FIND LINK: '$linkclean' for ${link.name.trim()}")
+			}
+
+		} else link.cat != LinkType.unknown {
+			// println("found image link:$linkstr")
+			linkclean = os.file_name(linkclean)
+			if !publisher.image_exists(linkclean) {
+				return error("- ERROR: CANNOT FIND FILE: '$linkclean' for ${link.name.trim()}")
+			}else{
+				//remember that the image has been used
+				_, mut img := publisher.image_get(linkstr) or {panic("bug")}
+				if !(page.name in img.usedby){
+					img.usedby<<page.name
+				}
+			}
+		}
+
+		if ! linkstr.contains("__"){
+			//only do when on local server
+			if link.cat == LinkType.page {
+				linkstr = 'page__${site.name}__$linkstr'
+			}else{
+				//works for image and other files
+				linkstr = 'file__${site.name}__$linkstr'
+			}
+		}
+
+
+	} 
+
+
+	if link.isimage{
+		clean = "!"
+	clean += "[$nameclean](image__$sitename__$itemname)"
+	return clean
+}
+
+//replace the markdown docs on the server
+pub fn ( parseresult ParseResult) mdserver_links_fix(content string, publisher &Publisher ) string {
+	println(parseresult.links)
+	mut tosearch := ""
+	mut toreplace := ""
+	mut content2 := content
+	for link in parseresult.links{
+		tosearch = link.link_original_get()
+		toreplace = link.link_mdserver_clean_get() //get how link needs to be on the md server
+		println("replace server: $tosearch to $toreplace")
+		content2=content2.replace(tosearch,toreplace)
+	}
+	return content2
+}
+
 
 // DO NOT CHANGE THE WAY HOW THIS WORKS, THIS HAS BEEN DONE AS A STATEFUL PARSER BY DESIGN
 // THIS ALLOWS FOR EASY ADOPTIONS TO DIFFERENT REALITIES
