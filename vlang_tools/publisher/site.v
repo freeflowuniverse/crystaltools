@@ -20,15 +20,15 @@ pub fn (site Site) page_get(name string) ?&Page {
 	return error('cannot find page with name $name')
 }
 
-pub fn (site Site) image_get(name string) ?&Image {
+pub fn (site Site) file_get(name string) ?&File {
 	mut namelower := name_fix(name)
-	for item in site.images {
+	for item in site.files {
 		// println('name search: $item.name $namelower')
 		if item.name == namelower {
-			return &site.images[item.id]
+			return &site.files[item.id]
 		}
 	}
-	return error('cannot find image with name $name')
+	return error('cannot find file with name $name')
 }
 
 pub fn (site Site) page_exists(name string) bool {
@@ -40,8 +40,8 @@ pub fn (site Site) page_exists(name string) bool {
 	return false
 }
 
-pub fn (site Site) image_exists(name string) bool {
-	for item in site.images {
+pub fn (site Site) file_exists(name string) bool {
+	for item in site.files {
 		if item.name == name {
 			return true
 		}
@@ -49,8 +49,8 @@ pub fn (site Site) image_exists(name string) bool {
 	return false
 }
 
-// remember the image, so we know if we have duplicates
-fn (mut site Site) image_remember(path string, name string)? {
+// remember the file, so we know if we have duplicates
+fn (mut site Site) file_remember(path string, name string)? {
 	mut namelower := name_fix(name)
 	mut pathfull_fixed := os.join_path(path, namelower)
 	mut pathfull := os.join_path(path, name)
@@ -60,27 +60,27 @@ fn (mut site Site) image_remember(path string, name string)? {
 	}
 	// now remove the root path
 	pathrelative := pathfull[site.path.len..]
-	// println(' - Image $namelower <- $pathfull')
-	if site.image_exists(namelower) {
+	// println(' - File $namelower <- $pathfull')
+	if site.file_exists(namelower) {
 		// error there should be no duplicates
-		image := site.image_get(namelower) or {
-			return error('BUG: should have been able to find image $namelower')
+		file := site.file_get(namelower) or {
+			return error('BUG: should have been able to find file $namelower')
 		}
-		mut duplicatepath := image.path
+		mut duplicatepath := file.path
 		site.errors << SiteError{
 			path: pathrelative
-			error: 'duplicate image $duplicatepath'
-			cat: SiteErrorCategory.duplicateimage
+			error: 'duplicate file $duplicatepath'
+			cat: SiteErrorCategory.duplicatefile
 		}
 	} else {
-		image:= Image{
-			id: site.images.len
+		file:= File{
+			id: site.files.len
 			site_id: site.id
 			name: namelower
 			path: pathrelative
 		}
-		// println("remember site: $image.name")
-		site.images << image
+		// println("remember site: $file.name")
+		site.files << file
 	}
 }
 
@@ -131,9 +131,9 @@ pub fn (site Site) check( mut publisher &Publisher) {
 		page = &publisher.sites[site.id].pages[page.id]
 		page.check(mut publisher)
 	}
-	for mut image in site.images {
-		image = &publisher.sites[site.id].images[image.id]
-		image.process(mut publisher)
+	for mut file in site.files {
+		file = &publisher.sites[site.id].files[file.id]
+		file.process(mut publisher)
 	}
 
 }
@@ -177,7 +177,7 @@ fn (mut site Site) files_process_recursive(path string) ? {
 					site.page_remember(path, item)?
 				}
 				if ext2 in ['jpg', 'png'] {
-					site.image_remember(path, item)?
+					site.file_remember(path, item)?
 				}
 			}
 		}

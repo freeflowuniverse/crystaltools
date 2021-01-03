@@ -12,18 +12,17 @@ enum ParseStatus {
 enum LinkType {
 	file	
 	page
-	image
+	file
 	unknown
 	html
 	data
 }
 
-enum LinkState {
-	init
-	ok
-	notfound
-	error
-}
+// enum LinkState {
+// 	init
+// 	ok
+// 	error
+// }
 
 struct ParseResult {
 mut:
@@ -35,156 +34,20 @@ struct Link {
 	name  string  //has the spaces inside, so we can replace
 	link  string  //has the spaces inside
 	cat   LinkType
-	isimage bool
+	isfile bool
 	isexternal bool
-mut:
-	state LinkState
-}
-
-fn (link Link) error_msg_get() string {
-	mut msg := ''
-	if link.state == LinkState.notfound {
-		if link.isimage {
-			msg = 'Cannot find image: $link.link'
-		} else {
-			msg = 'Cannot find link: $link.link'
-		}
-	}
-	return msg
+// mut:
+// 	state LinkState
 }
 
 fn ( link Link) link_original_get() string {
 	mut original := ""
-	if link.isimage{
+	if link.isfile{
 		original = "![${link.name}](${link.link})"
 	}else{
 		original = "[${link.name}](${link.link})"
 	}
 	return original
-}
-
-
-//////////////////////////////// get clean link
-
-//make the link as clean as possible, if it cannot be found the it will return error message
-//return sourcelink, serverlink
-fn ( link Link) link_clean_get(mut page &Page, publisher &Publisher) ?(string,string) {	
-	mut sourcelink := "" //the result for how it should be in the source file
-	mut serverlink := "" //result of how it needs to be on the server
-
-	mut site := publisher.sites[page.site_id]
-
-	link_description := link.name.trim(" ")
-	sitename := site.name
-
-	//only when local we need to check if we can find files/pages or not
-	if !link.isexternal && link.cat != LinkType.unknown{
-
-		//parse the different variations of how we can mention a link
-		// supported:
-		//  site:name
-		//  page__sitename__itemname
-		//  file__sitename__itemname
-		sitename2,itemname := site_page_names_get(link.link)
-		if sitename2 != "" {
-			//means was specified in the link
-			//if not returned means its the site name from the site we are on
-			sitename = sitename2
-		}
-
-		//we only need the last name for local content
-		//can be for image, file & page
-		itemname = os.file_name(itemname)
-
-		if link.cat == LinkType.page{
-			if !publisher.page_exists(link.link)) {
-				return error( "- ERROR: CANNOT FIND LINK: '${link.link}' for $link_description")
-			}
-
-			if ! linkclean.contains("__"){
-					serverlink = 'page__${sitename}__${itemname}'
-			}
-
-		} else {
-			// println("found image link:$linkstr")
-			
-			if !publisher.image_exists(link.link)) {
-				return error("- ERROR: CANNOT FIND FILE: '${link.link}' for $link_description")
-			}else{
-				//remember that the image has been used
-				_, mut img := publisher.image_get(link.link) or {panic("bug")}
-				if !(page.name in img.usedby){
-					img.usedby<<page.name
-				}
-			}
-
-			if ! linkclean.contains("__"){
-					serverlink = 'file__${sitename}__${itemname}'
-			}
-
-		}
-
-	}
-}
-
-
-fn ( link Link) link_source_clean_get() string {	
-	if !link.isexternal && link.cat != LinkType.unknown {
-		linkclean := name_fix(link.link.trim(" "))
-	}else{
-		linkclean := link.link.trim(" ") //can't do much because is not under our control
-	}
-	nameclean := link.name.trim(" ")
-	mut clean := ""
-	if link.isimage{
-		clean = "![$nameclean]($linkclean)"
-	}else{
-		clean = "[$nameclean]($linkclean)"
-	}
-	return clean
-}
-
-//walk over text and replace links to proper names & links for the source file
-pub fn ( parseresult ParseResult) source_links_fix(content string) string {
-	println(parseresult.links)
-	mut tosearch := ""
-	mut toreplace := ""
-	mut content2 := content
-	for link in parseresult.links{
-		tosearch = link.link_original_get()
-		toreplace = link.link_source_clean_get()
-		println("replace: $tosearch to $toreplace")
-		content2=content2.replace(tosearch,toreplace)
-	}
-	return content2
-}
-
-//////////////////////////////// REWRITE LINKS SERVER
-
-//rewrite the link on how it needs to be on the server
-
-
-
-//replace the markdown docs on the server
-pub fn ( parseresult ParseResult) mdserver_links_fix(content string, mut site &Site, mut publisher &Publisher ) string {
-	println(parseresult.links)
-	mut tosearch := ""
-	mut toreplace := ""
-	mut content2 := content
-	for link in parseresult.links{
-		tosearch = link.link_original_get()
-		toreplace = link.link_mdserver_clean_get() //get how link needs to be on the md server
-		println("replace server: $tosearch to $toreplace")
-		content2=content2.replace(tosearch,toreplace)
-	}
-
-	if link.isimage{
-		clean = "!"
-	clean += "[$nameclean](image__$sitename__$itemname)"
-	return clean
-}
-
-	return content2
 }
 
 
@@ -199,7 +62,7 @@ pub fn link_parser(text string) ParseResult {
 	mut capturegroup_post := '' // is in the ()
 	mut parseresult := ParseResult{}
 	mut linkcat := LinkType.unknown
-	mut isimage := false
+	mut isfile := false
 	mut isexternal := false
 	mut ext := ""
 	// mut original := ""
@@ -220,7 +83,7 @@ pub fn link_parser(text string) ParseResult {
 				state = ParseStatus.comment
 				capturegroup_pre = ''
 				capturegroup_post = ''
-				// check for end in link or image			
+				// check for end in link or file			
 			} else if state == ParseStatus.linkopen {
 				// original += char
 				if charprev == ']' {
@@ -236,7 +99,7 @@ pub fn link_parser(text string) ParseResult {
 							capturegroup_pre = ''
 						}
 					} else {
-						// cleanup was wrong match, was not image nor link
+						// cleanup was wrong match, was not file nor link
 						state = ParseStatus.start
 						capturegroup_pre = ''
 					}
@@ -247,11 +110,11 @@ pub fn link_parser(text string) ParseResult {
 			} else if state == ParseStatus.start {
 				if char == '[' {
 					if charprev == '!' {
-						isimage = true //will remember this is an image (can be external or internal)
+						isfile = true //will remember this is an file (can be external or internal)
 					}
 					state = ParseStatus.linkopen
 				}
-				// check for the end of the link/image
+				// check for the end of the link/file
 			} else if state == ParseStatus.link {
 				// original += char
 				if char == ')' {
@@ -259,14 +122,14 @@ pub fn link_parser(text string) ParseResult {
 					// see if its an external link or internal
 					mut linkstate := LinkState.init
 					if capturegroup_post.contains('://') {
-						linkstate = LinkState.ok
+						// linkstate = LinkState.ok
 						isexternal = true
 					}
 					
 					//check which link type
 					ext = os.file_ext(os.base(capturegroup_post)).to_lower()
 					if ext[1..] in ["jpg","png","svg","jpeg","gif"]{
-						linkcat = LinkType.image
+						linkcat = LinkType.file
 					}else if ext[1..] in ["md"]{
 						linkcat = LinkType.page
 					}else if ext[1..] in ["html"]{
@@ -285,8 +148,8 @@ pub fn link_parser(text string) ParseResult {
 						name: capturegroup_pre
 						link: capturegroup_post
 						cat: linkcat
-						state: linkstate
-						isimage: isimage
+						// state: linkstate
+						isfile: isfile
 						isexternal: isexternal
 						// original: original
 					}

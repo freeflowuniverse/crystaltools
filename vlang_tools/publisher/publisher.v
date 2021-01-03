@@ -93,7 +93,7 @@ pub fn site_page_names_get(name string) ?(string, string) {
 	} else if splitted.len == 2 {
 		return splitted[0], splitted[1]
 	} else {
-		return error("name needs to be in format 'sitename:imagename' or 'imagename', now '$pagename'")
+		return error("name needs to be in format 'sitename:filename' or 'filename', now '$pagename'")
 	}
 }
 
@@ -127,32 +127,32 @@ pub fn (mut publisher Publisher) page_get(name string) ?(&Site, &Page) {
 	return error("Could not find page: '$pagename'")
 }
 
-// name in form: 'sitename:imagename' or 'imagename'
-pub fn (mut publisher Publisher) image_get(name string) ?(&Site, &Image) {
-	sitename, imagename := site_page_names_get(name) ?
-	// println('get sitename:$sitename and imagename:$imagename')
+// name in form: 'sitename:filename' or 'filename'
+pub fn (mut publisher Publisher) file_get(name string) ?(&Site, &File) {
+	sitename, filename := site_page_names_get(name) ?
+	// println('get sitename:$sitename and filename:$filename')
 	for site in publisher.sites {
 		// println("find $name -> site:$site.name")
 		if (sitename != "" && site.name == sitename) || sitename==""{
-			// println("sitename:$sitename $site.images")
+			// println("sitename:$sitename $site.files")
 			if site.pages.len == 0{
 				//this is to make sure we have read the files from the filesystem if that was not done yet
 				publisher.sites[site.id].files_process()?	
 			}					
-			for image in publisher.sites[site.id].images {
-				// println("find $sitename -> page:$image.name")
-				if image.name == imagename {
+			for file in publisher.sites[site.id].files {
+				// println("find $sitename -> page:$file.name")
+				if file.name == filename {
 					// println("find $sitename -> FOUND")
-					return &publisher.sites[site.id], &publisher.sites[site.id].images[image.id]
+					return &publisher.sites[site.id], &publisher.sites[site.id].files[file.id]
 				}
 			}
 		}
 	}
-	return error("Could not find image: '$imagename'")
+	return error("Could not find file: '$filename'")
 }
 
-pub fn (mut publisher Publisher) image_exists(name string) bool {
-	publisher.image_get(name) or { return false }
+pub fn (mut publisher Publisher) file_exists(name string) bool {
+	publisher.file_get(name) or { return false }
 	return true
 }
 

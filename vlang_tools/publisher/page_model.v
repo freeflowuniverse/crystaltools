@@ -22,7 +22,7 @@ pub mut:
 
 pub enum PageErrorCat {
 	unknown
-	brokenimage
+	brokenfile
 	brokenlink
 	brokeninclude
 }

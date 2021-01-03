@@ -28,12 +28,12 @@ fn test_get_content_basic() {
 fn test_get_content1() {
 	mut f := publisher.new("..") or {panic(err)}
 	println('start')
-	_, imageobj := f.image_get('blockchain_dilema.png') or { panic(err) }
-	// this has enough info to serve the image back
-	println(imageobj.path_get(mut &f))
-	println(imageobj)
+	_, fileobj := f.file_get('blockchain_dilema.png') or { panic(err) }
+	// this has enough info to serve the file back
+	println(fileobj.path_get(mut &f))
+	println(fileobj)
 	_, pageobj := f.page_get('roadmap.md') or { panic(err) }
-	// // this has enough info to serve the image back
+	// // this has enough info to serve the file back
 	println(pageobj.path_get(mut &f))
 	println(pageobj)
 	// pages_test(mut f)
@@ -48,7 +48,7 @@ fn test_get_content2() {
 	}
 	assert f.sites.len == 2
 	_, mut pageobj := f.page_get('roadmap.md') or { panic(err) }
-	// // this has enough info to serve the image back
+	// // this has enough info to serve the file back
 	println(pageobj.path_get(mut &f))
 	e:=pageobj.markdown_get(mut &f)
 

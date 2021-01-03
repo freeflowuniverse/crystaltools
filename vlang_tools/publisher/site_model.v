@@ -4,7 +4,7 @@ struct Site {
 	id        int 		  [skip]	// id and index in the Publisher.sites array
 pub mut:
 	// not in json if we would serialize
-	images    []Image
+	files    []File
 	pages     []Page
 	errors    []SiteError
 	path      string
@@ -12,7 +12,7 @@ pub mut:
 }
 
 pub enum SiteErrorCategory {
-	duplicateimage
+	duplicatefile
 	duplicatepage
 }
 
