@@ -13,5 +13,5 @@ pub mut:
 	name         string
 	path         string
 	state        ImageStatus
-	nrtimes_used int
+	usedby 		 []string //names of pages which use this image
 }
