@@ -79,7 +79,14 @@ pub fn name_fix(name string) string {
 
 // return (sitename,pagename)
 pub fn site_page_names_get(name string) ?(string, string) {
-	pagename := name_fix(name)
+	mut pagename := name
+	if pagename.starts_with('file__') || pagename.starts_with('page__'){
+		pagename = pagename[6..]
+		sitename := pagename.split("__")[0]
+		itemname := pagename.split("__")[1]
+		pagename = "$sitename:$itemname"
+	}
+	pagename = name_fix(pagename)
 	splitted := pagename.split(':')
 	if splitted.len == 1 {
 		return '', pagename
@@ -101,9 +108,14 @@ pub fn (mut publisher Publisher) page_get(name string) ?(&Site, &Page) {
 	sitename, pagename := site_page_names_get(name) ?
 	// println("find $name in nr sites ${publisher.sites.len}")
 	for site in publisher.sites {
-		// println("find $name -> site:$site.name")
+		if site.pages.len == 0{
+			//this is to make sure we have read the files from the filesystem if that was not done yet
+			publisher.sites[site.id].files_process()?	
+		}		
+		// println("find '$sitename':'$pagename'  -> site:$site.name")
+		// println(publisher.sites[site.id])
 		if (sitename != "" && site.name == sitename) || sitename==""{
-			for page in site.pages {
+			for page in publisher.sites[site.id].pages {
 				// println("find $pagename -> page:$page.name")
 				if page.name == pagename {
 					// println("find $pagename -> FOUND")
@@ -123,7 +135,11 @@ pub fn (mut publisher Publisher) image_get(name string) ?(&Site, &Image) {
 		// println("find $name -> site:$site.name")
 		if (sitename != "" && site.name == sitename) || sitename==""{
 			// println("sitename:$sitename $site.images")
-			for image in site.images {
+			if site.pages.len == 0{
+				//this is to make sure we have read the files from the filesystem if that was not done yet
+				publisher.sites[site.id].files_process()?	
+			}					
+			for image in publisher.sites[site.id].images {
 				// println("find $sitename -> page:$image.name")
 				if image.name == imagename {
 					// println("find $sitename -> FOUND")

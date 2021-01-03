@@ -29,6 +29,7 @@ mut:
 }
 
 struct Link {
+	original string //how link was put in the document
 	name  string
 	link  string
 	cat   LinkType
@@ -59,6 +60,7 @@ pub fn link_parser(text string) ParseResult {
 	mut capturegroup_pre := '' // is in the []
 	mut capturegroup_post := '' // is in the ()
 	mut parseresult := ParseResult{}
+	mut original := ""
 	// no need to process files which are not at least 2 chars
 	if text.len > 2 {
 		charprev = ''
@@ -78,6 +80,7 @@ pub fn link_parser(text string) ParseResult {
 				capturegroup_post = ''
 				// check for end in link or image			
 			} else if state == ParseStatus.imageopen || state == ParseStatus.linkopen {
+				original += char
 				if charprev == ']' {
 					// end of capture group
 					// next char needs to be ( otherwise ignore the capturing
@@ -106,12 +109,15 @@ pub fn link_parser(text string) ParseResult {
 				if char == '[' {
 					if charprev == '!' {
 						state = ParseStatus.imageopen
+						original = "!["
 					} else {
 						state = ParseStatus.linkopen
+						original = "["
 					}
 				}
 				// check for the end of the link/image
 			} else if state == ParseStatus.image || state == ParseStatus.link {
+				original += char
 				if char == ')' {
 					// end of capture group
 					// see if its an external link or internal
@@ -125,6 +131,7 @@ pub fn link_parser(text string) ParseResult {
 							link: capturegroup_post
 							cat: LinkType.image
 							state: linkstate
+							original: original
 						}
 					} else {
 						parseresult.links << Link{
@@ -132,8 +139,10 @@ pub fn link_parser(text string) ParseResult {
 							link: capturegroup_post
 							cat: LinkType.link
 							state: linkstate
+							original: original
 						}
 					}
+					original = ""
 					capturegroup_pre = ''
 					capturegroup_post = ''
 					state = ParseStatus.start
