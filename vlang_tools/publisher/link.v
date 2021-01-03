@@ -178,7 +178,7 @@ pub fn link_parser(text string) ParseResult {
 	// no need to process files which are not at least 2 chars
 	if text.len > 2 {
 		charprev = ''
-		for i in 1 .. text.len {
+		for i in 0 .. text.len {
 			char = text[i..i + 1]
 			// check for comments end
 			if state == ParseStatus.comment {
