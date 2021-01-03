@@ -30,10 +30,11 @@ fn (mut page Page) error_add(error PageError,mut publisher &Publisher) {
 
 // process the markdown content and include other files, find links, ...
 // find errors
-pub fn (mut page Page) process(mut publisher &Publisher) ? {
+// if it returns false, it means was already processed
+pub fn (mut page Page) process(mut publisher &Publisher) ?bool {
 	if page.status == PageStatus.ok {
 		// means was already processed, content is available
-		return
+		return false
 	}
 
 	path_source := page.path_get(mut publisher)
@@ -44,7 +45,10 @@ pub fn (mut page Page) process(mut publisher &Publisher) ? {
 	page.process_links(mut publisher)	//first find all the links
 	page.process_includes(mut publisher) // should be recursive now
 
-	return
+	//make sure we only execute this once !
+	page.status = PageStatus.ok
+
+	return true
 }
 
 
@@ -202,7 +206,7 @@ fn ( page Page) process_links(linkparseresult &ParseResult, publisher &Publisher
 
 
 
-fn (mut page Page) process_includes(mut publisher &Publisher) string {
+fn (mut page Page) process_includes(mut publisher &Publisher) ?string {
 	
 	mut lines := ''   //the return of the process
 	mut nr := 0
@@ -225,20 +229,21 @@ fn (mut page Page) process_includes(mut publisher &Publisher) string {
 					cat: PageErrorCat.brokeninclude
 				}
 				page.error_add(page_error, mut publisher)
-				lines += '> ERROR: $page_error.msg'
+				lines += '> **ERROR: ${page_error.msg} **<BR>\n\n'
 				continue
 			}
 			if page_linked.path_get(mut publisher) == page.path_get(mut publisher) {
 				panic('recursive include: ${page_linked.path_get(mut publisher)}')
 			}
 			page_linked.nrtimes_inluded++
-			// path11 := page_linked
-			content_linked := page_linked.markdown_get(mut publisher)
-			lines += content_linked + '\n'
+
+			//make sure the page we include has been processed
+			page_linked.process() or return error("cannot process page: ${page.name}.\n$err\n")
+			lines += page_linked.content + '\n'
 		} else {
 			lines += line + '\n'
 		}
 	}
-	return lines
+	page.content = lines
 }
 
