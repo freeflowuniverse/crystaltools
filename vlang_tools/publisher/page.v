@@ -30,7 +30,6 @@ pub fn (mut page Page) markdown_get(mut publisher &Publisher) string {
 	mut links_parser_result := link_parser(content)
 	for mut link in links_parser_result.links {
 		content = page.check_links(content, mut link, mut publisher)
-		// println("${replaceaction.original_text}->${replaceaction.new_text}")
 		if link.state == LinkState.notfound {
 			mut cat := PageErrorCat.brokenlink
 			if link.cat == LinkType.image {
