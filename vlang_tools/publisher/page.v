@@ -122,9 +122,8 @@ pub fn (mut page Page) check_links(lines string, mut link Link, mut publisher &P
 	// support for links like ./img/zero_db.png, needs to become $site:zero_db.png
 	linkstr = os.file_name(linkstr)
 
-	if !(':' in linkstr) {
-		linkstr = '$site.name:$linkstr'
-	}
+	linkstr = 'image__${site.name}__$linkstr'
+
 	// mut new_link := ""
 	// if originSite == site.name{
 	// 	new_link = linkstr.split(":")[1]

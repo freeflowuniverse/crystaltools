@@ -52,7 +52,12 @@ pub fn (site Site) image_exists(name string) bool {
 // remember the image, so we know if we have duplicates
 fn (mut site Site) image_remember(path string, name string)? {
 	mut namelower := name_fix(name)
+	mut pathfull_fixed := os.join_path(path, namelower)
 	mut pathfull := os.join_path(path, name)
+	if pathfull_fixed != pathfull{
+		os.mv(pathfull,pathfull_fixed)
+		pathfull = pathfull_fixed
+	}
 	// now remove the root path
 	pathrelative := pathfull[site.path.len..]
 	// println(' - Image $namelower <- $pathfull')
@@ -80,9 +85,14 @@ fn (mut site Site) image_remember(path string, name string)? {
 }
 
 fn (mut site Site) page_remember(path string, name string)? {
-	mut pathfull := os.join_path(path, name)
-	pathrelative := pathfull[site.path.len..]
 	mut namelower := name_fix(name)
+	mut pathfull := os.join_path(path, name)+".md"
+	mut pathfull_fixed := os.join_path(path, namelower)+".md"
+	if pathfull_fixed != pathfull{
+		os.mv(pathfull,pathfull_fixed)
+		pathfull = pathfull_fixed
+	}	
+	pathrelative := pathfull[site.path.len..]	
 	if site.page_exists(namelower) {
 		// error there should be no duplicates
 		page := site.page_get(namelower) or {
