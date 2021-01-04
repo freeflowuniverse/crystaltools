@@ -84,7 +84,7 @@ pub fn (mut app App) get_wiki_file(sitename string, filename string) vweb.Result
 		mut file := ''
 		if filename.ends_with('.md') {
 			app.vweb.set_content_type('text/html')
-			mut pageobj := site.page_get(filename, mut &app.publisher) or {
+			mut pageobj := app.publisher.page_get("$sitename:$filename") or {
 				if filename == 'README.md' {
 					file = os.read_file(os.join_path(root, '_sidebar.md')) or {
 						return app.vweb.not_found()

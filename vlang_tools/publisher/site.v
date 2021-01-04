@@ -111,7 +111,6 @@ fn (mut site Site) files_process(mut publisher &Publisher) ? {
 
 fn (mut site Site) files_process_recursive(path string,mut publisher &Publisher) ? {
 	items := os.ls(path) ?
-	// println(items)
 	for item in items {
 		if os.is_dir(os.join_path(path, item)) {
 			mut basedir := os.file_name(path)
@@ -121,8 +120,9 @@ fn (mut site Site) files_process_recursive(path string,mut publisher &Publisher)
 			if basedir.starts_with('_') {
 				continue
 			}
+			println("here")
+			println(os.join_path(path, item))
 			site.files_process_recursive(os.join_path(path, item),mut publisher)
-			continue
 		} else {
 			if item.starts_with('.') {
 				continue
