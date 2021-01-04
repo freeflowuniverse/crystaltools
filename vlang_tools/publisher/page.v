@@ -131,7 +131,7 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 							linenr: nr
 							msg: errormsg  
 							cat:    PageErrorCat.brokenlink
-						}, publisher)
+						}, mut publisher)
 					}
 				} else {
 					serverlink = '[${link_description}](file__${sitename}__${itemname})'
@@ -150,7 +150,7 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 							linenr: nr
 							msg:    errormsg
 							cat:    PageErrorCat.brokenlink
-						}, publisher)
+						}, mut publisher)
 					}					
 				}
 
@@ -237,7 +237,7 @@ fn (mut page Page) process_includes(mut publisher &Publisher) ?string {
 			page_linked.nrtimes_inluded++
 
 			//make sure the page we include has been processed
-			page_linked.process(publisher) or {return error("cannot process page: ${page.name}.\n$err\n")}
+			page_linked.process(mut publisher) or {return error("cannot process page: ${page.name}.\n$err\n")}
 			lines += "$page_linked.content\n"
 		} else {
 			lines += line + '\n'

@@ -119,7 +119,7 @@ pub fn link_parser(text string) ParseResult {
 				if char == ')' {
 					// end of capture group
 					// see if its an external link or internal
-					mut linkstate := LinkState.init
+					//mut linkstate := LinkState.init
 					if capturegroup_post.contains('://') {
 						// linkstate = LinkState.ok
 						isexternal = true

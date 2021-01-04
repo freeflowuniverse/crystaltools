@@ -42,7 +42,7 @@ pub fn (mut publisher Publisher) site_exists(name string) bool {
 }
 
 pub fn (mut publisher Publisher) file_exists(name string) ?bool {
-	sitename,itemname := site_page_names_get(name)?
+	sitename,_ := site_page_names_get(name)?
 	if sitename==""{
 		for site in publisher.sites {
 			if sitename in site.files{
@@ -87,7 +87,7 @@ pub fn (mut publisher Publisher) site_get(name string) ?&Site {
 // name in form: 'sitename:filename' or 'filename'
 pub fn (mut publisher Publisher) file_get(name string) ?&File {
 	sitename,itemname := site_page_names_get(name)?
-	mut res := []int
+	mut res := []int{}
 	if sitename==""{
 		for site in publisher.sites {
 			if sitename in site.pages{
@@ -112,7 +112,7 @@ pub fn (mut publisher Publisher) file_get(name string) ?&File {
 // name in form: 'sitename:pagename' or 'pagename'
 pub fn (mut publisher Publisher) page_get(name string) ?&Page {
 	mut sitename,itemname := site_page_names_get(name)?
-	mut res := []int
+	mut res := []int{}
 	if sitename==""{
 		for site in publisher.sites {
 			if itemname in site.pages{
