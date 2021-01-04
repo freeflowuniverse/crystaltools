@@ -9,7 +9,7 @@ pub fn (page Page) path_get(mut publisher &Publisher) string {
 
 // will load the content, check everything, return true if ok
 pub fn (mut page Page) check(mut publisher &Publisher) bool {
-	_ := page.markdown_get(mut publisher)
+	page.site_get(mut publisher)
 	if page.state == PageStatus.error {
 		return false
 	}
@@ -32,13 +32,13 @@ fn (mut page Page) error_add(error PageError,mut publisher &Publisher) {
 // find errors
 // if it returns false, it means was already processed
 pub fn (mut page Page) process(mut publisher &Publisher) ?bool {
-	if page.status == PageStatus.ok {
+	if page.state == PageStatus.ok {
 		// means was already processed, content is available
 		return false
 	}
 
 	path_source := page.path_get(mut publisher)
-	page.content := os.read_file(path_source) or {
+	page.content = os.read_file(path_source) or {
 		return error('Failed to open $path_source\nerror:$err')
 	}
 
@@ -46,7 +46,7 @@ pub fn (mut page Page) process(mut publisher &Publisher) ?bool {
 	page.process_includes(mut publisher) // should be recursive now
 
 	//make sure we only execute this once !
-	page.status = PageStatus.ok
+	page.state = PageStatus.ok
 
 	return true
 }
@@ -55,7 +55,7 @@ pub fn (mut page Page) process(mut publisher &Publisher) ?bool {
 
 //walk over each line in the page and do the link parsing on it
 //happens line per line
-fn ( page Page) process_links(linkparseresult &ParseResult, publisher &Publisher) ?string {	
+fn ( mut page Page) process_links(mut publisher &Publisher) ?string {	
 
 	mut nr := 0
 	mut lines_source := ""  //needs to be written to the file where we loaded from, is returned as string
@@ -73,22 +73,21 @@ fn ( page Page) process_links(linkparseresult &ParseResult, publisher &Publisher
 	//first we need to do the links, then the process_includes
 
 	mut site := &publisher.sites[page.site_id]
-	sitename := site.name
+	mut sitename := site.name
 
-	mut links_parser_result = ParseResult{}
+	mut links_parser_result := ParseResult{}
 
-	errors := []""
+	mut errors := []string{}
 
 	for line in page.content.split_into_lines() {
 		// println (line)
 
-		if line.trim().starts_with"> **ERROR"){
+		if line.trim(" ").starts_with("> **ERROR"){
 			//these are error messages which will be rewritten if errors are still there
 			continue
 		}
 
 		nr++
-		errors = []""
 		
 		sourceline = line //what we will replace with on source
 		serverline = line		
@@ -111,7 +110,7 @@ fn ( page Page) process_links(linkparseresult &ParseResult, publisher &Publisher
 				//  site:name
 				//  page__sitename__itemname
 				//  file__sitename__itemname
-				sitename2,itemname := site_page_names_get(link.link)
+				mut sitename2, mut itemname := site_page_names_get(link.link) or {return err}
 				if sitename2 != "" {
 					//means was specified in the link
 					//if not returned means its the site name from the site we are on
@@ -124,34 +123,34 @@ fn ( page Page) process_links(linkparseresult &ParseResult, publisher &Publisher
 
 				if link.cat == LinkType.page{
 					serverlink = '[${link_description}](page__${sitename}__${itemname}.md)'
-					if ! publisher.page_exists(link.link)) {
-						errormsg =  "ERROR: CANNOT FIND LINK: '${link.link}' for $link_description"
+					if ! publisher.page_exists(link.link) {
+						errormsg :=  "ERROR: CANNOT FIND LINK: '${link.link}' for $link_description"
 						errors << errormsg
 						page.error_add({
 							line:   line
-							linenr: linenr
+							linenr: nr
 							msg: errormsg  
 							cat:    PageErrorCat.brokenlink
-						})
+						}, publisher)
 					}
 				} else {
 					serverlink = '[${link_description}](file__${sitename}__${itemname})'
-					if publisher.file_exists(link.link)) {
+					if publisher.file_exists(link.link) {
 						//remember that the file has been used
-						_, mut img := publisher.file_get(link.link) or {panic("bug")}
-						if !(page.name in img.usedby){
-							img.usedby<<page.name
+						mut img := publisher.file_get(link.link) or {panic("bug")}
+						if !(page.site_id in img.usedby){
+							img.usedby<<page.id
 						}
 
 					}else{
-						errormsg =  "ERROR: CANNOT FIND FILE: '${link.link}' for $link_description"
+						errormsg :=  "ERROR: CANNOT FIND FILE: '${link.link}' for $link_description"
 						errors << errormsg
 						page.error_add({
 							line:   line
-							linenr: linenr
+							linenr: nr
 							msg:    errormsg
 							cat:    PageErrorCat.brokenlink
-						})
+						}, publisher)
 					}					
 				}
 
@@ -176,7 +175,7 @@ fn ( page Page) process_links(linkparseresult &ParseResult, publisher &Publisher
 				serverlink = sourcelink
 			}
 
-			if link.isimage{
+			if link.isfile{
 				sourcelink = "!${sourcelink}"
 				serverlink = "!${serverlink}"
 			}			
@@ -198,7 +197,7 @@ fn ( page Page) process_links(linkparseresult &ParseResult, publisher &Publisher
 
 	}//end of the line walk
 
-	page.content = line_server //we need to remember what the server needs to give
+	page.content = lines_server //we need to remember what the server needs to give
 	//we return the source lines, so we can choose to store it on fs or not
 	return lines_source
 
@@ -220,7 +219,7 @@ fn (mut page Page) process_includes(mut publisher &Publisher) ?string {
 		if linestrip.starts_with('!!!include') {
 			name := linestrip['!!!include'.len + 1..]
 			// println('-includes-- $name')
-			mut _, mut page_linked := publisher.page_get(name) or {
+			mut page_linked := publisher.page_get(name) or {
 				// println("-includes-- could not get page $name")
 				page_error := PageError{
 					line: line
@@ -238,8 +237,8 @@ fn (mut page Page) process_includes(mut publisher &Publisher) ?string {
 			page_linked.nrtimes_inluded++
 
 			//make sure the page we include has been processed
-			page_linked.process() or return error("cannot process page: ${page.name}.\n$err\n")
-			lines += page_linked.content + '\n'
+			page_linked.process(publisher) or {return error("cannot process page: ${page.name}.\n$err\n")}
+			lines += "$page_linked.content\n"
 		} else {
 			lines += line + '\n'
 		}

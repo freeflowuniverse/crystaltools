@@ -25,7 +25,7 @@ fn (mut site Site) file_remember(path string, name string, mut publisher &Publis
 	// println(' - File $namelower <- $pathfull')
 	if site.file_exists(namelower) {
 		// error there should be no duplicates
-		file := site.file_get(namelower) or {
+		file := site.file_get(namelower, publisher) or {
 			return error('BUG: should have been able to find file $namelower')
 		}
 		mut duplicatepath := file.path
@@ -90,13 +90,13 @@ pub fn (site Site) check( mut publisher &Publisher) {
 
 
 	// if site.pages
-	for mut page in site.pages {
-		page = &publisher.sites[site.id].pages[page.id]
-		page.check(mut publisher)
+	for mut page, _ in site.pages {
+		// page = &publisher.sites[site.id].pages[page.id]
+		// page.check(mut publisher)
 	}
-	for mut file in site.files {
-		file = &publisher.sites[site.id].files[file.id]
-		file.process(mut publisher)
+	for mut file, _ in site.files {
+		// file = &publisher.sites[site.id].files[file.id]
+		// file.process(mut publisher)
 	}
 
 }

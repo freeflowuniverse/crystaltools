@@ -17,7 +17,7 @@ pub mut:
 }
 
 
-pub fn (page File) site_get(mut publisher &Publisher) ?&Site {
+pub fn (file File) site_get(mut publisher &Publisher) ?&Site {
 	return publisher.site_get_by_id(file.site_id)
 }
 

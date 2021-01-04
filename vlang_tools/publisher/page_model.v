@@ -7,7 +7,7 @@ pub enum PageStatus {
 }
 
 struct Page {
-// id      int  [skip]
+id      int  [skip]
 site_id int [skip]
 pub:
 	name            string
@@ -18,6 +18,7 @@ pub mut:
 	pages_included []int //links to pages
 	pages_linked  []int //links to pages
 	content         string
+	nrtimes_inluded int
 }
 
 pub enum PageErrorCat {

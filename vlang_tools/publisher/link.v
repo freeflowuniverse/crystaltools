@@ -12,17 +12,16 @@ enum ParseStatus {
 enum LinkType {
 	file	
 	page
-	file
 	unknown
 	html
 	data
 }
 
-// enum LinkState {
-// 	init
-// 	ok
-// 	error
-// }
+enum LinkState {
+	init
+	ok
+	error
+}
 
 struct ParseResult {
 mut:

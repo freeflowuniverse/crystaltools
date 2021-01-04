@@ -84,7 +84,7 @@ pub fn (mut app App) get_wiki_file(sitename string, filename string) vweb.Result
 		mut file := ''
 		if filename.ends_with('.md') {
 			app.vweb.set_content_type('text/html')
-			mut pageobj := site.page_get(filename) or {
+			mut pageobj := site.page_get(filename, &app.publisher) or {
 				if filename == 'README.md' {
 					file = os.read_file(os.join_path(root, '_sidebar.md')) or {
 						return app.vweb.not_found()
@@ -94,9 +94,9 @@ pub fn (mut app App) get_wiki_file(sitename string, filename string) vweb.Result
 				}
 				return app.vweb.not_found()
 			}
-			file = pageobj.markdown_get(mut &app.publisher)
+			file = pageobj.content
 		} else {
-			img := site.image_get(filename) or { return app.vweb.not_found() }
+			img := site.file_get(filename, app.publisher) or { return app.vweb.not_found() }
 			//shouldn't we return as static, this brings everything in memory?
 			file = os.read_file(img.path_get(mut &app.publisher)) or { return app.vweb.not_found() }
 			extension := filename.split('.')[1]
@@ -110,7 +110,7 @@ pub fn (mut app App) get_wiki_file(sitename string, filename string) vweb.Result
 ['/:sitename/img/:filename']
 pub fn (mut app App) get_wiki_img(sitename string, filename string) vweb.Result {
 	mut site := app.publisher.site_get(sitename) or { return app.vweb.not_found() }
-	img := site.image_get(filename) or { return app.vweb.not_found() }
+	img := site.file_get(filename, &app.publisher) or { return app.vweb.not_found() }
 	file := os.read_file(img.path_get(mut &app.publisher)) or { return app.vweb.not_found() }
 	extension := filename.split('.')[1]
 	app.vweb.set_content_type('image/' + extension)

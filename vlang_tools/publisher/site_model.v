@@ -1,7 +1,7 @@
 module publisher
 
 struct Site {
-	// id        int 		  [skip]	// id and index in the Publisher.sites array
+	id        int 		  // id and index in the Publisher.sites array
 pub mut:
 	// not in json if we would serialize
 	errors    []SiteError
