@@ -15,3 +15,5 @@ pub mut:
 	state        FileStatus
 	assignment 	 []int //someone works on the story or task, or bug, ...
 
+
+
