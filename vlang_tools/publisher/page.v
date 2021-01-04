@@ -135,7 +135,7 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 					}
 				} else {
 					serverlink = '[${link_description}](file__${sitename}__${itemname})'
-					if publisher.file_exists(link.link) {
+					if _ := publisher.file_exists(link.link) {
 						//remember that the file has been used
 						mut img := publisher.file_get(link.link) or {panic("bug")}
 						if !(page.site_id in img.usedby){
