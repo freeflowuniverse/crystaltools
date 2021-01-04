@@ -25,25 +25,24 @@ fn (mut site Site) file_remember(path string, name string, mut publisher &Publis
 	// println(' - File $namelower <- $pathfull')
 	if site.file_exists(namelower) {
 		// error there should be no duplicates
-		file := site.file_get(namelower, mut publisher) or {
-			return error('BUG: should have been able to find file $namelower')
-		}
-		mut duplicatepath := file.path
 		site.errors << SiteError{
 			path: pathrelative
-			error: 'duplicate file $duplicatepath'
+			error: 'duplicate file $pathrelative'
 			cat: SiteErrorCategory.duplicatefile
 		}
 	} else {
+		if publisher.files.len == 0{
+			publisher.files =  []File{}
+		}
+
 		file:= File{
-			// id: site.files.len
 			site_id: site.id
 			name: namelower
 			path: pathrelative
 		}
 		// println("remember site: $file.name")
 		publisher.files << file
-		site.files[namelower]=site.files.len
+		site.files[namelower]=publisher.files.len
 	}
 }
 
@@ -57,23 +56,23 @@ fn (mut site Site) page_remember(path string, name string, mut publisher &Publis
 	}	
 	pathrelative := pathfull[site.path.len..]	
 	if site.page_exists(namelower) {
-		// error there should be no duplicates
-		page := site.page_get(namelower,mut publisher) or {
-			return error('BUG: should have been able to find page $namelower')
-		}
-		mut duplicatepath := page.path
 		site.errors << SiteError{
 			path: pathrelative
-			error: 'duplicate page $duplicatepath'
+			error: 'duplicate page $pathrelative'
 			cat: SiteErrorCategory.duplicatepage
 		}
 	} else {
+		if publisher.pages.len == 0{
+			publisher.pages =  []Page{}
+		}
+		
 		publisher.pages << Page{
 			site_id: site.id
 			name: namelower
 			path: pathrelative
+			
 		}
-		site.pages[namelower]=site.pages.len
+		site.pages[namelower] = publisher.pages.len
 	}
 }
 
@@ -120,8 +119,6 @@ fn (mut site Site) files_process_recursive(path string,mut publisher &Publisher)
 			if basedir.starts_with('_') {
 				continue
 			}
-			println("here")
-			println(os.join_path(path, item))
 			site.files_process_recursive(os.join_path(path, item),mut publisher)
 		} else {
 			if item.starts_with('.') {

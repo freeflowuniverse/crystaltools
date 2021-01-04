@@ -123,7 +123,6 @@ pub fn (mut publisher Publisher) page_get(name string) ?&Page {
 		}
 	}else{
 		site := publisher.site_get(sitename)?
-		println(site)
 		if itemname in site.pages{
 			return publisher.page_get_by_id(site.pages[itemname])
 		}
