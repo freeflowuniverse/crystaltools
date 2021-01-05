@@ -42,7 +42,7 @@ pub fn (mut page Page) process(mut publisher &Publisher) ?bool {
 		return error('Failed to open $path_source\nerror:$err')
 	}
 
-	// page.process_links(mut publisher)	//first find all the links
+	page.process_links(mut publisher)	//first find all the links
 	page.process_includes(mut publisher) // should be recursive now
 
 	//make sure we only execute this once !
@@ -91,9 +91,7 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 		
 		sourceline = line //what we will replace with on source
 		serverline = line		
-
 		links_parser_result = link_parser(line)
-
 		//there can be more than 1 link on 1 line
 		for mut link in links_parser_result.links {
 
@@ -123,7 +121,7 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 
 				if link.cat == LinkType.page{
 					serverlink = '[${link_description}](page__${sitename}__${itemname}.md)'
-					if ! publisher.page_exists(link.link) {
+					if ! publisher.page_exists("$sitename:$itemname") {
 						errormsg :=  "ERROR: CANNOT FIND LINK: '${link.link}' for $link_description"
 						errors << errormsg
 						page.error_add({
@@ -135,9 +133,9 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 					}
 				} else {
 					serverlink = '[${link_description}](file__${sitename}__${itemname})'
-					if _ := publisher.file_exists(link.link) {
+					if _ := publisher.file_exists("$sitename:$itemname") {
 						//remember that the file has been used
-						mut img := publisher.file_get(link.link) or {panic(err)}
+						mut img := publisher.file_get("$sitename:$itemname") or {panic(err)}
 						if !(page.site_id in img.usedby){
 							img.usedby<<page.id
 						}

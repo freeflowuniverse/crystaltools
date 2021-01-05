@@ -127,18 +127,21 @@ pub fn link_parser(text string) ParseResult {
 					
 					//check which link type
 					ext = os.file_ext(os.base(capturegroup_post)).to_lower()
-					if ext[1..] in ["jpg","png","svg","jpeg","gif"]{
-						linkcat = LinkType.file
-					}else if ext[1..] in ["md"]{
-						linkcat = LinkType.page
-					}else if ext[1..] in ["html"]{
-						linkcat = LinkType.html							
-					}else if (! capturegroup_post.contains_any("./?&;")) && ! isexternal{
-						linkcat = LinkType.page
-					}else if ext[1..] in ["doc","docx","zip","xls","pdf","xlsx","ppt","pptx"]{
-						linkcat = LinkType.file		
-					}else if ext[1..] in ["json","yaml","yml","toml"]{
-						linkcat = LinkType.data											
+
+					if ext != "" {
+						if ext[1..] in ["jpg","png","svg","jpeg","gif"]{
+							linkcat = LinkType.file
+						}else if ext[1..] in ["md"]{
+							linkcat = LinkType.page
+						}else if ext[1..] in ["html"]{
+							linkcat = LinkType.html	
+						}else if ext[1..] in ["doc","docx","zip","xls","pdf","xlsx","ppt","pptx"]{
+							linkcat = LinkType.file		
+						}else if ext[1..] in ["json","yaml","yml","toml"]{
+							linkcat = LinkType.data											
+						}else if (! capturegroup_post.contains_any("./?&;")) && ! isexternal{
+							linkcat = LinkType.page
+						}
 					}else{
 						linkcat = LinkType.unknown
 					}

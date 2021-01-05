@@ -67,7 +67,7 @@ pub fn (mut publisher Publisher) page_exists(name string) bool {
 		return false
 	}else{
 		site := publisher.site_get(sitename) or {return false}
-		return sitename in site.pages
+		return itemname in site.pages
 	}
 }
 
@@ -101,7 +101,6 @@ pub fn (mut publisher Publisher) file_get(name string) ?&File {
 		}
 	}else{
 		site := publisher.site_get(sitename)?
-		println(site.files)
 		if itemname in site.files{
 			return publisher.file_get_by_id(site.files[itemname])
 		}
