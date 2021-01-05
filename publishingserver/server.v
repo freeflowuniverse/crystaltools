@@ -125,7 +125,5 @@ pub fn (mut app App) errors(sitename string) vweb.Result {
 	site.files_process(mut &app.publisher)
 	app.publisher.check()
 	site_errors := site.errors
-	// page_erros := map[string]map[string]string{}
-	
 	return $vweb.html()
 }
