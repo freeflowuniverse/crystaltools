@@ -13,6 +13,9 @@
 <div class="container">
   
   <h1> @sitename Errors</h1>
+  
+  @if site_errors.len > 0
+  
   <br>
   <br>
 
@@ -34,37 +37,49 @@
       @end
     </tbody>
   </table>
-
+ 
   <br>
   <br>
+  @else
+  <h3> Site Errors</h3>
+  <div style="color: green;">
+    No Errors
+  </div>
+  
+  @end
 
+ 
+@if page_errors.len > 0
   <h3> Page Errors</h3>
   
   <table class="table">
-    <thead>
-      <tr>
-        <th>Page</th>
-        <th>Line</th>
-        <th>Line Number</th>
-        <th>Error</th>
-      </tr>
-    </thead>
-    <tbody>
+    
         @for name, errors in page_errors
-          
-          <tr>
-            @for error in errors
-            <td>@name</td>
-            <td>@error.line</td>
-            <td>@error.linenr</td>
-            <td>@error.msg</td>
+        <h4 style="color:red">@name</h4>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Line</th>
+              <th>Error</th>
+            </tr>
+          </thead>
+          <tbody>
+          @for error in errors
+            <tr>
+              <td>@error.linenr : @error.line</td>
+              <td>@error.msg</td>
+            </tr>
           @end
+        </tbody>
 
-          </tr>
-        @end
-    </tbody>
-  </table>
-  
+      </table>
+      
+      @end
+@else
+<div style="color: green;">
+  No Errors
+</div>
+@end
 
 
 </div>
