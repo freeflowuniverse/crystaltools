@@ -22,23 +22,21 @@ fn main() {
 
 // Initialize (load wikis) only once when server starts
 pub fn (mut app App) init_once() {
-	// gitstructure := new()
-	// println(gitstructure)
 	app.publisher = publisher.new("") or {panic("cannot init publisher. $err")}
-	// app.publisher.load_all() or {panic("cannot loadaa publisher. $err")}// will find all sitename sites
-	// println(app.publisher)
-	// println('\nPublishing tools is running http://localhost:8082\n')
+	for mut site in app.publisher.sites {
+		site.files_process(mut &app.publisher)
+	}
 }
 
 // Initialization code goes here (with each request)
-pub fn (mut app App) init() {
-}
+pub fn (mut app App) init() {}
 
 // Index (List of wikis) -- reads index.html
 pub fn (mut app App) index() vweb.Result {
 	mut wikis := []string{}
 	for site in app.publisher.sites {
 		wikis << site.name
+
 	}
 	return $vweb.html()
 }
@@ -75,7 +73,7 @@ pub fn (mut app App) get_wiki_file(sitename string, filename string) vweb.Result
 	}
 
 	mut site := app.publisher.site_get(sitename) or { return app.vweb.not_found() }
-	site.files_process(mut &app.publisher)
+	
 	root := site.path
 	if filename.starts_with('_') {//why do we do this?
 		mut file := os.read_file(os.join_path(root, filename)) or { return app.vweb.not_found() }
@@ -125,9 +123,6 @@ pub fn (mut app App) get_wiki_img(sitename string, filename string) vweb.Result 
 pub fn (mut app App) errors(sitename string) vweb.Result {
 	mut site := app.publisher.site_get(sitename) or { return app.vweb.not_found() }
 	site.files_process(mut &app.publisher)
-	// mut f := publisher.new()
-	// f.lazy_loading = false
-	// f.load(sitename, app.publisher.sites[sitename].path)
 	app.publisher.check()
 	site_errors := site.errors
 	// page_erros := map[string]map[string]string{}
