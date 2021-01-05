@@ -9,10 +9,10 @@ const (
 )
 
 struct App {
+ vweb.Context
 pub mut:
-	vweb     vweb.Context // TODO embed
-	cnt      int
-	publisher publisher.Publisher
+ cnt      int
+ publisher publisher.Publisher
 }
 
 // Run server
@@ -44,13 +44,13 @@ pub fn (mut app App) index() vweb.Result {
 [get]
 ['/:sitename']
 pub fn (mut app App) get_wiki(sitename string) vweb.Result {
-	mut site := app.publisher.site_get(sitename) or { return app.vweb.not_found() }
+	mut site := app.publisher.site_get(sitename) or { return app.not_found() }
 	path := site.path
 	mut index := os.read_file( path + '/index.html') or {
-		return app.vweb.not_found()
+		return app.not_found()
 	}
-	app.vweb.set_content_type('text/html')
-	return app.vweb.ok(index)
+	app.set_content_type('text/html')
+	return app.ok(index)
 }
 
 [get]
@@ -59,7 +59,7 @@ pub fn (mut app App) get_wiki_file(sitename string, filename string) vweb.Result
 	if filename.starts_with("file__"){
 		splitted := filename.split("__")
 		if splitted.len != 3{
-			return app.vweb.not_found() 
+			return app.not_found() 
 		}
 		return app.get_wiki_img(splitted[1], splitted[2])
 	}
@@ -67,61 +67,61 @@ pub fn (mut app App) get_wiki_file(sitename string, filename string) vweb.Result
 	if filename.starts_with("page__"){
 		splitted := filename.split("__")
 		if splitted.len != 3{
-			return app.vweb.not_found() 
+			return app.not_found() 
 		}
 		return app.get_wiki_file(splitted[1], splitted[2])
 	}
 
-	mut site := app.publisher.site_get(sitename) or { return app.vweb.not_found() }
+	mut site := app.publisher.site_get(sitename) or { return app.not_found() }
 	
 	root := site.path
 	if filename.starts_with('_') {//why do we do this?
-		mut file := os.read_file(os.join_path(root, filename)) or { return app.vweb.not_found() }
-		app.vweb.set_content_type('text/html')
-		return app.vweb.ok(file)
+		mut file := os.read_file(os.join_path(root, filename)) or { return app.not_found() }
+		app.set_content_type('text/html')
+		return app.ok(file)
 	} else {
 		mut file := ''
 		if filename.ends_with('.md') {
-			app.vweb.set_content_type('text/html')
+			app.set_content_type('text/html')
 			mut pageobj := site.page_get("$filename", mut &app.publisher) or {
 				if filename == 'README.md' {
 					file = os.read_file(os.join_path(root, '_sidebar.md')) or {
-						return app.vweb.not_found()
+						return app.not_found()
 					}
-					app.vweb.set_content_type('text/html')
-					return app.vweb.ok('# $sitename\n' + file)
+					app.set_content_type('text/html')
+					return app.ok('# $sitename\n' + file)
 				}
-				return app.vweb.not_found()
+				return app.not_found()
 			}
 			pageobj.process(mut &app.publisher) or {panic(err)}
 			file = pageobj.content
 		} else {
-			img := site.file_get(filename, mut app.publisher) or { return app.vweb.not_found() }
+			img := site.file_get(filename, mut app.publisher) or { return app.not_found() }
 			//shouldn't we return as static, this brings everything in memory?
-			file = os.read_file(img.path_get(mut &app.publisher)) or { return app.vweb.not_found() }
+			file = os.read_file(img.path_get(mut &app.publisher)) or { return app.not_found() }
 			extension := filename.split('.')[1]
-			app.vweb.set_content_type('image/' + extension)
+			app.set_content_type('image/' + extension)
 		}
-		return app.vweb.ok(file)
+		return app.ok(file)
 	}
 }
 
 [get]
 ['/:sitename/img/:filename']
 pub fn (mut app App) get_wiki_img(sitename string, filename string) vweb.Result {
-	mut site := app.publisher.site_get(sitename) or { return app.vweb.not_found() }
+	mut site := app.publisher.site_get(sitename) or { return app.not_found() }
 	site.files_process(mut &app.publisher)
-	img := site.file_get(filename, mut &app.publisher) or { return app.vweb.not_found() }
-	file := os.read_file(img.path_get(mut &app.publisher)) or { return app.vweb.not_found() }
+	img := site.file_get(filename, mut &app.publisher) or { return app.not_found() }
+	file := os.read_file(img.path_get(mut &app.publisher)) or { return app.not_found() }
 	extension := filename.split('.')[1]
-	app.vweb.set_content_type('image/' + extension)
-	return app.vweb.ok(file)
+	app.set_content_type('image/' + extension)
+	return app.ok(file)
 }
 
 [get]
 ['/:sitename/errors']
 pub fn (mut app App) errors(sitename string) vweb.Result {
-	mut site := app.publisher.site_get(sitename) or { return app.vweb.not_found() }
+	mut site := app.publisher.site_get(sitename) or { return app.not_found() }
 	app.publisher.check()
 	mut site_errors := []publisher.SiteError{}
 
@@ -134,7 +134,7 @@ pub fn (mut app App) errors(sitename string) vweb.Result {
 	mut page_errors := map[string][]publisher.PageError{}
 	
 	for name, id in site.pages{
-		page := site.page_get("$name", mut &app.publisher) or { return app.vweb.not_found() }
+		page := site.page_get("$name", mut &app.publisher) or { return app.not_found() }
 		if page.errors.len > 0{
 			page_errors[name] = page.errors
 		}
