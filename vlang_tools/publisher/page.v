@@ -42,7 +42,7 @@ pub fn (mut page Page) process(mut publisher &Publisher) ?bool {
 		return error('Failed to open $path_source\nerror:$err')
 	}
 
-	page.process_links(mut publisher)	//first find all the links
+	// page.process_links(mut publisher)	//first find all the links
 	page.process_includes(mut publisher) // should be recursive now
 
 	//make sure we only execute this once !
