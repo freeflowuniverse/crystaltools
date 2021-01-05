@@ -29,10 +29,11 @@ pub enum PageErrorCat {
 }
 
 struct PageError {
-	line   string
-	linenr int
-	msg    string
-	cat    PageErrorCat
+	pub:
+		line   string
+		linenr int
+		msg    string
+		cat    PageErrorCat
 }
 
 

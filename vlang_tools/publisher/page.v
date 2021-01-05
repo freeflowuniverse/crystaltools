@@ -10,6 +10,8 @@ pub fn (page Page) path_get(mut publisher &Publisher) string {
 // will load the content, check everything, return true if ok
 pub fn (mut page Page) check(mut publisher &Publisher) bool {
 	page.site_get(mut publisher)
+	page.process(publisher)
+
 	if page.state == PageStatus.error {
 		return false
 	}
@@ -227,7 +229,9 @@ fn (mut page Page) process_includes(mut publisher &Publisher) ?string {
 					msg: "Cannot inlude '$name'\n$err"
 					cat: PageErrorCat.brokeninclude
 				}
+				
 				page.error_add(page_error, mut publisher)
+				
 				lines += '> **ERROR: ${page_error.msg} **<BR>\n\n'
 				continue
 			}

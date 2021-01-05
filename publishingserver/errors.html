@@ -11,7 +11,13 @@
 <body>
 
 <div class="container">
-  <h2> @sitename Errors</h2>
+  
+  <h1> @sitename Errors</h1>
+  <br>
+  <br>
+
+  <h3> Site Errors</h3>
+  
   <table class="table">
     <thead>
       <tr>
@@ -28,6 +34,39 @@
       @end
     </tbody>
   </table>
+
+  <br>
+  <br>
+
+  <h3> Page Errors</h3>
+  
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Page</th>
+        <th>Line</th>
+        <th>Line Number</th>
+        <th>Error</th>
+      </tr>
+    </thead>
+    <tbody>
+        @for name, errors in page_errors
+          
+          <tr>
+            @for error in errors
+            <td>@name</td>
+            <td>@error.line</td>
+            <td>@error.linenr</td>
+            <td>@error.msg</td>
+          @end
+
+          </tr>
+        @end
+    </tbody>
+  </table>
+  
+
+
 </div>
 </body>
 </html>

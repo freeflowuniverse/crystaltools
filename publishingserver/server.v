@@ -122,8 +122,22 @@ pub fn (mut app App) get_wiki_img(sitename string, filename string) vweb.Result 
 ['/:sitename/errors']
 pub fn (mut app App) errors(sitename string) vweb.Result {
 	mut site := app.publisher.site_get(sitename) or { return app.vweb.not_found() }
-	site.files_process(mut &app.publisher)
 	app.publisher.check()
-	site_errors := site.errors
+	mut site_errors := []publisher.SiteError{}
+
+	for err in site.errors{
+		if err.cat != publisher.SiteErrorCategory.duplicatefile && err.cat != publisher.SiteErrorCategory.duplicatepage{
+			site_errors << err
+		}
+	}
+	
+	mut page_errors := map[string][]publisher.PageError{}
+	
+	for name, id in site.pages{
+		page := site.page_get("$name", mut &app.publisher) or { return app.vweb.not_found() }
+		if page.errors.len > 0{
+			page_errors[name] = page.errors
+		}
+	}
 	return $vweb.html()
 }
