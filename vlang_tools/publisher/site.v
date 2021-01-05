@@ -101,7 +101,7 @@ pub fn (site Site) check( mut publisher &Publisher) {
 }
 
 // process files in the site
-fn (mut site Site) files_process(mut publisher &Publisher) ? {
+pub fn (mut site Site) files_process(mut publisher &Publisher) ? {
 	// println('FILES LOAD FOR : $site.name')
 	// println("file path check: $site.path -> ${os.exists(site.path)}")
 	if ! os.exists(site.path){return error("cannot find site on path:'$site.path'")}
@@ -119,7 +119,7 @@ fn (mut site Site) files_process_recursive(path string,mut publisher &Publisher)
 			if basedir.starts_with('_') {
 				continue
 			}
-			site.files_process_recursive(os.join_path(path, item),mut publisher)
+			site.files_process_recursive(os.join_path(path, item), mut publisher)
 		} else {
 			if item.starts_with('.') {
 				continue

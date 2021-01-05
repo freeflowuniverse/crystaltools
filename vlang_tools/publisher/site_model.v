@@ -25,7 +25,7 @@ pub:
 
 pub fn (site Site) page_get(name string, mut publisher &Publisher) ?&Page {
 	mut namelower := name_fix(name)
-	if namelower in site.pages{
+	if namelower in site.pages{	
 		return publisher.page_get_by_id(site.pages[namelower])
 	}
 	return error('cannot find page with name $name')

@@ -79,7 +79,6 @@ pub fn (mut publisher Publisher) site_get(name string) ?&Site {
 	sitename := name_fix(name)
 	if sitename in publisher.site_names{
 		mut site := publisher.site_get_by_id(publisher.site_names[sitename]) or {return error('cannot find site: $sitename')}
-		site.files_process(mut &publisher)
 		return site
 	}
 	return error('cannot find site: $sitename')
@@ -88,17 +87,22 @@ pub fn (mut publisher Publisher) site_get(name string) ?&Site {
 
 // name in form: 'sitename:filename' or 'filename'
 pub fn (mut publisher Publisher) file_get(name string) ?&File {
-	sitename,itemname := site_page_names_get(name)?
+	n := name.trim_left(".")
+	sitename,itemname := site_page_names_get(n)?
+	
 	mut res := []int{}
 	if sitename==""{
 		for site in publisher.sites {
-			if sitename in site.pages{
-				res << site.files[sitename]
+			for file in publisher.files{
+				if file.path.ends_with(itemname){
+					res << site.files[itemname]
+				}
 			}
 		}
 	}else{
 		site := publisher.site_get(sitename)?
-		if sitename in site.files{
+		println(site.files)
+		if itemname in site.files{
 			return publisher.file_get_by_id(site.files[itemname])
 		}
 	}

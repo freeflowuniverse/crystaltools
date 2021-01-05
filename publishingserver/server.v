@@ -75,6 +75,7 @@ pub fn (mut app App) get_wiki_file(sitename string, filename string) vweb.Result
 	}
 
 	mut site := app.publisher.site_get(sitename) or { return app.vweb.not_found() }
+	site.files_process(mut &app.publisher)
 	root := site.path
 	if filename.starts_with('_') {//why do we do this?
 		mut file := os.read_file(os.join_path(root, filename)) or { return app.vweb.not_found() }
@@ -84,7 +85,7 @@ pub fn (mut app App) get_wiki_file(sitename string, filename string) vweb.Result
 		mut file := ''
 		if filename.ends_with('.md') {
 			app.vweb.set_content_type('text/html')
-			mut pageobj := app.publisher.page_get("$sitename:$filename") or {
+			mut pageobj := site.page_get("$filename", &app.publisher) or {
 				if filename == 'README.md' {
 					file = os.read_file(os.join_path(root, '_sidebar.md')) or {
 						return app.vweb.not_found()
@@ -94,6 +95,7 @@ pub fn (mut app App) get_wiki_file(sitename string, filename string) vweb.Result
 				}
 				return app.vweb.not_found()
 			}
+			pageobj.process(&app.publisher) or {panic(err)}
 			file = pageobj.content
 		} else {
 			img := site.file_get(filename, mut app.publisher) or { return app.vweb.not_found() }
@@ -110,6 +112,7 @@ pub fn (mut app App) get_wiki_file(sitename string, filename string) vweb.Result
 ['/:sitename/img/:filename']
 pub fn (mut app App) get_wiki_img(sitename string, filename string) vweb.Result {
 	mut site := app.publisher.site_get(sitename) or { return app.vweb.not_found() }
+	site.files_process(mut &app.publisher)
 	img := site.file_get(filename, mut &app.publisher) or { return app.vweb.not_found() }
 	file := os.read_file(img.path_get(mut &app.publisher)) or { return app.vweb.not_found() }
 	extension := filename.split('.')[1]
@@ -121,6 +124,7 @@ pub fn (mut app App) get_wiki_img(sitename string, filename string) vweb.Result 
 ['/:sitename/errors']
 pub fn (mut app App) errors(sitename string) vweb.Result {
 	mut site := app.publisher.site_get(sitename) or { return app.vweb.not_found() }
+	site.files_process(mut &app.publisher)
 	// mut f := publisher.new()
 	// f.lazy_loading = false
 	// f.load(sitename, app.publisher.sites[sitename].path)
