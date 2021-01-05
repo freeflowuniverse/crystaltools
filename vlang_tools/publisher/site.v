@@ -72,7 +72,7 @@ fn (mut site Site) page_remember(path string, name string, mut publisher &Publis
 			path: pathrelative
 			
 		}
-		site.pages[namelower] = publisher.pages.len
+		site.pages[namelower] = publisher.pages.len - 1
 	}
 }
 
@@ -102,8 +102,6 @@ pub fn (site Site) check( mut publisher &Publisher) {
 
 // process files in the site
 pub fn (mut site Site) files_process(mut publisher &Publisher) ? {
-	// println('FILES LOAD FOR : $site.name')
-	// println("file path check: $site.path -> ${os.exists(site.path)}")
 	if ! os.exists(site.path){return error("cannot find site on path:'$site.path'")}
 	return site.files_process_recursive(site.path,mut publisher)
 }
@@ -136,7 +134,7 @@ fn (mut site Site) files_process_recursive(path string,mut publisher &Publisher)
 				if ext2 == 'md' {
 					site.page_remember(path, item, mut publisher)?
 				}
-				if ext2 in ['jpg', 'png'] {
+				if ext2 in ["jpg","png","svg","jpeg","gif"] {
 					site.file_remember(path, item, mut publisher)?
 				}
 			}
