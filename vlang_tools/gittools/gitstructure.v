@@ -20,10 +20,7 @@ pub fn (mut gitstructure GitStructure) repo_get_from_url(url string) ?&GitRepo {
 	addr := addr_get_from_url(url) or {return error("cannot get addr from url:$err")}
 	addr2 := GitGetArgs{name:addr.name, account:addr.account}
 
-	if gitstructure.repo_exists(addr2) {
-		mut r := gitstructure.repo_get(addr2) or {return error("cannot load git $url\nerror:$err")}
-		return r
-	}else{
+	if ! gitstructure.repo_exists(addr2) {
 		//repo does not exist yet
 		gitstructure.repos << GitRepo{path:addr.path_get(),addr:addr,id:gitstructure.repos.len}
 		_:= gitstructure.repo_get(addr2) or { 
@@ -33,7 +30,9 @@ pub fn (mut gitstructure GitStructure) repo_get_from_url(url string) ?&GitRepo {
 		}
 
 	}
-	
+
+	mut r := gitstructure.repo_get(addr2) or {return error("cannot load git $url\nerror:$err")}
+	return r
 }
 
 struct GitGetArgs {
@@ -81,6 +80,7 @@ pub fn (mut gitstructure GitStructure) repo_exists(addr GitGetArgs) bool {
 
 //find all git repo's, this goes very fast, no reason to cache
 fn (mut gitstructure GitStructure) load(path string)? {
+	gitstructure.repos = []GitRepo{}
 	mut path1 := ""
 	if path == "" {
 		path1 = "${os.home_dir()}/code/"

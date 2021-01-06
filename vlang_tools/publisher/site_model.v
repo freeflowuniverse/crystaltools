@@ -9,6 +9,7 @@ pub mut:
 	name      string
 	files map[string]int
 	pages map[string]int
+	state 	  SiteState
 }
 
 pub enum SiteErrorCategory {
@@ -22,6 +23,12 @@ pub:
 	error string
 	cat   SiteErrorCategory
 }
+
+pub enum SiteState {
+	init
+	ok
+	error
+}		
 
 
 pub fn (site Site) page_get(name string, mut publisher &Publisher) ?&Page {

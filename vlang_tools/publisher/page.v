@@ -136,11 +136,11 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 					serverlink = '[${link_description}](file__${sitename}__${itemname})'
 					if _ := publisher.file_exists("$sitename:$itemname") {
 						//remember that the file has been used
-						mut img := publisher.file_get("$sitename:$itemname") or {
+						mut file := publisher.file_get("$sitename:$itemname") or {
 							return err
 						}
-						if !(page.site_id in img.usedby){
-							img.usedby<<page.id
+						if !(page.site_id in file.usedby){
+							file.usedby<<page.id
 						}
 
 					}else{

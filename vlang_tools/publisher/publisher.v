@@ -8,12 +8,8 @@ import json
 //will find all wiki's
 pub fn new(path string) ?Publisher {
 	mut publisher := Publisher{}
-	mut domain := os.getenv('DOMAIN')
-	if domain == '' {
-		domain = 'http://localhost:8082'
-	}
 	publisher.gitlevel = 0
-	publisher.load_all(path)?
+	publisher.load_all(path.replace('~', os.home_dir()))?
 	return publisher
 }
 
@@ -78,7 +74,7 @@ pub fn site_page_names_get(name string) ?(string, string) {
 // check all pages, try to find errors
 pub fn (mut publisher Publisher) check() {
 	for mut site in publisher.sites {
-		site.check(mut publisher)
+		site.load(mut publisher)
 	}
 }
 
