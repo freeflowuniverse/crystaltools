@@ -119,3 +119,15 @@ pub fn (mut executor ExecutorSSH) info() map[string]string {
 		'port': "$executor.ipaddr.port",
 	}
 }
+
+// ssh shell on the node default ssh port, or any custom port that may be
+// forwarding ssh traffic to certain container
+
+pub fn (mut executor ExecutorSSH) ssh_shell(port int)? {
+	mut p := "$executor.ipaddr.port"
+	if port != 0{
+		p = "$port"
+	}
+
+	os.execvp("ssh", ["$executor.user@$executor.ipaddr.addr", "-p $port"])?
+}
