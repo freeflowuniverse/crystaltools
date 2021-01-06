@@ -90,11 +90,17 @@ pub fn (site Site) check( mut publisher &Publisher) {
 
 	// if site.pages
 	for _, id in site.pages {
-		mut p := &publisher.page_get_by_id(id)
+		mut p := publisher.page_get_by_id(id) or { 
+			eprintln(err)
+			continue
+		}
 		p.check(mut publisher)
 	}
 	for _, id in site.files {
-		mut f := &publisher.file_get_by_id(id)
+		mut f := publisher.file_get_by_id(id) or {
+			eprintln(err)
+			continue
+		}
 		f.process(mut publisher)
 	}
 
