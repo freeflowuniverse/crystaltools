@@ -23,6 +23,7 @@ pub:
 	cat   SiteErrorCategory
 }
 
+
 pub fn (site Site) page_get(name string, mut publisher &Publisher) ?&Page {
 	mut namelower := name_fix(name)
 	if namelower in site.pages{	

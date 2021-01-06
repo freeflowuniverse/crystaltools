@@ -10,7 +10,6 @@ pub mut:
 	site_names map[string]int	
 }
 
-
 pub fn (mut publisher Publisher) site_get_by_id(id int) ?&Site {
 	if id > publisher.sites.len{
 		return error("cannot get site with id: $id because not enough sites in the list")
@@ -89,12 +88,11 @@ pub fn (mut publisher Publisher) site_get(name string) ?&Site {
 pub fn (mut publisher Publisher) file_get(name string) ?&File {
 	n := name.trim_left(".")
 	sitename,itemname := site_page_names_get(n)?
-	
 	mut res := []int{}
 	if sitename==""{
 		for site in publisher.sites {
 			for file in publisher.files{
-				if file.path.ends_with(itemname){
+				if file.name == itemname{
 					res << site.files[itemname]
 				}
 			}

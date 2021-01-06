@@ -9,8 +9,7 @@ pub fn (page Page) path_get(mut publisher &Publisher) string {
 
 // will load the content, check everything, return true if ok
 pub fn (mut page Page) check(mut publisher &Publisher) bool {
-	page.site_get(mut publisher)
-	page.process(publisher)
+	page.process(mut publisher)
 
 	if page.state == PageStatus.error {
 		return false

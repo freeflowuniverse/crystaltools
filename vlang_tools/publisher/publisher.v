@@ -77,7 +77,7 @@ pub fn site_page_names_get(name string) ?(string, string) {
 
 // check all pages, try to find errors
 pub fn (mut publisher Publisher) check() {
-	for site in publisher.sites {
+	for mut site in publisher.sites {
 		site.check(mut publisher)
 	}
 }

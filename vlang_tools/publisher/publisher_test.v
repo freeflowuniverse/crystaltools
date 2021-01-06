@@ -1,56 +1,62 @@
 import publisher
 
 fn test_get_content_basic() {
-	mut f := publisher.new("..") or {panic(err)}
-	site5 := f.site_get("wiki")or { panic('cant find wiki') }
-	assert site5.page_exists('roadmap')
-	_ := site5.page_get('roadmap') or { panic('cant find page') }
-	// println(p)
-	site1, page1 := f.page_get('docker_Compatibility.md') or { panic('cannot find doc 1 $err') }
-	// println(page1)
-	site2, page2 := f.page_get('docker_Compatibility') or { panic('cannot find doc 2 $err') }
+	mut f := publisher.new("../../examples") or {panic(err)}
+	f.check()
+	mut wiki := f.site_get("wiki")or { panic('cant find wiki') }
+	assert wiki.page_exists('roadmap')
+	_ := wiki.page_get('roadmap', mut &f) or { panic('cant find page') }
+	
+	mut test := f.site_get("test")or { panic('cant find test') }
+	page1 := f.page_get('docker_Compatibility.md') or { panic('cannot find doc 1 $err') }
+	site1 := page1.site_get(mut &f) or {panic(err)}
+
+	page2 := f.page_get('docker_Compatibility') or { panic('cannot find doc 2 $err') }
+	site2 := page2.site_get(mut &f) or {panic(err)}
+
 	// println(page2)
-	site3, page3 := f.page_get('test:docker_Compatibility') or { panic('cannot find doc 3 $err') }
+	page3 := f.page_get('test:docker_Compatibility') or { panic('cannot find doc 3 $err') }
+	site3 := page3.site_get(mut &f) or {panic(err)}
+
 	assert site1.name == site2.name
 	assert site3.name == site2.name
 	assert page3.name == page2.name
 	assert page1.name == page2.name
-	mut a := 1
-	_, _ := f.page_get('test:docker_cCompatibility') or {
-		a = 2
-		return
-	}
-	assert a == 2
+	
+	_ := f.page_get('test:docker_Compatibility') or {panic(err)}
+
 	assert f.sites.len == 2
 	assert f.sites[1].name == 'wiki'
 }
 
 fn test_get_content1() {
-	mut f := publisher.new("..") or {panic(err)}
-	println('start')
-	_, fileobj := f.file_get('blockchain_dilema.png') or { panic(err) }
+	mut f := publisher.new("../../examples") or {panic(err)}
+	f.check()
+	fileobj := f.file_get('test:blockchain_dilema.png') or { panic(err) }
 	// this has enough info to serve the file back
 	println(fileobj.path_get(mut &f))
 	println(fileobj)
-	_, pageobj := f.page_get('roadmap.md') or { panic(err) }
+	pageobj := f.page_get('roadmap.md') or { panic(err) }
 	// // this has enough info to serve the file back
 	println(pageobj.path_get(mut &f))
 	println(pageobj)
-	// pages_test(mut f)
 }
 
 
 fn test_get_content2() {
-	mut f := publisher.new("..") or {panic(err)}
+	mut f := publisher.new("../../examples") or {panic(err)}
+	f.check()
 	println('start')
 	for site in f.sites{
 		println(site.name)
 	}
 	assert f.sites.len == 2
-	_, mut pageobj := f.page_get('roadmap.md') or { panic(err) }
+	
+	mut pageobj := f.page_get('roadmap.md') or { panic(err) }
 	// // this has enough info to serve the file back
 	println(pageobj.path_get(mut &f))
-	e:=pageobj.markdown_get(mut &f)
+	pageobj.process(mut &f)
+	e:=pageobj.content
 
 	//check includes & links worked well
 	assert e.contains("TFGrid release 2.1")

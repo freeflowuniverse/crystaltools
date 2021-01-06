@@ -76,7 +76,8 @@ fn (mut site Site) page_remember(path string, name string, mut publisher &Publis
 	}
 }
 
-pub fn (site Site) check( mut publisher &Publisher) {
+pub fn (mut site Site) check( mut publisher &Publisher) {
+	site.files_process(mut publisher)
 
 	imgnotusedpath := site.path+"/img_notused"
 	if ! os.exists(imgnotusedpath){
@@ -94,7 +95,9 @@ pub fn (site Site) check( mut publisher &Publisher) {
 			eprintln(err)
 			continue
 		}
-		p.check(mut publisher)
+
+		p.process(mut publisher)
+
 	}
 	for _, id in site.files {
 		mut f := publisher.file_get_by_id(id) or {
@@ -113,6 +116,7 @@ pub fn (mut site Site) files_process(mut publisher &Publisher) ? {
 }
 
 fn (mut site Site) files_process_recursive(path string,mut publisher &Publisher) ? {
+	
 	items := os.ls(path) ?
 	for item in items {
 		if os.is_dir(os.join_path(path, item)) {
