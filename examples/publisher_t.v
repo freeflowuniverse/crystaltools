@@ -21,7 +21,7 @@ fn main() {
 
 	// println(site.pages)
 
-	site.check(mut f)
+	site.load(mut f)
 
 	// println(site.pages)
 
