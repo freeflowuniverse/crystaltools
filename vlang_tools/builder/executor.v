@@ -10,5 +10,6 @@ interface Executor {
 	upload(source string, dest string) ?string
 	environ_get() ?map[string]string
 	info() map[string]string
+	ssh_shell(port int)?
 }
 

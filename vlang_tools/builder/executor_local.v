@@ -72,3 +72,7 @@ pub fn (mut executor ExecutorLocal) upload(source string, dest string) ?string {
 pub fn (mut executor ExecutorLocal) download(source string, dest string) ?string {
 	panic('not implemented')
 }
+
+pub fn (mut executor ExecutorLocal) ssh_shell(port int)? {
+	os.execvp("ssh", ["localhost", "-p $port"])?
+}

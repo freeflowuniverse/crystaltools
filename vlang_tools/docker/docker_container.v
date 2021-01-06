@@ -31,6 +31,7 @@ pub mut:
 	ports       	[]string
 	forwarded_ports	[]string
 	mounted_volumes	[]string
+	ssh_port        int //ssh port on node that is used to get ssh
 }
 
 struct DockerContainerInfo {
@@ -90,7 +91,9 @@ pub fn (mut container DockerContainer) export(path string) ?string {
 }
 
 // open ssh shell to the cobtainer
-pub fn (mut container DockerContainer) ssh_shell() ? {}
+pub fn (mut container DockerContainer) ssh_shell() ? {
+	container.node.executor.ssh_shell(container.ssh_port)?
+}
 
 // return the builder.node class which allows to remove executed, ...
 pub fn (mut container DockerContainer) node_get() ?builder.Node {
