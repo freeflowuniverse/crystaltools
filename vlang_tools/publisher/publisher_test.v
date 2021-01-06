@@ -1,7 +1,12 @@
+import os
+
 import publisher
 
 fn test_get_content_basic() {
-	mut f := publisher.new("../../examples") or {panic(err)}
+	mut path := os.resource_abs_path('../../examples')
+	println(path)
+	println(path)
+	mut f := publisher.new(path) or {panic(err)}
 	f.check()
 	mut wiki := f.site_get("wiki")or { panic('cant find wiki') }
 	assert wiki.page_exists('roadmap')
@@ -30,7 +35,8 @@ fn test_get_content_basic() {
 }
 
 fn test_get_content1() {
-	mut f := publisher.new("../../examples") or {panic(err)}
+	mut path := os.resource_abs_path('../../examples')
+	mut f := publisher.new(path) or {panic(err)}
 	f.check()
 	fileobj := f.file_get('test:blockchain_dilema.png') or { panic(err) }
 	// this has enough info to serve the file back
@@ -44,7 +50,8 @@ fn test_get_content1() {
 
 
 fn test_get_content2() {
-	mut f := publisher.new("../../examples") or {panic(err)}
+	mut path := os.resource_abs_path('../../examples')
+	mut f := publisher.new(path) or {panic(err)}
 	f.check()
 	println('start')
 	for site in f.sites{
