@@ -1,8 +1,6 @@
 module config
 
 import gittools
-import vweb
-import publisher
 
 pub fn config() {
 	//get publisher, check for all wiki's

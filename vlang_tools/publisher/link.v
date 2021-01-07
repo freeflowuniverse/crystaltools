@@ -111,7 +111,7 @@ pub fn link_parser(text string) ParseResult {
 			} else if state == ParseStatus.start {
 				if char == '[' {
 					if charprev == '!' {
-						inkcat := LinkType.file
+						linkcat = LinkType.file
 						isfile = true //will remember this is an file (can be external or internal)
 					}
 					state = ParseStatus.linkopen
