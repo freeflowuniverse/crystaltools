@@ -24,17 +24,19 @@ enum LinkState {
 }
 
 struct ParseResult {
-mut:
+pub mut:
 	links []Link
 }
 
 struct Link {
 	// original string //how link was put in the document
 	name  string  //has the spaces inside, so we can replace
-	link  string  //has the spaces inside
 	cat   LinkType
 	isfile bool
 	isexternal bool
+	pub:
+		link  string  //has the spaces inside
+
 // mut:
 // 	state LinkState
 }
@@ -109,6 +111,7 @@ pub fn link_parser(text string) ParseResult {
 			} else if state == ParseStatus.start {
 				if char == '[' {
 					if charprev == '!' {
+						inkcat := LinkType.file
 						isfile = true //will remember this is an file (can be external or internal)
 					}
 					state = ParseStatus.linkopen
@@ -147,8 +150,8 @@ pub fn link_parser(text string) ParseResult {
 					}
 					
 					parseresult.links << Link{
-						name: capturegroup_pre
-						link: capturegroup_post
+						name: capturegroup_pre.trim(" ")
+						link: capturegroup_post.trim(" ")
 						cat: linkcat
 						// state: linkstate
 						isfile: isfile
@@ -168,6 +171,5 @@ pub fn link_parser(text string) ParseResult {
 			// println("$char $state '$capturegroup_pre|$capturegroup_post'")
 		}
 	}
-	// println("")
 	return parseresult
 }

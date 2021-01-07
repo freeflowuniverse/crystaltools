@@ -13,7 +13,6 @@ pub fn (file File) path_get(mut publisher &Publisher) string {
 // need to create smaller sizes if needed and change the name
 //also need to make sure its in right directory
 pub fn (mut file File) process(mut publisher &Publisher) {
-	println(file)
 	if file.site_id>publisher.sites.len{
 		panic("cannot find site: ${file.site_id}, not enough elements in list.")
 	}
@@ -62,4 +61,5 @@ pub fn (mut file File) process(mut publisher &Publisher) {
 			os.mv(path,dest)
 		}
 	}
+	file.path = dest
 }

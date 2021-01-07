@@ -3,8 +3,7 @@ import os
 import publisher
 
 fn test_get_content_basic() {
-	mut path := os.resource_abs_path('../../examples')
-	println(path)
+	mut path := os.join_path(os.getwd(), "examples")
 	println(path)
 	mut f := publisher.new(path) or {panic(err)}
 	f.check()
@@ -31,11 +30,12 @@ fn test_get_content_basic() {
 	_ := f.page_get('test:docker_Compatibility') or {panic(err)}
 
 	assert f.sites.len == 2
-	assert f.sites[1].name == 'wiki'
+	assert f.sites[1].name == 'test'
+	assert f.sites[0].name == 'wiki'
 }
 
 fn test_get_content1() {
-	mut path := os.resource_abs_path('../../examples')
+	mut path := os.join_path(os.getwd(), "examples")
 	mut f := publisher.new(path) or {panic(err)}
 	f.check()
 	fileobj := f.file_get('test:blockchain_dilema.png') or { panic(err) }
@@ -50,7 +50,7 @@ fn test_get_content1() {
 
 
 fn test_get_content2() {
-	mut path := os.resource_abs_path('../../examples')
+	mut path := os.join_path(os.getwd(), "examples")
 	mut f := publisher.new(path) or {panic(err)}
 	f.check()
 	println('start')
