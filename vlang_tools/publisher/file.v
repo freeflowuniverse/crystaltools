@@ -19,9 +19,7 @@ pub fn (mut file File) process(mut publisher &Publisher) {
 	mut site := publisher.sites[file.site_id]
 	mut path := file.path_get(mut publisher)
 	mut dest:= ""
-	if path.contains("presos"){
-		println(file)
-	}
+	
 	if file.usedby.len>0{
 		// println("${file.name} used")
 		if file.usedby.len>1{
@@ -53,11 +51,10 @@ pub fn (mut file File) process(mut publisher &Publisher) {
 		if path.contains("img_notused"){
 			return
 		}
+		
 		println("${file.name} not used")
 		dest = "${site.path}/img_notused/${os.base(path)}"
-		if os.exists(dest){
-			panic("double file: fix first: $path -> $dest")
-		}else{
+		if !os.exists(dest){
 			os.mv(path,dest)
 		}
 	}
