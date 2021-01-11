@@ -102,7 +102,32 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 			link_description = link.name.trim(" ")
 
 			//only when local we need to check if we can find files/pages or not
-			if !link.isexternal && link.cat != LinkType.unknown{
+			if link.cat == LinkType.missing{
+				link_link = ""
+				serverlink = '[${link_description}]()'
+				errormsg :=  "ERROR: EMPTY LINK: for $link_description"
+					errors << errormsg
+					page.error_add({
+						line:   line
+						linenr: nr
+						msg: errormsg  
+						cat:    PageErrorCat.brokenlink
+					}, mut publisher)
+			}else if link.isexternal{
+				link_link = link.link.trim(" ")
+			}else if link.cat == LinkType.unknown{
+				//was no page or file on the localserver
+				//we can only do some generic cleanup now
+				link_link = link.link.trim(" ")
+				errormsg :=  "ERROR: UNKNOWN  LINK: '${link.link}' for $link_description"
+				errors << errormsg
+				page.error_add({
+					line:   line
+					linenr: nr
+					msg:    errormsg
+					cat:    PageErrorCat.brokenlink
+				}, mut publisher)
+			}else {
 
 				//parse the different variations of how we can mention a link
 				// supported:
@@ -120,19 +145,7 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 				//can be for file, file & page
 				itemname = os.file_name(itemname)
 				
-				if link.cat == LinkType.missing{
-					link_link = ""
-					serverlink = '[${link_description}]()'
-					errormsg :=  "ERROR: EMPTY LINK: for $link_description"
-						errors << errormsg
-						page.error_add({
-							line:   line
-							linenr: nr
-							msg: errormsg  
-							cat:    PageErrorCat.brokenlink
-						}, mut publisher)
-
-				}else if link.cat == LinkType.page{
+				if link.cat == LinkType.page{
 					serverlink = '[${link_description}](page__${sitename}__${itemname}.md)'
 					if ! publisher.page_exists("$sitename:$itemname") {
 						errormsg :=  "ERROR: CANNOT FIND LINK: '${link.link}' for $link_description"
@@ -144,7 +157,7 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 							cat:    PageErrorCat.brokenlink
 						}, mut publisher)
 					}
-				} else {
+				} else if link.cat != LinkType.email{
 					serverlink = '[${link_description}](file__${sitename}__${itemname})'
 					if _ := publisher.file_exists("$sitename:$itemname") {
 						//remember that the file has been used
@@ -174,10 +187,6 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 					link_link = "$sitename:$itemname"
 				}
 				
-			}else{
-				//was no page or file on the localserver
-				//we can only do some generic cleanup now
-				link_link = link.link.trim(" ")
 			}
 
 			//lets cleanup the sourcecode & the code which will come from server
