@@ -3,8 +3,11 @@ import os
 import publisher
 
 fn test_get_content_basic() {
-	mut path := os.join_path(os.getwd(), "examples")
-	println(path)
+	mut p := @FILE.split("/")
+	p.pop()
+
+	mut path := os.join_path(p.join("/"), "..", "..", "examples")
+	
 	mut f := publisher.new(path) or {panic(err)}
 	f.check()
 	mut wiki := f.site_get("wiki")or { panic('cant find wiki') }
@@ -35,7 +38,10 @@ fn test_get_content_basic() {
 }
 
 fn test_get_content1() {
-	mut path := os.join_path(os.getwd(), "examples")
+	mut p := @FILE.split("/")
+	p.pop()
+
+	mut path := os.join_path(p.join("/"), "..", "..", "examples")
 	mut f := publisher.new(path) or {panic(err)}
 	f.check()
 	fileobj := f.file_get('test:blockchain_dilema.png') or { panic(err) }
@@ -50,7 +56,11 @@ fn test_get_content1() {
 
 
 fn test_get_content2() {
-	mut path := os.join_path(os.getwd(), "examples")
+	mut p := @FILE.split("/")
+	p.pop()
+
+	mut path := os.join_path(p.join("/"), "..", "..", "examples")
+	
 	mut f := publisher.new(path) or {panic(err)}
 	f.check()
 	println('start')
