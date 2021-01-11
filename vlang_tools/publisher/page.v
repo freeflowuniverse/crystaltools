@@ -191,10 +191,10 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 
 		//now we need to check if there were errors if yes lets put them in the source code
 		//this will make it easy to spot errors and fix, remember endusers will see it too
-		for err in errors{
-			lines_source += "> **ERROR: $err**<br>\n\n"
-			lines_server += "> **ERROR: $err**<br>\n\n"
-		}
+		// for err in errors{
+		// 	lines_source += "> **ERROR: $err**<br>\n\n"
+		// 	lines_server += "> **ERROR: $err**<br>\n\n"
+		// }
 
 	}//end of the line walk
 
