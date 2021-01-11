@@ -132,7 +132,11 @@ pub fn link_parser(text string) ParseResult {
 					
 					//check which link type
 					ext = os.file_ext(os.base(capturegroup_post)).to_lower()
-					if capturegroup_post.starts_with("mailto:"){
+					
+					splitted := capturegroup_post.split(" ")
+					if splitted.len > 0 && splitted[0].ends_with(".html"){
+						linkcat = LinkType.html
+					}else if capturegroup_post.starts_with("mailto:"){
 						linkcat = LinkType.email
 					}else if ext == "."{
 						linkcat = LinkType.missing

@@ -127,7 +127,28 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 					msg:    errormsg
 					cat:    PageErrorCat.brokenlink
 				}, mut publisher)
+			}else if link.cat == LinkType.html{
+				link_link = link.link.trim(" ")
+				splitted := link.link.split(" ")
+				mut l := "html__${sitename}__" + splitted[0].replace("/", "__")
+				
+				if splitted.len > 1{
+					l = l + " " + splitted[1 ..].join(" ")
+				}
+				serverlink = '[${link_description}]($l)'
+
+				// if ! publisher.page_exists("$sitename:$itemname") {
+				// 	errormsg :=  "ERROR: CANNOT FIND LINK: '${link.link}' for $link_description"
+				// 	errors << errormsg
+				// 	page.error_add({
+				// 		line:   line
+				// 		linenr: nr
+				// 		msg: errormsg  
+				// 		cat:    PageErrorCat.brokenlink
+				// 	}, mut publisher)
+				// }
 			}else {
+				
 
 				//parse the different variations of how we can mention a link
 				// supported:

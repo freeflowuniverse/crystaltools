@@ -75,6 +75,23 @@ pub fn (mut app App) get_wiki_file(sitename string, filename string) vweb.Result
 		return app.get_wiki_file(splitted[1], splitted[2])
 	}
 
+	if filename.starts_with("html__"){
+		mut splitted := filename.split("__")
+
+		if splitted.len < 3{
+			return app.not_found() 
+		}
+
+		mut site := app.publisher.site_get(splitted[1]) or { return app.not_found() }
+		mut path := os.join_path(site.path, splitted[2..].join("/"))
+		
+		mut f := os.read_file( path) or {return app.not_found()}
+		app.set_content_type('text/html')
+		return app.ok(f)	
+	}
+
+
+
 	mut site := app.publisher.site_get(sitename) or { return app.not_found() }
 	
 	root := site.path
