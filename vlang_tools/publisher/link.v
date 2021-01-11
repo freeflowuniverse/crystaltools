@@ -15,6 +15,7 @@ enum LinkType {
 	unknown
 	html
 	data
+	missing
 }
 
 enum LinkState {
@@ -130,8 +131,9 @@ pub fn link_parser(text string) ParseResult {
 					
 					//check which link type
 					ext = os.file_ext(os.base(capturegroup_post)).to_lower()
-
-					if ext != "" {
+					if ext == "."{
+						linkcat = LinkType.missing
+					}else if ext != "" {
 						if ext[1..] in ["jpg","png","svg","jpeg","gif"]{
 							linkcat = LinkType.file
 						}else if ext[1..] in ["md"]{

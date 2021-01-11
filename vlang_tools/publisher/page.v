@@ -119,8 +119,20 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 				//we only need the last name for local content
 				//can be for file, file & page
 				itemname = os.file_name(itemname)
+				
+				if link.cat == LinkType.missing{
+					link_link = ""
+					serverlink = '[${link_description}]()'
+					errormsg :=  "ERROR: EMPTY LINK: for $link_description"
+						errors << errormsg
+						page.error_add({
+							line:   line
+							linenr: nr
+							msg: errormsg  
+							cat:    PageErrorCat.brokenlink
+						}, mut publisher)
 
-				if link.cat == LinkType.page{
+				}else if link.cat == LinkType.page{
 					serverlink = '[${link_description}](page__${sitename}__${itemname}.md)'
 					if ! publisher.page_exists("$sitename:$itemname") {
 						errormsg :=  "ERROR: CANNOT FIND LINK: '${link.link}' for $link_description"
@@ -169,9 +181,9 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 			}
 
 			//lets cleanup the sourcecode & the code which will come from server
-
 			sourcelink = "[${link_description}](${link_link})"
 			
+
 			if serverlink == ""{
 				serverlink = sourcelink
 			}
@@ -181,8 +193,13 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 				serverlink = "!${serverlink}"
 			}			
 
-			sourceline=sourceline.replace(link.link_original_get(),sourcelink)
-			serverline=serverline.replace(link.link_original_get(),serverlink)
+			if link_link != ""{
+				
+				sourceline=sourceline.replace(link.link_original_get(),sourcelink)
+				serverline=serverline.replace(link.link_original_get(),serverlink)	
+			}
+			// sourceline=sourceline.replace(link.link_original_get(),sourcelink)
+			// serverline=serverline.replace(link.link_original_get(),serverlink)
 
 		}//end of the walk over all links
 
