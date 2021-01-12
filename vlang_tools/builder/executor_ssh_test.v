@@ -11,6 +11,7 @@ fn test_init() {
 	e.exec('chmod 0600 ~/.ssh/id_rsa_test && chmod 0644 ~/.ssh/id_rsa_test.pub')
 	e.exec('cat ~/.ssh/id_rsa_test.pub >> ~/.ssh/authorized_keys')
 	e.exec('chmod og-wx ~/.ssh/authorized_keys')
+	println("x")
 }
 
 fn test_exec() {
@@ -21,7 +22,7 @@ fn test_exec() {
 		addr: '127.0.0.1'
 		port: 22
 	}
-	res := e.exec('ls  /') or { panic('error execution') }
+	res := e.exec('ls  /') or { panic(err) }
 	println(res)
 }
 
