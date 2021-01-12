@@ -1,5 +1,9 @@
 module builder
 
+fn optstring() ?string {}
+fn optvoid() ? {}
+fn optmapstringstring() ?map[string]string {}
+
 interface Executor {
 	exec(cmd string) ?string
 	file_write(path string, text string) ?
@@ -8,8 +12,8 @@ interface Executor {
 	remove(path string) ?
 	download(source string, dest string) ?string
 	upload(source string, dest string) ?string
-	info() map[string]string
 	environ_get() ?map[string]string
+	info() map[string]string
 
 	ssh_shell(port int)?
 }
