@@ -1,6 +1,7 @@
 module main
 
 import os
+import cli
 import vweb
 import publisher
 import config
@@ -19,8 +20,34 @@ pub mut:
 
 // Run server
 fn main() {
-	config.config()
-	vweb.run<App>(port)
+	mut app := cli.Command{
+		name: 'publishing tools',
+		description: 'publishing tools',
+		execute: fn (cmd cli.Command) ? {
+			config.config()
+			vweb.run<App>(port)
+
+		},
+		commands: [
+			cli.Command{
+				name: 'flatten'
+				execute: fn (cmd cli.Command) ? {
+					mut publisher := publisher.new("") or {panic("cannot init publisher. $err")}
+					for mut site in publisher.sites {
+						site.files_process(mut &publisher)
+						
+					}
+					// generate flatten files per site
+					mut base := "$os.home_dir()/generated"
+					publisher.flatten(base)
+					println("** FINISHED FLATTENING **")
+					return
+				}
+			},
+		]
+	}
+	app.setup()
+	app.parse(os.args)
 }
 
 // Initialize (load wikis) only once when server starts
@@ -28,6 +55,7 @@ pub fn (mut app App) init_once() {
 	app.publisher = publisher.new("") or {panic("cannot init publisher. $err")}
 	for mut site in app.publisher.sites {
 		site.files_process(mut &app.publisher)
+		
 	}
 }
 

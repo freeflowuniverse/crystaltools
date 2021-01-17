@@ -144,3 +144,59 @@ pub fn (mut publisher Publisher) site_locations_get() [][]string {
 	}
 	return res
 }
+
+pub fn (mut publisher Publisher) flatten(base string){
+	mut src_path := map[int]string
+	mut dest_path := map[int]string
+	mut files := map[string]string
+
+	for mut site in publisher.sites {
+		src_path[site.id] = site.path
+		mut dest := "$base/$site.name"
+		dest_path[site.id] = dest
+		
+		if !os.exists(dest){
+			os.mkdir_all(dest)
+		}
+
+		
+		if !os.exists(dest){
+			os.mkdir_all(dest)
+		}
+
+		mut special := ["readme.md", "README.md", "_sidebar.md"]
+
+		for file in special{
+			os.cp("$site.path/$file", "$dest/$file")
+		}
+	}
+
+	for mut file in publisher.files {
+		mut path := file.path
+		if path.contains("img_notused"){
+			path = path.replace("img_notused", "img")
+		}
+
+		if path.contains("img_multiple_use"){
+			path = path.replace("img_multiple_use", "img")
+		}
+
+		files[path] = "/" + os.file_name(file.path)
+		mut src := os.join_path(src_path[file.site_id], file.path)
+		mut dest := os.join_path(dest_path[file.site_id], os.file_name(file.path))
+		os.cp(src, dest)
+	}
+
+	for mut page in publisher.pages {
+		mut src := os.join_path(src_path[page.site_id], page.path)
+		mut dest := os.join_path(dest_path[page.site_id], os.file_name(page.path))
+		mut content :=  os.read_file(src) or {continue}
+
+		for f_src, f_dest in files{
+			content = content.replace(f_src, f_dest)
+		}
+
+		os.write_file(dest, content)
+	}
+
+}
