@@ -1,9 +1,5 @@
 module builder
 
-fn optstring() ?string {}
-fn optvoid() ? {}
-fn optmapstringstring() ?map[string]string {}
-
 interface Executor {
 	exec(cmd string) ?string
 	file_write(path string, text string) ?
