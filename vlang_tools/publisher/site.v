@@ -36,6 +36,7 @@ fn (mut site Site) file_remember(path string, name string, mut publisher &Publis
 		}
 
 		file:= File{
+			id: publisher.files.len
 			site_id: site.id
 			name: namelower
 			path: pathrelative
@@ -67,6 +68,7 @@ fn (mut site Site) page_remember(path string, name string, mut publisher &Publis
 		}
 		
 		publisher.pages << Page{
+			id: publisher.pages.len
 			site_id: site.id
 			name: namelower
 			path: pathrelative

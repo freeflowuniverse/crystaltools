@@ -137,16 +137,6 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 				}
 				serverlink = '[${link_description}]($l)'
 
-				// if ! publisher.page_exists("$sitename:$itemname") {
-				// 	errormsg :=  "ERROR: CANNOT FIND LINK: '${link.link}' for $link_description"
-				// 	errors << errormsg
-				// 	page.error_add({
-				// 		line:   line
-				// 		linenr: nr
-				// 		msg: errormsg  
-				// 		cat:    PageErrorCat.brokenlink
-				// 	}, mut publisher)
-				// }
 			}else {
 				
 
@@ -185,7 +175,10 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 						mut file := publisher.file_get("$sitename:$itemname") or {
 							return err
 						}
-						if !(page.site_id in file.usedby){
+						if !(page.id in file.usedby){
+							if page.id == 0 {
+								panic("page.id should not be 0")
+							}
 							file.usedby<<page.id
 						}
 
@@ -223,8 +216,7 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 				serverlink = "!${serverlink}"
 			}			
 
-			if link_link != ""{
-				
+			if link_link != ""{				
 				sourceline=sourceline.replace(link.link_original_get(),sourcelink)
 				serverline=serverline.replace(link.link_original_get(),serverlink)	
 			}
@@ -250,7 +242,6 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 	return lines_source
 
 }
-
 
 
 fn (mut page Page) process_includes(mut publisher &Publisher) ?string {

@@ -7,7 +7,7 @@ pub enum FileStatus {
 }
 
 pub struct File {
-// id        int 	[skip]
+id        int 	[skip]
 site_id   int 	[skip]
 pub mut:
 	name         string
