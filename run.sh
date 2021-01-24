@@ -1,2 +1,2 @@
-cd vlang_tools
+cd publishingserver
 v run server.v

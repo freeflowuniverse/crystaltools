@@ -3,6 +3,7 @@ module config
 import gittools
 
 pub fn config() {
+
 	//get publisher, check for all wiki's
 	mut gt := gittools.new() or {panic ("cannot load gittools:$err")}
 	//will only pull if it does not exists
