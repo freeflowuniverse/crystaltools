@@ -23,17 +23,19 @@ pub fn (mut file File) process(mut publisher &Publisher) {
 	if file.usedby.len>0{
 		// println("${file.name} used")
 		if file.usedby.len>1{
-			if path.contains("img_multiple_use"){
-				//already processed
-				return
-			}		
-			//means more than 1 page use this file
-			dest = "${site.path}/img_multiple_use/${os.base(path)}"
-			if os.exists(dest){
-				os.rm(path)
-			}else{
-				os.mv(path,dest)
-			}			
+			println(file.usedby)
+			panic("S")
+			// if path.contains("img_multiple_use"){
+			// 	//already processed
+			// 	return
+			// }		
+			// //means more than 1 page use this file
+			// dest = "${site.path}/img_multiple_use/${os.base(path)}"
+			// if os.exists(dest){
+			// 	os.rm(path)
+			// }else{
+			// 	os.mv(path,dest)
+			// }			
 		}else{
 			pageid_who_has_file := file.usedby[0]
 			mut page_file := publisher.page_get_by_id(pageid_who_has_file) or {panic(err)}
