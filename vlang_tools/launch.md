@@ -38,7 +38,7 @@ Means a git command,
 makes sure a git repo is on system.
 
 
-## we can even take content our of this discipline
+## we can even take content out
 
 !!action.define name:get_content
 

@@ -18,7 +18,7 @@ pub struct DockerNodeArguments {
 	user	      string
 }
 
-//get a new docker image
+//get a new docker engine
 // to use docker.new() -> returns DockerEngine for local machine
 // to use docker.new(node_ipaddr:"node_ipaddr192.168..10:2222",node_name:"myremoteserver") -> returns DockerEngine for a remote machine, ssh-agent needs to be loaded
 // to use docker.new(node_ipaddr:"192.168..10",node_name:"myremoteserver") -> returns DockerEngine for a remote machine on default ssh port 22
@@ -194,7 +194,7 @@ pub fn (mut e DockerEngine) container_get(name_or_id string) ?DockerContainer {
 			return c
 		}
 	}
-	return error("")
+	return error("Cannot find container with name $name_or_id")
 }
 
 // import a container into an image, run docker container with it
@@ -258,4 +258,12 @@ fn (mut e DockerEngine) parse_container_state(state string) DockerContainerStatu
 		return DockerContainerStatus.created
 	}
 	return DockerContainerStatus.down
+}
+
+//reset all images & containers, CAREFUL!
+fn (mut e DockerEngine) reset_all() {
+	e.node.executor.exec("docker container rm -f $(docker container ls -aq)") or {}
+	e.node.executor.exec("docker image prune -a -f") or {panic(err)}
+	e.node.executor.exec("docker builder prune -a -f") or {panic(err)}
+
 }

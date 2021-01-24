@@ -294,7 +294,6 @@ fn (mut page Page) process_includes(mut publisher &Publisher) ?string {
 		}
 	}
 	page.content = lines
-	
-    	return page.content
+	return page.content
 }
 
