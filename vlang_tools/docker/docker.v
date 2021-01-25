@@ -261,7 +261,7 @@ fn (mut e DockerEngine) parse_container_state(state string) DockerContainerStatu
 }
 
 //reset all images & containers, CAREFUL!
-fn (mut e DockerEngine) reset_all() {
+pub fn (mut e DockerEngine) reset_all() {
 	e.node.executor.exec("docker container rm -f $(docker container ls -aq)") or {}
 	e.node.executor.exec("docker image prune -a -f") or {panic(err)}
 	e.node.executor.exec("docker builder prune -a -f") or {panic(err)}

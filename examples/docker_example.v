@@ -34,6 +34,12 @@ fn docker1() {
 
 fn docker2() {
 	mut engine := docker.new({}) or {panic(err)}
+	engine.reset_all()
+	mut containers := engine.containers_list()
+	mut images := engine.images_list()
+	assert containers.len == 0
+	assert images.len == 0
+	
 	// create new docker
 	name := rand.uuid_v4()
 	println("creating container : $name")
@@ -69,7 +75,7 @@ fn docker2() {
 	// should be found again
 	found = false
 
-	mut images := engine.images_list()
+	images = engine.images_list()
 	for image in images{
 		if "$image.repo:$image.tag" == "$name:test_image"{
 			found = true
@@ -87,7 +93,7 @@ fn docker2() {
 	
 	assert c.image.id == newimage_id
 
-	mut containers := engine.containers_list()
+	containers = engine.containers_list()
 	println(containers)
 
 	// delete (clean)
@@ -104,6 +110,6 @@ fn docker2() {
 }
 
 fn main() {
-	docker1()
-	//docker2()
+	// docker1()
+	docker2()
 }
