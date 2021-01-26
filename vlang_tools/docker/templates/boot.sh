@@ -17,9 +17,14 @@ fi
 
 mkdir -p /root/.ssh/
 # cp /myhost/authorized_keys /root/.ssh/authorized_keys
-ln -s /myhost/authorized_keys /root/.ssh/authorized_keys
+
+if [ ! -L "/root/.ssh/authorized_keys" ]; then
+  ln -s /myhost/authorized_keys /root/.ssh/authorized_keys
+fi
+
 # chmod 600 /root/.ssh/authorized_keys
-passwd -u root #to get pam to work
+passwd -u root || true  #to get pam to work
+
 
 #no -D because then goes to background
 /usr/sbin/sshd

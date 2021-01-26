@@ -103,7 +103,7 @@ pub fn (mut e DockerEngine) containers_list() []DockerContainer {
 		mut id := info[0]
 		mut name := info[info.len - 1]
 		
-		details := e.node.executor.exec("docker inspect -f  '{{.Id}} {{.Created }} {{.Image}}'  $id") or {
+		details := e.node.executor.exec("docker inspect -f  '{{.Id}} {{.Created }} {{.Image}} {{.Config.Image}}'  $id") or {
 			println('could not retrieve container info')
 			return []DockerContainer{}
 		}
@@ -116,7 +116,7 @@ pub fn (mut e DockerEngine) containers_list() []DockerContainer {
 			engine: e
 		}
 		for image in images {
-			if image.id == splitted[2] {
+			if image.id == splitted[2] || splitted[3] == "$image.repo:$image.tag"{
 				container.image = image
 				break
 			}
