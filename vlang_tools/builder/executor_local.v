@@ -65,12 +65,12 @@ pub fn (mut executor ExecutorLocal) info() map[string]string {
 
 // upload from local FS to executor FS
 pub fn (mut executor ExecutorLocal) upload(source string, dest string) ?string {
-	panic('not implemented, suggest to use rsync')
+	return execute_cmd("cp -r $source $dest")
 }
 
 // download from executor FS to local FS
 pub fn (mut executor ExecutorLocal) download(source string, dest string) ?string {
-	panic('not implemented')
+	return execute_cmd("cp -r $source $dest")
 }
 
 pub fn (mut executor ExecutorLocal) ssh_shell(port int)? {

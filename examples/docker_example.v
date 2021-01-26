@@ -8,27 +8,27 @@ fn docker1() {
 	mut images := engine.images_list()
 	println(images)
 
-	// name := rand.uuid_v4()
-	// println("creating container : $name")
-	// mut args := docker.DockerContainerCreateArgs{
-	// 	name: name,
-	// 	hostname: name,
-	// 	mounted_volumes: ["/tmp:/tmp"],
-	// 	forwarded_ports: [],
-	// 	image_repo: "ubuntu"
-	// }
+	name := rand.uuid_v4()
+	println("creating container : $name")
+	mut args := docker.DockerContainerCreateArgs{
+		name: name,
+		hostname: name,
+		mounted_volumes: ["/tmp:/tmp"],
+		forwarded_ports: [],
+		image_repo: "ubuntu"
+	}
 
-	// // create new container
-	// mut c := engine.container_create(args) or {panic(err)}
-	// assert c.status == docker.DockerContainerStatus.up
-	// c.halt()
-	// assert c.status == docker.DockerContainerStatus.down
-	// c.start()
-	// assert c.status == docker.DockerContainerStatus.up
-	// export_path := "/tmp/$rand.uuid_v4()"
-	// c.export(export_path)
-	// println("deleting container : $name")
-	// c.delete(true)
+	// create new container
+	mut c := engine.container_create(args) or {panic(err)}
+	assert c.status == docker.DockerContainerStatus.up
+	c.halt()
+	assert c.status == docker.DockerContainerStatus.down
+	c.start()
+	assert c.status == docker.DockerContainerStatus.up
+	export_path := "/tmp/$rand.uuid_v4()"
+	c.export(export_path)
+	println("deleting container : $name")
+	c.delete(true)
 	
 }
 
@@ -39,7 +39,9 @@ fn docker2() {
 	mut images := engine.images_list()
 	assert containers.len == 0
 	assert images.len == 0
-	
+
+	println(engine.build())
+
 	// create new docker
 	name := rand.uuid_v4()
 	println("creating container : $name")
