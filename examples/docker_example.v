@@ -40,8 +40,6 @@ fn docker2() {
 	assert containers.len == 0
 	assert images.len == 0
 
-	println(engine.build())
-
 	// create new docker
 	name := rand.uuid_v4()
 	println("creating container : $name")
@@ -50,11 +48,12 @@ fn docker2() {
 		hostname: name,
 		mounted_volumes: ["/tmp:/tmp"],
 		forwarded_ports: [],
-		image_repo: "ubuntu"
+		image_repo: ""
 	}
 
 	// create new container
 	mut c := engine.container_create(args) or {panic(err)}
+	assert c.image.repo == "threefold"
 	assert c.status == docker.DockerContainerStatus.up
 	c.halt()
 	assert c.status == docker.DockerContainerStatus.down
@@ -71,8 +70,17 @@ fn docker2() {
 		panic("container should have been deleted")
 	}
 
-	println("creating container : $name")
-	engine.container_load(export_path, "$name", "test_image", mut args)
+	println("loading container : $name")
+	args = docker.DockerContainerCreateArgs{
+		name: name,
+		hostname: name,
+		mounted_volumes: ["/tmp:/tmp"],
+		forwarded_ports: [],
+		image_repo: name,
+		image_tag: "test_image",
+		command : "/usr/local/bin/boot.sh" // important for threefold image
+	}
+	engine.container_load(export_path, mut args)
 
 	// should be found again
 	found = false
@@ -98,7 +106,6 @@ fn docker2() {
 	containers = engine.containers_list()
 	println(containers)
 
-	// delete (clean)
 	println("deleting container : $name")
 	
 	mut error := false

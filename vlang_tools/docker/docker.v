@@ -160,6 +160,7 @@ pub fn (mut e DockerEngine) container_new() DockerContainer {
 pub fn (mut e DockerEngine) container_create(args DockerContainerCreateArgs) ?DockerContainer {
 	mut ports := ""
 	mut mounts := ""
+	mut command := args.command
 
 	for port in args.forwarded_ports{
 		ports = ports + "-p $port "
@@ -177,9 +178,10 @@ pub fn (mut e DockerEngine) container_create(args DockerContainerCreateArgs) ?Do
 	if image == "threefold" || image == "threefold:latest" || image == ""{
 		img := e.build() or {panic(err)}
 		image = "$img.repo:$img.tag"
+		command = "/usr/local/bin/boot.sh"
 	}
 
-	mut cmd := 'docker run --hostname $args.hostname --name $args.name $ports $mounts -d  -t $image $args.command'
+	mut cmd := 'docker run --hostname $args.hostname --name $args.name $ports $mounts -d  -t $image $command'
 	e.node.executor.exec(cmd) or {panic(err)}
 
 	mut container := e.container_get(args.name) or {panic(err)}
@@ -205,17 +207,15 @@ pub fn (mut e DockerEngine) container_get(name_or_id string) ?DockerContainer {
 // import a container into an image, run docker container with it
 // image_repo examples ['myimage', 'myimage:latest']
 // if DockerContainerCreateArgs contains a name, container will be created and restarted
-pub fn (mut e DockerEngine) container_load(path string, image_repo string, image_tag string, mut args DockerContainerCreateArgs) ?DockerContainer {
-	mut image := "$image_repo"
+pub fn (mut e DockerEngine) container_load(path string, mut args DockerContainerCreateArgs) ?DockerContainer {
+	mut image := args.image_repo
 	
-	if image_tag != "" {
-		image = image + ":$image_tag"
+	if args.image_tag != "" {
+		image = image + ":$args.image_tag"
 	}
+
 	e.node.executor.exec('docker import  $path $image') or {panic(err)}
 	// make sure we start from loaded image
-	args.command = "/bin/bash"
-	args.image_repo = image_repo
-	args.image_tag = image_tag
 	return e.container_create(args)
 }
 

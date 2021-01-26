@@ -25,7 +25,7 @@ pub fn (mut e DockerEngine) build() ?DockerImage{
 	
 	e.node.executor.exec("echo '$dockerfile' > $dest/dockerfile")
 	e.node.executor.upload("$templates/boot.sh", "$dest/boot.sh")
-	println("Building threefold image at $dockerfile_path")
+	println("Building threefold image at $dest/dockerfile")
 	e.node.executor.exec('cd $dest && docker build -t threefold .') or {panic(err)}
 	
 	return e.image_get("threefold:latest")

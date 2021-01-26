@@ -24,9 +24,9 @@ passwd -u root #to get pam to work
 #no -D because then goes to background
 /usr/sbin/sshd
 
-@if redis_enable {
-redis-server /etc/redis.conf  --daemonize yes
-}
+# @if redis_enable {
+# redis-server /etc/redis.conf  --daemonize yes
+# }
 
 
 sh
