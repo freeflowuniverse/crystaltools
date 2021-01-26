@@ -174,6 +174,11 @@ pub fn (mut e DockerEngine) container_create(args DockerContainerCreateArgs) ?Do
 		image = image + ":$args.image_tag"
 	}
 
+	if image == "threefold" || image == "threefold:latest" || image == ""{
+		img := e.build() or {panic(err)}
+		image = "$img.repo:$img.tag"
+	}
+
 	mut cmd := 'docker run --hostname $args.hostname --name $args.name $ports $mounts -d  -t $image $args.command'
 	e.node.executor.exec(cmd) or {panic(err)}
 
