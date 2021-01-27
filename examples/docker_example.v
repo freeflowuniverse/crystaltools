@@ -8,33 +8,6 @@ fn docker1() {
 	mut images := engine.images_list()
 	println(images)
 
-	// name := rand.uuid_v4()
-	// println("creating container : $name")
-	// mut args := docker.DockerContainerCreateArgs{
-	// 	name: name,
-	// 	hostname: name,
-	// 	mounted_volumes: ["/tmp:/tmp"],
-	// 	forwarded_ports: [],
-	// 	image_repo: "ubuntu"
-	// }
-
-	// // create new container
-	// mut c := engine.container_create(args) or {panic(err)}
-	// assert c.status == docker.DockerContainerStatus.up
-	// c.halt()
-	// assert c.status == docker.DockerContainerStatus.down
-	// c.start()
-	// assert c.status == docker.DockerContainerStatus.up
-	// export_path := "/tmp/$rand.uuid_v4()"
-	// c.export(export_path)
-	// println("deleting container : $name")
-	// c.delete(true)
-	
-}
-
-fn docker2() {
-	mut engine := docker.new({}) or {panic(err)}
-	// create new docker
 	name := rand.uuid_v4()
 	println("creating container : $name")
 	mut args := docker.DockerContainerCreateArgs{
@@ -56,6 +29,40 @@ fn docker2() {
 	c.export(export_path)
 	println("deleting container : $name")
 	c.delete(true)
+	
+}
+
+fn docker2() {
+	mut engine := docker.new({}) or {panic(err)}
+	engine.reset_all()
+	mut containers := engine.containers_list()
+	mut images := engine.images_list()
+	assert containers.len == 0
+	assert images.len == 0
+
+	// create new docker
+	name := rand.uuid_v4()
+	println("creating container : $name")
+	mut args := docker.DockerContainerCreateArgs{
+		name: name,
+		hostname: name,
+		mounted_volumes: ["/tmp:/tmp"],
+		forwarded_ports: [],
+		image_repo: ""
+	}
+
+	// create new container
+	mut c := engine.container_create(args) or {panic(err)}
+	assert c.image.repo == "threefold"
+	assert c.status == docker.DockerContainerStatus.up
+	c.halt()
+	assert c.status == docker.DockerContainerStatus.down
+	c.start()
+	assert c.status == docker.DockerContainerStatus.up
+	export_path := "/tmp/$rand.uuid_v4()"
+	c.export(export_path)
+	println("deleting container : $name")
+	c.delete(true)
 
 	mut found := true
 	engine.container_get(name) or {found=false}
@@ -63,13 +70,22 @@ fn docker2() {
 		panic("container should have been deleted")
 	}
 
-	println("creating container : $name")
-	engine.container_load(export_path, "$name", "test_image", mut args)
+	println("loading container : $name")
+	args = docker.DockerContainerCreateArgs{
+		name: name,
+		hostname: name,
+		mounted_volumes: ["/tmp:/tmp"],
+		forwarded_ports: [],
+		image_repo: name,
+		image_tag: "test_image",
+		command : "/usr/local/bin/boot.sh" // important for threefold image
+	}
+	engine.container_load(export_path, mut args)
 
 	// should be found again
 	found = false
 
-	mut images := engine.images_list()
+	images = engine.images_list()
 	for image in images{
 		if "$image.repo:$image.tag" == "$name:test_image"{
 			found = true
@@ -87,10 +103,9 @@ fn docker2() {
 	
 	assert c.image.id == newimage_id
 
-	mut containers := engine.containers_list()
+	containers = engine.containers_list()
 	println(containers)
 
-	// delete (clean)
 	println("deleting container : $name")
 	
 	mut error := false
@@ -104,6 +119,6 @@ fn docker2() {
 }
 
 fn main() {
-	docker1()
-	//docker2()
+	// docker1()
+	docker2()
 }

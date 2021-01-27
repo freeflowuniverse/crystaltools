@@ -103,7 +103,7 @@ pub fn (mut e DockerEngine) containers_list() []DockerContainer {
 		mut id := info[0]
 		mut name := info[info.len - 1]
 		
-		details := e.node.executor.exec("docker inspect -f  '{{.Id}} {{.Created }} {{.Image}}'  $id") or {
+		details := e.node.executor.exec("docker inspect -f  '{{.Id}} {{.Created }} {{.Image}} {{.Config.Image}}'  $id") or {
 			println('could not retrieve container info')
 			return []DockerContainer{}
 		}
@@ -116,7 +116,7 @@ pub fn (mut e DockerEngine) containers_list() []DockerContainer {
 			engine: e
 		}
 		for image in images {
-			if image.id == splitted[2] {
+			if image.id == splitted[2] || splitted[3] == "$image.repo:$image.tag"{
 				container.image = image
 				break
 			}
@@ -160,6 +160,7 @@ pub fn (mut e DockerEngine) container_new() DockerContainer {
 pub fn (mut e DockerEngine) container_create(args DockerContainerCreateArgs) ?DockerContainer {
 	mut ports := ""
 	mut mounts := ""
+	mut command := args.command
 
 	for port in args.forwarded_ports{
 		ports = ports + "-p $port "
@@ -174,7 +175,13 @@ pub fn (mut e DockerEngine) container_create(args DockerContainerCreateArgs) ?Do
 		image = image + ":$args.image_tag"
 	}
 
-	mut cmd := 'docker run --hostname $args.hostname --name $args.name $ports $mounts -d  -t $image $args.command'
+	if image == "threefold" || image == "threefold:latest" || image == ""{
+		img := e.build() or {panic(err)}
+		image = "$img.repo:$img.tag"
+		command = "/usr/local/bin/boot.sh"
+	}
+
+	mut cmd := 'docker run --hostname $args.hostname --name $args.name $ports $mounts -d  -t $image $command'
 	e.node.executor.exec(cmd) or {panic(err)}
 
 	mut container := e.container_get(args.name) or {panic(err)}
@@ -200,17 +207,15 @@ pub fn (mut e DockerEngine) container_get(name_or_id string) ?DockerContainer {
 // import a container into an image, run docker container with it
 // image_repo examples ['myimage', 'myimage:latest']
 // if DockerContainerCreateArgs contains a name, container will be created and restarted
-pub fn (mut e DockerEngine) container_load(path string, image_repo string, image_tag string, mut args DockerContainerCreateArgs) ?DockerContainer {
-	mut image := "$image_repo"
+pub fn (mut e DockerEngine) container_load(path string, mut args DockerContainerCreateArgs) ?DockerContainer {
+	mut image := args.image_repo
 	
-	if image_tag != "" {
-		image = image + ":$image_tag"
+	if args.image_tag != "" {
+		image = image + ":$args.image_tag"
 	}
+
 	e.node.executor.exec('docker import  $path $image') or {panic(err)}
 	// make sure we start from loaded image
-	args.command = "/bin/bash"
-	args.image_repo = image_repo
-	args.image_tag = image_tag
 	return e.container_create(args)
 }
 
@@ -260,8 +265,34 @@ fn (mut e DockerEngine) parse_container_state(state string) DockerContainerStatu
 	return DockerContainerStatus.down
 }
 
+
+//name is repo:tag or image id
+pub fn (mut e DockerEngine) image_get(name_or_id string) ?DockerImage {
+	images_list := e.images_list()
+	
+	mut splitted := name_or_id.split(":")
+	mut repo := ""
+	mut tag := ""
+	mut id := ""
+
+	if splitted.len > 1{
+		repo = splitted[0]
+		tag = splitted[1]
+	}else if splitted.len == 1{
+		repo = splitted[0]
+		id = splitted[0]
+	}
+
+	for i in e.images_list(){
+		if (i.repo == repo && i.tag == tag) || i.id == id{
+			return i
+		}
+	}
+	return error("Cannot find image  $name_or_id")
+}
+
 //reset all images & containers, CAREFUL!
-fn (mut e DockerEngine) reset_all() {
+pub fn (mut e DockerEngine) reset_all() {
 	e.node.executor.exec("docker container rm -f $(docker container ls -aq)") or {}
 	e.node.executor.exec("docker image prune -a -f") or {panic(err)}
 	e.node.executor.exec("docker builder prune -a -f") or {panic(err)}
