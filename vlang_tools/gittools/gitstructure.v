@@ -9,15 +9,16 @@ pub enum GitStatus {
 	error
 }
 
-struct GitStructure {
+struct GitStructure {	
 	pub mut:
+		root string
 		repos []GitRepo
 }
 
 //will get repo starting from url, if the repo does not exist, only then will pull
 pub fn (mut gitstructure GitStructure) repo_get_from_url(url string) ?&GitRepo {
 
-	addr := addr_get_from_url(url) or {return error("cannot get addr from url:$err")}
+	addr := gitstructure.addr_get_from_url(url) or {return error("cannot get addr from url:$err")}
 	addr2 := GitGetArgs{name:addr.name, account:addr.account}
 
 	if ! gitstructure.repo_exists(addr2) {
@@ -79,14 +80,18 @@ pub fn (mut gitstructure GitStructure) repo_exists(addr GitGetArgs) bool {
 
 
 //find all git repo's, this goes very fast, no reason to cache
-fn (mut gitstructure GitStructure) load(path string)? {
+fn (mut gitstructure GitStructure) load()? {
 	gitstructure.repos = []GitRepo{}
-	mut path1 := ""
-	if path == "" {
-		path1 = "${os.home_dir()}/code/"
-	}else{
-		path1 = path
+	if gitstructure.root == ""{
+		gitstructure.root = "${os.home_dir()}/code/"
 	}
+	gitstructure.root = gitstructure.root.replace('~', os.home_dir())
+	return gitstructure.load_recursive(gitstructure.root)
+}
+
+
+fn (mut gitstructure GitStructure) load_recursive(path1 string)? {
+
 	items := os.ls(path1) or { return error("cannot load gitstructure because cannot find $path1")}
 	mut pathnew:= ""
 	for item in items {
@@ -94,7 +99,7 @@ fn (mut gitstructure GitStructure) load(path string)? {
 		if os.is_dir(pathnew) {
 			// println(" - $pathnew")		
 			if os.exists(os.join_path(pathnew, ".git")){
-				gitaddr := addr_get_from_path(pathnew) or {return error(err)}
+				gitaddr := gitstructure.addr_get_from_path(pathnew) or {return error(err)}
 				gitstructure.repos << GitRepo{addr:gitaddr,path:pathnew,id:gitstructure.repos.len}
 				continue
 			}
@@ -104,7 +109,7 @@ fn (mut gitstructure GitStructure) load(path string)? {
 			if item.starts_with('_') {
 				continue
 			}
-			gitstructure.load(pathnew)?
+			gitstructure.load_recursive(pathnew)?
 		}
 	}	
 }

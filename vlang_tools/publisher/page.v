@@ -9,7 +9,7 @@ pub fn (page Page) path_get(mut publisher &Publisher) string {
 
 // will load the content, check everything, return true if ok
 pub fn (mut page Page) check(mut publisher &Publisher) bool {
-	page.process(mut publisher)
+	page.process(mut publisher) or {panic(err)}
 
 	if page.state == PageStatus.error {
 		return false
@@ -43,8 +43,12 @@ pub fn (mut page Page) process(mut publisher &Publisher) ?bool {
 		return error('Failed to open $path_source\nerror:$err')
 	}
 
-	page.process_links(mut publisher)	//first find all the links
-	page.process_includes(mut publisher) // should be recursive now
+	page.process_links(mut publisher)?	//first find all the links
+	page.process_includes(mut publisher)? // should be recursive now
+
+	// if page.state == PageStatus.reprocess{
+	// 	page.process(mut publisher) or {return error(err)}
+	// }
 
 	//make sure we only execute this once !
 	page.state = PageStatus.ok
@@ -81,7 +85,7 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 	mut errors := []string{}
 
 	for line in page.content.split_into_lines() {
-		// println (line)
+		// println ("LINK: $line")
 
 		if line.trim(" ").starts_with("> **ERROR"){
 			//these are error messages which will be rewritten if errors are still there
@@ -95,6 +99,8 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 		links_parser_result = link_parser(line)
 		//there can be more than 1 link on 1 line
 		for mut link in links_parser_result.links {
+
+			// println(link)
 
 			sourcelink = "" //the result for how it should be in the source file
 			serverlink = "" //result of how it needs to be on the server
@@ -137,28 +143,44 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 				}
 				serverlink = '[${link_description}]($l)'
 
-			}else {
-				
-
+			}else{
+				// println(link)
 				//parse the different variations of how we can mention a link
 				// supported:
 				//  site:name
 				//  page__sitename__itemname
 				//  file__sitename__itemname
 				mut sitename2, mut itemname := site_page_names_get(link.link) or {return err}
-				if sitename2 != "" {
-					//means was specified in the link
-					//if not returned means its the site name from the site we are on
-					sitename = sitename2
-				}
 
 				//we only need the last name for local content
 				//can be for file, file & page
-				itemname = os.file_name(itemname)
-				
+				itemname = os.file_name(itemname)		
+
+				// println("check:'${link.link}'")
+
 				if link.cat == LinkType.page{
-					serverlink = '[${link_description}](page__${sitename}__${itemname}.md)'
-					if ! publisher.page_exists("$sitename:$itemname") {
+
+					if site.name_change_check(itemname){
+						//the name of the link changed, will remove .md and will get the alias					
+						itemname = site.name_fix_alias(itemname)
+						println("Found link with name to replace: '(${link.link}) to '($itemname)'")
+						if sitename2 == ""{
+							page.replace_write(mut publisher, "(${link.link})", "($itemname)") or {return error(err)}
+						}else{
+							page.replace_write(mut publisher, "(${link.link})", "($sitename2:$itemname)") or {return error(err)}
+						}
+					}
+				}
+
+				if sitename2 == "" {
+					//if not returned means its the site name from the site we are on
+					sitename2 = sitename
+				}
+
+				if link.cat == LinkType.page{
+					if itemname.starts_with("#"){continue}
+					serverlink = '[${link_description}](page__${sitename2}__${itemname}.md)'
+					if ! publisher.page_exists("$sitename2:$itemname") {
 						errormsg :=  "ERROR: CANNOT FIND LINK: '${link.link}' for $link_description"
 						errors << errormsg
 						page.error_add({
@@ -169,10 +191,10 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 						}, mut publisher)
 					}
 				} else if link.cat != LinkType.email{
-					serverlink = '[${link_description}](file__${sitename}__${itemname})'
-					if _ := publisher.file_exists("$sitename:$itemname") {
+					serverlink = '[${link_description}](file__${sitename2}__${itemname})'
+					if _ := publisher.file_exists("$sitename2:$itemname") {
 						//remember that the file has been used
-						mut file := publisher.file_get("$sitename:$itemname") or {
+						mut file := publisher.file_get("$sitename2:$itemname") or {
 							return err
 						}
 						if !(page.id in file.usedby){
@@ -195,10 +217,10 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 				}
 
 				//now we need to cleanup the source
-				if site.name == sitename{
+				if site.name == sitename2{
 					link_link = itemname
 				} else{
-					link_link = "$sitename:$itemname"
+					link_link = "$sitename2:$itemname"
 				}
 				
 			}
@@ -220,8 +242,6 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 				sourceline=sourceline.replace(link.link_original_get(),sourcelink)
 				serverline=serverline.replace(link.link_original_get(),serverlink)	
 			}
-			// sourceline=sourceline.replace(link.link_original_get(),sourcelink)
-			// serverline=serverline.replace(link.link_original_get(),serverlink)
 
 		}//end of the walk over all links
 
@@ -244,10 +264,30 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 }
 
 
+
+fn (mut page Page) replace_write(mut publisher &Publisher, tofind string, toreplace string) ? {
+
+	path_source := page.path_get(mut publisher)
+	mut content := os.read_file(path_source) or {
+		return error('Failed to open $path_source\nerror:$err')
+	}
+
+	content = content.replace(tofind,toreplace)
+
+	os.write_file(path_source,content) or {
+		return error('Failed to write $path_source\nerror:$err')
+	}
+
+	page.state = PageStatus.reprocess //makes sure that page will be re-processed
+
+}
+
 fn (mut page Page) process_includes(mut publisher &Publisher) ?string {
 	
 	mut lines := ''   //the return of the process
 	mut nr := 0
+	mut linestrip_fix := ''
+	mut site := publisher.site_get_by_id(page.site_id)?
 
 	// site := &publisher.sites[page.site_id]
 	for line in page.content.split_into_lines() {
@@ -256,8 +296,14 @@ fn (mut page Page) process_includes(mut publisher &Publisher) ?string {
 
 		mut linestrip := line.trim(' ')
 		if linestrip.starts_with('!!!include') {
-			name := linestrip['!!!include'.len + 1..]
+			mut name := linestrip['!!!include'.len + 1..]
 			// println('-includes-- $name')
+			if site.name_change_check(name){
+				//the name of the include changed, will remove .md and will get the alias
+				linestrip_fix = linestrip.replace(name,site.name_fix_alias(name))
+				name = site.name_fix_alias(name)
+				page.replace_write(mut publisher, linestrip, linestrip_fix) or {return error(err)}
+			}
 			mut page_linked := publisher.page_get(name) or {
 				// println("-includes-- could not get page $name")
 				page_error := PageError{

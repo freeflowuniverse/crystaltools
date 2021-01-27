@@ -18,7 +18,7 @@ fn (mut executor ExecutorSSH) init()?{
 
 		execute_cmd('pgrep -x ssh-agent || eval `ssh-agent -s`') or { return error("Could not start ssh-agent, error was: $err") }
 		if executor.sshkey != '' {
-			execute_cmd('ssh-add $executor.sshkey')
+			execute_cmd('ssh-add $executor.sshkey')?
 		}
 		mut addr := executor.ipaddr.addr
 		if addr == '' {
@@ -44,16 +44,16 @@ pub fn (mut executor ExecutorSSH) exec(cmd string) ?string {
 
 pub fn (mut executor ExecutorSSH) file_write(path string, text string) ? {
 	local_path := '/tmp/$rand.uuid_v4()'
-	os.write_file(local_path, text)
-	executor.upload(local_path, path)
-	os.rm(local_path)
+	os.write_file(local_path, text)?
+	executor.upload(local_path, path)?
+	os.rm(local_path)?
 }
 
 pub fn (mut executor ExecutorSSH) file_read(path string) ?string {
 	local_path := '/tmp/$rand.uuid_v4()'
-	executor.download(path, local_path)
+	executor.download(path, local_path)?
 	r:=os.read_file(local_path)?
-	os.rm(local_path)
+	os.rm(local_path) or {panic(err)}
 	return r
 }
 
@@ -67,7 +67,7 @@ pub fn (mut executor ExecutorSSH) file_exists(path string) bool {
 
 // carefull removes everything
 pub fn (mut executor ExecutorSSH) remove(path string) ? {
-	executor.exec('rm -rf $path')
+	executor.exec('rm -rf $path') or {panic(err)}
 }
 
 // upload from local FS to executor FS

@@ -2,8 +2,10 @@ module gittools
 import json
 
 fn test_url1() {
+	gs = gittools.new()
+
 	url := "https://github.com/vlang/v/blob/master/doc/docs.md#maps"
-	obj := addr_get_from_url(url)
+	obj := gs.addr_get_from_url(url)
 
 
 	tocompare := GitAddr{
@@ -19,8 +21,10 @@ fn test_url1() {
 }
 
 fn test_url2() {
+	gs = gittools.new()
+
 	url := "https://github.com/vlang/v/blob/master/doc/docs.md"
-	obj := addr_get_from_url(url)
+	obj := gs.addr_get_from_url(url)
 
 
 	tocompare := GitAddr{
@@ -35,8 +39,10 @@ fn test_url2() {
 }
 
 fn test_url3() {
+	gs = gittools.new()
+
 	url := "https://github.com/vlang/v/blob/master/"
-	obj := addr_get_from_url(url)
+	obj := gs.addr_get_from_url(url)
 
 	tocompare := GitAddr{
 		provider: 'github.com'
@@ -51,8 +57,11 @@ fn test_url3() {
 }
 
 fn test_url4() {
+
+	gs = gittools.new()
+
 	url := "https://github.com/vlang/v"
-	obj := addr_get_from_url(url)
+	obj := gs.addr_get_from_url(url)
 
 	tocompare := GitAddr{
 		provider: 'github.com'
@@ -67,8 +76,11 @@ fn test_url4() {
 }
 
 fn test_url4b() {
+
+	gs = gittools.new()
+
 	url := "https://github.com/vlang/v.git"
-	obj := addr_get_from_url(url)
+	obj := gs.addr_get_from_url(url)
 
 	tocompare := GitAddr{
 		provider: 'github.com'
@@ -83,8 +95,10 @@ fn test_url4b() {
 }
 
 fn test_url4c() {
+	gs = gittools.new()
+
 	url := "http://github.com/vlang/v.git"
-	obj := addr_get_from_url(url)
+	obj := gs.addr_get_from_url(url)
 
 	tocompare := GitAddr{
 		provider: 'github.com'
@@ -101,8 +115,10 @@ fn test_url4c() {
 
 
 fn test_url5() {
+	gs = gittools.new()
+
 	url := "git@github.com:vlang/v.git"
-	obj := addr_get_from_url(url)
+	obj := gs.addr_get_from_url(url)
 
 	tocompare := GitAddr{
 		provider: 'github.com'
@@ -117,8 +133,10 @@ fn test_url5() {
 }
 
 fn test_url6() {
+	gs = gittools.new()
+
 	url := "github.com:vlang/v.git"
-	obj := addr_get_from_url(url)
+	obj := gs.addr_get_from_url(url)
 
 	tocompare := GitAddr{
 		provider: 'github.com'
@@ -134,8 +152,10 @@ fn test_url6() {
 
 
 fn test_url7() {
+	gs = gittools.new()
+
 	url := "github.com:vlang/v"
-	obj := addr_get_from_url(url)
+	obj := gs.addr_get_from_url(url)
 
 	tocompare := GitAddr{
 		provider: 'github.com'
@@ -153,7 +173,7 @@ fn test_path1() {
 
 	mut s := gittools.new()
 
-	addr := addr_get_from_url("https://github.com/crystaluniverse/crystaltools")
+	addr := s.addr_get_from_url("https://github.com/crystaluniverse/crystaltools")
 	mut r := s.repo_get(addr) or {panic("cannot load git ${addr.url}\n$err\n")}
 
 	println(r.url_get())
@@ -184,7 +204,7 @@ fn test_changes() {
 	mut s := gittools.new()
 
 
-	addr := addr_get_from_url("https://github.com/crystaluniverse/crystaltools")
+	addr := s.addr_get_from_url("https://github.com/crystaluniverse/crystaltools")
 	mut r := s.repo_get(addr) or {panic("cannot load git repo:\n$err\n$addr")}	
 
 	println(r.changes())

@@ -33,11 +33,11 @@ pub fn (mut node Node) package_install(mut package Package) {
 	name := package.name
 	node.platform_load()
 	if node.platform == PlatformType.osx {
-		node.executor.exec('brew install $name')
+		node.executor.exec('brew install $name') or {panic(err)}
 	} else if node.platform == PlatformType.ubuntu {
-		node.executor.exec('apt install $name -y')
+		node.executor.exec('apt install $name -y') or {panic(err)}
 	} else if node.platform == PlatformType.alpine {
-		node.executor.exec('apk install $name')
+		node.executor.exec('apk install $name') or {panic(err)}
 	} else {
 		panic('only ubuntu, alpine and osx supported for now')
 	}

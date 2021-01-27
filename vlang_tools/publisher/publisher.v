@@ -15,8 +15,8 @@ pub fn new(path string) ?Publisher {
 
 // load a site into the publishing tools
 // name of the site needs to be unique
-fn (mut publisher Publisher) load(name string, path string) ? {
-	sitename := name_fix(name)
+fn (mut publisher Publisher) load(config SiteConfig, path string) ? {
+	sitename := name_fix(config.name)
 	path2 := path.replace('~', os.home_dir())
 	println('load publisher: $path2')
 	if !publisher.site_exists(sitename) {
@@ -26,6 +26,8 @@ fn (mut publisher Publisher) load(name string, path string) ? {
 			path: path2
 			name: sitename
 		}
+		site.config = config
+		site.replace_init()? //make sure we init the replace arguments
 		publisher.sites << site
 		publisher.site_names[sitename] = id
 	} else {
@@ -114,7 +116,7 @@ fn (mut publisher Publisher) load_all_private(path string) ? {
 					// eprintln()
 					return error('Failed to decode json ${os.join_path(pathnew, 'wikiconfig.json')}')
 				}
-				publisher.load(config.name, pathnew)
+				publisher.load(config, pathnew) or {panic(err)}
 				continue
 			}
 			if item == '.git' {
@@ -130,7 +132,7 @@ fn (mut publisher Publisher) load_all_private(path string) ? {
 			if item.starts_with('_') {
 				continue
 			}
-			publisher.load_all_private(pathnew)
+			publisher.load_all_private(pathnew) or {panic(err)}
 		}
 	}
 	publisher.gitlevel--
@@ -156,18 +158,18 @@ pub fn (mut publisher Publisher) flatten(base string){
 		dest_path[site.id] = dest
 		
 		if !os.exists(dest){
-			os.mkdir_all(dest)
+			os.mkdir_all(dest) or {panic(err)}
 		}
 
 		
 		if !os.exists(dest){
-			os.mkdir_all(dest)
+			os.mkdir_all(dest) or {panic(err)}
 		}
 
 		mut special := ["readme.md", "README.md", "_sidebar.md"]
 
 		for file in special{
-			os.cp("$site.path/$file", "$dest/$file")
+			os.cp("$site.path/$file", "$dest/$file") or {panic(err)}
 		}
 	}
 
@@ -184,7 +186,7 @@ pub fn (mut publisher Publisher) flatten(base string){
 		files[path] = "/" + os.file_name(file.path)
 		mut src := os.join_path(src_path[file.site_id], file.path)
 		mut dest := os.join_path(dest_path[file.site_id], os.file_name(file.path))
-		os.cp(src, dest)
+		os.cp(src, dest) or {panic(err)}
 	}
 
 	for mut page in publisher.pages {
@@ -196,7 +198,7 @@ pub fn (mut publisher Publisher) flatten(base string){
 			content = content.replace(f_src, f_dest)
 		}
 
-		os.write_file(dest, content)
+		os.write_file(dest, content) or {panic(err)}
 	}
 
 }

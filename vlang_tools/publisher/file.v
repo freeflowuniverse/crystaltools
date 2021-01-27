@@ -20,7 +20,7 @@ pub fn (mut file File) process(mut publisher &Publisher) {
 	mut path := file.path_get(mut publisher)
 	mut dest:= ""
 	mut m := map[string]int{} 
-	mut page_strings := []string
+	mut page_strings := []string{}
 
 	if path.contains("testcontent/"){return}
 	
@@ -46,10 +46,11 @@ pub fn (mut file File) process(mut publisher &Publisher) {
 					panic("should never be same path: $dest and $path")
 				}
 				println(">>>RM: $path")
-				// os.rm(path)
+				os.rm(path) or {panic(err)}
 			}else{
-				println(">>>MV: $path -> $dest")
-				// os.mv(path,dest)
+				println(">>>MV3: $path -> $dest")
+				os.mkdir_all(os.dir(dest)) or {panic(err)}
+				os.mv(path,dest) or {panic(err)}
 			}		
 		}else{
 			pageid_who_has_file := file.usedby[0]
@@ -62,10 +63,11 @@ pub fn (mut file File) process(mut publisher &Publisher) {
 					panic("should never be same path: $dest and $path")
 				}
 				println(">>>RM: $path")
-				// os.rm(path)
+				os.rm(path) or {panic(err)}
 			}else{
-				println(">>>MV: $path -> $dest")
-				// os.mv(path,dest)
+				println(">>>MV2: '$path' -> '$dest'")
+				os.mkdir_all(os.dir(dest)) or {panic(err)}
+				os.mv(path,dest) or {panic(err)}
 			}		
 		}
 	}else{
@@ -76,7 +78,8 @@ pub fn (mut file File) process(mut publisher &Publisher) {
 		dest = "${site.path}/img_notused/${os.base(path)}"
 		if !os.exists(dest){
 			println(">>>MV: $path -> $dest")
-			// os.mv(path,dest)
+			os.mkdir_all(os.dir(dest)) or {panic(err)}
+			os.mv(path,dest) or {panic(err)}
 		}
 	}
 	file.path = dest

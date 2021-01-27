@@ -2,22 +2,15 @@ module publisher
 
 import os
 
-struct SiteConfig {
-	// name of the wiki site
-	name    string
-	// depends on which other wiki sites
-	depends []string
-}
-
 
 
 // remember the file, so we know if we have duplicates
 fn (mut site Site) file_remember(path string, name string, mut publisher &Publisher)? {
-	mut namelower := name_fix(name)
+	mut namelower := site.name_fix_alias(name)
 	mut pathfull_fixed := os.join_path(path, namelower)
 	mut pathfull := os.join_path(path, name)
 	if pathfull_fixed != pathfull{
-		os.mv(pathfull,pathfull_fixed)
+		os.mv(pathfull,pathfull_fixed) or {panic(err)}
 		pathfull = pathfull_fixed
 	}
 	// now remove the root path
@@ -48,11 +41,11 @@ fn (mut site Site) file_remember(path string, name string, mut publisher &Publis
 }
 
 fn (mut site Site) page_remember(path string, name string, mut publisher &Publisher)? {
-	mut namelower := name_fix(name)
-	mut pathfull := os.join_path(path, name)+".md"
+	mut namelower := site.name_fix_alias(name)
+	mut pathfull := os.join_path(path, name)
 	mut pathfull_fixed := os.join_path(path, namelower)+".md"
 	if pathfull_fixed != pathfull{
-		os.mv(pathfull,pathfull_fixed)
+		os.mv(pathfull,pathfull_fixed) or {panic(err)}
 		pathfull = pathfull_fixed
 	}	
 	pathrelative := pathfull[site.path.len..]	
@@ -83,7 +76,7 @@ pub fn (mut site Site) reload( mut publisher &Publisher) {
 	site.pages = map[string]int{}
 	site.files = map[string]int{}
 	site.errors = []SiteError{}
-	site.files_process(mut publisher)
+	site.files_process(mut publisher) or {panic(err)}
 	site.load(mut publisher)
 }
 
@@ -92,16 +85,16 @@ pub fn (mut site Site) load( mut publisher &Publisher) {
 	if site.state == SiteState.ok{return}
 
 	if site.pages.len == 0 {
-		site.files_process(mut publisher)
+		site.files_process(mut publisher) or {panic(err)}
 	}
 
 	imgnotusedpath := site.path+"/img_notused"
 	if ! os.exists(imgnotusedpath){
-		os.mkdir(imgnotusedpath)
+		os.mkdir(imgnotusedpath) or {panic(err)}
 	}
 	imgdoubleusedpath := site.path+"/img_multiple_use"
 	if ! os.exists(imgdoubleusedpath){
-		os.mkdir(imgdoubleusedpath)
+		os.mkdir(imgdoubleusedpath) or {panic(err)}
 	}
 
 
@@ -112,7 +105,7 @@ pub fn (mut site Site) load( mut publisher &Publisher) {
 			continue
 		}
 
-		p.process(mut publisher)
+		p.process(mut publisher) or {panic(err)}
 
 	}
 	for _, id in site.files {
@@ -125,7 +118,7 @@ pub fn (mut site Site) load( mut publisher &Publisher) {
 
 }
 
-// process files in the site
+// process files in the site (find all files)
 pub fn (mut site Site) files_process(mut publisher &Publisher) ? {
 	if ! os.exists(site.path){return error("cannot find site on path:'$site.path'")}
 	return site.files_process_recursive(site.path,mut publisher)
@@ -136,32 +129,31 @@ fn (mut site Site) files_process_recursive(path string,mut publisher &Publisher)
 	items := os.ls(path) ?
 	for item in items {
 		if os.is_dir(os.join_path(path, item)) {
-			mut basedir := os.file_name(path)
-			if basedir.starts_with('.') {
+			if item.starts_with('.') {
 				continue
-			}
-			if basedir.starts_with('_') {
+			} else if item.starts_with('_') {
 				continue
+			}else{
+				site.files_process_recursive(os.join_path(path, item), mut publisher)?
 			}
-			site.files_process_recursive(os.join_path(path, item), mut publisher)
 		} else {
 			if item.starts_with('.') {
 				continue
-			}
-			if item.starts_with('_') {
+			}else if item.starts_with('_') {
 				continue
-			}
-			// for names we do everything case insensitive
-			mut itemlower := item.to_lower()
-			mut ext := os.file_ext(itemlower)
-			if ext != '' {
-				// only process files which do have extension
-				ext2 := ext[1..]
-				if ext2 == 'md' {
-					site.page_remember(path, item, mut publisher)?
-				}
-				if ext2 in ["jpg","png","svg","jpeg","gif"] {
-					site.file_remember(path, item, mut publisher)?
+			}else{
+				// for names we do everything case insensitive
+				mut itemlower := item.to_lower()
+				mut ext := os.file_ext(itemlower)
+				if ext != '' {
+					// only process files which do have extension
+					ext2 := ext[1..]
+					if ext2 == 'md' {
+						site.page_remember(path, item, mut publisher)?
+					}
+					if ext2 in ["jpg","png","svg","jpeg","gif"] {
+						site.file_remember(path, item, mut publisher)?
+					}
 				}
 			}
 		}

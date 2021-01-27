@@ -4,6 +4,7 @@ pub enum PageStatus {
 	unknown
 	ok
 	error
+	reprocess
 }
 
 struct Page {

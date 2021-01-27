@@ -15,8 +15,8 @@ pub fn ssh_agent_loaded() bool{
 
 // the factory for getting the gitstructure
 // git is checked uderneith $/code
-pub fn new() ?GitStructure {
-	mut gitstructure := GitStructure{}
-	gitstructure.load("")?
+pub fn new(root string) ?GitStructure {
+	mut gitstructure := GitStructure{root:root}
+	gitstructure.load()?
 	return gitstructure
 }

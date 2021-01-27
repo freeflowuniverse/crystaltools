@@ -155,9 +155,9 @@ pub fn link_parser(text string) ParseResult {
 								linkcat = LinkType.page
 							}
 						
-					}else  {
-						
-						linkcat = LinkType.unknown
+					}else  {				
+						//should be a page if no extension
+						linkcat = LinkType.page
 					}
 					
 					parseresult.links << Link{

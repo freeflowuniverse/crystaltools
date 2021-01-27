@@ -24,9 +24,9 @@ fn (db DB) db_path() string {
 pub fn db_new(args DBArguments) ?DB {
 	node := node_get(args.node_args) or {panic(err)}
 	mut db := DB{node: &node, db_dirname: args.db_dirname}
-	db.environment_load()
+	db.environment_load()?
 	// make sure the db path exists
-	db.node.executor.exec('mkdir -p $db.db_path()')
+	db.node.executor.exec('mkdir -p $db.db_path()')?
 	return db
 }
 
@@ -49,7 +49,7 @@ pub fn (mut db DB) get(key string) ?string {
 // save
 pub fn (mut db DB) save(key string, val string) ? {
 	fpath := db.db_key_path_get(key)
-	db.node.executor.file_write(fpath, val)
+	db.node.executor.file_write(fpath, val)?
 }
 
 pub fn (mut db DB) delete(key string) ? {
@@ -75,7 +75,7 @@ pub fn (mut db DB) delete(key string) ? {
 		}
 	}else {
 		fpath := db.db_key_path_get(key)
-		db.node.executor.remove(fpath)
+		db.node.executor.remove(fpath)?
 	}
 }
 

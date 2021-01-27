@@ -4,6 +4,7 @@ import os
 
 // import publisher
 struct GitAddr {
+	root string
 	pub:
 		provider string
 		account  string
@@ -20,7 +21,8 @@ fn (addr GitAddr) path_get() string {
 	} else {
 		provider = addr.provider
 	}
-	return '$os.home_dir()/code/$provider/$addr.account/$addr.name'
+	if addr.root == "" {panic("cannot be empty")}
+	return '${addr.root}/$provider/$addr.account/$addr.name'
 }
 
 fn (addr GitAddr) path_account_get() string {
@@ -30,7 +32,8 @@ fn (addr GitAddr) path_account_get() string {
 	} else {
 		provider = addr.provider
 	}
-	return '$os.home_dir()/code/$provider/$addr.account'
+	if addr.root == "" {panic("cannot be empty")}
+	return '${addr.root}/$provider/$addr.account'
 }
 
 fn (addr GitAddr) url_get() string {
@@ -62,7 +65,7 @@ fn (addr GitAddr) url_http_get() string {
 // 		anker string //position in the file
 // }
 // ```
-pub fn addr_get_from_url(url string) ?GitAddr {
+pub fn (gs GitStructure) addr_get_from_url(url string) ?GitAddr {
 	mut urllower := url.to_lower()
 	urllower = urllower.trim_space()
 	if urllower.starts_with('git@') {
@@ -110,7 +113,7 @@ pub fn addr_get_from_url(url string) ?GitAddr {
 	provider := parts[0]
 	account := parts[1]
 	name := parts[2]
-	return GitAddr{provider:provider, account:account, name:name, branch:branch, anker:anker, path:path}
+	return GitAddr{root:gs.root, provider:provider, account:account, name:name, branch:branch, anker:anker, path:path}
 }
 
 // returns the git arguments starting from a git path
@@ -125,7 +128,7 @@ pub fn addr_get_from_url(url string) ?GitAddr {
 // 		anker string //position in the file
 // }
 // ```
-pub fn addr_get_from_path(path string) ?GitAddr {
+pub fn (gs GitStructure) addr_get_from_path(path string) ?GitAddr {
 	//"cd #{@path} && git config --get remote.origin.url"
 	mut path2 := path.replace('~', os.home_dir())
 	if !os.exists(os.join_path(path2, '.git')) {
@@ -156,5 +159,5 @@ pub fn addr_get_from_path(path string) ?GitAddr {
 	if url == '' {
 		return error('could not parse config file to find url for git.\n$content')
 	}
-	return addr_get_from_url(url)
+	return gs.addr_get_from_url(url)
 }
