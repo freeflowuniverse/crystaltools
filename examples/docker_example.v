@@ -21,14 +21,14 @@ fn docker1() {
 	// create new container
 	mut c := engine.container_create(args) or {panic(err)}
 	assert c.status == docker.DockerContainerStatus.up
-	c.halt()
+	c.halt() or {panic(err)}
 	assert c.status == docker.DockerContainerStatus.down
-	c.start()
+	c.start() or {panic(err)}
 	assert c.status == docker.DockerContainerStatus.up
 	export_path := "/tmp/$rand.uuid_v4()"
-	c.export(export_path)
+	c.export(export_path) or {panic(err)}
 	println("deleting container : $name")
-	c.delete(true)
+	c.delete(true) or {panic(err)}
 	
 }
 
@@ -55,14 +55,14 @@ fn docker2() {
 	mut c := engine.container_create(args) or {panic(err)}
 	assert c.image.repo == "threefold"
 	assert c.status == docker.DockerContainerStatus.up
-	c.halt()
+	c.halt() or {panic(err)}
 	assert c.status == docker.DockerContainerStatus.down
-	c.start()
+	c.start() or {panic(err)}
 	assert c.status == docker.DockerContainerStatus.up
 	export_path := "/tmp/$rand.uuid_v4()"
-	c.export(export_path)
+	c.export(export_path) or {panic(err)}
 	println("deleting container : $name")
-	c.delete(true)
+	c.delete(true) or {panic(err)}
 
 	mut found := true
 	engine.container_get(name) or {found=false}
@@ -80,7 +80,7 @@ fn docker2() {
 		image_tag: "test_image",
 		command : "/usr/local/bin/boot.sh" // important for threefold image
 	}
-	engine.container_load(export_path, mut args)
+	engine.container_load(export_path, mut args) or {panic(err)}
 
 	// should be found again
 	found = false

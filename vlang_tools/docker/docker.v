@@ -189,8 +189,8 @@ pub fn (mut e DockerEngine) container_create(args DockerContainerCreateArgs) ?Do
 	if container.node.executor is builder.ExecutorSSH {
 		mut sshkey := container.node.executor.info()['sshkey'] + '.pub'
 		mut dest := '/tmp/$rand.uuid_v4()'
-		container.node.executor.upload(sshkey, dest)
-		container.node.executor.exec("docker cp $dest $container.id:$dest && docker start $container.id && docker exec $container.id sh -c 'cat $dest >> ~/.ssh/authorized_keys'")
+		container.node.executor.upload(sshkey, dest)?
+		container.node.executor.exec("docker cp $dest $container.id:$dest && docker start $container.id && docker exec $container.id sh -c 'cat $dest >> ~/.ssh/authorized_keys'")?
 	}
 	return container
 }

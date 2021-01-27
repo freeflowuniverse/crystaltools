@@ -10,7 +10,7 @@ pub fn (mut e DockerEngine) build() ?DockerImage{
 	
 	mut dest := '/tmp/$rand.uuid_v4()'
 	println("Creating temp dir $dest")
-	e.node.executor.exec("mkdir $dest")
+	e.node.executor.exec("mkdir $dest")?
 	mut currpath := @FILE.split("/")
 	currpath.pop()
 	mut templates :=  os.join_path(currpath.join("/"), "templates")
@@ -23,8 +23,8 @@ pub fn (mut e DockerEngine) build() ?DockerImage{
 	mut dockerfile := os.read_file(dockerfile_path) or {panic(err)}
 	dockerfile = dockerfile.replace("\$base", base).replace("redis_enable", "$redis_enable")
 	
-	e.node.executor.exec("echo '$dockerfile' > $dest/dockerfile")
-	e.node.executor.upload("$templates/boot.sh", "$dest/boot.sh")
+	e.node.executor.exec("echo '$dockerfile' > $dest/dockerfile")?
+	e.node.executor.upload("$templates/boot.sh", "$dest/boot.sh")?
 	println("Building threefold image at $dest/dockerfile")
 	e.node.executor.exec('cd $dest && docker build -t threefold .') or {panic(err)}
 	
