@@ -3,6 +3,5 @@ module config
 
 pub struct ConfigData {
 pub mut:
-	root string
 }
 
