@@ -1,7 +1,7 @@
 module docker
 
-import rand
-
+import os
+import time
 import builder
 
 struct DockerEngine {
@@ -81,7 +81,9 @@ pub fn (mut e DockerEngine) images_list() []DockerImage {
 }
 
 pub fn (mut e DockerEngine) init() {
-	// docker version
+	/// Add predefined threefold docker ssh keys to the node
+	e.node.executor.exec("echo '$docker.pubkey' > ~/.ssh/threefold.pub && chmod 644 ~/.ssh/threefold.pub") or {panic(err)}
+	e.node.executor.exec("echo '$docker.privkey' > ~/.ssh/threefold && chmod 600 ~/.ssh/threefold") or {panic(err)}
 
 }
 
@@ -181,17 +183,30 @@ pub fn (mut e DockerEngine) container_create(args DockerContainerCreateArgs) ?Do
 		command = "/usr/local/bin/boot.sh"
 	}
 
+	// if forwarded ports passed in the args not containing mapping tp ssh (22) create one
+	if ! e.contains_ssh_port(args.forwarded_ports){
+		// find random free port in the node
+		mut port := e.node.get_free_port()?
+		ports += "-p $port:22/tcp"
+	}
+
 	mut cmd := 'docker run --hostname $args.hostname --name $args.name $ports $mounts -d  -t $image $command'
 	e.node.executor.exec(cmd) or {panic(err)}
 
 	mut container := e.container_get(args.name) or {panic(err)}
+	mut docker_pubkey := docker.pubkey
+	cmd = "docker exec $container.id sh -c 'echo \"$docker_pubkey\" >> ~/.ssh/authorized_keys'"
 	
 	if container.node.executor is builder.ExecutorSSH {
 		mut sshkey := container.node.executor.info()['sshkey'] + '.pub'
-		mut dest := '/tmp/$rand.uuid_v4()'
-		container.node.executor.upload(sshkey, dest)?
-		container.node.executor.exec("docker cp $dest $container.id:$dest && docker start $container.id && docker exec $container.id sh -c 'cat $dest >> ~/.ssh/authorized_keys'")?
+		sshkey = os.read_file(sshkey) or {panic(err)}
+		// add pub sshkey on authorized keys of node and container 
+		cmd = "echo \"$sshkey\" >> ~/.ssh/authorized_keys && docker exec $container.id sh -c 'echo \"$docker_pubkey\" >> ~/.ssh/authorized_keys && echo \"$sshkey\" >> ~/.ssh/authorized_keys'"		
 	}
+	
+	// wait  making sure container started correctly
+	time.sleep_ms(200)
+	container.node.executor.exec(cmd)?
 	return container
 }
 
@@ -229,10 +244,10 @@ fn (mut e DockerEngine) parse_container_ports(ports string) []string {
 	splitted := str.split(" ")
 	for element in splitted{
 		ss := element.split(":")
-		dest := ss[1]
-		src_splitted := ss[0].split("/")
-		src := src_splitted[0]
-		protocol := src_splitted[1]
+		src := ss[1]
+		dest_splitted := ss[0].split("/")
+		dest := dest_splitted[0]
+		protocol := dest_splitted[1]
 		res << "$src:$dest/$protocol"
 	}
 	return res
@@ -265,11 +280,19 @@ fn (mut e DockerEngine) parse_container_state(state string) DockerContainerStatu
 	return DockerContainerStatus.down
 }
 
+fn (mut e DockerEngine) contains_ssh_port(forwarded_ports []string) bool {
+	for port in forwarded_ports{
+		splitted := port.split(":")
+		if splitted[1] == "22" || splitted[1] == "22/tcp"{
+			return true
+		}
+	}
+	return false
+}
+
 
 //name is repo:tag or image id
 pub fn (mut e DockerEngine) image_get(name_or_id string) ?DockerImage {
-	images_list := e.images_list()
-	
 	mut splitted := name_or_id.split(":")
 	mut repo := ""
 	mut tag := ""

@@ -4,9 +4,11 @@ import docker
 
 fn docker1() {
 	mut engine := docker.new({node_ipaddr:"174.138.48.10:22",node_name:"myremoteserver", user: "root"}) or {panic(err)}
+	engine.reset_all()
 	mut containers := engine.containers_list()
 	mut images := engine.images_list()
-	println(images)
+	assert containers.len == 0
+	assert images.len == 0
 
 	name := rand.uuid_v4()
 	println("creating container : $name")
