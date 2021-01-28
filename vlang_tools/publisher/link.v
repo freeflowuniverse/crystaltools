@@ -129,6 +129,15 @@ pub fn link_parser(text string) ParseResult {
 						// linkstate = LinkState.ok
 						isexternal = true
 					}
+
+					if capturegroup_post.contains(" '") {
+						//to support something like
+						//![](./img/license_threefoldfzc.png ':size=800x900')
+						splitted := capturegroup_post.split(" ")
+						if splitted.len > 0 {
+							capturegroup_post = splitted[0]
+						}
+					}
 					
 					//check which link type
 					ext = os.file_ext(os.base(capturegroup_post)).to_lower()

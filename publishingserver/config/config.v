@@ -19,7 +19,7 @@ pub fn config() ConfigData {
 	_ := gt.repo_get_from_url("https://github.com/threefoldfoundation/info_tfgrid_sdk") or {panic ("cannot load repo:$err")}
 	_ := gt.repo_get_from_url("https://github.com/threefoldfoundation/legal") or {panic ("cannot load repo:\n$err")}
 
-	mut configdata := ConfigData{}
+	mut configdata := ConfigData{root:"~/codesync"}
 
 	return configdata
 
