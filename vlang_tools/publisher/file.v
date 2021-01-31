@@ -28,12 +28,12 @@ pub fn (mut file File) process(mut publisher &Publisher) {
 		// println("${file.name} used")
 		if file.usedby.len>1{
 			page_strings = []
-			println("## file used multiple times for ${file.path}")
+			// println("## file used multiple times for ${file.path}")
 			for pageid_who_has_file in file.usedby {
 				page_file := publisher.page_get_by_id(pageid_who_has_file) or {panic(err)}
 				page_strings << page_file.path
 				m[page_file.path] = pageid_who_has_file
-				println("  - ${page_file.path}")
+				// println("  - ${page_file.path}")
 			}
 			page_strings.sort()
 			page_id_found := m[page_strings[0]]
@@ -45,7 +45,7 @@ pub fn (mut file File) process(mut publisher &Publisher) {
 				if os.real_path(dest)==os.real_path(path){
 					panic("should never be same path: $dest and $path")
 				}
-				println(">>>RM: $path")
+				println(">>>RM3: $path")
 				os.rm(path) or {panic(err)}
 			}else{
 				println(">>>MV3: $path -> $dest")
@@ -62,7 +62,7 @@ pub fn (mut file File) process(mut publisher &Publisher) {
 				if os.real_path(dest)==os.real_path(path){
 					panic("should never be same path: $dest and $path")
 				}
-				println(">>>RM: $path")
+				println(">>>RM2: $path")
 				os.rm(path) or {panic(err)}
 			}else{
 				println(">>>MV2: '$path' -> '$dest'")

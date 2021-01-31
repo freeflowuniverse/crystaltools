@@ -40,6 +40,7 @@ struct SiteConfig {
 	depends []string
 	replace []string
 	filechanges []string
+	error_ignore []string
 }
 
 
@@ -113,6 +114,8 @@ pub fn (mut site Site) name_fix_alias(name string) string {
 	return name2
 }
 
+
+
 //init all replace items in the config file, populate the regex'es
 pub fn (mut site Site) replace_init() ? {
 	site.replace = SiteReplace{}
@@ -144,6 +147,15 @@ pub fn (mut site Site) replace_init() ? {
 
 
 
+//check there is a name change (return empty string if not)
+pub fn (mut site Site) error_ignore_check(name string) bool {
+	for mut item in site.config.error_ignore {
+		if name_fix(name) == name_fix(item){
+			return true
+		}
+	}
+	return false
+}
 
 
 pub fn (site Site) page_get(name string, mut publisher &Publisher) ?&Page {

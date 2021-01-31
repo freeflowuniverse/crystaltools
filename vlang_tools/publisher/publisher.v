@@ -39,6 +39,9 @@ fn (mut publisher Publisher) load(config SiteConfig, path string) ? {
 // make sure that the names are always normalized so its easy to find them back
 pub fn name_fix(name string) string {
 	mut pagename := name.to_lower()
+	if "#" in pagename{
+		pagename = pagename.split("#")[0]
+	}
 	if pagename.ends_with('.md') {
 		pagename = pagename[0..pagename.len - 3]
 	}
@@ -54,12 +57,17 @@ pub fn name_fix(name string) string {
 
 // return (sitename,pagename)
 pub fn site_page_names_get(name string) ?(string, string) {
-	mut pagename := name
+	mut pagename := name.trim(" ")
 	if pagename.starts_with('file__') || pagename.starts_with('page__'){
 		pagename = pagename[6..]
 		sitename := pagename.split("__")[0]
 		itemname := pagename.split("__")[1]
 		pagename = "$sitename:$itemname"
+	}
+	//to deal with things like "img/tf_world.jpg ':size=300x160'"
+	splitted0 := pagename.split(" ")
+	if splitted0.len > 0 {
+		pagename = splitted0[0]
 	}
 	pagename = name_fix(pagename)
 	splitted := pagename.split(':')

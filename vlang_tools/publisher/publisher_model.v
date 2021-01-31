@@ -40,18 +40,18 @@ pub fn (mut publisher Publisher) site_exists(name string) bool {
 	return pagename in publisher.site_names
 }
 
-pub fn (mut publisher Publisher) file_exists(name string) ?bool {
-	sitename,_ := site_page_names_get(name)?
+pub fn (mut publisher Publisher) file_exists(name string) bool {
+	sitename,itemname := site_page_names_get(name) or {panic(err)}
 	if sitename==""{
 		for site in publisher.sites {
-			if sitename in site.files{
+			if itemname in site.files{
 				return true
 			}
 		}
 		return false
 	}else{
-		site := publisher.site_get(sitename)?
-		return sitename in site.files
+		site := publisher.site_get(sitename) or {panic(err)}
+		return itemname in site.files
 	}
 }
 

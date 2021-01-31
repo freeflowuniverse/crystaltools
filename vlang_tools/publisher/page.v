@@ -7,6 +7,11 @@ pub fn (page Page) path_get(mut publisher &Publisher) string {
 	return os.join_path(site_path, page.path)
 }
 
+pub fn (page Page) write(mut publisher &Publisher, content string){
+	os.write_file(page.path_get(mut publisher), content) or {panic("cannot write, $err")}
+}
+
+
 // will load the content, check everything, return true if ok
 pub fn (mut page Page) check(mut publisher &Publisher) bool {
 	page.process(mut publisher) or {panic(err)}
@@ -20,6 +25,7 @@ pub fn (mut page Page) check(mut publisher &Publisher) bool {
 fn (mut page Page) error_add(error PageError,mut publisher &Publisher) {
 	if page.state != PageStatus.error {
 		// only add when not in error mode yet, because means check was already done
+		println(" - ERROR: ${error.msg}")
 		page.errors << error
 	} else {
 		panic(' ** ERROR (2nd time): in file ${page.path_get(mut publisher)}')
@@ -60,29 +66,27 @@ pub fn (mut page Page) process(mut publisher &Publisher) ?bool {
 
 //walk over each line in the page and do the link parsing on it
 //happens line per line
-fn ( mut page Page) process_links(mut publisher &Publisher) ?string {	
+fn ( mut page Page) process_links(mut publisher &Publisher) ? {	
+
 
 	mut nr := 0
 	mut lines_source := ""  //needs to be written to the file where we loaded from, is returned as string
 	mut lines_server := ''   //the return of the process, will go back to page.content
 
-	mut sourcelink := "" //what we will replace with on source
-	mut serverlink := ""
-	mut link_link := ""
-
 	mut sourceline := "" //what we will replace with on source
 	mut serverline := ""
 
-	mut link_description:= ""
+	mut source_changed := false //if we need to rewrite the source
 
 	//first we need to do the links, then the process_includes
 
 	mut site := &publisher.sites[page.site_id]
-	mut sitename := site.name
+
+	if site.error_ignore_check(page.name){
+		return
+	}
 
 	mut links_parser_result := ParseResult{}
-
-	mut errors := []string{}
 
 	for line in page.content.split_into_lines() {
 		// println ("LINK: $line")
@@ -95,171 +99,45 @@ fn ( mut page Page) process_links(mut publisher &Publisher) ?string {
 		nr++
 		
 		sourceline = line //what we will replace with on source
-		serverline = line		
+		serverline = line	
+
 		links_parser_result = link_parser(line)
+
 		//there can be more than 1 link on 1 line
 		for mut link in links_parser_result.links {
 
-			// println(link)
-
-			sourcelink = "" //the result for how it should be in the source file
-			serverlink = "" //result of how it needs to be on the server
-
-			link_description = link.name.trim(" ")
-
-			//only when local we need to check if we can find files/pages or not
-			if link.cat == LinkType.missing{
-				link_link = ""
-				serverlink = '[${link_description}]()'
-				errormsg :=  "ERROR: EMPTY LINK: for $link_description"
-					errors << errormsg
-					page.error_add({
-						line:   line
-						linenr: nr
-						msg: errormsg  
-						cat:    PageErrorCat.brokenlink
-					}, mut publisher)
-			}else if link.isexternal{
-				link_link = link.link.trim(" ")
-			}else if link.cat == LinkType.unknown{
-				//was no page or file on the localserver
-				//we can only do some generic cleanup now
-				link_link = link.link.trim(" ")
-				errormsg :=  "ERROR: UNKNOWN  LINK: '${link.link}' for $link_description"
-				errors << errormsg
-				page.error_add({
-					line:   line
-					linenr: nr
-					msg:    errormsg
-					cat:    PageErrorCat.brokenlink
-				}, mut publisher)
-			}else if link.cat == LinkType.html{
-				link_link = link.link.trim(" ")
-				splitted := link.link.split(" ")
-				mut l := "html__${sitename}__" + splitted[0].replace("/", "__")
-				
-				if splitted.len > 1{
-					l = l + " " + splitted[1 ..].join(" ")
-				}
-				serverlink = '[${link_description}]($l)'
-
-			}else{
-				// println(link)
-				//parse the different variations of how we can mention a link
-				// supported:
-				//  site:name
-				//  page__sitename__itemname
-				//  file__sitename__itemname
-				mut sitename2, mut itemname := site_page_names_get(link.link) or {return err}
-
-				//we only need the last name for local content
-				//can be for file, file & page
-				itemname = os.file_name(itemname)		
-
-				// println("check:'${link.link}'")
-
-				if link.cat == LinkType.page{
-
-					if site.name_change_check(itemname){
-						//the name of the link changed, will remove .md and will get the alias					
-						itemname = site.name_fix_alias(itemname)
-						println("Found link with name to replace: '(${link.link}) to '($itemname)'")
-						if sitename2 == ""{
-							page.replace_write(mut publisher, "(${link.link})", "($itemname)") or {return error(err)}
-						}else{
-							page.replace_write(mut publisher, "(${link.link})", "($sitename2:$itemname)") or {return error(err)}
-						}
-					}
-				}
-
-				if sitename2 == "" {
-					//if not returned means its the site name from the site we are on
-					sitename2 = sitename
-				}
-
-				if link.cat == LinkType.page{
-					if itemname.starts_with("#"){continue}
-					serverlink = '[${link_description}](page__${sitename2}__${itemname}.md)'
-					if ! publisher.page_exists("$sitename2:$itemname") {
-						errormsg :=  "ERROR: CANNOT FIND LINK: '${link.link}' for $link_description"
-						errors << errormsg
-						page.error_add({
-							line:   line
-							linenr: nr
-							msg: errormsg  
-							cat:    PageErrorCat.brokenlink
-						}, mut publisher)
-					}
-				} else if link.cat != LinkType.email{
-					serverlink = '[${link_description}](file__${sitename2}__${itemname})'
-					if _ := publisher.file_exists("$sitename2:$itemname") {
-						//remember that the file has been used
-						mut file := publisher.file_get("$sitename2:$itemname") or {
-							return err
-						}
-						if !(page.id in file.usedby){
-							if page.id == 0 {
-								panic("page.id should not be 0")
-							}
-							file.usedby<<page.id
-						}
-
-					}else{
-						errormsg :=  "ERROR: CANNOT FIND FILE: '${link.link}' for $link_description"
-						errors << errormsg
-						page.error_add({
-							line:   line
-							linenr: nr
-							msg:    errormsg
-							cat:    PageErrorCat.brokenlink
-						}, mut publisher)
-					}					
-				}
-
-				//now we need to cleanup the source
-				if site.name == sitename2{
-					link_link = itemname
-				} else{
-					link_link = "$sitename2:$itemname"
-				}
-				
-			}
-
-			//lets cleanup the sourcecode & the code which will come from server
-			sourcelink = "[${link_description}](${link_link})"
+			link.init()
+			link.check(mut publisher, mut page ,nr,line)
 			
+			if link.state == LinkState.ok{
 
-			if serverlink == ""{
-				serverlink = sourcelink
+				if link.original_get() != link.source_get(site.name){
+					source_changed = true
+					sourceline = sourceline.replace(link.original_get(),link.source_get(site.name))
+					println(" - REPLACE: ${link.original_get()} -> ${link.source_get(site.name)}")
+				}
 			}
-
-			if link.isfile{
-				sourcelink = "!${sourcelink}"
-				serverlink = "!${serverlink}"
-			}			
-
-			if link_link != ""{				
-				sourceline=sourceline.replace(link.link_original_get(),sourcelink)
-				serverline=serverline.replace(link.link_original_get(),serverlink)	
-			}
+			serverline = serverline.replace(link.original_get(),link.server_get())
 
 		}//end of the walk over all links
 
 		lines_source += sourceline + "\n"
 		lines_server += serverline + "\n"
 
-		//now we need to check if there were errors if yes lets put them in the source code
-		//this will make it easy to spot errors and fix, remember endusers will see it too
+		// //now we need to check if there were errors if yes lets put them in the source code
+		// //this will make it easy to spot errors and fix, remember endusers will see it too
 		// for err in errors{
-		// 	lines_source += "> **ERROR: $err**<br>\n\n"
 		// 	lines_server += "> **ERROR: $err**<br>\n\n"
 		// }
 
 	}//end of the line walk
 
 	page.content = lines_server //we need to remember what the server needs to give
-	//we return the source lines, so we can choose to store it on fs or not
-	return lines_source
+
+	if source_changed{
+		page.write(mut publisher, lines_source)
+		println(lines_source)
+	}
 
 }
 
