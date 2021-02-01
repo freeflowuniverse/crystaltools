@@ -174,7 +174,7 @@ pub fn (mut publisher Publisher) flatten(base string){
 			os.mkdir_all(dest) or {panic(err)}
 		}
 
-		mut special := ["readme.md", "README.md", "_sidebar.md"]
+		mut special := ["readme.md", "README.md", "_sidebar.md", "index.html", "_navbar.md"]
 
 		for file in special{
 			if os.exists("$site.path/$file"){
