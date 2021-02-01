@@ -177,7 +177,9 @@ pub fn (mut publisher Publisher) flatten(base string){
 		mut special := ["readme.md", "README.md", "_sidebar.md"]
 
 		for file in special{
-			os.cp("$site.path/$file", "$dest/$file") or {panic(err)}
+			if os.exists("$site.path/$file"){
+				os.cp("$site.path/$file", "$dest/$file") or {panic(err)}
+			}
 		}
 	}
 
