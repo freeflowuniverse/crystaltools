@@ -1,7 +1,13 @@
 module config
+
+import os
 import gittools
 
 pub fn config() ConfigData {
+	
+	if !os.exists("$os.home_dir()/codesync"){
+		os.mkdir("$os.home_dir()/codesync") or {panic(err)}
+	}
 
 	//get publisher, check for all wiki's
 	mut gt := gittools.new("~/codesync") or {panic ("cannot load gittools:$err")}
