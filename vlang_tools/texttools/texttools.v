@@ -239,3 +239,66 @@ fn (mut result TextParams) add(key string, value string){
     result.params << TextParam{key:key2, value:value2}
     
 }
+
+
+enum TextArgsStatus {
+	start
+    quote //quote found means value in between ''
+}
+
+
+
+// convert text string to arguments
+// \n supported but will be \\n and only supported within '' or ""
+// \' not modified, same for \"
+pub fn text_to_args(text string)[]string{
+    mut res := []string{}
+    mut quote := ""
+    mut char_previous := ""
+    mut arg := ""
+    mut char := ""
+    for i in 0 .. text.len {
+        char = text[i..i + 1]
+        //skip spaces which are not escaped
+        if char == " " && arg=="" {continue}
+
+        if char in ['"','\'']{
+            if char_previous != "\\"{
+                if quote == "" {
+                    //beginning of quote need to close off previous arg
+                    if arg!=""{
+                        res << arg.trim(" ")
+                        arg = ""
+                    }
+                    quote = char
+                    char_previous = char
+                    continue
+                }else{
+                    //end of quote 
+                    quote = ""
+                    res << arg.trim(" ")
+                    arg = ""
+                    char_previous = char
+                    continue
+                }
+            }
+        }
+
+        if quote!=""{
+            //unmodified add, because we are in quote
+            arg+=char
+        }else{
+            if char == " " && arg!="" {
+                res << arg.trim(" ")
+                arg = ""
+            }else{
+                arg+=char
+            }
+        }
+        char_previous = char
+    }
+    if arg != ""{
+        res << arg.trim(" ")
+    }
+    return res
+}

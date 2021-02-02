@@ -144,3 +144,25 @@ def test():
 	assert json.encode(params)== json.encode(expectedresult).replace("\\t","    ")
 
 }
+
+fn test_text_args(){
+	mut r := []string{}
+	r = text_to_args("'aa bb'   ' cc dd' one -two")
+	assert r == ['aa bb', 'cc dd', 'one', '-two']
+	r = text_to_args("'\taa bb'   ' cc dd' one -two")
+	assert r == ['\taa bb', 'cc dd', 'one', '-two']
+	//now spaces
+	r = text_to_args("  '\taa bb'    ' cc dd'  one -two ")
+	assert r == ['\taa bb', 'cc dd', 'one', '-two']
+	//now other quote
+	r = text_to_args('"aa bb"   " cc dd" one -two')
+	assert r == ['aa bb', 'cc dd', 'one', '-two']
+	r = text_to_args("\"aa bb\"   ' cc dd' one -two")
+	assert r == ['aa bb', 'cc dd', 'one', '-two']	
+
+	r = text_to_args("find . /tmp")
+	assert r == ['find', '.', '/tmp']
+
+	r = text_to_args("bash -c 'find /'")
+	assert r == ['bash', '-c', 'find /']
+}

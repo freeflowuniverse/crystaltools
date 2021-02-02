@@ -70,7 +70,7 @@ pub fn (mut db DB) delete(key string) ? {
 			k := file.trim_right(".json")
 			if k.ends_with(suffix){
 				fpath := db.db_key_path_get(k)
-				os.rm(fpath) or {panic(err)}
+				db.node.executor.remove(fpath) or {panic(err)}
 			}
 		}
 	}else {

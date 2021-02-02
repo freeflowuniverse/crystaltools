@@ -20,7 +20,7 @@ pub struct DockerNodeArguments {
 
 //get a new docker engine
 // to use docker.new() -> returns DockerEngine for local machine
-// to use docker.new(node_ipaddr:"node_ipaddr192.168..10:2222",node_name:"myremoteserver") -> returns DockerEngine for a remote machine, ssh-agent needs to be loaded
+// to use docker.new(node_ipaddr:"192.168..10:2222",node_name:"myremoteserver") -> returns DockerEngine for a remote machine, ssh-agent needs to be loaded
 // to use docker.new(node_ipaddr:"192.168..10",node_name:"myremoteserver") -> returns DockerEngine for a remote machine on default ssh port 22
 pub fn new(args DockerNodeArguments) ?DockerEngine {
 	mut node_name := args.node_ipaddr

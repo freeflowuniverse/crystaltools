@@ -1,5 +1,6 @@
 module builder
 
+import process
 import os
 
 pub struct ExecutorLocal {
@@ -8,7 +9,7 @@ pub struct ExecutorLocal {
 
 
 pub fn execute_cmd(cmd string)?string{
-	e := os.exec(cmd)?
+	e := process.execute({cmd:cmd})?
 	if e.exit_code == 0 {
 		return e.output.trim('\n')
 	} else {
