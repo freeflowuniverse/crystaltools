@@ -200,9 +200,10 @@ pub fn (mut publisher Publisher) flatten(base string){
 	}
 
 	for mut page in publisher.pages {
-		mut src := os.join_path(src_path[page.site_id], page.path)
+		// mut src := os.join_path(src_path[page.site_id], page.path)
 		mut dest := os.join_path(dest_path[page.site_id], os.file_name(page.path))
-		mut content :=  os.read_file(src) or {continue}
+		page.process(mut publisher) or {panic(err)}
+		mut content :=  page.content
 
 		for f_src, f_dest in files{
 			content = content.replace(f_src, f_dest)
