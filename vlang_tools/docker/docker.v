@@ -178,7 +178,7 @@ pub fn (mut e DockerEngine) container_create(args DockerContainerCreateArgs) ?Do
 	}
 
 	if image == "threefold" || image == "threefold:latest" || image == ""{
-		img := e.build() or {panic(err)}
+		img := e.build(false) or {panic(err)}
 		image = "$img.repo:$img.tag"
 		command = "/usr/local/bin/boot.sh"
 	}
