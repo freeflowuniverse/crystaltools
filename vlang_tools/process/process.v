@@ -152,7 +152,7 @@ pub fn execute(cmd Command) ? Job {
 
 //write temp file and return path
 pub fn temp_write(text string) ? string {
-	tmpdir := os.environ()["TMPDIR"]
+	tmpdir := os.environ()["TMPDIR"] or {"/tmp"}
 	mut tmppath := ""
 	if ! os.exists("$tmpdir/tmpfiles/"){
 			os.mkdir("$tmpdir/tmpfiles") or {return error("Cannot create $tmpdir/tmpfiles,$err")}
