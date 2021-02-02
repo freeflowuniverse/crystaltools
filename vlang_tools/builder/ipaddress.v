@@ -14,23 +14,30 @@ pub enum IpAddressType {
 	ipv6
 }
 
-
+//format: localhost:7777
+//format: 192.168.6.6:7777
+//format: 192.168.6.6
+//format: any ipv6 addr
 pub fn ipaddress_new(addr_string string) ?IPAddress{
 	mut cat := IpAddressType.ipv4
 	mut addr := addr_string
 	mut port := "0"
 
-	if "::" in addr_string && addr_string.count("::") == 1{
+	if addr_string.starts_with('localhost'){
+		addr=addr_string.replace("localhost","127.0.0.1")
+	}
+
+	if "::" in addr && addr.count("::") == 1{
 		cat = IpAddressType.ipv6
-		s := addr_string.split("::")
+		s := addr.split("::")
 		addr, port = s[0], s[1]
-	} else if ":" in addr_string && addr_string.count(":") == 1{
+	} else if ":" in addr && addr.count(":") == 1{
 		cat = IpAddressType.ipv4
-		s := addr_string.split(":")
+		s := addr.split(":")
 		addr, port = s[0], s[1]
-	} else if ":" in addr_string && addr_string.count(":") > 1{
+	} else if ":" in addr && addr.count(":") > 1{
 		cat = IpAddressType.ipv6
-	} else if "." in addr_string && addr_string.count(".") == 3{
+	} else if "." in addr && addr.count(".") == 3{
 		cat = IpAddressType.ipv4
 	}else{
 		return error("Invalid Ip address string")

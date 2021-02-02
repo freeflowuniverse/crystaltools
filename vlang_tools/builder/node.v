@@ -14,6 +14,10 @@ pub mut:
 	platform PlatformType
 }
 
+//format ipaddr: localhost:7777
+//format ipaddr: 192.168.6.6:7777
+//format ipaddr: 192.168.6.6
+//format ipaddr: any ipv6 addr
 pub struct NodeArguments {
 	ipaddr   string
 	name     string
@@ -21,6 +25,7 @@ pub struct NodeArguments {
 }
 
 // the factory which returns an node, based on the arguments will chose ssh executor or the local one
+
 pub fn node_get(args NodeArguments) ?Node {
 	mut node := Node{}
 	if args.ipaddr == '' || args.ipaddr.starts_with('localhost') || args.ipaddr.starts_with('127.0.0.1') {
