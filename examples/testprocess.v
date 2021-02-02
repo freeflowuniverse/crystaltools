@@ -6,3 +6,8 @@ print(job)
 
 job2 := process.execute({cmd:"find /tmp/", timeout:1}) or {panic(err)}
 print(job2)
+
+
+
+job3 := process.execute({cmd:"cd / &&ls /", timeout:1}) or {panic(err)}
+print(job3)

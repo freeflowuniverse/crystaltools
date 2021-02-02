@@ -60,25 +60,25 @@ pub struct Job{
 // out is the output
 pub fn execute(cmd Command) ? Job {
 	mut cmd2 := cmd.cmd
-	mut cleanup:=false
 	mut out := ""
 	mut job := Job{}
 	job.cmd = cmd
 	job.start = time.now()	
 	mut cleanuppath := ""
-	if "\n" in cmd2 {
+	if "\n" in cmd2 || cmd2.contains("&&") {
 		//will write temp file which can then be executed
-		mut tmpfile,tmpfile_path := util.temp_file({})?
-		cleanuppath = tmpfile_path
+		if cmd2.contains("&&") && ! ("\n" in cmd2){			
+			cmd2 = cmd2.replace("&&","\n")
+			cmd2="set -ex\n$cmd2"
+		}
 		cmd2 = texttools.dedent(cmd2)		
 		if ! cmd2.ends_with("\n"){
 			cmd2 += "\n"
 		}
-		tmpfile.write_str(cmd2)?
-		tmpfile.close()
+		println("write\n$cmd2")
+		cleanuppath = temp_write(cmd2)or {return error("error: cannot write $err")}
 		job.cmd.cmd = cmd2
-		cmd2 = "/bin/bash '$tmpfile_path'"
-		cleanup = true		
+		cmd2 = "/bin/bash '$cleanuppath'"	
 	}else{
 		for x in ["find","ls"]{
 			if cmd2.starts_with("$x "){
@@ -131,11 +131,11 @@ pub fn execute(cmd Command) ? Job {
 	}
 
 	job.end = time.now()
-	if cleanup{os.rm(cleanuppath)or {}}
+	if cleanuppath!=""{os.rm(cleanuppath) or {}}
 
 	if job.exit_code > 0{
 		if cmd.die{
-			if cleanup{os.rm(cleanuppath) or {}}
+			if cleanuppath!=""{os.rm(cleanuppath) or {}}
 			return error("Cannot execute:\n$job")
 		}else{
 			if job.error == ""{
@@ -147,3 +147,22 @@ pub fn execute(cmd Command) ? Job {
 
 }
 
+
+
+
+//write temp file and return path
+pub fn temp_write(text string) ? string {
+	tmpdir := os.environ()["TMPDIR"]
+	mut tmppath := ""
+	if ! os.exists("$tmpdir/tmpfiles/"){
+			os.mkdir("$tmpdir/tmpfiles") or {return error("Cannot create $tmpdir/tmpfiles,$err")}
+		}
+	for i in 1..1000{
+		tmppath = "$tmpdir/tmpfiles/exec_${i}.sh"
+		if ! os.exists(tmppath){
+			break
+		}
+	}
+	os.write_file(tmppath,text) ?
+	return tmppath
+}
