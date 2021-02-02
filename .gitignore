@@ -4,3 +4,4 @@ examples/publisher
 examples/texttools
 examples/gittools
 *dSYM/
+publisher/publish

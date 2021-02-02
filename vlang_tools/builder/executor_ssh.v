@@ -7,7 +7,7 @@ pub struct ExecutorSSH {
 mut:
 	ipaddr      IPAddress
 	sshkey      string
-	user        string //default will be root
+	user        string = "root"//default will be root
 	initialized bool
 	retry       int = 5 // nr of times something will be retried before failing, need to check also what error is, only things which should be retried need to be done
 }

@@ -3,11 +3,12 @@ module builder
 import os
 
 pub struct DB {
-	node        Node
-	db_dirname	string = "builder"
+	
+	pub mut:
+		environment map[string]string
+		node        Node
+		db_dirname	string = "builder"
 
-pub mut:
-	environment map[string]string
 }
 
 pub struct DBArguments{
@@ -16,7 +17,7 @@ pub struct DBArguments{
 		db_dirname	string = "builder"
 }
 
-fn (db DB) db_path() string {
+pub fn (db DB) db_path() string {
 	return '${db.environment['HOME']}/.config/$db.db_dirname'
 }
 
