@@ -161,6 +161,8 @@ pub fn (mut publisher Publisher) flatten(base string){
 	mut files := map[string]string
 
 	for mut site in publisher.sites {
+		site.files_process(mut publisher) or {panic(err)}
+		
 		src_path[site.id] = site.path
 		mut dest := "$base/$site.name"
 		dest_path[site.id] = dest
@@ -181,6 +183,16 @@ pub fn (mut publisher Publisher) flatten(base string){
 				os.cp("$site.path/$file", "$dest/$file") or {panic(err)}
 			}
 		}
+
+		for name, _ in site.pages{
+			mut page := site.page_get(name, mut publisher) or {continue}
+			page.process(mut publisher) or {panic(err)}
+			content := page.content
+			
+			mut page_dest := os.join_path(dest_path[page.site_id], os.file_name(page.path))
+			
+			os.write_file(page_dest, content) or {panic(err)}
+		}
 	}
 
 	for mut file in publisher.files {
@@ -198,18 +210,4 @@ pub fn (mut publisher Publisher) flatten(base string){
 		mut dest := os.join_path(dest_path[file.site_id], os.file_name(file.path))
 		os.cp(src, dest) or {panic(err)}
 	}
-
-	for mut page in publisher.pages {
-		// mut src := os.join_path(src_path[page.site_id], page.path)
-		mut dest := os.join_path(dest_path[page.site_id], os.file_name(page.path))
-		page.process(mut publisher) or {panic(err)}
-		mut content :=  page.content
-
-		for f_src, f_dest in files{
-			content = content.replace(f_src, f_dest)
-		}
-
-		os.write_file(dest, content) or {panic(err)}
-	}
-
 }

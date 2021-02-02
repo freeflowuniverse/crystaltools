@@ -63,7 +63,7 @@ fn ( link Link) server_get() string {
 	}
 	if link.cat == LinkType.file {
 		if link.isimage{
-			return '![${link.description}](file__${link.site}__${link.filename}.md)'
+			return '![${link.description}](file__${link.site}__${link.filename})'
 		}else{
 			return '[${link.description}](file__${link.site}__${link.filename}.md)'
 		}

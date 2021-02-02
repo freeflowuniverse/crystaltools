@@ -30,14 +30,10 @@ fn main() {
 		},
 		commands: [
 			cli.Command{
-				name: 'flatten'
+				name: 'export'
 				execute: fn (cmd cli.Command) ? {
 					configdata := config.config()
 					mut publisher := publisher.new(configdata.root) or {panic("cannot init publisher. $err")}
-					for mut site in publisher.sites {
-						site.files_process(mut &publisher) or {panic(err)}
-						
-					}
 					// generate flatten files per site
 					mut base := "$os.home_dir()/generated"
 					publisher.flatten(base)
