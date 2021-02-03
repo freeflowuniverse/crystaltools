@@ -42,8 +42,3 @@ pub fn (mut node Node) package_install(mut package Package) {
 		panic('only ubuntu, alpine and osx supported for now')
 	}
 }
-
-pub fn (mut node Node) get_free_port() ?int{
-	port := node.executor.exec("bash -c \"comm -23 <(seq 49152 65535 | sort) <(ss -Htan | awk '{print $$4}' | cut -d':' -f2 | sort -u) | shuf | head -n 1\"") or {panic(err)}
-	return port.int()
-}
