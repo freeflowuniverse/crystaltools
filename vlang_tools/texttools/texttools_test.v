@@ -147,22 +147,38 @@ def test():
 
 fn test_text_args(){
 	mut r := []string{}
-	r = text_to_args("'aa bb'   ' cc dd' one -two")
+	r = text_to_args("'aa bb'   ' cc dd' one -two") or {panic(err)}
 	assert r == ['aa bb', 'cc dd', 'one', '-two']
-	r = text_to_args("'\taa bb'   ' cc dd' one -two")
+	r = text_to_args("'\taa bb'   ' cc dd' one -two") or {panic(err)}
 	assert r == ['\taa bb', 'cc dd', 'one', '-two']
 	//now spaces
-	r = text_to_args("  '\taa bb'    ' cc dd'  one -two ")
+	r = text_to_args("  '\taa bb'    ' cc dd'  one -two ") or {panic(err)}
 	assert r == ['\taa bb', 'cc dd', 'one', '-two']
 	//now other quote
-	r = text_to_args('"aa bb"   " cc dd" one -two')
+	r = text_to_args('"aa bb"   " cc dd" one -two') or {panic(err)}
 	assert r == ['aa bb', 'cc dd', 'one', '-two']
-	r = text_to_args("\"aa bb\"   ' cc dd' one -two")
+	r = text_to_args("\"aa bb\"   ' cc dd' one -two") or {panic(err)}
 	assert r == ['aa bb', 'cc dd', 'one', '-two']	
 
-	r = text_to_args("find . /tmp")
+	r = text_to_args("find . /tmp") or {panic(err)}
 	assert r == ['find', '.', '/tmp']
 
-	r = text_to_args("bash -c 'find /'")
+	r = text_to_args("bash -c 'find /'") or {panic(err)}
 	assert r == ['bash', '-c', 'find /']
+
+	mut r2 := string{}
+	r2 = text_remove_quotes('echo "hi >" > /tmp/a.txt')
+	assert r2 == 'echo  > /tmp/a.txt'
+	r2 = text_remove_quotes("echo 'hi >' > /tmp/a.txt")
+	assert r2 == 'echo  > /tmp/a.txt'
+	r2 = text_remove_quotes("echo 'hi >' /tmp/a.txt")
+	assert r2 == 'echo  /tmp/a.txt'
+	assert check_exists_outside_quotes("echo 'hi >' > /tmp/a.txt",["<",">","|"])
+	assert check_exists_outside_quotes("echo 'hi ' /tmp/a.txt |",["<",">","|"])
+	assert ! check_exists_outside_quotes("echo 'hi >'  /tmp/a.txt",["<",">","|"])
+
+	r = text_to_args('echo "hi" > /tmp/a.txt') or {panic(err)}
+	assert r == ['echo', '"hi" > /tmp/a.txt']
+
+	
 }

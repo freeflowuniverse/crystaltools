@@ -65,46 +65,26 @@ pub fn execute(cmd Command) ? Job {
 	job.cmd = cmd
 	job.start = time.now()	
 	mut cleanuppath := ""
-	if "\n" in cmd2 || cmd2.contains("&&") {
-		//will write temp file which can then be executed
-		if cmd2.contains("&&") && ! ("\n" in cmd2){			
-			cmd2 = cmd2.replace("&&","\n")
-			cmd2="set -ex\n$cmd2"
-		}
-		cmd2 = texttools.dedent(cmd2)		
-		if ! cmd2.ends_with("\n"){
-			cmd2 += "\n"
-		}
-		println("write\n$cmd2")
-		cleanuppath = temp_write(cmd2)or {return error("error: cannot write $err")}
-		job.cmd.cmd = cmd2
-		cmd2 = "/bin/bash '$cleanuppath'"	
-	}else{
-		for x in ["find","ls"]{
-			if cmd2.starts_with("$x "){
-				if "\"" in cmd2{
-					return error("Cannot embed string in \"\"  because is already using in $cmd2")
-				}
-				cmd2= "bash -c \"${cmd2}\""
-			}
-		}
-	}
+	cleanuppath, job.args = cmd_to_args(cmd2)?
+
 	if cmd.logcmd{
 		println("execute: $cmd2")
-	}
-	job.args = texttools.text_to_args(cmd2)
-
-	//get the path of the file
-	if ! job.args[0].starts_with("/"){
-		job.args[0] = os.find_abs_path_of_executable(job.args[0])?
-	}
-
+	}	
 	// println("execute: $args")
 
 	mut p := os.new_process(job.args[0])
 	p.set_redirect_stdio()
 	p.set_args(job.args[1..job.args.len])
 	p.run()
+
+	if !p.is_alive() || p.code>0 {
+		//didn't start, will restart but write to text file (adding \n will trigger that)
+		cleanuppath, job.args = cmd_to_args(cmd2+"\n")?
+		p = os.new_process(job.args[0])
+		p.set_redirect_stdio()
+		p.set_args(job.args[1..job.args.len])
+		p.run()
+	}
 
 	start := time.now().unix_time()
 	for {
@@ -131,11 +111,11 @@ pub fn execute(cmd Command) ? Job {
 	}
 
 	job.end = time.now()
-	if cleanuppath!=""{os.rm(cleanuppath) or {}}
+	// if cleanuppath!=""{os.rm(cleanuppath) or {}}
 
 	if job.exit_code > 0{
 		if cmd.die{
-			if cleanuppath!=""{os.rm(cleanuppath) or {}}
+			// if cleanuppath!=""{os.rm(cleanuppath) or {}}
 			return error("Cannot execute:\n$job")
 		}else{
 			if job.error == ""{
@@ -152,7 +132,10 @@ pub fn execute(cmd Command) ? Job {
 
 //write temp file and return path
 pub fn temp_write(text string) ? string {
-	tmpdir := os.environ()["TMPDIR"] or {"/tmp"}
+	mut tmpdir := "/tmp"
+	if ! os.exists("/tmp"){
+		tmpdir =  os.environ()["TMPDIR"] or {panic("cannot find TMPDIR in os.environment variables.")}
+	}
 	mut tmppath := ""
 	if ! os.exists("$tmpdir/tmpfiles/"){
 			os.mkdir("$tmpdir/tmpfiles") or {return error("Cannot create $tmpdir/tmpfiles,$err")}
@@ -165,4 +148,52 @@ pub fn temp_write(text string) ? string {
 	}
 	os.write_file(tmppath,text) ?
 	return tmppath
+}
+
+
+fn check_write(text string) bool{
+	if texttools.check_exists_outside_quotes(text,["<",">","|"]){return true}
+	if "\n" in text {return true}
+	return false
+}
+
+//process commands to arguments which can be given to a process manager
+//will return temporary path and args
+pub fn cmd_to_args(cmd string)? (string,[]string){
+	mut cleanuppath := ""
+	mut text:=cmd
+
+	if text.contains("&&") && !check_write(text){			
+		text = text.replace("&&","\n")
+		text="set -ex\n$text"
+	}
+
+	if check_write(text) {
+		//will write temp file which can then be executed
+
+		text = texttools.dedent(text)		
+		if ! text.ends_with("\n"){
+			text += "\n"
+		}
+		println("write\n$text")
+		cleanuppath = temp_write(text)or {return error("error: cannot write $err")}
+		text = "/bin/bash '$cleanuppath'"	
+	}else{
+		for x in ["find","ls"]{
+			if text.starts_with("$x "){
+				if "\"" in text{
+					return error("Cannot embed string in \"\"  because is already using in $text")
+				}
+				text= "bash -c \"${text}\""
+			}
+		}
+	}
+	mut args := texttools.text_to_args(text)?
+
+	//get the path of the file
+	if ! args[0].starts_with("/"){
+		args[0] = os.find_abs_path_of_executable(args[0])?
+	}	
+	return cleanuppath,args
+
 }
