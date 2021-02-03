@@ -1,7 +1,5 @@
 module builder
 
-import os
-
 pub struct DB {
 	
 	pub mut:
@@ -56,17 +54,17 @@ pub fn (mut db DB) save(key string, val string) ? {
 pub fn (mut db DB) delete(key string) ? {
 	if key.ends_with('*') {
 		prefix := key.trim_right("*")
-		files := os.ls(db.db_path()) or {panic(err)}
+		files := db.node.executor.list(db.db_path())?
 		for file in files{
 			k := file.trim_right(".json")
 			if k.starts_with(prefix){
 				fpath := db.db_key_path_get(k)
-				os.rm(fpath) or {panic(err)}
+				db.node.executor.exec('rm $fpath')?
 			}
 		}
 	} else if key.starts_with('*') {
 		suffix := key.trim_left("*")
-		files := os.ls(db.db_path()) or {panic(err)}
+		files := db.node.executor.list(db.db_path())?
 		for file in files{
 			k := file.trim_right(".json")
 			if k.ends_with(suffix){

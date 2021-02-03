@@ -131,3 +131,23 @@ pub fn (mut executor ExecutorSSH) ssh_shell(port int)? {
 
 	os.execvp("ssh", ["$executor.user@$executor.ipaddr.addr", "-p $port"])?
 }
+
+pub fn (mut executor ExecutorSSH) list(path string) ?[]string {
+	if ! executor.dir_exists(path){
+		panic('Dir Not found')
+	}
+	mut res := []string{}
+	output := executor.exec('ls $path')?
+	for line in output.split("\n"){
+		res << line
+	}
+	return res
+}
+
+pub fn (mut executor ExecutorSSH) dir_exists(path string) bool {
+	output := executor.exec('test -d $path && echo found || echo not found') or { return false }
+	if output == 'found' {
+		return true
+	}
+	return false
+}
