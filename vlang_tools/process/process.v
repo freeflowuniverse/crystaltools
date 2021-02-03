@@ -2,7 +2,6 @@ module process
 import os
 import time
 import texttools
-import io.util
 
 pub struct Command{
 	pub mut:
