@@ -73,3 +73,14 @@ pub fn (mut executor ExecutorLocal) download(source string, dest string) ? {
 pub fn (mut executor ExecutorLocal) ssh_shell(port int)? {
 	os.execvp("ssh", ["localhost", "-p $port"])?
 }
+
+pub fn (mut executor ExecutorLocal) list(path string) ?[]string {
+	if ! executor.dir_exists(path){
+		panic('Dir Not found')
+	}
+	return os.ls(path)
+}
+
+pub fn (mut executor ExecutorLocal) dir_exists(path string) bool {
+	return os.is_dir(path)
+}

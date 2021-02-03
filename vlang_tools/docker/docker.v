@@ -3,6 +3,7 @@ module docker
 import os
 import time
 import builder
+import arrays
 
 struct DockerEngine {
 pub mut :
@@ -186,7 +187,7 @@ pub fn (mut e DockerEngine) container_create(args DockerContainerCreateArgs) ?Do
 	// if forwarded ports passed in the args not containing mapping tp ssh (22) create one
 	if ! e.contains_ssh_port(args.forwarded_ports){
 		// find random free port in the node
-		mut port := e.node.get_free_port()?
+		mut port := e.get_free_port()
 		ports += "-p $port:22/tcp"
 	}
 
@@ -321,3 +322,24 @@ pub fn (mut e DockerEngine) reset_all() {
 	e.node.executor.exec("docker builder prune -a -f") or {panic(err)}
 
 }
+
+//Get free port
+pub fn (mut e DockerEngine) get_free_port() int{
+	mut used_ports := []int{}
+	mut range := []int{}
+
+	for c in e.containers_list(){
+		for p in c.forwarded_ports{
+			used_ports << p.split(":")[0].int()
+		}
+	}
+
+	for i in 20000 .. 40000 {
+		if ! (i in used_ports){
+			range << i
+		}
+	}
+	arrays.shuffle<int>(mut range, 0)
+	return range[0]
+}
+
