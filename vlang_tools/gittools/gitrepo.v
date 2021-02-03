@@ -1,7 +1,6 @@
 module gittools
-import builder
 import os
-
+import process
 
 struct GitRepo {
 id        int  [skip]	
@@ -27,7 +26,7 @@ fn (mut repo GitRepo) url_get() string {
 //if there are changes then will return 'true', otherwise 'false'
 fn (mut repo GitRepo) changes() ?bool {
 	cmd := "cd ${repo.addr.path_get()} && git status"
-	out := builder.execute_cmd(cmd) or {
+	out := process.execute_silent(cmd) or {
 		return error("Could not execute command to check git status on $repo.path\ncannot execute $cmd")		
 	}	
 	// println(out)
@@ -73,7 +72,7 @@ fn (mut repo GitRepo) pull(args PullArgs) ?{
 			}else{
 				cmd = "cd ${repo.path_get()} && git clean -xfd && git checkout . && git checkout ${repo}"
 			}
-			builder.execute_cmd(cmd) or {
+			process.execute_silent(cmd) or {
 				return error("Cannot pull repo: ${repo.path}. Error was $err")
 			}
 		}
@@ -93,7 +92,7 @@ fn (mut repo GitRepo) pull(args PullArgs) ?{
 		// 	cmd += " --depth= ${repo.addr.depth}  && cd ${repo.addr.name} && git fetch"
 		// }
 	}
-	builder.execute_cmd(cmd) or {return error("Cannot pull repo: ${repo.path}. Error was $err")}
+	process.execute_silent(cmd) or {return error("Cannot pull repo: ${repo.path}. Error was $err")}
 }
 
 fn (mut repo GitRepo) commit(msg string)?{

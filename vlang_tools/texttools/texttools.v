@@ -345,3 +345,66 @@ pub fn text_to_args(text string)? []string{
     }
     return res
 }
+
+// //check the char is in a...Z0..9
+// fn is_var_char(char string) bool{
+//     tocheck:="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
+//     if char in tocheck{
+//         return true
+//     }
+//     return false
+// }
+
+// //find variables which is $[a...zA...Z0...9]
+// pub fn template_find_args(text string)[]string{
+//     mut var := ""
+//     mut res := []string{}
+//     mut invar := false
+//     mut quoted := false
+//     for i in text {
+//         if i =="$"{
+//             invar = true
+//             var = ""
+//             continue
+//         }
+//         if invar{
+//             if i =="{"{
+//                 quoted=true
+//                 continue
+//             }
+//             if quoted &&  i =="}" {
+//                 quoted = false
+//                 res << var
+//                 var = ""
+//                 invar = false
+//                 continue
+//             }
+//             if is_var_char(i) || quoted {
+//                 var += i
+//             }else{
+//                 res << var
+//                 var = ""
+//                 invar = false
+//             }
+//         }
+//     }
+//     return res
+// }
+
+// //find variables which is $[a...zA...Z0...9]
+// pub fn template_replace_args(text string, args map[string]string )?string{
+//     mut args2 := map[string]string{}
+//     mut text2 := text
+//     for key in args.key_values{
+//         args2[key.to_upper()]=args[key]
+//     }
+//     for arg in template_find_args(text){        
+//         if arg.to_upper() in args2{
+//             text2 = text2.replace("\$${arg}",args2[arg.to_upper()])
+//         }else{
+//             return error("Cannot find $arg in\n$text2")
+//         }
+//     }
+//     return text2
+// }
+

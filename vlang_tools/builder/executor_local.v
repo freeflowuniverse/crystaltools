@@ -8,18 +8,14 @@ pub struct ExecutorLocal {
 }
 
 
-pub fn execute_cmd(cmd string)?string{
-	e := process.execute({cmd:cmd})?
-	if e.exit_code == 0 {
-		return e.output.trim('\n')
-	} else {
-		return error('could not execute: $cmd\n Error was:$e')
-	}
+pub fn (mut executor ExecutorLocal) exec(cmd string) ?string {
+	res := process.execute({cmd:cmd})?
+	return res.output
 }
 
-
-pub fn (mut executor ExecutorLocal) exec(cmd string) ?string {
-	return execute_cmd(cmd)
+pub fn (mut executor ExecutorLocal) exec_silent(cmd string) ?string {
+	res :=  process.execute({cmd:cmd,stdout:false})?
+	return res.output
 }
 
 pub fn (mut executor ExecutorLocal) file_write(path string, text string) ? {
@@ -65,13 +61,13 @@ pub fn (mut executor ExecutorLocal) info() map[string]string {
 }
 
 // upload from local FS to executor FS
-pub fn (mut executor ExecutorLocal) upload(source string, dest string) ?string {
-	return execute_cmd("cp -r $source $dest")
+pub fn (mut executor ExecutorLocal) upload(source string, dest string) ? {
+	executor.exec("cp -r $source $dest") ?
 }
 
 // download from executor FS to local FS
-pub fn (mut executor ExecutorLocal) download(source string, dest string) ?string {
-	return execute_cmd("cp -r $source $dest")
+pub fn (mut executor ExecutorLocal) download(source string, dest string) ? {
+	executor.exec("cp -r $source $dest") ?
 }
 
 pub fn (mut executor ExecutorLocal) ssh_shell(port int)? {

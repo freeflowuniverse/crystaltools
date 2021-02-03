@@ -182,3 +182,16 @@ fn test_text_args(){
 
 	
 }
+
+// fn test_text_args(){
+
+// 	mut args := []string{}
+// 	text := "
+// 	$test something $test2T 
+// 	a$TEST
+// 		b${TEST}c
+// 	"
+// 	args = template_find_args(text)
+// 	println(args)
+// 	panic("A")
+// }

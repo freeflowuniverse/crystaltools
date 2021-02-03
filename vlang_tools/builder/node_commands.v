@@ -2,12 +2,12 @@ module builder
 
 // check command exists on the platform, knows how to deal with different platforms
 pub fn (mut node Node) cmd_exists(cmd string) bool {
-	node.executor.exec('which $cmd 2>&1 > /dev/null') or { return false }
+	node.executor.exec_silent('which $cmd') or { return false }
 	return true
 }
 
 pub fn (mut node Node) exec_ok(cmd string) bool {
-	node.executor.exec('$cmd 2> /dev/null') or {
+	node.executor.exec_silent(cmd) or {
 		// see if it executes ok, if cmd not found is false
 		return false
 	}
@@ -29,15 +29,40 @@ fn (mut node Node) platform_load() {
 	}
 }
 
-pub fn (mut node Node) package_install(mut package Package) {
+pub fn (mut node Node) platform_prepare() ? {
+	node.platform_load()
+	if node.platform == PlatformType.osx {
+		if ! node.cmd_exists("brew"){
+			node.executor.exec('/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"') or {
+				return error("cannot install brew, something went wrong.\n$err")
+			}
+		}
+		if ! node.cmd_exists("clang"){
+			node.executor.exec('xcode-select --install') or {
+				return error("cannot install xcode-select --install, something went wrong.\n$err")
+			}
+		}		
+	} else if node.platform == PlatformType.ubuntu {
+		println("ubuntu prepare")
+	} else {
+		panic('only ubuntu and osx supported for now')
+	}	
+	for x in ["mc","git","rsync","curl"]{
+		if ! node.cmd_exists(x){
+			node.package_install({name:"x"})?	
+		}
+	}	
+}
+
+pub fn (mut node Node) package_install(package Package) ? {
 	name := package.name
 	node.platform_load()
 	if node.platform == PlatformType.osx {
-		node.executor.exec('brew install $name') or {panic(err)}
+		node.executor.exec('brew install $name') or {return error("could not install package:${package.name}\nerror:\n$err")}
 	} else if node.platform == PlatformType.ubuntu {
-		node.executor.exec('apt install $name -y') or {panic(err)}
+		node.executor.exec('apt install $name -y') or {return error("could not install package:${package.name}\nerror:\n$err")}
 	} else if node.platform == PlatformType.alpine {
-		node.executor.exec('apk install $name') or {panic(err)}
+		node.executor.exec('apk install $name') or {return error("could not install package:${package.name}\nerror:\n$err")}
 	} else {
 		panic('only ubuntu, alpine and osx supported for now')
 	}

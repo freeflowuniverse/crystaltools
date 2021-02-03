@@ -2,7 +2,6 @@ module process
 import os
 import time
 import texttools
-import io.util
 
 pub struct Command{
 	pub mut:
@@ -60,6 +59,7 @@ pub struct Job{
 // out is the output
 pub fn execute(cmd Command) ? Job {
 	mut cmd2 := cmd.cmd
+	mut out_err := ""
 	mut out := ""
 	mut job := Job{}
 	job.cmd = cmd
@@ -90,12 +90,17 @@ pub fn execute(cmd Command) ? Job {
 	for {
 		if p.is_alive(){
 			out = p.stdout_read()
+			// out_err = p.stderr_read()
 			if out !=""{
 				if cmd.stdout{println(out)}		
 				if cmd.stdout_log{		
 					job.output+=out
 				}
-			}			
+			}	
+			if out_err !=""{
+				println(out_err)
+				job.error+=out_err
+			}						
 			if time.now().unix_time() > start + cmd.timeout{
 				job.exit_code = 100
 				job.error = "timeout"
@@ -111,17 +116,18 @@ pub fn execute(cmd Command) ? Job {
 	}
 
 	job.end = time.now()
-	if cleanuppath!=""{os.rm(cleanuppath) or {}}
 
 	if job.exit_code > 0{
 		if cmd.die{
-			if cleanuppath!=""{os.rm(cleanuppath) or {}}
+			// if cleanuppath!=""{os.rm(cleanuppath) or {}}
 			return error("Cannot execute:\n$job")
 		}else{
 			if job.error == ""{
 				job.error = "unknown"
 			}			
 		}
+	}else{
+		if cleanuppath!=""{os.rm(cleanuppath) or {}}
 	}
 	return job
 
@@ -175,9 +181,9 @@ pub fn cmd_to_args(cmd string)? (string,[]string){
 		if ! text.ends_with("\n"){
 			text += "\n"
 		}
-		println("write\n$text")
+		// println("write\n$text")
 		cleanuppath = temp_write(text)or {return error("error: cannot write $err")}
-		text = "/bin/bash '$cleanuppath'"	
+		text = "/bin/bash $cleanuppath"	
 	}else{
 		for x in ["find","ls"]{
 			if text.starts_with("$x "){
@@ -188,7 +194,12 @@ pub fn cmd_to_args(cmd string)? (string,[]string){
 			}
 		}
 	}
-	mut args := texttools.text_to_args(text)?
+
+	//is still giving issues prob easier for now to only use first part and then all the rest together, lets see what happens now
+	// mut args := texttools.text_to_args(text)?
+
+	splitted := text.split_nth(" ",2)
+	mut args := [splitted[0],splitted[1]]	
 
 	//get the path of the file
 	if ! args[0].starts_with("/"){
@@ -196,4 +207,15 @@ pub fn cmd_to_args(cmd string)? (string,[]string){
 	}	
 	return cleanuppath,args
 
+}
+
+
+pub fn execute_silent(cmd string) ? string {
+	job :=  execute({cmd:cmd,stdout:false}) ?
+	return job.output
+}
+
+pub fn execute_stdout(cmd string) ? string {
+	job :=  execute({cmd:cmd,stdout:true}) ?
+	return job.output
 }

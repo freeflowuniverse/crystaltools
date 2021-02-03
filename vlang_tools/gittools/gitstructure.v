@@ -36,7 +36,7 @@ pub fn (mut gitstructure GitStructure) repo_get_from_url(url string) ?&GitRepo {
 	return r
 }
 
-struct GitGetArgs {
+pub struct GitGetArgs {
 mut:
 	account  string
 	name     string //is the name of the repository

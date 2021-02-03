@@ -2,6 +2,7 @@ module builder
 
 import os
 import rand
+import process
 
 pub struct ExecutorSSH {
 mut:
@@ -16,30 +17,32 @@ fn (mut executor ExecutorSSH) init()?{
 	if !executor.initialized {
 		// todo : don't load if already running
 
-		execute_cmd('pgrep -x ssh-agent || eval `ssh-agent -s`') or { return error("Could not start ssh-agent, error was: $err") }
+		process.execute({cmd:'pgrep -x ssh-agent || eval `ssh-agent -s`'}) or { return error("Could not start ssh-agent, error was: $err") }
 		if executor.sshkey != '' {
-			execute_cmd('ssh-add $executor.sshkey')?
+			process.execute({cmd:'ssh-add $executor.sshkey'})?
 		}
 		mut addr := executor.ipaddr.addr
 		if addr == '' {
 			addr = 'localhost'
 		}
-		mut fingerprint := ''
 		cmd := "sh -c 'ssh-keyscan -H $executor.ipaddr.addr -p $executor.ipaddr.port -t ecdsa-sha2-nistp256 2>/dev/null >> ~/.ssh/known_hosts'"
-		fingerprint = execute_cmd(cmd) or {
+		process.execute_silent(cmd) or {
 			return error("cannot add the ssh keys to known hosts")
 		}
-		// execute_cmd('echo "$fingerprint" ')
 		executor.initialized = true
 	}
 }
 
 pub fn (mut executor ExecutorSSH) exec(cmd string) ?string {
-	
-	if executor.user != '' {
-		return execute_cmd('ssh $executor.user@$executor.ipaddr.addr -p $executor.ipaddr.port "$cmd"')
-	}
-	return execute_cmd('ssh $executor.ipaddr.addr -p $executor.ipaddr.port "$cmd"')
+	cmd2 := 'ssh $executor.user@$executor.ipaddr.addr -p $executor.ipaddr.port "$cmd"'
+	res := process.execute({cmd:cmd2,stdout:false})?
+	return res.output
+}
+
+pub fn (mut executor ExecutorSSH) exec_silent(cmd string) ?string {
+	cmd2 := 'ssh $executor.user@$executor.ipaddr.addr -p $executor.ipaddr.port "$cmd"'
+	res := process.execute({cmd:cmd2,stdout:false})?
+	return res.output
 }
 
 pub fn (mut executor ExecutorSSH) file_write(path string, text string) ? {
@@ -71,23 +74,16 @@ pub fn (mut executor ExecutorSSH) remove(path string) ? {
 }
 
 // upload from local FS to executor FS
-pub fn (mut executor ExecutorSSH) download(source string, dest string) ?string {
+pub fn (mut executor ExecutorSSH) download(source string, dest string) ? {
 	
 	port := executor.ipaddr.port
-	if executor.user != '' {
-		return execute_cmd('rsync -avHPe "ssh -p$port" $executor.user@$executor.ipaddr.addr:$source $dest')
-	}
-	return execute_cmd('rsync -avHPe "ssh -p$port" $executor.ipaddr.addr:$source $dest')
+	process.execute({cmd:'rsync -avHPe "ssh -p$port" $executor.user@$executor.ipaddr.addr:$source $dest'})?
 }
 
 // download from executor FS to local FS
-pub fn (mut executor ExecutorSSH) upload(source string, dest string) ?string {
-	
+pub fn (mut executor ExecutorSSH) upload(source string, dest string) ? {
 	port := executor.ipaddr.port
-	if executor.user != '' {
-		return execute_cmd('rsync -avHPe "ssh -p$port" $source -e ssh $executor.user@$executor.ipaddr.addr:$dest')
-	}
-	return execute_cmd('rsync -avHPe "ssh -p$port" $source -e ssh $executor.ipaddr.addr:$dest')
+	process.execute({cmd:'rsync -avHPe "ssh -p$port" $source -e ssh $executor.user@$executor.ipaddr.addr:$dest'})?
 }
 
 // get environment variables from the executor
