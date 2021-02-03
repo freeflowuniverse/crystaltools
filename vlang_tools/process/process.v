@@ -111,11 +111,11 @@ pub fn execute(cmd Command) ? Job {
 	}
 
 	job.end = time.now()
-	// if cleanuppath!=""{os.rm(cleanuppath) or {}}
+	if cleanuppath!=""{os.rm(cleanuppath) or {}}
 
 	if job.exit_code > 0{
 		if cmd.die{
-			// if cleanuppath!=""{os.rm(cleanuppath) or {}}
+			if cleanuppath!=""{os.rm(cleanuppath) or {}}
 			return error("Cannot execute:\n$job")
 		}else{
 			if job.error == ""{
@@ -137,11 +137,11 @@ pub fn temp_write(text string) ? string {
 		tmpdir =  os.environ()["TMPDIR"] or {panic("cannot find TMPDIR in os.environment variables.")}
 	}
 	mut tmppath := ""
-	if ! os.exists("$tmpdir/tmpfiles/"){
-			os.mkdir("$tmpdir/tmpfiles") or {return error("Cannot create $tmpdir/tmpfiles,$err")}
+	if ! os.exists("$tmpdir/execscripts/"){
+			os.mkdir("$tmpdir/execscripts") or {return error("Cannot create $tmpdir/execscripts,$err")}
 		}
 	for i in 1..1000{
-		tmppath = "$tmpdir/tmpfiles/exec_${i}.sh"
+		tmppath = "$tmpdir/execscripts/exec_${i}.sh"
 		if ! os.exists(tmppath){
 			break
 		}
