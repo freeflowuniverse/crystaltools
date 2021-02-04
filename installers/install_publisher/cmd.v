@@ -1,3 +1,5 @@
+module installerpublisher
+
 module main
 import nodejs
 import process
@@ -8,7 +10,7 @@ import builder
 import texttools
 import config
 
-fn main() {
+pub fn new() cli.Command {
 	mut app := cli.Command{
 		name: 'publishing tools'
 		description: 'publishing tools'

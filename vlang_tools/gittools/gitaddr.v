@@ -2,18 +2,6 @@ module gittools
 
 import os
 
-// import publisher
-struct GitAddr {
-	root string
-	pub:
-		provider string
-		account  string
-		name     string //is the name of the repository
-		path     string // path in the repo (not on filesystem)
-		branch   string
-		anker    string // position in the file
-}
-
 fn (addr GitAddr) path_get() string {
 	mut provider := ''
 	if addr.provider == 'github.com' {
@@ -21,8 +9,10 @@ fn (addr GitAddr) path_get() string {
 	} else {
 		provider = addr.provider
 	}
-	if addr.root == "" {panic("cannot be empty")}
-	return '${addr.root}/$provider/$addr.account/$addr.name'
+	if addr.root == '' {
+		panic('cannot be empty')
+	}
+	return '$addr.root/$provider/$addr.account/$addr.name'
 }
 
 fn (addr GitAddr) path_account_get() string {
@@ -32,8 +22,10 @@ fn (addr GitAddr) path_account_get() string {
 	} else {
 		provider = addr.provider
 	}
-	if addr.root == "" {panic("cannot be empty")}
-	return '${addr.root}/$provider/$addr.account'
+	if addr.root == '' {
+		panic('cannot be empty')
+	}
+	return '$addr.root/$provider/$addr.account'
 }
 
 fn (addr GitAddr) url_get() string {
@@ -86,9 +78,9 @@ pub fn (gs GitStructure) addr_get_from_url(url string) ?GitAddr {
 	urllower = urllower.replace('/blob/', '/')
 	// println("AA:$urllower")
 	parts := urllower.split('/')
-	mut anker := ""
-	mut path := ""
-	mut branch := ""
+	mut anker := ''
+	mut path := ''
+	mut branch := ''
 	// deal with path
 	if parts.len > 4 {
 		path = parts[4..parts.len].join('/')
@@ -109,11 +101,19 @@ pub fn (gs GitStructure) addr_get_from_url(url string) ?GitAddr {
 	if parts.len < 3 {
 		return error('url badly formatted, not enough parts in $urllower')
 	}
-	
+
 	provider := parts[0]
 	account := parts[1]
 	name := parts[2]
-	return GitAddr{root:gs.root, provider:provider, account:account, name:name, branch:branch, anker:anker, path:path}
+	return GitAddr{
+		root: gs.root
+		provider: provider
+		account: account
+		name: name
+		branch: branch
+		anker: anker
+		path: path
+	}
 }
 
 // returns the git arguments starting from a git path

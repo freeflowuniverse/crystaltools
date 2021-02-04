@@ -1,55 +1,10 @@
-module main
-import nodejs
+module installerpublisher
+
 import process
-import cli
 import os
 import gittools
 import builder
 import texttools
-import config
-
-fn main() {
-	mut app := cli.Command{
-		name: 'publishing tools'
-		description: 'publishing tools'
-		execute: root
-	app.setup()
-	app.parse(os.args)
-}
-
-
-fn (cmd cli.Command) root() ? {
-			ourreset := true
-			if ourreset {
-				reset() or {
-					println(' ** ERROR: cannot reset. Error was:\n$err')
-					exit(1)
-				}
-			}
-			step1() or {
-				println(' ** ERROR: cannot prepare system. Error was:\n$err')
-				exit(1)
-			}
-			getsites() or {
-				println(' ** ERROR: cannot get web & wiki sites. Error was:\n$err')
-				exit(1)
-			}
-			npm() or {
-				println(' ** ERROR: cannot install npm. Error was:\n$err')
-				exit(1)
-			}		}
-		commands: [
-			cli.Command{
-				name: 'export'
-				execute: export
-			},
-		]
-	}
-
-
-fn (cmd cli.Command) export() ? {
-	println('export')
-}	
 
 fn step1() ? {
 	base := base_path_get()
@@ -77,6 +32,12 @@ fn getsites() ? {
 	mut gt := gittools.new('$base') or { return error('cannot load gittools:$err') }
 
 	println(' - get all code repositories.')
+
+	scs := site_config()
+	for sc in scs.sites {
+		if sc.cat == SiteCat.web {
+		}
+	}
 }
 
 fn reset() ? {
@@ -93,47 +54,7 @@ fn reset() ? {
 	println(' - cleanup')
 }
 
-fn npm() ? {
-	base := base_path_get()
 
-	mut node := builder.node_get({}) or {
-		println(' ** ERROR: cannot load node. Error was:\n$err')
-		exit(1)
-	}
-	node.platform_prepare() ?
-
-	if !os.exists('$base/nvm.sh') {
-		script := "
-		set -e
-		rm -f $base/nvm.sh
-		curl -s -o '$base/nvm.sh' https://raw.githubusercontent.com/nvm-sh/nvm/master/nvm.sh
-		"
-		process.execute_silent(script) or {
-			println('cannot download nvm script.\n$err')
-			exit(1)
-		}
-	}
-
-	nodejspath := nodejs_path_get()
-	if !os.exists('$nodejspath/bin/node') {
-		println(' - will install nodejs (can take quite a while)')
-		script := '
-		set -e
-		export NVM_DIR=$base
-		source $base/nvm.sh
-		nvm install --lts
-		npm install -g grunt
-		npm install -g gridsome
-		npm install -g @gridsome/cli
-		'
-		process.execute_silent(script) or {
-			println('cannot install nodejs.\n$err')
-			exit(1)
-		}
-	}
-
-	println(' - nodejs installed')
-}
 
 // Initialize (load wikis) only once when server starts
 fn website_install(name string, first bool, reset bool) ? {

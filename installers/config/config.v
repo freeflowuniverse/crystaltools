@@ -1,33 +1,86 @@
 module config
 
 import os
-import gittools
 
-pub fn config() ConfigData {
-	
-	if !os.exists("$os.home_dir()/codesync"){
-		os.mkdir("$os.home_dir()/codesync") or {panic(err)}
-	}
-
-	//get publisher, check for all wiki's
-	mut gt := gittools.new("~/codesync") or {panic ("cannot load gittools:$err")}
-	
-	//will only pull if it does not exists
-	_ := gt.repo_get_from_url("https://github.com/threefoldtech/info_tftech") or {panic ("cannot load info_tftech:$err")}
-
-	_ := gt.repo_get_from_url("https://github.com/threefoldfoundation/www_threefold_cloud") or {panic ("cannot load repo:$err")}
-	_ := gt.repo_get_from_url("https://github.com/threefoldfoundation/www_threefold_farming") or {panic ("cannot load repo:\n$err")}
-	_ := gt.repo_get_from_url("https://github.com/threefoldfoundation/www_threefold_twin") or {panic ("cannot load repo:\n$err")}
-	_ := gt.repo_get_from_url("https://github.com/threefoldfoundation/www_vdc") or {panic ("cannot load repo:\n$err")}
-	_ := gt.repo_get_from_url("https://github.com/threefoldfoundation/www_tfnow") or {panic ("cannot load repo:\n$err")}
-	_ := gt.repo_get_from_url("https://github.com/threefoldfoundation/www_conscious_internet") or {panic ("cannot load repo:\n$err")}
-	_ := gt.repo_get_from_url("https://github.com/threefoldfoundation/info_foundation") or {panic ("cannot load repo:$err")}
-	_ := gt.repo_get_from_url("https://github.com/threefoldfoundation/info_tfgrid_sdk") or {panic ("cannot load repo:$err")}
-	_ := gt.repo_get_from_url("https://github.com/threefoldfoundation/legal") or {panic ("cannot load repo:\n$err")}
-
-	mut configdata := ConfigData{root:"~/codesync"}
-
-	return configdata
-
+fn base_path_get() string {
+	return '$os.home_dir()/.publisher'
 }
 
+fn code_path_get() string {
+	return '$os.home_dir()/codesync'
+}
+
+fn nodejs_config() NpmConfig {
+	mut config := NpmConfig{
+		version: NpmVersion{
+			cat: NpmVersionEnum.lts
+		}
+	}
+	return config
+}
+
+
+fn site_config() SiteConfigs {
+	mut sc := SiteConfigs{}
+	sc.sites << SiteConfig{
+		name: 'info_tftech'
+		url: 'https://github.com/threefoldtech/info_tftech'
+	}
+	sc.sites << SiteConfig{
+		name: 'www_threefold_cloud'
+		url: 'https://github.com/threefoldfoundation/www_threefold_cloud'
+		cat: SiteCat.web
+	}
+	sc.sites << SiteConfig{
+		name: 'www_threefold_farming'
+		url: 'https://github.com/threefoldfoundation/www_threefold_farming'
+		cat: SiteCat.web
+	}
+	sc.sites << SiteConfig{
+		name: 'www_threefold_twin'
+		url: 'https://github.com/threefoldfoundation/www_threefold_twin'
+		cat: SiteCat.web
+	}
+	sc.sites << SiteConfig{
+		name: 'www_threefold_marketplace'
+		url: 'https://github.com/threefoldfoundation/www_threefold_marketplace'
+		cat: SiteCat.web
+	}
+	sc.sites << SiteConfig{
+		name: 'www_conscious_internet'
+		url: 'https://github.com/threefoldfoundation/www_conscious_internet'
+		cat: SiteCat.web
+	}
+	sc.sites << SiteConfig{
+		name: 'www_threefold_tech'
+		url: 'https://github.com/threefoldtech/www_threefold_tech'
+		cat: SiteCat.web
+	}
+	sc.sites << SiteConfig{
+		name: 'www_examplesite'
+		url: 'https://github.com/threefoldfoundation/www_examplesite'
+		cat: SiteCat.web
+	}
+	sc.sites << SiteConfig{
+		name: 'info_foundation'
+		url: 'https://github.com/threefoldfoundation/info_foundation'
+	}
+	sc.sites << SiteConfig{
+		name: 'info_tfgrid_sdk'
+		url: 'https://github.com/threefoldfoundation/info_tfgrid_sdk'
+	}
+	sc.sites << SiteConfig{
+		name: 'info_legal'
+		url: 'https://github.com/threefoldfoundation/info_legal'
+	}
+	sc.sites << SiteConfig{
+		name: 'info_cloud'
+		url: 'https://github.com/threefoldfoundation/info_cloud'
+	}
+	sc.sites << SiteConfig{
+		name: 'data_threefold'
+		url: 'https://github.com/threefoldfoundation/data_threefold'
+		cat: SiteCat.data
+	}
+	return sc
+}
