@@ -1,18 +1,18 @@
-module config
+module myconfig
 
-// import gittools
 
 pub struct ConfigRoot {
 pub mut:
 	root string
 }
 
-struct SiteConfigs {
-mut:
+pub struct SiteConfigs {
+pub mut:
 	sites []SiteConfig
 }
 
-struct SiteConfig {
+pub struct SiteConfig {
+pub mut:
 	name   string
 	url    string
 	branch string = 'default' // means is the default branch
@@ -27,19 +27,19 @@ pub enum SiteCat {
 	html
 }
 
-pub struct NpmConfig {
+pub struct NodejsConfig {
 pub mut:
-	version NpmVersion
+	version NodejsVersion
 	path    string
 }
 
-struct NpmVersion {
+pub struct NodejsVersion {
 pub mut:
 	version string
-	cat     NpmVersionEnum
+	cat     NodejsVersionEnum
 }
 
-pub enum NpmVersionEnum {
+pub enum NodejsVersionEnum {
 	lts
 	latest
 }

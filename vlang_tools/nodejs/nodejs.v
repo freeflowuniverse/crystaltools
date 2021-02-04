@@ -1,36 +1,35 @@
 module nodejs
-import config
+import myconfig
 import os
 import builder
+import process
 
-fn nodejs_path_get() string {
-	config := nodejs_config()
-	return config.path
-}
-
-fn (mut npm NpmConfig) init(){
-	if npm.path == ""{
+fn (mut nodeconfig NodejsConfig) init(){
+	mut version:= ""
+	if nodeconfig.path == ""{
 		base := config.base_path_get()	
-		if config.version.cat == NpmVersionEnum.lts{
-			version := "v15.8.0"
+		if nodeconfig.version.cat == nodejs.NodejsVersionEnum.lts{
+			version = "v15.8.0"
 		}else{
-			version := "v14.15.4"
+			version = "v14.15.4"
 		}
-		npm.path = "${base}/versions/node/$version"
-		npm.version.version = version
+		nodeconfig.path = "${base}/versions/node/$version"
+		nodeconfig.version.name = version
 	}	
 }
 
 //return string which represents init for npm
-pub fn (mut npm NpmConfig) init_string() string {
+pub fn (mut npm NodejsConfig) init_string() string {
 	return ""
 }
 
-pub fn (mut npm NpmConfig) install() ? {
+pub fn (mut npm NodejsConfig) install() ? {
+
+	mut script := ""
 
 	npm.init()
 
-	base := config.base_path_get()
+	base := myconfig.base_path_get()
 
 	mut node := builder.node_get({}) or {
 		println(' ** ERROR: cannot load node. Error was:\n$err')
@@ -39,7 +38,7 @@ pub fn (mut npm NpmConfig) install() ? {
 	node.platform_prepare() ?
 
 	if !os.exists('$base/nvm.sh') {
-		script := "
+		script = "
 		set -e
 		rm -f $base/nvm.sh
 		curl -s -o '$base/nvm.sh' https://raw.githubusercontent.com/nvm-sh/nvm/master/nvm.sh
@@ -50,18 +49,18 @@ pub fn (mut npm NpmConfig) install() ? {
 		}
 	}
 
-	nodejspath := config.nodejs_path_get()
+	nodejspath := myconfig.nodejs_path_get()
 	if !os.exists('$nodejspath/bin/node') {
 		println(' - will install nodejs (can take quite a while)')
-		if npm.version.cat == NpmVersionEnum.lts {
-			script := '
+		if npm.version.cat == NodejsVersionEnum.lts {
+			script = '
 			set -e
 			export NVM_DIR=$base
 			source $base/nvm.sh
 			nvm install --lts
 			'
 		}else{
-			script := '
+			script = '
 			set -e
 			export NVM_DIR=$base
 			source $base/nvm.sh

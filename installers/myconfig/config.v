@@ -1,26 +1,33 @@
-module config
+module myconfig
+import nodejs
 
 import os
 
-fn base_path_get() string {
+pub fn base_path_get() string {
 	return '$os.home_dir()/.publisher'
 }
 
-fn code_path_get() string {
+pub fn code_path_get() string {
 	return '$os.home_dir()/codesync'
 }
 
-fn nodejs_config() NpmConfig {
-	mut config := NpmConfig{
-		version: NpmVersion{
-			cat: NpmVersionEnum.lts
+pub fn nodejs_config() NodejsConfig {
+	mut c := NodejsConfig{
+		version: NodejsVersion{
+			cat: NodejsVersionEnum.lts
 		}
 	}
-	return config
+	return c
 }
 
 
-fn site_config() SiteConfigs {
+pub fn nodejs_path_get() string {
+	mut c := nodejs_config()
+	return c.path
+}
+
+
+pub fn site_config() SiteConfigs {
 	mut sc := SiteConfigs{}
 	sc.sites << SiteConfig{
 		name: 'info_tftech'

@@ -1,18 +1,18 @@
 module nodejs
 
-pub struct NpmConfig {
+pub struct NodejsConfig {
 pub mut:
-	version NpmVersion
+	version NodejsVersion
 	path    string
 }
 
-struct NpmVersion {
+struct NodejsVersion {
 pub mut:
-	version string
-	cat     NpmVersionEnum
+	name string
+	cat     NodejsVersionEnum
 }
 
-pub enum NpmVersionEnum {
+pub enum NodejsVersionEnum {
 	lts
 	latest
 }

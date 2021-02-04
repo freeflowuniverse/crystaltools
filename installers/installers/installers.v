@@ -1,13 +1,36 @@
-module installerpublisher
+module installers
 
-import process
 import os
 import gittools
 import builder
 import texttools
+import myconfig
+import process
 
-fn step1() ? {
-	base := base_path_get()
+pub fn main() ?{
+
+	ourreset := true
+	if ourreset {
+		reset() or {
+			return error(' ** ERROR: cannot reset. Error was:\n$err')
+		}
+	}
+	step1() or {
+		return error(' ** ERROR: cannot prepare system. Error was:\n$err')
+	}
+	getsites() or {
+		return error(' ** ERROR: cannot get web & wiki sites. Error was:\n$err')
+	}
+	mut c := myconfig.nodejs_config()
+	c.install() or {
+		return error(' ** ERROR: cannot install nodejs. Error was:\n$err')
+	}
+}
+
+
+
+pub fn step1() ? {
+	base := myconfig.base_path_get()
 
 	mut node := builder.node_get({}) or {
 		println(' ** ERROR: cannot load node. Error was:\n$err')
@@ -22,8 +45,8 @@ fn step1() ? {
 	println(' - installed base requirements')
 }
 
-fn getsites() ? {
-	base := code_path_get()
+pub fn getsites() ? {
+	base := myconfig.code_path_get()
 
 	if !os.exists('$base/codesync') {
 		os.mkdir('$base/codesync') or { return error(err) }
@@ -33,15 +56,15 @@ fn getsites() ? {
 
 	println(' - get all code repositories.')
 
-	scs := site_config()
+	scs := myconfig.site_config()
 	for sc in scs.sites {
-		if sc.cat == SiteCat.web {
+		if sc.cat == myconfig.SiteCat.web {
 		}
 	}
 }
 
-fn reset() ? {
-	base := base_path_get()
+pub fn reset() ? {
+	base := myconfig.base_path_get()
 	assert base.len > 10 // just to make sure we don't erase all
 	script := '
 	set -e
@@ -57,10 +80,10 @@ fn reset() ? {
 
 
 // Initialize (load wikis) only once when server starts
-fn website_install(name string, first bool, reset bool) ? {
-	base := base_path_get()
-	codepath := code_path_get()
-	nodejspath := nodejs_path_get()
+pub fn website_install(name string, first bool, reset bool) ? {
+	base := myconfig.base_path_get()
+	codepath := myconfig.code_path_get()
+	nodejspath := myconfig.nodejs_path_get()
 
 	mut gt := gittools.new(codepath) or {
 		println('ERROR: cannot load gittools:$err')
