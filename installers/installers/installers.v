@@ -6,8 +6,11 @@ import builder
 import texttools
 import myconfig
 import process
+import nodejs
 
 pub fn main() ?{
+
+	cfg := myconfig.get()
 
 	ourreset := true
 	if ourreset {
@@ -21,8 +24,10 @@ pub fn main() ?{
 	getsites() or {
 		return error(' ** ERROR: cannot get web & wiki sites. Error was:\n$err')
 	}
-	mut c := myconfig.nodejs_config()
-	c.install() or {
+
+
+
+	nodejs.install(&cfg) or {
 		return error(' ** ERROR: cannot install nodejs. Error was:\n$err')
 	}
 }
@@ -30,7 +35,7 @@ pub fn main() ?{
 
 
 pub fn step1() ? {
-	base := myconfig.base_path_get()
+	base := myconfig.get().paths.base
 
 	mut node := builder.node_get({}) or {
 		println(' ** ERROR: cannot load node. Error was:\n$err')
@@ -46,7 +51,8 @@ pub fn step1() ? {
 }
 
 pub fn getsites() ? {
-	base := myconfig.code_path_get()
+	cfg := myconfig.get()
+	base := cfg.paths.base
 
 	if !os.exists('$base/codesync') {
 		os.mkdir('$base/codesync') or { return error(err) }
@@ -56,15 +62,14 @@ pub fn getsites() ? {
 
 	println(' - get all code repositories.')
 
-	scs := myconfig.site_config()
-	for sc in scs.sites {
+	for sc in cfg.sites {
 		if sc.cat == myconfig.SiteCat.web {
 		}
 	}
 }
 
 pub fn reset() ? {
-	base := myconfig.base_path_get()
+	base := myconfig.get().paths.base
 	assert base.len > 10 // just to make sure we don't erase all
 	script := '
 	set -e
@@ -81,9 +86,10 @@ pub fn reset() ? {
 
 // Initialize (load wikis) only once when server starts
 pub fn website_install(name string, first bool, reset bool) ? {
-	base := myconfig.base_path_get()
-	codepath := myconfig.code_path_get()
-	nodejspath := myconfig.nodejs_path_get()
+	mut conf := myconfig.get()
+	base := conf.paths.base
+	codepath := conf.paths.code
+	nodejspath := conf.paths.nodejs
 
 	mut gt := gittools.new(codepath) or {
 		println('ERROR: cannot load gittools:$err')
@@ -164,7 +170,7 @@ pub fn website_install(name string, first bool, reset bool) ? {
 		os.symlink(' $codepath/data_threefold/content/$x', '$repo.path/content/$x') or {
 			return error('Cannot link $x from data path to repo path.\n$err')
 		}
-		processs.execute_silent('cd $repo.path && git pull') or {
+		process.execute_silent('cd $repo.path && git pull') or {
 			return error('Error cannot pull git for: $repo.path\n$err')
 		}
 	}

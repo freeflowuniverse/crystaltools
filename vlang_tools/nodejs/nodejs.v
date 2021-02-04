@@ -1,35 +1,21 @@
 module nodejs
-import myconfig
 import os
 import builder
 import process
+import myconfig
 
-fn (mut nodeconfig NodejsConfig) init(){
-	mut version:= ""
-	if nodeconfig.path == ""{
-		base := config.base_path_get()	
-		if nodeconfig.version.cat == nodejs.NodejsVersionEnum.lts{
-			version = "v15.8.0"
-		}else{
-			version = "v14.15.4"
-		}
-		nodeconfig.path = "${base}/versions/node/$version"
-		nodeconfig.version.name = version
-	}	
-}
 
 //return string which represents init for npm
-pub fn (mut npm NodejsConfig) init_string() string {
+pub fn init_string(cfg &myconfig.ConfigRoot) string {
 	return ""
 }
 
-pub fn (mut npm NodejsConfig) install() ? {
+pub fn install(cfg &myconfig.ConfigRoot) ? {
 
 	mut script := ""
 
-	npm.init()
-
-	base := myconfig.base_path_get()
+	base := cfg.paths.base
+	nodejspath := cfg.paths.nodejs
 
 	mut node := builder.node_get({}) or {
 		println(' ** ERROR: cannot load node. Error was:\n$err')
@@ -49,10 +35,10 @@ pub fn (mut npm NodejsConfig) install() ? {
 		}
 	}
 
-	nodejspath := myconfig.nodejs_path_get()
+	
 	if !os.exists('$nodejspath/bin/node') {
 		println(' - will install nodejs (can take quite a while)')
-		if npm.version.cat == NodejsVersionEnum.lts {
+		if cfg.nodejs.version.cat == myconfig.NodejsVersionEnum.lts {
 			script = '
 			set -e
 			export NVM_DIR=$base
