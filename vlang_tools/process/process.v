@@ -74,6 +74,7 @@ pub fn execute(cmd Command) ? Job {
 
 	mut p := os.new_process(job.args[0])
 	p.set_redirect_stdio()
+
 	p.set_args(job.args[1..job.args.len])
 	p.run()
 
@@ -88,25 +89,28 @@ pub fn execute(cmd Command) ? Job {
 
 	start := time.now().unix_time()
 	for {
-		if p.is_alive(){
-			out = p.stdout_read()
-			// out_err = p.stderr_read()
-			if out !=""{
-				if cmd.stdout{println(out)}		
-				if cmd.stdout_log{		
-					job.output+=out
-				}
-			}	
-			if out_err !=""{
-				println(out_err)
-				job.error+=out_err
-			}						
-			if time.now().unix_time() > start + cmd.timeout{
-				job.exit_code = 100
-				job.error = "timeout"
-				break
+		out = p.stdout_read()
+		// out_err = p.stderr_read()
+		if out !=""{
+			if cmd.stdout{println(out)}		
+			if cmd.stdout_log{		
+				job.output+=out
 			}
-		}else{
+		}	
+		if ! p.is_alive(){
+			out_err = p.stderr_read()
+		}
+		if out_err !=""{
+			if cmd.stdout{println(out_err)}	
+			job.error+=out_err
+		}						
+		if time.now().unix_time() > start + cmd.timeout{
+			job.exit_code = 100
+			job.error = "timeout"
+			break
+		}
+
+		if ! p.is_alive(){
 			break
 		}
 	}
@@ -171,7 +175,7 @@ pub fn cmd_to_args(cmd string)? (string,[]string){
 
 	if text.contains("&&") && !check_write(text){			
 		text = text.replace("&&","\n")
-		text="set -ex\n$text"
+		text="set -e\n$text"
 	}
 
 	if check_write(text) {
@@ -218,4 +222,18 @@ pub fn execute_silent(cmd string) ? string {
 pub fn execute_stdout(cmd string) ? string {
 	job :=  execute({cmd:cmd,stdout:true}) ?
 	return job.output
+}
+
+
+pub fn execute_interactive(cmd string) ? {
+
+	mut cleanuppath := ""
+	mut args := []string{}
+
+	cleanuppath, args = cmd_to_args(cmd)?
+
+	os.execvp(args[0],[args[1]])?
+
+	if cleanuppath!=""{os.rm(cleanuppath) or {}}
+
 }

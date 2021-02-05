@@ -1,18 +1,17 @@
 module nodejs
+
 import os
 import builder
 import process
 import myconfig
 
-
-//return string which represents init for npm
+// return string which represents init for npm
 pub fn init_string(cfg &myconfig.ConfigRoot) string {
-	return ""
+	return ''
 }
 
 pub fn install(cfg &myconfig.ConfigRoot) ? {
-
-	mut script := ""
+	mut script := ''
 
 	base := cfg.paths.base
 	nodejspath := cfg.paths.nodejs
@@ -35,7 +34,6 @@ pub fn install(cfg &myconfig.ConfigRoot) ? {
 		}
 	}
 
-	
 	if !os.exists('$nodejspath/bin/node') {
 		println(' - will install nodejs (can take quite a while)')
 		if cfg.nodejs.version.cat == myconfig.NodejsVersionEnum.lts {
@@ -45,13 +43,13 @@ pub fn install(cfg &myconfig.ConfigRoot) ? {
 			source $base/nvm.sh
 			nvm install --lts
 			'
-		}else{
+		} else {
 			script = '
 			set -e
 			export NVM_DIR=$base
 			source $base/nvm.sh
 			nvm install node
-			'			
+			'
 		}
 		process.execute_silent(script) or {
 			println('cannot install nodejs.\n$err')

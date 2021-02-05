@@ -1,40 +1,35 @@
 module installers
 
+import cli
 import os
 import gittools
 import builder
-import texttools
 import myconfig
 import process
 import nodejs
 
-pub fn main() ?{
-
+pub fn main(cmd cli.Command) ? {
 	cfg := myconfig.get()
 
-	ourreset := true
-	if ourreset {
-		reset() or {
-			return error(' ** ERROR: cannot reset. Error was:\n$err')
+	mut ourreset := false
+	for flag in cmd.flags {
+		if flag.name == 'reset' && flag.value.len > 0 {
+			ourreset = true
 		}
 	}
-	step1() or {
-		return error(' ** ERROR: cannot prepare system. Error was:\n$err')
-	}
-	getsites() or {
-		return error(' ** ERROR: cannot get web & wiki sites. Error was:\n$err')
-	}
 
-
-
-	nodejs.install(&cfg) or {
-		return error(' ** ERROR: cannot install nodejs. Error was:\n$err')
+	if ourreset {
+		println(' - reset the full system')
+		reset() or { return error(' ** ERROR: cannot reset. Error was:\n$err') }
 	}
+	base() or { return error(' ** ERROR: cannot prepare system. Error was:\n$err') }
+
+	nodejs.install(&cfg) or { return error(' ** ERROR: cannot install nodejs. Error was:\n$err') }
+
+	getsites(cmd) or { return error(' ** ERROR: cannot get web & wiki sites. Error was:\n$err') }
 }
 
-
-
-pub fn step1() ? {
+pub fn base() ? {
 	base := myconfig.get().paths.base
 
 	mut node := builder.node_get({}) or {
@@ -50,20 +45,34 @@ pub fn step1() ? {
 	println(' - installed base requirements')
 }
 
-pub fn getsites() ? {
-	cfg := myconfig.get()
-	base := cfg.paths.base
+pub fn getsites(cmd cli.Command) ? {
+	mut cfg := myconfig.get()
 
-	if !os.exists('$base/codesync') {
-		os.mkdir('$base/codesync') or { return error(err) }
+	for flag in cmd.flags {
+		if flag.name == 'pull' && flag.value.len > 0 {
+			cfg.pull = true
+		}
+		if flag.name == 'reset' && flag.value.len > 0 {
+			cfg.reset = true
+		}
+	}
+
+	if !os.exists(cfg.paths.code) {
+		os.mkdir(cfg.paths.code) or { return error(err) }
 	}
 	// get publisher, check for all wiki's
-	mut gt := gittools.new('$base') or { return error('cannot load gittools:$err') }
+	mut gt := gittools.new(cfg.paths.code) or { return error('cannot load gittools:$err') }
 
 	println(' - get all code repositories.')
-
+	mut first := true
 	for sc in cfg.sites {
+		//, branch: sc.branch
+		gt.repo_get_from_url(url: sc.url, pull: sc.pull) ?
+
 		if sc.cat == myconfig.SiteCat.web {
+			website_cleanup(sc.name, &cfg) ?
+			// website_install(sc.name,first,&cfg) ?
+			first = false
 		}
 	}
 }
@@ -80,114 +89,4 @@ pub fn reset() ? {
 		exit(1)
 	}
 	println(' - cleanup')
-}
-
-
-
-// Initialize (load wikis) only once when server starts
-pub fn website_install(name string, first bool, reset bool) ? {
-	mut conf := myconfig.get()
-	base := conf.paths.base
-	codepath := conf.paths.code
-	nodejspath := conf.paths.nodejs
-
-	mut gt := gittools.new(codepath) or {
-		println('ERROR: cannot load gittools:$err')
-		exit(1)
-	}
-
-	mut repo := gt.repo_get(name: name) or {
-		println('ERROR: cannot load gittools:$err')
-		exit(1)
-	}
-	println(' - install website (can take long) on $repo.path')
-
-	if reset {
-		script6 := '
-		
-		cd $repo.path
-
-		rm -f yarn.lock
-		rm -rf .cache		
-		rm -rf modules
-
-		'
-		process.execute_silent(script6) or {
-			println('cannot install node modules for ${name}.\n$err')
-			exit(1)
-		}
-	}
-
-	if first {
-		script2 := '
-		
-		cd $repo.path
-
-		rm -f yarn.lock
-		rm -rf .cache		
-
-		git pull
-		
-		source $base/nvm.sh
-		
-		nvm use --lts
-		npm install
-
-		rsync -ra --delete node_modules/ $base/node_modules/
-
-		'
-		process.execute_silent(script2) or {
-			println('cannot install node modules for ${name}.\n$err')
-			exit(1)
-		}
-	} else {
-		script3 := '
-		
-		cd $repo.path
-
-		rm -f yarn.lock
-		rm -rf .cache
-
-		git pull ; echo 
-		
-		source $base/nvm.sh
-		
-		rsync -ra --delete $base/node_modules/ node_modules/ 
-
-		nvm use --lts		
-		npm install		
-
-		'
-		process.execute_silent(script3) or {
-			return error('cannot install node modules for ${name}.\n$err')
-		}
-	}
-
-	for x in ['blog', 'person', 'news', 'project'] {
-		os.rmdir_all('$repo.path/content/$x') or {
-			return error('cannot remove the content link to data\n$err')
-		}
-		os.symlink(' $codepath/data_threefold/content/$x', '$repo.path/content/$x') or {
-			return error('Cannot link $x from data path to repo path.\n$err')
-		}
-		process.execute_silent('cd $repo.path && git pull') or {
-			return error('Error cannot pull git for: $repo.path\n$err')
-		}
-	}
-
-	script_run := '
-
-	cd $repo.path
-
-	nvm use --lts
-
-	export PATH=$nodejspath/bin:\$PATH
-
-	gridsome develop
-
-	'
-
-	os.write_file('$repo.path/run.sh', texttools.dedent(script_run)) or {
-		println('cannot write to $repo.path/run.sh\n$err')
-	}
 }

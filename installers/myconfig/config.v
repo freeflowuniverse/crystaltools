@@ -12,13 +12,22 @@ pub fn get() ConfigRoot {
 		}
 	}
 	c.nodejs = nodejsconfig
-	site_config(mut &c)
 	c.paths.nodejs = c.nodejs.path
+
+	c.reset = true
+	c.pull = false
+	c.debug = true
+
+	c.redis = false
+
+	// add the site configurations to it
+	site_config(mut &c)
+
 	c.init()
 	return c
 }
 
-fn site_config(mut c &ConfigRoot) {
+fn site_config(mut c ConfigRoot) {
 	c.sites << SiteConfig{
 		name: 'info_tftech'
 		url: 'https://github.com/threefoldtech/info_tftech'

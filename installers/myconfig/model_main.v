@@ -6,6 +6,10 @@ pub mut:
 	paths  Paths
 	sites  []SiteConfig
 	nodejs NodejsConfig
+	reset  bool
+	pull   bool
+	debug  bool
+	redis  bool
 }
 
 pub struct Paths {
