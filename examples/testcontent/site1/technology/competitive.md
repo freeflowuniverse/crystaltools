@@ -28,7 +28,7 @@ There are other projects which put the person as the center of their digital lif
 
 ## Available market options for delivering cloud capacity
 
-![](./img/compare.png)
+![](img/compare.png)
 
 If you required cloud capacity for your project you can today choose between blockchain or centralized clouds, they both have their benefits and issues. We believe our approach of automomous IT resolves the possible issues found.
 
@@ -71,7 +71,7 @@ Blockchain in general suffers from the Blockchain dilemma problem, which can be 
 
 <BR>
 
-![](./img/blockchain_dilema.png)
+![](img/blockchain_dilema.png)
 
 What is needed is scale & security, which cannot be achieved with current blockchain technologies.
 

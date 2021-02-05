@@ -1,4 +1,4 @@
-![](./img/3Node_nice.png)
+![](img/3node_nice.png)
 
 # 3Node & Zero-OS 
 
@@ -16,7 +16,7 @@ They provide storage, compute & networking capacities. Together, 3Nodes make up 
 
 Today we have about thousands of 3Nodes across the grid see our https://explorer.grid.tf
 
-![](./img/tf_grid.png)
+![](img/tf_grid.png)
 
 ### Zero install
 

@@ -14,7 +14,7 @@ The coding environment includes:
 
 Basically everything required to run a full blown development environment in a peer2peer way.
 
-![](./img/coder2.png)
+![](img/coder2.png)
 
 
 ## Features

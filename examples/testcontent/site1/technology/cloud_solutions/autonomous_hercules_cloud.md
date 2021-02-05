@@ -117,7 +117,7 @@ The gateway manages both DNS (to reserve subdomains), and also configures proxie
 You could traffic multiple gateways in different countries that routes traffic to your container, so you have entry points anywhere in the world. 
 This is a __unique__ concept, managing in a very balanced way connectivity and security to your containers. 
       
-![](./img/web_gateway.png)
+![](img/web_gateway.png)
       
 ##### How it works: 
   - The TCP router client opens a connection to the TCP router server (connection goes from client to server)

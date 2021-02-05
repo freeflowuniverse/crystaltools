@@ -24,17 +24,17 @@ ZeroOS (ZOS) is an operating system designed to be as secure as possible and sup
 
 ## architecture
 
-![](./img/zos1.png)
+![](img/zos1.png)
 
 The core-0 is the master process which manages everything which comes later.
 
-![](./img/zos2.png)
+![](img/zos2.png)
 
 - Zero-DB = the base storage component on top of SSD/HD provides efficient storage access
 - Zero-Net = meshed overlay network layer, delivers secure global scalable network between the containers and VM's
 - Process management and remove access.
 
-![](./img/zos3.png)
+![](img/zos3.png)
 
 ### Zero install
 

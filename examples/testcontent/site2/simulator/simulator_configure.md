@@ -17,6 +17,6 @@
 - The simulator only takes capacity sales into consideration, the TFT will be used for many other use cases but this has not been included in the simulator. The simulator is just a way to visualize the growth of the grid in relation to TFT price and how the TFGrid provides a good economical model for the TF Farmer.
 
 
-> It's good to compare how the suggested sales prices compare with the market, [see here](cloud_pricing.md)
+> It's good to compare how the suggested sales prices compare with the market, [see here](cloud_pricing)
 
 

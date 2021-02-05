@@ -1,11 +1,11 @@
 # Hercules Compliance
 
 
-The [smart contract for IT provisioning methodology](smart_contract_for_it.md) allows for for transparency and autitability of deployed IT workloads.
+The [smart contract for IT provisioning methodology](smart_contract_for_it) allows for for transparency and autitability of deployed IT workloads.
 
 ### VDC Compute compliance
 
-Deployed [ZOS Containers](zos_container.md) are end to end described in the [blockchain database](bcdb.md) and inspectable.
+Deployed [ZOS Containers](zos_container) are end to end described in the [blockchain database](bcdb.md) and inspectable.
 
 ### VDC Storage compliance
 

@@ -31,15 +31,15 @@ To maximize performance, all of the components can be run in close proximity of 
 
 ### Unlimited Scalability
 
-![](./img/storage_scale.png)
+![](img/storage_scale.png)
 
 The system is a pure scale-out storage system, it can scale to unlimited size, there is simply no bottleneck inside this system. Each S3 system is independent and uses our ThreeFold Space Codec to store the data distributed over typically 20 3nodes. Only 20% overhead is required to come to reliability which allows losing any 4 nodes at the same time per S3 storage system (this can easily be changed to even more redundancy).
 
 ### Private (not multi-tenant)
 
-![](./img/storage_monitoring.png)
+![](img/storage_monitoring.png)
 
-Each architecture on the TF Grid has its own private overlay [network](vdc_network.md) which makes the storage solution a single tenant solution by design.  On top of that, each S3 deployment has 1 master and (optional) 1 slave S3 front end server which can be operated in a private setting when there is no Web Gateway used to connect it to the public internet, or the S3 interface can be exposed on the public internet by using the [Web Gateway](vdc_network.md).
+Each architecture on the TF Grid has its own private overlay [network](vdc_network) which makes the storage solution a single tenant solution by design.  On top of that, each S3 deployment has 1 master and (optional) 1 slave S3 front end server which can be operated in a private setting when there is no Web Gateway used to connect it to the public internet, or the S3 interface can be exposed on the public internet by using the [Web Gateway](vdc_network).
 
 To deploy and manage an S3 cluster the enduser uses their 3bot (or a child of their 3bot) to manage the S3 instance (cluster). All required encryption keys and storage policies are managed by the private 3bot. It is a complete private and this single tenant solution. For good reliability and performance of the S3 instance we recommend to use a storage policy that includes at least 20 3nodes (disks) per S3 cluster.  A well defined storage policy leads to good performance, excellent reliability and low overhead.  A much used policy is 16+4 where the original object is represented by 16 equations derived from the original data object and then 4 more equtions are created for redundancy purposes.  This creates 20% overhead (4 out of 20) but delivers a solution that can sustain failure of 4 simultaneous disks (or in the case that 20 3nodes are used a failure or 4 simultaneous 3nodes) without loosing access to the original data.
 
@@ -56,7 +56,7 @@ In v2.1 we have added 100% self healing capability which means that any automati
 
 ### Legacy Storage World
 
-![](./img/storage_dispersed_problem.png)
+![](img/storage_dispersed_problem.png)
 
 
 Data gets copied 5 times if you want to be able to lose 4 copies of your data, this is not efficient.
@@ -66,7 +66,7 @@ Security provided by encryption.
 
 ### ThreeFold Space Algorithm
 
-![](./img/storage_dispersed_solution.png)
+![](img/storage_dispersed_solution.png)
 
 
 The ThreeFold approach leads to 20x less overhead compared to the traditional storage system.

@@ -19,16 +19,16 @@ The Hercules blockhost product allows blockchain protocols to take advantage of 
 
 Also, if people are interested in operating their own blockchain nodes they can quite easily invest in some hardware, install the ThreeFold Zero-OS operating system to create a 3node creating new capacity to the TF grid.  This capacity can then be utilized to operate blockchain nodes. 
 
-![](./img/bh2.png)
+![](img/bh2.png)
 
 
 ## Features
 * Uses our other components
-    - [ZOS Containers](zos_container.md)
-    - [VDC Network](vdc_network.md)
-    - [VDC Storage](vdc_storage.md)
-    - [Hercules Blockhost](hercules_blockhost.md)
-    - [Hercules Coder](hercules_coder.md)
+    - [ZOS Containers](zos_container)
+    - [VDC Network](vdc_network)
+    - [VDC Storage](vdc_storage)
+    - [Hercules Blockhost](hercules_blockhost)
+    - [Hercules Coder](hercules_coder)
 *   Flexible
     * Choose to use existing nodes and deploy blockchain protocol nodes
     * Choose to deploy TF 3Nodes, farm TF Tokens and deploy blockchain protocol nodes.

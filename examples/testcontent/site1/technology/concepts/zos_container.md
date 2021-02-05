@@ -6,7 +6,7 @@ Uses capacity layer from Zero-OS and your virtual system administrator called 3b
 
 The ZOS Container is not running in the Kubernetes part of the VDC, its running directly in the Zero-OS (ZOS) and can be integrated with the eVDC over the network.
 
-![](./img/container_native.png)
+![](img/container_native.png)
 
 ## Features
 

@@ -1,6 +1,6 @@
 # Architecture
 
-![](./img/architecture_overview_magic.png)
+![](img/architecture_overview_magic.png)
 
 
 The architecture is built around a few essential and unique concepts. Capacity is managed in an autonomous way, and data is stored in a fully privacy respecting manner. 

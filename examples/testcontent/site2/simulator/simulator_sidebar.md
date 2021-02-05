@@ -1,4 +1,4 @@
-- [Home](simulator_configure.md)
+- [Home](simulator_configure)
 - [Grid valuation](tfgrid_valuation.md)
 - [Farming return on investment](nodesbatch_1_report.md)
 - [Grid growth](tfgrid_growth.md)

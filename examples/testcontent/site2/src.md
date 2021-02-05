@@ -8,7 +8,7 @@ Welcome to the ThreeFold Wiki. Here you will find all relevant information aroun
 
 ## What is ThreeFold all about?
 
-Read [this simplified introduction](longstoryshort.md) or watch the short video below:
+Read [this simplified introduction](longstoryshort) or watch the short video below:
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/5DtVU66Z74s" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 

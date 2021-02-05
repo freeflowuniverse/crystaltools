@@ -48,24 +48,30 @@ pub fn wiki_cleanup(name string, conf &myconfig.ConfigRoot) ? {
 
 	process.execute_stdout(script_cleanup) or { return error('cannot cleanup for ${name}.\n$err') }
 
-	script_merge_master := '
-	git checkout master
-	git merge development
-	set +e
-	git add . -A
-	git commit -m "installer cleanup"
-	set -e
-	git push
-	git checkout development
-	'
+	// script_merge_master := '
+	// set -ex
+	// cd $repo.path
+	// set +e
+	// git add . -A
+	// git commit -m "installer cleanup"
+	// git push
+	// set -e
+	// git checkout master
+	// git merge development
+	// set +e
+	// git add . -A
+	// git commit -m "installer cleanup"
+	// set -e
+	// git push
+	// git checkout development
+	// '
 
-	process.execute_stdout(script_merge_master) or {
-		return error('cannot merge_master for ${name}.\n$err')
-	}
-
-	// mut publisher := publisher.new(conf.root) or { panic('cannot init publisher. $err') }
-	// for mut site in publisher.sites {
-	// 	site.files_process(mut &publisher) or { panic(err) }
-	// 	site.load(mut &publisher) // will check the errors
+	// process.execute_stdout(script_merge_master) or {
+	// 	return error('cannot merge_master for ${name}.\n$err')
 	// }
+
+	mut publisher := publisher.new(repo.path) or { panic('cannot init publisher. $err') }
+	publisher.check()
+
+	panic('s')
 }

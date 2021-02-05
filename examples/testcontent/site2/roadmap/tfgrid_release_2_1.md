@@ -1,6 +1,6 @@
 # TFGrid release 2.1
 
-![](./img/roadmap.png)
+![](img/roadmap.png)
 
 - [details on github of the project](https://github.com/orgs/threefoldtech/projects/93)
 
