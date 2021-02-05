@@ -70,9 +70,11 @@ pub fn getsites(cmd cli.Command) ? {
 		gt.repo_get_from_url(url: sc.url, pull: sc.pull) ?
 
 		if sc.cat == myconfig.SiteCat.web {
-			website_cleanup(sc.name, &cfg) ?
+			// website_cleanup(sc.name, &cfg) ?
 			// website_install(sc.name,first,&cfg) ?
 			first = false
+		} else if sc.cat == myconfig.SiteCat.wiki {
+			wiki_cleanup(sc.name, &cfg) ?
 		}
 	}
 }

@@ -10,7 +10,7 @@ pub mut:
 }
 
 pub enum SiteCat {
-	info
+	wiki
 	data
 	web
 	html

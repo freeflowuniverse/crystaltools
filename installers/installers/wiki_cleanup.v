@@ -16,23 +16,17 @@ pub fn wiki_cleanup(name string, conf &myconfig.ConfigRoot) ? {
 	println(' - cleanup wiki $repo.path')
 
 	gitignore := '
-	*.log
-	.cache
-	.DS_Store
-	src/.temp
-	content/blog
-	content/news
-	content/person
-	content/project
-	node_modules
-	!.env.example
-	.env
-	.env.*
-	yarn.lock
-	dist
-	.installed
-	#install.sh
-	#run.sh
+	src/errors.md
+	session_data/*
+	book
+	book/
+	boo/*
+	"https*
+	https*
+	http*
+	"*
+	docshttp*
+	.vscode
 	'
 	os.write_file('$repo.path/.gitignore', texttools.dedent(gitignore)) or {
 		return error('cannot write to $repo.path/.gitignore\n$err')
@@ -44,22 +38,30 @@ pub fn wiki_cleanup(name string, conf &myconfig.ConfigRoot) ? {
 	
 	cd $repo.path
 
-	rm -f yarn.lock
+	git checkout development
+
+	rm -rf .vscode
 	rm -rf .cache		
 	rm -rf modules
 	rm -f .installed
-	
-	git pull
-	rm -f install.sh
-	rm -f run.sh
+	'
+
+	process.execute_stdout(script_cleanup) or { return error('cannot cleanup for ${name}.\n$err') }
+
+	script_merge_master := '
+	git checkout master
+	git merge development
 	set +e
 	git add . -A
 	git commit -m "installer cleanup"
 	set -e
 	git push
+	git checkout development
 	'
 
-	process.execute_stdout(script_cleanup) or { return error('cannot cleanup for ${name}.\n$err') }
+	process.execute_stdout(script_merge_master) or {
+		return error('cannot merge_master for ${name}.\n$err')
+	}
 
 	mut publisher := publisher.new(conf.root) or { panic('cannot init publisher. $err') }
 	for mut site in publisher.sites {
