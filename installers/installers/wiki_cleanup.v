@@ -63,9 +63,9 @@ pub fn wiki_cleanup(name string, conf &myconfig.ConfigRoot) ? {
 		return error('cannot merge_master for ${name}.\n$err')
 	}
 
-	mut publisher := publisher.new(conf.root) or { panic('cannot init publisher. $err') }
-	for mut site in publisher.sites {
-		site.files_process(mut &publisher) or { panic(err) }
-		site.load(mut &publisher) // will check the errors
-	}
+	// mut publisher := publisher.new(conf.root) or { panic('cannot init publisher. $err') }
+	// for mut site in publisher.sites {
+	// 	site.files_process(mut &publisher) or { panic(err) }
+	// 	site.load(mut &publisher) // will check the errors
+	// }
 }
