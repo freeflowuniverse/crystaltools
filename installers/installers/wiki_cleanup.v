@@ -5,7 +5,6 @@ import myconfig
 import process
 import gittools
 import texttools
-import publisher
 
 pub fn wiki_cleanup(name string, conf &myconfig.ConfigRoot) ? {
 	codepath := conf.paths.code
@@ -33,8 +32,6 @@ pub fn wiki_cleanup(name string, conf &myconfig.ConfigRoot) ? {
 	}
 
 	script_cleanup := '
-
-	set -ex
 	
 	cd $repo.path
 
@@ -48,13 +45,22 @@ pub fn wiki_cleanup(name string, conf &myconfig.ConfigRoot) ? {
 
 	process.execute_stdout(script_cleanup) or { return error('cannot cleanup for ${name}.\n$err') }
 
+	script_commit := '
+	cd $repo.path
+	set +e
+	git add . -A
+	git commit -m "wiki reformat"
+	set -e
+	git push
+	'
+
+	process.execute_stdout(script_commit) or {
+		return error('cannot script_commit for ${name}.\n$err')
+	}
+
 	// script_merge_master := '
 	// set -ex
 	// cd $repo.path
-	// set +e
-	// git add . -A
-	// git commit -m "installer cleanup"
-	// git push
 	// set -e
 	// git checkout master
 	// git merge development
@@ -69,9 +75,4 @@ pub fn wiki_cleanup(name string, conf &myconfig.ConfigRoot) ? {
 	// process.execute_stdout(script_merge_master) or {
 	// 	return error('cannot merge_master for ${name}.\n$err')
 	// }
-
-	mut publisher := publisher.new(repo.path) or { panic('cannot init publisher. $err') }
-	publisher.check()
-
-	panic('s')
 }

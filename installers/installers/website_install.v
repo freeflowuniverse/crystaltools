@@ -10,7 +10,7 @@ import texttools
 pub fn website_install(name string, first bool, conf &myconfig.ConfigRoot) ? {
 	base := conf.paths.base
 	codepath := conf.paths.code
-	nodejspath := conf.paths.nodejs
+	nodejspath := conf.nodejs.path
 
 	mut gt := gittools.new(codepath) or { return error('ERROR: cannot load gittools:$err') }
 
@@ -26,7 +26,7 @@ pub fn website_install(name string, first bool, conf &myconfig.ConfigRoot) ? {
 		rm -f .installed
 
 		'
-		process.execute_silent(script6) or {
+		process.execute_stdout(script6) or {
 			return error('cannot install node modules for ${name}.\n$err')
 		}
 	}
@@ -37,37 +37,65 @@ pub fn website_install(name string, first bool, conf &myconfig.ConfigRoot) ? {
 
 	script_install := '
 
-	set -ex
-	
+	set -e
+
 	cd $repo.path
 
 	rm -f yarn.lock
 	rm -rf .cache		
 	
+	set +e
 	source $base/nvm.sh
-	
-	nvm use --lts
-	npm install
+	set -e
 
-	if [ "$first" = true ]; then
+	if [ "$first" = "true" ]; then
 		rsync -ra --delete node_modules/ $base/node_modules/
 	else
 		rsync -ra --delete $base/node_modules/ node_modules/ 
 	fi
 
+	nvm use --lts
+	npm install
+
 	'
+
+	if nodejspath.len==0{
+		panic("nodejspath needs to be set")
+	}
 
 	script_run := '
 
-	source $base/nvm.sh
-
+	set -e
 	cd $repo.path
 
+	#need to ignore errors for getting nvm not sure why
+	set +e
+	source $base/nvm.sh
+
+	set -e
 	nvm use --lts
 
 	export PATH=$nodejspath/bin:\$PATH
 
 	gridsome develop
+
+	'
+
+	script_build := '
+
+	set -e
+	cd $repo.path
+
+	#need to ignore errors for getting nvm not sure why
+	set +e
+	source $base/nvm.sh
+
+	set -e
+	nvm use --lts
+
+	export PATH=$nodejspath/bin:\$PATH
+
+	gridsome build
 
 	'
 
@@ -77,8 +105,15 @@ pub fn website_install(name string, first bool, conf &myconfig.ConfigRoot) ? {
 	os.write_file('$repo.path/run.sh', texttools.dedent(script_run)) or {
 		return error('cannot write to $repo.path/run.sh\n$err')
 	}
+	os.write_file('$repo.path/build.sh', texttools.dedent(script_build)) or {
+		return error('cannot write to $repo.path/build.sh\n$err')
+	}
 
-	process.execute_silent(script_install) or {
+	os.chmod('$repo.path/install.sh',0o700)
+	os.chmod('$repo.path/run.sh',0o700)
+	os.chmod('$repo.path/build.sh',0o700)
+
+	process.execute_stdout(script_install) or {
 		return error('cannot install node modules for ${name}.\n$err')
 	}
 

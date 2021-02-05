@@ -5,6 +5,7 @@ import os
 pub fn get() ConfigRoot {
 	mut c := ConfigRoot{}
 	c.paths.base = '$os.home_dir()/.publisher'
+	c.paths.publish = '$c.paths.base/publish'
 	c.paths.code = '$os.home_dir()/codesync'
 	mut nodejsconfig := NodejsConfig{
 		version: NodejsVersion{
@@ -12,26 +13,23 @@ pub fn get() ConfigRoot {
 		}
 	}
 	c.nodejs = nodejsconfig
-	c.paths.nodejs = c.nodejs.path
 
-	c.reset = true
+	c.reset = false
 	c.pull = false
 	c.debug = true
 
 	c.redis = false
 
+	c.init()
+
 	// add the site configurations to it
 	site_config(mut &c)
 
-	c.init()
+
 	return c
 }
 
 fn site_config(mut c ConfigRoot) {
-	c.sites << SiteConfig{
-		name: 'info_tftech'
-		url: 'https://github.com/threefoldtech/info_tftech'
-	}
 	c.sites << SiteConfig{
 		name: 'www_threefold_cloud'
 		url: 'https://github.com/threefoldfoundation/www_threefold_cloud'
@@ -82,6 +80,10 @@ fn site_config(mut c ConfigRoot) {
 	c.sites << SiteConfig{
 		name: 'info_cloud'
 		url: 'https://github.com/threefoldfoundation/info_cloud'
+	}
+	c.sites << SiteConfig{
+		name: 'info_tftech'
+		url: 'https://github.com/threefoldtech/info_tftech'
 	}
 	c.sites << SiteConfig{
 		name: 'data_threefold'

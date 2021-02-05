@@ -2,7 +2,6 @@ module installers
 
 import cli
 import os
-import gittools
 import builder
 import myconfig
 import process
@@ -26,7 +25,9 @@ pub fn main(cmd cli.Command) ? {
 
 	nodejs.install(&cfg) or { return error(' ** ERROR: cannot install nodejs. Error was:\n$err') }
 
-	getsites(cmd) or { return error(' ** ERROR: cannot get web & wiki sites. Error was:\n$err') }
+	sites_get(cmd) or { return error(' ** ERROR: cannot get web & wiki sites. Error was:\n$err') }
+	sites_cleanup(cmd) or { return error(' ** ERROR: cannot cleanup sites. Error was:\n$err') }
+	sites_install(cmd) or { return error(' ** ERROR: cannot install sites. Error was:\n$err') }
 }
 
 pub fn base() ? {
@@ -45,9 +46,8 @@ pub fn base() ? {
 	println(' - installed base requirements')
 }
 
-pub fn getsites(cmd cli.Command) ? {
+fn config_get(cmd cli.Command) ?myconfig.ConfigRoot {
 	mut cfg := myconfig.get()
-
 	for flag in cmd.flags {
 		if flag.name == 'pull' && flag.value.len > 0 {
 			cfg.pull = true
@@ -56,27 +56,10 @@ pub fn getsites(cmd cli.Command) ? {
 			cfg.reset = true
 		}
 	}
-
 	if !os.exists(cfg.paths.code) {
 		os.mkdir(cfg.paths.code) or { return error(err) }
 	}
-	// get publisher, check for all wiki's
-	mut gt := gittools.new(cfg.paths.code) or { return error('cannot load gittools:$err') }
-
-	println(' - get all code repositories.')
-	mut first := true
-	for sc in cfg.sites {
-		//, branch: sc.branch
-		gt.repo_get_from_url(url: sc.url, pull: sc.pull) ?
-
-		if sc.cat == myconfig.SiteCat.web {
-			// website_cleanup(sc.name, &cfg) ?
-			// website_install(sc.name,first,&cfg) ?
-			first = false
-		} else if sc.cat == myconfig.SiteCat.wiki {
-			wiki_cleanup(sc.name, &cfg) ?
-		}
-	}
+	return cfg
 }
 
 pub fn reset() ? {

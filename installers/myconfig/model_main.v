@@ -14,7 +14,7 @@ pub mut:
 
 pub struct Paths {
 pub mut:
-	base   string
-	code   string
-	nodejs string
+	base    string
+	code    string
+	publish string
 }

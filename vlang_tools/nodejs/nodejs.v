@@ -14,7 +14,7 @@ pub fn install(cfg &myconfig.ConfigRoot) ? {
 	mut script := ''
 
 	base := cfg.paths.base
-	nodejspath := cfg.paths.nodejs
+	nodejspath := cfg.nodejs.path
 
 	mut node := builder.node_get({}) or {
 		println(' ** ERROR: cannot load node. Error was:\n$err')
@@ -42,6 +42,7 @@ pub fn install(cfg &myconfig.ConfigRoot) ? {
 			export NVM_DIR=$base
 			source $base/nvm.sh
 			nvm install --lts
+			npm install --global @gridsome/cli
 			'
 		} else {
 			script = '
@@ -49,6 +50,7 @@ pub fn install(cfg &myconfig.ConfigRoot) ? {
 			export NVM_DIR=$base
 			source $base/nvm.sh
 			nvm install node
+			npm install --global @gridsome/cli
 			'
 		}
 		process.execute_silent(script) or {

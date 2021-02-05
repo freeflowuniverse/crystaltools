@@ -33,6 +33,7 @@ pub fn website_cleanup(name string, conf &myconfig.ConfigRoot) ? {
 	.installed
 	install.sh
 	run.sh
+	package-lock.json
 	'
 	os.write_file('$repo.path/.gitignore', texttools.dedent(gitignore)) or {
 		return error('cannot write to $repo.path/.gitignore\n$err')
@@ -52,13 +53,11 @@ pub fn website_cleanup(name string, conf &myconfig.ConfigRoot) ? {
 	> please make sure you work in line with instructions above
 
 	'
-	os.write_file('$repo.path/readme.md', texttools.dedent(gitignore)) or {
+	os.write_file('$repo.path/readme.md', texttools.dedent(readme)) or {
 		return error('cannot write to $repo.path/README.md\n$err')
 	}
 
 	script_cleanup := '
-
-	set -ex
 	
 	cd $repo.path
 
@@ -69,18 +68,14 @@ pub fn website_cleanup(name string, conf &myconfig.ConfigRoot) ? {
 	rm -rf modules
 	rm -f .installed
 	rm -rf dist
-	
-	set +e
-	rm readme.md
-	rm Readme.md
-	set -e
+	rm -f package-lock.json
 	
 	git pull
 	rm -f install.sh
 	rm -f run.sh
 	rm -f install_gridsome.sh
 	
-	if ![ "$name" = "www_examplesite" ]; then
+	if ! [ "$name" = "www_examplesite" ]; then
 		rm -f content/blog
 		rm -f content/news
 		rm -f content/person

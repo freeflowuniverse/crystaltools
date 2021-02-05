@@ -288,9 +288,6 @@ fn (mut link Link) check(mut publisher Publisher, mut page Page, linenr int, lin
 		}
 		// remember in file that this page uses it
 		if !(page.id in file.usedby) {
-			if page.id == 0 {
-				panic('page.id should not be 0')
-			}
 			file.usedby << page.id
 		}
 
