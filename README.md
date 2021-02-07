@@ -22,8 +22,10 @@ Make sure your ssh-key is loaded and you have it in your github account
 ```bash
 #install the publishtools
 publishtools install
-#re-install
+#re-install (if something is wrong, do an install -reset)
 publishtools install -reset
+#re-install and pull newest website code in
+publishtools install -reset -pull
 #list the know sites
 publishtools list
 #start development mode of website cloud (specify part of name of website is good enough)

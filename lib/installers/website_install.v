@@ -15,7 +15,7 @@ pub fn website_install(name string, first bool, conf &myconfig.ConfigRoot) ? {
 	mut gt := gittools.new(codepath) or { return error('ERROR: cannot load gittools:$err') }
 
 	mut repo := gt.repo_get(name: name) or { return error('ERROR: cannot load gittools:$err') }
-	println(' - install website (can take long) on $repo.path')
+	println(' - install website on $repo.path')
 
 	if conf.reset {
 		script6 := '
@@ -26,10 +26,25 @@ pub fn website_install(name string, first bool, conf &myconfig.ConfigRoot) ? {
 		rm -f .installed
 
 		'
+		println(' - reset') 
 		process.execute_stdout(script6) or {
 			return error('cannot install node modules for ${name}.\n$err')
 		}
 	}
+
+	if conf.pull {
+		script7 := '
+		
+		cd $repo.path
+
+		git pull
+
+		'
+		println(' - pull')
+		process.execute_stdout(script7) or {
+			return error('cannot pull code for ${name}.\n$err')
+		}
+	}	
 
 	if os.exists('$repo.path/.installed') {
 		return
@@ -108,8 +123,8 @@ pub fn website_install(name string, first bool, conf &myconfig.ConfigRoot) ? {
 
 	cd $repo.path/dist
 
-	echo go to http://localhost:9999/
- 	python3 -m http.server 9999
+	#echo go to http://localhost:9999/
+ 	#python3 -m http.server 9999
 
 	'
 
