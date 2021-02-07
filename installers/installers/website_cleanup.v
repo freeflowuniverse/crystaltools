@@ -33,6 +33,7 @@ pub fn website_cleanup(name string, conf &myconfig.ConfigRoot) ? {
 	.installed
 	install.sh
 	run.sh
+	build.sh
 	package-lock.json
 	'
 	os.write_file('$repo.path/.gitignore', texttools.dedent(gitignore)) or {

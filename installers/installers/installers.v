@@ -35,6 +35,7 @@ pub fn main(cmd cli.Command) ? {
 	if clean {
 		sites_cleanup(cmd) or { return error(' ** ERROR: cannot cleanup sites. Error was:\n$err') }
 	}
+
 	sites_install(cmd) or { return error(' ** ERROR: cannot install sites. Error was:\n$err') }
 }
 

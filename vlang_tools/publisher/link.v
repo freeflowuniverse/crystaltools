@@ -208,7 +208,7 @@ fn (mut link Link) check(mut publisher Publisher, mut page Page, linenr int, lin
 	if link.cat in [LinkType.file, LinkType.page] {
 		if site.name_change_check(link.filename) {
 			// the name of the link changed, will remove .md and will get the alias					
-			println("Found link with name to replace: '($link.filename)'")
+			// println("Found link with name to replace: '($link.filename)'")
 			link.filename = site.name_fix_alias(link.filename)
 		}
 	}
@@ -220,7 +220,7 @@ fn (mut link Link) check(mut publisher Publisher, mut page Page, linenr int, lin
 			msg: link.error_msg
 			cat: PageErrorCat.brokenlink
 		}, mut publisher)
-		println(link)
+		// println(link)
 		return
 	}
 	// this can't work, no idea what to do with this, lets see TODO:
@@ -263,14 +263,14 @@ fn (mut link Link) check(mut publisher Publisher, mut page Page, linenr int, lin
 				cat: PageErrorCat.brokenlink
 			}, mut publisher)
 			link.state = LinkState.missing
-			println(link)
+			// println(link)
 			return
 		}
 		return
 	}
 
 	if link.cat == LinkType.file {
-		println('filename_complete:$filename_complete')
+		// println('filename_complete:$filename_complete')
 		if !publisher.file_exists(filename_complete) {
 			page.error_add({
 				line: line
@@ -279,7 +279,7 @@ fn (mut link Link) check(mut publisher Publisher, mut page Page, linenr int, lin
 				cat: PageErrorCat.brokenlink
 			}, mut publisher)
 			link.state = LinkState.missing
-			println(link)
+			// println(link)
 			return
 		}
 

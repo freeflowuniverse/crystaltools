@@ -3,6 +3,8 @@ module main
 import installers
 import os
 import cli
+import publisher
+import myconfig
 
 fn main() {
 	// INSTALL
@@ -36,15 +38,29 @@ fn main() {
 	install_cmd.add_flag(resetflag)
 	install_cmd.add_flag(cleanflag)
 
+	// DEVELOP
+	develop_exec := fn (cmd cli.Command) ? {
+		installers.website_develop(&cmd) ?
+	}
+	mut develop_cmd := cli.Command{
+		name: 'develop'
+		usage: 'specify name of website or wiki to develop on'
+		execute: develop_exec
+		required_args: 1
+	}
+
 	// RUN
 	run_exec := fn (cmd cli.Command) ? {
-		installers.website_run(&cmd) ?
+		cfg := myconfig.get()
+		mut publisher := publisher.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
+		publisher.check()
+		publisher.flatten(cfg.paths.publish)
 	}
 	mut run_cmd := cli.Command{
+		description: 'run all websites & wikis, they need to be build first'
 		name: 'run'
-		usage: 'specify name of website or wiki to run'
 		execute: run_exec
-		required_args: 1
+		required_args: 0
 	}
 
 	// BUILD
@@ -70,7 +86,7 @@ fn main() {
 	// MAIN
 	mut main_cmd := cli.Command{
 		name: 'installer'
-		commands: [install_cmd, run_cmd, build_cmd, list_cmd]
+		commands: [install_cmd, run_cmd, build_cmd, list_cmd, develop_cmd]
 		description: '
 
         Publishing Tool Installer
@@ -81,4 +97,6 @@ fn main() {
 
 	main_cmd.setup()
 	main_cmd.parse(os.args)
+
+	println(' - OK')
 }

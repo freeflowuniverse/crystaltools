@@ -97,8 +97,9 @@ pub fn (mut site Site) load(mut publisher Publisher) {
 	// if site.pages
 	for _, id in site.pages {
 		mut p := publisher.page_get_by_id(id) or {
-			eprintln(err)
-			continue
+			panic(err)
+			// eprintln(err)
+			// continue
 		}
 
 		p.process(mut publisher) or { panic(err) }

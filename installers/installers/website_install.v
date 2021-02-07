@@ -62,8 +62,8 @@ pub fn website_install(name string, first bool, conf &myconfig.ConfigRoot) ? {
 
 	'
 
-	if nodejspath.len==0{
-		panic("nodejspath needs to be set")
+	if nodejspath.len == 0 {
+		panic('nodejspath needs to be set')
 	}
 
 	script_run := '
@@ -101,6 +101,9 @@ pub fn website_install(name string, first bool, conf &myconfig.ConfigRoot) ? {
 	set +e
 	gridsome build
 
+	set -e
+
+	mkdir -p $conf.paths.publish/$name
 	rsync -ra --delete $repo.path/dist/ $conf.paths.publish/$name/
 
 	cd $repo.path/dist
@@ -120,9 +123,9 @@ pub fn website_install(name string, first bool, conf &myconfig.ConfigRoot) ? {
 		return error('cannot write to $repo.path/build.sh\n$err')
 	}
 
-	os.chmod('$repo.path/install.sh',0o700)
-	os.chmod('$repo.path/run.sh',0o700)
-	os.chmod('$repo.path/build.sh',0o700)
+	os.chmod('$repo.path/install.sh', 0o700)
+	os.chmod('$repo.path/run.sh', 0o700)
+	os.chmod('$repo.path/build.sh', 0o700)
 
 	process.execute_stdout(script_install) or {
 		return error('cannot install node modules for ${name}.\n$err')

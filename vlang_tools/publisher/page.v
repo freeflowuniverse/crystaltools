@@ -24,7 +24,7 @@ pub fn (mut page Page) check(mut publisher Publisher) bool {
 fn (mut page Page) error_add(error PageError, mut publisher Publisher) {
 	if page.state != PageStatus.error {
 		// only add when not in error mode yet, because means check was already done
-		println(' - ERROR: $error.msg')
+		// println(' - ERROR: $error.msg')
 		page.errors << error
 	} else {
 		panic(' ** ERROR (2nd time): in file ${page.path_get(mut publisher)}')
@@ -107,7 +107,7 @@ fn (mut page Page) process_links(mut publisher Publisher) ? {
 				if link.original_get() != link.source_get(site.name) {
 					source_changed = true
 					sourceline = sourceline.replace(link.original_get(), link.source_get(site.name))
-					println(' - REPLACE: $link.original_get() -> ${link.source_get(site.name)}')
+					// println(' - REPLACE: $link.original_get() -> ${link.source_get(site.name)}')
 				}
 			}
 			serverline = serverline.replace(link.original_get(), link.server_get())
@@ -127,7 +127,7 @@ fn (mut page Page) process_links(mut publisher Publisher) ? {
 
 	if source_changed {
 		page.write(mut publisher, lines_source)
-		println(lines_source)
+		// println(lines_source)
 	}
 }
 
