@@ -7,3 +7,4 @@ examples/gittools
 publisher/publish
 install_publisher
 .vmodules/
+publishtools
