@@ -50,6 +50,7 @@ pub fn website_develop(cmd &cli.Command) ? {
 
 pub fn website_build(cmd &cli.Command) ? {
 	if cmd.args.len == 0 {
+		println(' - build all websites')
 		mut conf := myconfig.get()
 		mut gt := gittools.new(conf.paths.code) or {
 			return error('ERROR: cannot load gittools:$err')
@@ -59,12 +60,14 @@ pub fn website_build(cmd &cli.Command) ? {
 				mut repo2 := gt.repo_get(name: site.name) or {
 					return error('ERROR: cannot find repo: $site.name\n$err')
 				}
-				process.execute_interactive('$repo2.path/build.sh') ?
+				println(' - build website: $repo2.path')
+				process.execute_stdout('$repo2.path/build.sh') ?
 			}
 		}
 	} else {
 		_, repo := website_conf_repo_get(cmd) ?
 		println(' - build website: $repo.path')
+		//be careful process stops after interactive execute
 		process.execute_interactive('$repo.path/build.sh') ?
 	}
 }

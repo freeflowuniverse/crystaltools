@@ -82,5 +82,5 @@ pub fn reset() ? {
 		println('** ERROR: cannot reset the system.\n$err')
 		exit(1)
 	}
-	println(' - cleanup')
+	println(' - removed the ~/.publishtools')
 }

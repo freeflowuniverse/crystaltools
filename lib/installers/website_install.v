@@ -26,8 +26,8 @@ pub fn website_install(name string, first bool, conf &myconfig.ConfigRoot) ? {
 		rm -f .installed
 
 		'
-		println(' - reset') 
-		process.execute_stdout(script6) or {
+		println('   > reset') 
+		process.execute_silent(script6) or {
 			return error('cannot install node modules for ${name}.\n$err')
 		}
 	}
@@ -40,8 +40,8 @@ pub fn website_install(name string, first bool, conf &myconfig.ConfigRoot) ? {
 		git pull
 
 		'
-		println(' - pull')
-		process.execute_stdout(script7) or {
+		println('   > pull')
+		process.execute_silent(script7) or {
 			return error('cannot pull code for ${name}.\n$err')
 		}
 	}	
@@ -142,7 +142,8 @@ pub fn website_install(name string, first bool, conf &myconfig.ConfigRoot) ? {
 	os.chmod('$repo.path/run.sh', 0o700)
 	os.chmod('$repo.path/build.sh', 0o700)
 
-	process.execute_stdout(script_install) or {
+	println('   > node modules install')
+	process.execute_silent(script_install) or {
 		return error('cannot install node modules for ${name}.\n$err')
 	}
 

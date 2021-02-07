@@ -41,7 +41,7 @@ fn main() {
 	// DEVELOP
 	develop_exec := fn (cmd cli.Command) ? {
 		if cmd.args.len == 0 {
-			// publisher.webserver_start_develop()
+			publisher.webserver_start_develop()
 			println(" ERROR: need to implement webserver_start_develop")
 		}else{
 			installers.website_develop(&cmd) ?
@@ -57,9 +57,11 @@ fn main() {
 	// RUN
 	run_exec := fn (cmd cli.Command) ? {
 		cfg := myconfig.get()
-		mut publisher := publisher.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
-		publisher.check()
-		publisher.flatten(cfg.paths.publish)
+		mut publ := publisher.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
+		publ.check()
+		publ.flatten(cfg.paths.publish)
+		//TODO: now we need to run a webserver which exposes all flattened directories
+		publisher.webserver_start_build()
 	}
 	mut run_cmd := cli.Command{
 		description: 'run all websites & wikis, they need to be build first'
@@ -70,6 +72,11 @@ fn main() {
 
 	// BUILD
 	build_exec := fn (cmd cli.Command) ? {
+		cfg := myconfig.get()
+		mut publ := publisher.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
+		publ.check()
+		publ.flatten(cfg.paths.publish)
+
 		installers.website_build(&cmd) ?
 	}
 	mut build_cmd := cli.Command{

@@ -2,5 +2,8 @@ set -ex
 cd publishtools
 v -prod  publishtools.v
 
-set +ex
-cp publishtools ~/Downloads/publishtools_osx
+cp publishtools /usr/local/bin/publishtools
+   
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    cp publishtools ~/Downloads/publishtools_osx
+fi
