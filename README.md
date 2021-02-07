@@ -41,25 +41,12 @@ publishtools build cloud
 
 ## work with your ssh keys
 
-- important to start in publishingtools dir otherwise it will not start the blog
-- best to have your sshkey loaded see
-  - https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
-  - https://docs.github.com/en/github/authenticating-to-github/adding-a-new-ssh-key-to-your-github-account
-- note: make sure you are in your terminal and have your prompt, don't type the $ sign at front of the commands, this is part of your prompt
+see [instructions](docs/sshkey.md)
 
-![](img/sshgen.png)
+## advanced usage
 
-to manually add your ssh to the agent
-
+```bash
+#will go over all repo's and update the repo's after cleaning up e.g. the wiki's
+#a lot of automation happens here, be careful
+publishtools install -clean
 ```
-ssh-add ~/.ssh/despiegk
-```
-
-to see if it succeeded
-
-```
-ssh-add -l
-2048 SHA256:olDf62/m6YOwIxYWUzrB6/XE4J4CalsxnaMpPuIEQpk /Users/despiegk/.ssh/despiegk (RSA)
-```
-
-> important: make sure there is passphrase on your ssh key
