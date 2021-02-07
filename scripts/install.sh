@@ -15,6 +15,6 @@ fi
 
 chmod 770 /usr/local/bin/publishtools
 
-
+print " - INSTALL DONE"
 
 
