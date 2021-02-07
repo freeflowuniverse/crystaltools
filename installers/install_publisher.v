@@ -41,8 +41,8 @@ fn main() {
 	// DEVELOP
 	develop_exec := fn (cmd cli.Command) ? {
 		if cmd.args.len == 0 {
-			installers.website_develop(&cmd) ?
-		}else{}
+			publisher.webserver_start_develop()
+		}else{
 			installers.website_develop(&cmd) ?
 		}
 	}

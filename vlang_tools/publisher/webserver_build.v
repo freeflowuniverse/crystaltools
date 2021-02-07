@@ -17,7 +17,7 @@ pub mut:
 }
 
 // Run server
-fn webserver_start() {	
+fn webserver_start_build() {	
 	vweb.run<App>(port){}
 }
 
