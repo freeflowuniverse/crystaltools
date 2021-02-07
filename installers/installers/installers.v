@@ -32,6 +32,7 @@ pub fn main(cmd cli.Command) ? {
 	sites_get(cmd) or { return error(' ** ERROR: cannot get web & wiki sites. Error was:\n$err') }
 
 	nodejs.install(&cfg) or { return error(' ** ERROR: cannot install nodejs. Error was:\n$err') }
+
 	if clean {
 		sites_cleanup(cmd) or { return error(' ** ERROR: cannot cleanup sites. Error was:\n$err') }
 	}
@@ -54,7 +55,7 @@ pub fn base() ? {
 	println(' - installed base requirements')
 }
 
-fn config_get(cmd cli.Command) ?myconfig.ConfigRoot {
+pub fn config_get(cmd cli.Command) ?myconfig.ConfigRoot {
 	mut cfg := myconfig.get()
 	for flag in cmd.flags {
 		if flag.name == 'pull' && flag.value.len > 0 {

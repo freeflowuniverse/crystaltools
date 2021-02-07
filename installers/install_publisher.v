@@ -83,10 +83,22 @@ fn main() {
 		execute: list_exec
 	}
 
+	// DIGITAL TWIN
+	twin_exec := fn (cmd cli.Command) ? {
+		mut cfg := installers.config_get(cmd) ?
+		installers.digitaltwin_start(&cfg) or {
+			return error(' ** ERROR: cannot start digital twin. Error was:\n$err')
+		}
+	}
+	mut twin_cmd := cli.Command{
+		name: 'digitaltwin'
+		execute: twin_exec
+	}
+
 	// MAIN
 	mut main_cmd := cli.Command{
 		name: 'installer'
-		commands: [install_cmd, run_cmd, build_cmd, list_cmd, develop_cmd]
+		commands: [install_cmd, run_cmd, build_cmd, list_cmd, develop_cmd, twin_cmd]
 		description: '
 
         Publishing Tool Installer

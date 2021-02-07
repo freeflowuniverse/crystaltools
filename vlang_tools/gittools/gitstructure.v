@@ -55,7 +55,7 @@ pub fn (mut gitstructure GitStructure) repo_get(addr RepoGetArgs) ?&GitRepo {
 				mut r2 := &gitstructure.repos[r.id]
 				if !os.exists(r2.path) {
 					// is not checked out yet need to do
-					println('repo on $r2.path did not exist yet will pull.')
+					println(' - repo on $r2.path did not exist yet will pull.')
 					r2.pull({}) ?
 				}
 				return r2

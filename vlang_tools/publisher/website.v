@@ -1,9 +1,9 @@
 module publisher
 
-import os
+// import os
 import vweb
-import publisher
-import myconfig
+// import publisher
+// import myconfig
 
 
 const (

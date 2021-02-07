@@ -23,3 +23,12 @@ pub fn brew_remove(conf &myconfig.ConfigRoot) ? {
 
 	process.execute_silent(script) ?
 }
+
+
+pub fn brew_install(conf &myconfig.ConfigRoot) ? {
+	script := '
+	echo ... to be done
+	exit 1
+	'
+	process.execute_silent(script) ?
+}
