@@ -1,2 +1,2 @@
-cd publishingserver
-v run server.v
+cd publishtools
+v publishtools.v
