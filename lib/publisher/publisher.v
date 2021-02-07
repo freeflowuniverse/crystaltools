@@ -164,7 +164,6 @@ pub fn (mut publisher Publisher) flatten(destination string) {
 	println(' - flatten wiki to $destination')
 	mut src_path := map[int]string{}
 	mut dest_path := map[int]string{}
-	mut files := map[string]string{}
 
 	mut errors := PublisherErrors{}
 
@@ -225,19 +224,9 @@ pub fn (mut publisher Publisher) flatten(destination string) {
 	}
 
 	for mut file in publisher.files {
-		mut path := file.path
-		if path.contains('img_notused') {
-			path = path.replace('img_notused', 'img')
-		}
-
-		if path.contains('img_multiple_use') {
-			path = path.replace('img_multiple_use', 'img')
-		}
-
-		files[path] = '/' + os.file_name(file.path)
 		mut src := os.join_path(src_path[file.site_id], file.path)
 		mut dest := os.join_path(dest_path[file.site_id], os.file_name(file.path))
-		os.cp(src, dest) or { panic(err) }
+		os.cp(src, dest) or {panic(err)}
 	}
 }
 

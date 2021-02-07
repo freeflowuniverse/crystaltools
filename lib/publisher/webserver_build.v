@@ -1,7 +1,7 @@
 module publisher
 
 // import os
-import vweb
+// import vweb
 // import publisher
 // import myconfig
 

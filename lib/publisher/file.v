@@ -88,5 +88,5 @@ pub fn (mut file File) process(mut publisher Publisher) {
 			os.mv(path, dest) or { panic(err) }
 		}
 	}
-	file.path = dest
+	file.path = '/img_notused/${os.base(path)}'
 }
