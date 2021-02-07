@@ -6,38 +6,38 @@ import vweb
 // import myconfig
 
 
-const (
-	port = 9998
-)
+// const (
+// 	port = 9998
+// )
 
-struct App {
- vweb.Context
-pub mut:
- cnt      int
-}
+// struct App {
+//  vweb.Context
+// pub mut:
+//  cnt      int
+// }
 
-// Run server
-pub fn webserver_start_build() {	
-	vweb.run<App>(port){}
-}
+// // Run server
+// pub fn webserver_start_build() {	
+// 	vweb.run<App>(port){}
+// }
 
-// Initialize (load wikis) only once when server starts
-pub fn (mut app App) init_once() {
-	// configdata := config.config()
-}
+// // Initialize (load wikis) only once when server starts
+// pub fn (mut app App) init_once() {
+// 	// configdata := config.config()
+// }
 
-// Initialization code goes here (with each request)
-pub fn (mut app App) init() {}
+// // Initialization code goes here (with each request)
+// pub fn (mut app App) init() {}
 
-// Index (List of wikis) -- reads index.html
-pub fn (mut app App) index() vweb.Result {
-	mut wikis := []string{}
-	// for site in app.publisher.sites {
-	// 	wikis << site.name
-	// }
-	//get the index from the published website location
-	return $vweb.html()
-}
+// // Index (List of wikis) -- reads index.html
+// pub fn (mut app App) index() vweb.Result {
+// 	mut wikis := []string{}
+// 	// for site in app.publisher.sites {
+// 	// 	wikis << site.name
+// 	// }
+// 	//get the index from the published website location
+// 	return $vweb.html()
+// }
 
 // [get]
 // ['/:sitename']

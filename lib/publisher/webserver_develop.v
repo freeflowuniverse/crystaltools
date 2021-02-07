@@ -7,11 +7,11 @@ import vweb
 import myconfig
 
 
-// const2 (
-// 	port = 9998
-// )
+const (
+	port = 9998
+)
 
-struct App2{
+struct App{
  	vweb.Context
 pub mut:
  	cnt      int
@@ -20,23 +20,24 @@ pub mut:
 
 // Run server
 pub fn webserver_start_develop() {	
-	vweb.run<App2>(port){}
+	vweb.run<App>(port){}
 }
 
 // Initialize (load wikis) only once when server starts
-pub fn (mut app App2) init_once() {
+pub fn (mut app App) init_once() {
 	configdata := myconfig.get()
-	app.publisherobj = new(configdata.root) or {panic("cannot init publisher. $err")}
+	println(" - publish wiki's on: $configdata.paths.code")
+	app.publisherobj = new(configdata.paths.code) or {panic("cannot init publisher. $err")}
 	for mut site in app.publisherobj.sites {
 		site.files_process(mut &app.publisherobj) or {panic(err)}
 	}
 }
 
 // Initialization code goes here (with each request)
-pub fn (mut app App2) init() {}
+pub fn (mut app App) init() {}
 
 // Index (List of wikis) -- reads index.html
-pub fn (mut app App2) index() vweb.Result {
+pub fn (mut app App) index() vweb.Result {
 	mut wikis := []string{}
 	for site in app.publisherobj.sites {
 		wikis << site.name
@@ -46,7 +47,7 @@ pub fn (mut app App2) index() vweb.Result {
 
 [get]
 ['/:sitename']
-pub fn (mut app App2) get_wiki(sitename string) vweb.Result {
+pub fn (mut app App) get_wiki(sitename string) vweb.Result {
 	mut site := app.publisherobj.site_get(sitename) or { return app.not_found() }
 	path := site.path
 	mut index := os.read_file( path + '/index.html') or {
@@ -58,7 +59,7 @@ pub fn (mut app App2) get_wiki(sitename string) vweb.Result {
 
 [get]
 ['/:sitename/:filename']
-pub fn (mut app App2) get_wiki_file(sitename string, filename string) vweb.Result {
+pub fn (mut app App) get_wiki_file(sitename string, filename string) vweb.Result {
 	if filename.starts_with("file__"){
 		splitted := filename.split("__")
 		if splitted.len != 3{
@@ -128,7 +129,7 @@ pub fn (mut app App2) get_wiki_file(sitename string, filename string) vweb.Resul
 
 [get]
 ['/:sitename/img/:filename']
-pub fn (mut app App2) get_wiki_img(sitename string, filename string) vweb.Result {
+pub fn (mut app App) get_wiki_img(sitename string, filename string) vweb.Result {
 	mut site := app.publisherobj.site_get(sitename) or { return app.not_found() }
 	site.files_process(mut &app.publisherobj) or {panic(err)}
 	img := site.file_get(filename, mut &app.publisherobj) or { return app.not_found() }
@@ -140,7 +141,7 @@ pub fn (mut app App2) get_wiki_img(sitename string, filename string) vweb.Result
 
 [get]
 ['/:sitename/errors']
-pub fn (mut app App2) errors(sitename string) vweb.Result {
+pub fn (mut app App) errors(sitename string) vweb.Result {
 	mut site := app.publisherobj.site_get(sitename) or { return app.not_found() }
 	site.load(mut &app.publisherobj)
 	mut site_errors := []SiteError{}

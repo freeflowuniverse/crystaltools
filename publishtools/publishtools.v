@@ -61,7 +61,7 @@ fn main() {
 		publ.check()
 		publ.flatten(cfg.paths.publish)
 		//TODO: now we need to run a webserver which exposes all flattened directories
-		publisher.webserver_start_build()
+		// publisher.webserver_start_build()
 	}
 	mut run_cmd := cli.Command{
 		description: 'run all websites & wikis, they need to be build first'
