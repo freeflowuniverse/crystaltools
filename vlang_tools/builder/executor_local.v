@@ -9,12 +9,12 @@ pub struct ExecutorLocal {
 
 
 pub fn (mut executor ExecutorLocal) exec(cmd string) ?string {
-	res := process.execute({cmd:cmd})?
+	res := process.execute_job({cmd:cmd})?
 	return res.output
 }
 
 pub fn (mut executor ExecutorLocal) exec_silent(cmd string) ?string {
-	res :=  process.execute({cmd:cmd,stdout:false})?
+	res :=  process.execute_job({cmd:cmd,stdout:false})?
 	return res.output
 }
 

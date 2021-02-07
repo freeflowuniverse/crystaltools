@@ -49,13 +49,16 @@ pub fn website_install(name string, first bool, conf &myconfig.ConfigRoot) ? {
 	set -e
 
 	if [ "$first" = "true" ]; then
+		nvm use --lts
+		npm install
 		rsync -ra --delete node_modules/ $base/node_modules/
 	else
 		rsync -ra --delete $base/node_modules/ node_modules/ 
+		nvm use --lts
+		npm install
 	fi
 
-	nvm use --lts
-	npm install
+
 
 	'
 
@@ -95,7 +98,15 @@ pub fn website_install(name string, first bool, conf &myconfig.ConfigRoot) ? {
 
 	export PATH=$nodejspath/bin:\$PATH
 
+	set +e
 	gridsome build
+
+	rsync -ra --delete $repo.path/dist/ $conf.paths.publish/$name/
+
+	cd $repo.path/dist
+
+	echo go to http://localhost:9999/
+ 	python3 -m http.server 9999
 
 	'
 

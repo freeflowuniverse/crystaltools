@@ -7,10 +7,10 @@ import texttools
 pub struct Command {
 pub mut:
 	cmd        string
-	timeout    int  = 600
-	stdout     bool = true
+	timeout    int = 600
+	stdout     bool
 	stdout_log bool = true
-	debug      bool 
+	debug      bool
 	die        bool = true
 	logcmd     bool
 	args       map[string]string
@@ -58,8 +58,9 @@ pub mut:
 //
 // return Job
 // out is the output
-pub fn execute(cmd Command) ?Job {
+pub fn execute_job(cmd Command) ?Job {
 	mut cmd_obj := cmd
+	// println("CMD:$cmd_obj.cmd")
 	mut out := ''
 	mut job := Job{}
 	job.cmd = cmd
@@ -143,10 +144,14 @@ pub fn temp_write(text string) ?string {
 			return error('Cannot create $tmpdir/execscripts,$err')
 		}
 	}
-	for i in 1 .. 1000 {
+	for i in 1 .. 200 {
+		// println(i)
 		tmppath = '$tmpdir/execscripts/exec_${i}.sh'
 		if !os.exists(tmppath) {
 			break
+		}
+		if i > 99 {
+			return error('Cannote write execscripts, maybe too many of them. Please remove.\ndo:\nrm -rf /temp/execscripts')
 		}
 	}
 	os.write_file(tmppath, text) ?
@@ -169,14 +174,14 @@ pub fn cmd_to_args(cmd string) ?(string, []string) {
 	mut cleanuppath := ''
 	mut text := cmd
 
-	//all will be done over filessytem now
+	// all will be done over filessytem now
 	text = texttools.dedent(text)
 	if !text.ends_with('\n') {
 		text += '\n'
 	}
 	text = '#!/bin/bash\nset -e\n$text'
 	cleanuppath = temp_write(text) or { return error('error: cannot write $err') }
-	return cleanuppath, ['/bin/bash', '-c', '/bin/bash $cleanuppath 2>&1']	
+	return cleanuppath, ['/bin/bash', '-c', '/bin/bash $cleanuppath 2>&1']
 
 	// if text.contains('&&') && !check_write(text) {
 	// 	text = text.replace('&&', '\n')
@@ -220,12 +225,12 @@ pub fn cmd_to_args(cmd string) ?(string, []string) {
 }
 
 pub fn execute_silent(cmd string) ?string {
-	job := execute(cmd: cmd, stdout: false) ?
+	job := execute_job(cmd: cmd, stdout: false) ?
 	return job.output
 }
 
 pub fn execute_stdout(cmd string) ?string {
-	job := execute(cmd: cmd, stdout: true) ?
+	job := execute_job(cmd: cmd, stdout: true) ?
 	return job.output
 }
 
@@ -235,7 +240,7 @@ pub fn execute_interactive(cmd string) ? {
 
 	cleanuppath, args = cmd_to_args(cmd) ?
 
-	os.execvp(args[0], [args[1]]) ?
+	os.execvp(args[0], args[1..args.len]) ?
 
 	if cleanuppath != '' {
 		os.rm(cleanuppath) or { }

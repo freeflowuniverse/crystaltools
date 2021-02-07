@@ -11,11 +11,17 @@ pub fn main(cmd cli.Command) ? {
 	cfg := myconfig.get()
 
 	mut ourreset := false
+	mut clean := false
 	for flag in cmd.flags {
 		if flag.name == 'reset' && flag.value.len > 0 {
 			ourreset = true
 		}
+		if flag.name == 'clean' && flag.value.len > 0 {
+			clean = true
+		}
 	}
+
+	println('INSTALLER:')
 
 	if ourreset {
 		println(' - reset the full system')
@@ -23,10 +29,12 @@ pub fn main(cmd cli.Command) ? {
 	}
 	base() or { return error(' ** ERROR: cannot prepare system. Error was:\n$err') }
 
-	nodejs.install(&cfg) or { return error(' ** ERROR: cannot install nodejs. Error was:\n$err') }
-
 	sites_get(cmd) or { return error(' ** ERROR: cannot get web & wiki sites. Error was:\n$err') }
-	sites_cleanup(cmd) or { return error(' ** ERROR: cannot cleanup sites. Error was:\n$err') }
+
+	nodejs.install(&cfg) or { return error(' ** ERROR: cannot install nodejs. Error was:\n$err') }
+	if clean {
+		sites_cleanup(cmd) or { return error(' ** ERROR: cannot cleanup sites. Error was:\n$err') }
+	}
 	sites_install(cmd) or { return error(' ** ERROR: cannot install sites. Error was:\n$err') }
 }
 
@@ -34,8 +42,7 @@ pub fn base() ? {
 	base := myconfig.get().paths.base
 
 	mut node := builder.node_get({}) or {
-		println(' ** ERROR: cannot load node. Error was:\n$err')
-		exit(1)
+		return error(' ** ERROR: cannot load node. Error was:\n$err')
 	}
 	node.platform_prepare() ?
 

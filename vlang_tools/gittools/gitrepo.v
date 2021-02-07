@@ -74,9 +74,9 @@ fn (mut repo GitRepo) pull(args PullArgs) ? {
 		if repo.addr.branch != '' {
 			cmd += ' -b $repo.addr.branch'
 		}
-		// if repo.addr.depth != 0 {
-		// 	cmd += " --depth= ${repo.addr.depth}  && cd ${repo.addr.name} && git fetch"
-		// }
+		if repo.addr.depth != 0 {
+			cmd += " --depth=${repo.addr.depth}  && cd ${repo.addr.name} && git fetch"
+		}
 	}
 	process.execute_silent(cmd) or {
 		return error('Cannot pull repo: ${repo.path}. Error was $err')

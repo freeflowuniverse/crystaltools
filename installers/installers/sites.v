@@ -9,7 +9,9 @@ pub fn sites_get(cmd cli.Command) ? {
 	mut cfg := config_get(cmd) ?
 	mut gt := gittools.new(cfg.paths.code) or { return error('cannot load gittools:$err') }
 	println(' - get all code repositories.')
+	
 	for sc in cfg.sites {
+		println(" - get:$sc.url")
 		gt.repo_get_from_url(url: sc.url, pull: sc.pull) ?
 	}
 }

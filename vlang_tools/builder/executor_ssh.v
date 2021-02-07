@@ -17,9 +17,9 @@ fn (mut executor ExecutorSSH) init()?{
 	if !executor.initialized {
 		// todo : don't load if already running
 
-		process.execute({cmd:'pgrep -x ssh-agent || eval `ssh-agent -s`'}) or { return error("Could not start ssh-agent, error was: $err") }
+		process.execute_job({cmd:'pgrep -x ssh-agent || eval `ssh-agent -s`'}) or { return error("Could not start ssh-agent, error was: $err") }
 		if executor.sshkey != '' {
-			process.execute({cmd:'ssh-add $executor.sshkey'})?
+			process.execute_job({cmd:'ssh-add $executor.sshkey'})?
 		}
 		mut addr := executor.ipaddr.addr
 		if addr == '' {
@@ -35,13 +35,13 @@ fn (mut executor ExecutorSSH) init()?{
 
 pub fn (mut executor ExecutorSSH) exec(cmd string) ?string {
 	cmd2 := 'ssh $executor.user@$executor.ipaddr.addr -p $executor.ipaddr.port "$cmd"'
-	res := process.execute({cmd:cmd2,stdout:false})?
+	res := process.execute_job({cmd:cmd2,stdout:false})?
 	return res.output
 }
 
 pub fn (mut executor ExecutorSSH) exec_silent(cmd string) ?string {
 	cmd2 := 'ssh $executor.user@$executor.ipaddr.addr -p $executor.ipaddr.port "$cmd"'
-	res := process.execute({cmd:cmd2,stdout:false})?
+	res := process.execute_job({cmd:cmd2,stdout:false})?
 	return res.output
 }
 
@@ -77,13 +77,13 @@ pub fn (mut executor ExecutorSSH) remove(path string) ? {
 pub fn (mut executor ExecutorSSH) download(source string, dest string) ? {
 	
 	port := executor.ipaddr.port
-	process.execute({cmd:'rsync -avHPe "ssh -p$port" $executor.user@$executor.ipaddr.addr:$source $dest'})?
+	process.execute_job({cmd:'rsync -avHPe "ssh -p$port" $executor.user@$executor.ipaddr.addr:$source $dest'})?
 }
 
 // download from executor FS to local FS
 pub fn (mut executor ExecutorSSH) upload(source string, dest string) ? {
 	port := executor.ipaddr.port
-	process.execute({cmd:'rsync -avHPe "ssh -p$port" $source -e ssh $executor.user@$executor.ipaddr.addr:$dest'})?
+	process.execute_job({cmd:'rsync -avHPe "ssh -p$port" $source -e ssh $executor.user@$executor.ipaddr.addr:$dest'})?
 }
 
 // get environment variables from the executor
