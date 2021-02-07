@@ -76,7 +76,7 @@ fn main() {
 		name: 'build'
 		usage: 'specify name of website or wiki to run'
 		execute: build_exec
-		required_args: 1
+		required_args: 0
 	}
 
 	// LIST
