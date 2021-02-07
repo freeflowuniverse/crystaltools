@@ -39,32 +39,6 @@ publishtools build cloud
 
 > remark: this will checkout all relevant repo's on ~/codewww <BR>
 
-### To Run e.g. for www_threefold_farming
-
-```
-cd ~/code/github/threefoldfoundation/www_threefold_farming
-sh run.sh
-```
-
-this will start a local dev server at http://localhost:8080
-
-to now see your website, copy `http://localhost:8080` in your browser
-
-### List of repo's which are cloned
-
-it could be you don't have access to all of them
-
-```bash
-ct git pull -u git@github.com:threefoldfoundation/www_threefold_cloud.git
-ct git pull -u git@github.com:threefoldfoundation/www_threefold_farming.git
-ct git pull -u git@github.com:threefoldfoundation/www_threefold_twin.git
-ct git pull -u git@github.com:threefoldfoundation/www_tfnow.git
-ct git pull -u git@github.com:threefoldfoundation/www_tfgrid.git
-ct git pull -u git@github.com:threefoldfoundation/info_foundation.git
-ct git pull -u git@github.com:threefoldtech/info_tftech.git
-ct git pull -u git@github.com:threefoldfoundation/data_threefold.git
-```
-
 ## work with your ssh keys
 
 - important to start in publishingtools dir otherwise it will not start the blog
@@ -78,25 +52,14 @@ ct git pull -u git@github.com:threefoldfoundation/data_threefold.git
 to manually add your ssh to the agent
 
 ```
-ssh-add ~/.ssh/id_rsa
+ssh-add ~/.ssh/despiegk
 ```
 
 to see if it succeeded
 
 ```
 ssh-add -l
-2048 SHA256:olDf62/m6YOwIxYWUzrB6/XE4J4CalsxnaMpPuIEQpk /Users/despiegk/.ssh/id_rsa (RSA)
+2048 SHA256:olDf62/m6YOwIxYWUzrB6/XE4J4CalsxnaMpPuIEQpk /Users/despiegk/.ssh/despiegk (RSA)
 ```
 
-## troubeshooting
-
-### OSX
-
-- once brew installed do
-
-```
-brew update
-brew upgrade
-```
-
-and try again, see if brew worked well
+> important: make sure there is passphrase on your ssh key
