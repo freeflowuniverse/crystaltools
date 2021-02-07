@@ -5,3 +5,4 @@ examples/texttools
 examples/gittools
 *dSYM/
 publisher/publish
+install_publisher

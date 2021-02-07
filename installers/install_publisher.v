@@ -40,13 +40,17 @@ fn main() {
 
 	// DEVELOP
 	develop_exec := fn (cmd cli.Command) ? {
-		installers.website_develop(&cmd) ?
+		if cmd.args.len == 0 {
+			installers.website_develop(&cmd) ?
+		}else{}
+			installers.website_develop(&cmd) ?
+		}
 	}
 	mut develop_cmd := cli.Command{
 		name: 'develop'
-		usage: 'specify name of website or wiki to develop on'
+		usage: 'specify name of website to develop on'
 		execute: develop_exec
-		required_args: 1
+		required_args: 0
 	}
 
 	// RUN
