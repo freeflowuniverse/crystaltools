@@ -1,9 +1,10 @@
 module tmux
 
 import os
+import vredis2
 
 struct Window {
-mut:	
+mut:
 	session Session
 	name    string
 	id      int
@@ -32,7 +33,7 @@ fn (mut w Window) create() {
 			}
 		}
 	}
-	mut t := tmux.new()
+	mut t := new()
 }
 
 fn (mut w Window) restart() {
@@ -42,12 +43,10 @@ fn (mut w Window) restart() {
 
 fn (mut w Window) stop() {
 	if w.pid > 0 {
-		exec_stop := os.exec("kill -9 $w.pid") or {
-			os.Result{
-				exit_code: 1
-				output: ''
-			}
-		}
+		exec_stop := os.exec('kill -9 $w.pid') or { os.Result{
+			exit_code: 1
+			output: ''
+		} }
 	}
 	w.pid = 0
 	w.active = false
@@ -55,38 +54,41 @@ fn (mut w Window) stop() {
 }
 
 fn (mut w Window) activate() {
-	mut redis := vredis2.connect('localhost:6379')
-	key ="$w.session.name:$w.name"
-	active_window = redis.get("tmux:active_window")
+	mut redis := vredis2.connect('localhost:6379') ?
+	key := '$w.session.name:$w.name'
+	active_window := redis.get('tmux:active_window')?
 	if active_window != key || !w.active || w.pid == 0 {
 		w.session.activate()
 		if !w.active || w.pid == 0 {
 			w.create()
 		}
-		exec_select = os.exec("tmux select-window -t $w.name")
-		redis.set("tmux:active_window", key)
+		exec_select := os.exec('tmux select-window -t $w.name') or {
+			os.Result{
+				exit_code: 1
+				output: ''
+			}
+		}
+		redis.set('tmux:active_window', key)?
 	}
 }
 
 fn (mut w Window) execute(cmd string, check string, reset bool) {
 	w.activate()
-	os.log("window:$w.name execute:$cmd")
+	os.log('window:$w.name execute:$cmd')
 	if reset {
 		w.restart()
 	}
-	exec_send := os.exec("tmux send-keys -t $w.session.name $cmd Enter") or {
-			os.Result{
-				exit_code: 1
-				output: ''
-			}
+	exec_send := os.exec('tmux send-keys -t $w.session.name $cmd Enter') or {
+		os.Result{
+			exit_code: 1
+			output: ''
 		}
-	if check != "" {
-		error("implement")
-		exec_tmux := os.exec("tmux") or {
-			os.Result{
-				exit_code: 1
-				output: ''
-			}
-		}
+	}
+	if check != '' {
+		error('implement')
+		exec_tmux := os.exec('tmux') or { os.Result{
+			exit_code: 1
+			output: ''
+		} }
 	}
 }

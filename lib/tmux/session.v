@@ -49,17 +49,17 @@ fn (mut s Session) stop() {
 }
 
 fn (mut s Session) activate() {
-	mut redis := vredis2.connect('localhost:6379')
+	mut redis := vredis2.connect('localhost:6379')?
 	// Use 0 as it the default database
-	active_session = redis.get('tmux:active_session')
+	active_session := redis.get('tmux:active_session')?
 	if s.name != active_session {
-		exec_switch = os.exec('tmux switch -t $s.name') or {
+		exec_switch := os.exec('tmux switch -t $s.name') or {
 			os.Result{
 				exit_code: 1
 				output: ''
 			}
 		}
-		redis.set('tmux:active_session', s.name)
+		redis.set('tmux:active_session', s.name)?
 	}
 }
 
