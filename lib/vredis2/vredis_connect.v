@@ -58,8 +58,8 @@ fn (mut r Redis) socket_write_line(data string) ? {
 	r.socket.write('$data\r\n'.bytes())?
 }
 
-fn (mut r Redis) socket_write(data string) ?string {
-	r.socket.write(data.bytes())
+fn (mut r Redis) socket_write(data string) ? {
+	return r.socket.write(data.bytes())
 }
 
 pub fn (mut r Redis) disconnect() {
@@ -127,7 +127,7 @@ fn (mut r Redis) encode_value(value RedisValue) ?string {
 
 fn (mut r Redis) encode_send(value RedisValue)? {
 	buffer := r.encode_value(value)?
-	r.socket_write(buffer)
+	r.socket_write(buffer)?
 	time.sleep_ms(10) // FIXME
 }
 
@@ -184,7 +184,7 @@ pub fn (mut r Redis) get_response()? RedisValue {
 		if bulkstring_size == 0 {
 			// extract final \r\n and not reading
 			// any payload
-			r.socket_read_line()
+			r.socket_read_line()?
 			result.str = ""
 			return result
 		}
@@ -199,7 +199,7 @@ pub fn (mut r Redis) get_response()? RedisValue {
 		}
 
 		// extract final \r\n
-		r.socket_read_line()
+		r.socket_read_line()?
 
 		result.str = buffer.bytestr() // FIXME: won't support binary (afaik)
 		return result
