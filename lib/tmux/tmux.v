@@ -94,8 +94,8 @@ fn (mut t Tmux) stop() {
 		session.stop()
 	}
 	mut redis := vredis2.connect('localhost:6379')?
-	redis.delete("tmux:active_session")?
-	redis.delete("tmux:active_window")?
+	redis.del("tmux:active_session")?
+	redis.del("tmux:active_window")?
 }
 
 pub fn (mut t Tmux) list() {
