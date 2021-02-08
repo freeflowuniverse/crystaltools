@@ -4,7 +4,7 @@ import os
 import vredis2
 
 struct Session {
-mut:
+pub mut:
 	windows map[string]Window
 	name    string
 }
@@ -16,22 +16,23 @@ fn init_session(s_name string) Session {
 	os.log('tmux session: $s.name')
 	s.windows = map[string]Window{}
 	s.name = s.name.to_lower()
+	s.create()
 	return s
 }
 
 fn (mut s Session) create() {
-	exec_new := os.exec("tmux new-session -d -s $s.name 'sh'") or {
+	os.exec("tmux new-session -d -s $s.name 'sh'") or {
 		os.Result{
 			exit_code: 1
 			output: 'cannot create tmux session $s.name'
 		}
 	}
-	exec_rename := os.exec("tmux rename-window -t 0 'notused'") or {
-		os.Result{
-			exit_code: 1
-			output: ''
-		}
-	}
+	// os.exec("tmux rename-window -t 0 'notused'") or {
+	// 	os.Result{
+	// 		exit_code: 1
+	// 		output: ''
+	// 	}
+	// }
 }
 
 fn (mut s Session) restart() {
@@ -40,7 +41,7 @@ fn (mut s Session) restart() {
 }
 
 fn (mut s Session) stop() {
-	exec_stop := os.exec('tmux kill-session -t $s.name') or {
+	os.exec('tmux kill-session -t $s.name') or {
 		os.Result{
 			exit_code: 1
 			output: ''
@@ -49,16 +50,16 @@ fn (mut s Session) stop() {
 }
 
 fn (mut s Session) activate() {
-	mut redis := vredis2.connect('localhost:6379')?
-	active_session := redis.get('tmux:active_session')?
+	mut redis := vredis2.connect('localhost:6379') or { panic("Couldn't connect to redis client")}
+	active_session := redis.get('tmux:active_session') or {panic(" - Couldn't get tmux:active_session")}
 	if s.name != active_session {
-		exec_switch := os.exec('tmux switch -t $s.name') or {
+		os.exec('tmux switch -t $s.name') or {
 			os.Result{
 				exit_code: 1
 				output: ''
 			}
 		}
-		redis.set('tmux:active_session', s.name)?
+		redis.set('tmux:active_session', s.name) or {panic("Failed to set tmux:active_session")}
 	}
 }
 

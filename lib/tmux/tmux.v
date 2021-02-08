@@ -89,13 +89,13 @@ pub fn (mut t Tmux) scan() {
 	}
 }
 
-fn (mut t Tmux) stop() {
+pub fn (mut t Tmux) stop() {
 	for _, mut session in t.sessions {
 		session.stop()
 	}
-	mut redis := vredis2.connect('localhost:6379')?
-	redis.del("tmux:active_session")?
-	redis.del("tmux:active_window")?
+	mut redis := vredis2.connect('localhost:6379') or { panic("Couldn't connect to redis client")}
+	redis.del("tmux:active_session") or {panic(" - Couldn't delete tmux:active_session")}
+	redis.del("tmux:active_window") or {panic(" - Couldn't delete tmux:active_window")}
 }
 
 pub fn (mut t Tmux) list() {
