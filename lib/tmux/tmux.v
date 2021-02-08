@@ -78,7 +78,7 @@ pub fn (mut t Tmux) scan() {
 				active = true
 			}
 			if window_name != 'notused' {
-				mut window := session.window_get(window_name_l, false)
+				mut window := session.window_get(window_name_l)
 				window.id = (window_id.replace('@', '')).int()
 				window.pid = pane_pid.int()
 				window.active = active
