@@ -6,8 +6,21 @@ import gittools
 import cli
 
 fn website_conf_repo_get(cmd &cli.Command) ?(myconfig.ConfigRoot, &gittools.GitRepo) {
-	mut name := cmd.args[0]
-	mut conf := myconfig.get()
+
+	mut name := ""
+	conf := myconfig.get()
+
+	for flag in cmd.flags {
+		if flag.name == 'repo' {
+			if flag.value.len > 0 {
+				name = flag.value[0]
+			}
+		}
+	}
+
+	if name ==""{
+		return error("please specify repo name with '-r name', can be part of name")
+	}
 
 	mut res := []string{}
 	for site in conf.sites {
@@ -34,14 +47,6 @@ fn website_conf_repo_get(cmd &cli.Command) ?(myconfig.ConfigRoot, &gittools.GitR
 	return conf, repo
 }
 
-pub fn sites_list(cmd &cli.Command) ? {
-	mut conf := myconfig.get()
-
-	for site in conf.sites {
-		println(' - $site.name')
-	}
-}
-
 pub fn website_develop(cmd &cli.Command) ? {
 	_, repo := website_conf_repo_get(cmd) ?
 	println(' - start website: $repo.path')
@@ -49,7 +54,16 @@ pub fn website_develop(cmd &cli.Command) ? {
 }
 
 pub fn website_build(cmd &cli.Command) ? {
-	if cmd.args.len == 0 {
+	mut arg := false
+	for flag in cmd.flags {
+		if flag.name == 'repo' {
+			if flag.value.len > 0 {
+				arg = true
+			}
+		}
+	}
+
+	if ! arg {
 		println(' - build all websites')
 		mut conf := myconfig.get()
 		mut gt := gittools.new(conf.paths.code) or {
@@ -67,7 +81,7 @@ pub fn website_build(cmd &cli.Command) ? {
 	} else {
 		_, repo := website_conf_repo_get(cmd) ?
 		println(' - build website: $repo.path')
-		//be careful process stops after interactive execute
+		// be careful process stops after interactive execute
 		process.execute_interactive('$repo.path/build.sh') ?
 	}
 }

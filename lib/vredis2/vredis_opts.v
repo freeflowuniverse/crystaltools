@@ -22,5 +22,5 @@ pub fn (mut r Redis) psetex(key string, millis int, value string) ? {
 pub fn (mut r Redis) setnx(key string, value string) ? {
 	r.set_opts(key, value, SetOpts{
 		nx: true
-	})
+	})?
 }

@@ -24,6 +24,7 @@ pub fn website_install(name string, first bool, conf &myconfig.ConfigRoot) ? {
 
 		rm -rf modules
 		rm -f .installed
+		rm -f src/errors.md
 
 		'
 		println('   > reset') 

@@ -13,5 +13,4 @@ pub enum SiteCat {
 	wiki
 	data
 	web
-	html
 }

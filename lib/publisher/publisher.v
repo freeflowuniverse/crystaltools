@@ -37,12 +37,17 @@ fn (mut publisher Publisher) load(config SiteConfig, path string) ? {
 
 // make sure that the names are always normalized so its easy to find them back
 pub fn name_fix(name string) string {
+	mut pagename := name_fix_keepext(name)
+	if pagename.ends_with('.md') {
+		pagename = pagename[0..pagename.len - 3]
+	}
+	return pagename
+}
+
+pub fn name_fix_keepext(name string) string {
 	mut pagename := name.to_lower()
 	if '#' in pagename {
 		pagename = pagename.split('#')[0]
-	}
-	if pagename.ends_with('.md') {
-		pagename = pagename[0..pagename.len - 3]
 	}
 	pagename = pagename.replace(' ', '_')
 	pagename = pagename.replace('-', '_')
@@ -53,6 +58,7 @@ pub fn name_fix(name string) string {
 	pagename = pagename.trim(' .:')
 	return pagename
 }
+
 
 // return (sitename,pagename)
 pub fn site_page_names_get(name string) ?(string, string) {
@@ -162,10 +168,11 @@ pub mut:
 // destination is the destination path for the flatten operation
 pub fn (mut publisher Publisher) flatten(destination string) {
 	println(' - flatten wiki to $destination')
-	mut src_path := map[int]string{}
-	mut dest_path := map[int]string{}
 
 	mut errors := PublisherErrors{}
+	mut dest_file := ""
+
+	publisher.check() //makes sure we checked all
 
 	for mut site in publisher.sites {
 
@@ -173,9 +180,9 @@ pub fn (mut publisher Publisher) flatten(destination string) {
 
 		site.files_process(mut publisher) or { panic(err) }
 
-		src_path[site.id] = site.path
-		mut dest := '$destination/$site.name'
-		dest_path[site.id] = dest
+		// src_path[site.id] = site.path
+		mut dest_dir := '$destination/$site.name'
+		// dest_path[site.id] = dest
 
 		//collect all errors in a datastruct
 		for err in site.errors{
@@ -193,41 +200,42 @@ pub fn (mut publisher Publisher) flatten(destination string) {
 			}
 		}		
 
-		if !os.exists(dest) {
-			os.mkdir_all(dest) or { panic(err) }
-		}
-
-		if !os.exists(dest) {
-			os.mkdir_all(dest) or { panic(err) }
+		if !os.exists(dest_dir) {
+			os.mkdir_all(dest_dir) or { panic(err) }
 		}
 
 		//write the json errors file
-		os.write_file("$dest/errors.json",json.encode(errors)) or {panic(err)}
+		os.write_file("$dest_dir/errors.json",json.encode(errors)) or {panic(err)}
 
 		mut special := ['readme.md', 'README.md', '_sidebar.md', 'index.html', '_navbar.md']
 
-		for file in special {
+	
+		for file in special {	
+			dest_file = file
 			if os.exists('$site.path/$file') {
-				os.cp('$site.path/$file', '$dest/$file') or { panic(err) }
+				if dest_file.starts_with('_'){
+					dest_file = dest_file[1..] //remove the _
+				}
+				os.cp('$site.path/$file', '$dest_dir/$dest_file') or { panic(err) }
 			}
 		}
 
 		for name, _ in site.pages {
-			mut page := site.page_get(name, mut publisher) or { continue }
-			page.process(mut publisher) or { panic(err) }
+			mut page := site.page_get(name, mut publisher) or { panic(err)}
 			content := page.content
-
-			mut page_dest := os.join_path(dest_path[page.site_id], os.file_name(page.path))
-
-			os.write_file(page_dest, content) or { panic(err) }
+			dest_file = os.join_path(dest_dir, os.file_name(page.path))
+			os.write_file(dest_file, content) or { panic(err) }
 		}
+		
+		for name, _ in site.files {
+			mut fileobj := site.file_get(name, mut publisher) or { panic(err) }
+			dest_file = os.join_path(dest_dir, os.file_name(fileobj.path))
+			os.cp(fileobj.path_get(mut publisher), dest_file) or {panic(err)}
+		}
+
 	}
 
-	for mut file in publisher.files {
-		mut src := os.join_path(src_path[file.site_id], file.path)
-		mut dest := os.join_path(dest_path[file.site_id], os.file_name(file.path))
-		os.cp(src, dest) or {panic(err)}
-	}
+
 }
 
 
