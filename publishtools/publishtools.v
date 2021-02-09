@@ -68,7 +68,7 @@ fn main() {
 
 		if ! arg {
 			// publisher.webserver_start_develop()
-			println(' ERROR: need to implement webserver_start_develop')
+			publisher.webserver_run() //would be better to have the develop
 		} else {
 			installers.website_develop(&cmd) ?
 		}
@@ -86,7 +86,7 @@ fn main() {
 		mut publ := publisher.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
 		publ.flatten(cfg.paths.publish)
-		publisher.webserver_start_build()
+		publisher.webserver_run()
 	}
 	mut run_cmd := cli.Command{
 		description: 'run all websites & wikis, they need to be build first'

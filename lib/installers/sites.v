@@ -64,11 +64,7 @@ fn flag_repo_do(cmd cli.Command, reponame string) bool {
 	for flag in cmd.flags {
 		if flag.name == 'repo' {
 			if flag.value.len > 0 {
-				// ch1 := reponame.to_lower()
-				// ch2 :=  flag.value[0].to_lower()
-				// println('check repo do: $ch1  == $ch2')
 				if reponame.to_lower().contains(flag.value[0].to_lower()) {
-					// println("FOUND")
 					return true
 				} else {
 					return false

@@ -34,7 +34,7 @@ struct ErrorJson{
 
 
 // Run server
-pub fn webserver_start_build() {	
+pub fn webserver_run() {	
 	vweb.run<App>(port){}
 }
 
@@ -157,16 +157,17 @@ fn (mut app App) path_get(site string, name string)? (FileType, string) {
 [get]
 ['/:sitename']
 pub fn (mut app App) get_wiki(sitename string) vweb.Result {
-	siteconfig := app.site_config_get(sitename) or {
+	_ := app.site_config_get(sitename) or {
 		app.set_status(501,"$err")
 		println(" >> **ERROR: $err")
 		return app.ok("$err")
 	}
 	path := os.join_path(app.config.paths.publish, sitename, "index.html")
 	if ! os.exists(path){
-		reponame := siteconfig.name
-		repourl := siteconfig.url
-		return $vweb.html()
+		panic ("need to have index.html file in the wiki repo")
+		// reponame := siteconfig.name
+		// repourl := siteconfig.url
+		// return $vweb.html()
 	}
 	file := os.read_file(path) or {return app.not_found()}
 	app.set_content_type('text/html')
@@ -177,7 +178,7 @@ pub fn (mut app App) get_wiki(sitename string) vweb.Result {
 ['/:sitename/:filename']
 pub fn (mut app App) get_wiki_file(sitename string, filename string) vweb.Result {
 
-	filetype, path := app.path_get(sitename, filename) or {
+	_, path := app.path_get(sitename, filename) or {
 		app.set_status(501,"$err")
 		println(" >> **ERROR: $err")
 		return app.not_found()
