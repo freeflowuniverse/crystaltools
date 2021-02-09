@@ -22,16 +22,12 @@ pub fn (mut t Tmux) session_get(name string, restart bool) Session {
 	mut session := Session{}
 	if name_l in t.sessions {
 		session = t.sessions[name_l]
-		if restart {
-			session.restart()
-		}
 	} else {
 		session = init_session(name_l)
-
-		if restart {
-			session.restart()
-		}
 		t.sessions[name_l] = session
+	}
+	if restart {
+		session.restart()
 	}
 	return session
 }
@@ -93,9 +89,9 @@ pub fn (mut t Tmux) stop() {
 	for _, mut session in t.sessions {
 		session.stop()
 	}
-	mut redis := vredis2.connect('localhost:6379') or { panic("Couldn't connect to redis client")}
-	redis.del("tmux:active_session") or {panic(" - Couldn't delete tmux:active_session")}
-	redis.del("tmux:active_window") or {panic(" - Couldn't delete tmux:active_window")}
+	mut redis := vredis2.connect('localhost:6379') or { panic("Couldn't connect to redis client") }
+	redis.del('tmux:active_session') or { 1 }
+	redis.del('tmux:active_window') or { 1 }
 }
 
 pub fn (mut t Tmux) list() {

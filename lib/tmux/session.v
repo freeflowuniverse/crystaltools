@@ -16,7 +16,6 @@ fn init_session(s_name string) Session {
 	os.log('tmux session: $s.name')
 	s.windows = map[string]Window{}
 	s.name = s.name.to_lower()
-	s.create()
 	return s
 }
 
@@ -27,12 +26,12 @@ fn (mut s Session) create() {
 			output: 'cannot create tmux session $s.name'
 		}
 	}
-	// os.exec("tmux rename-window -t 0 'notused'") or {
-	// 	os.Result{
-	// 		exit_code: 1
-	// 		output: ''
-	// 	}
-	// }
+	os.exec("tmux rename-window -t 0 'notused'") or {
+		os.Result{
+			exit_code: 1
+			output: ''
+		}
+	}
 }
 
 fn (mut s Session) restart() {
@@ -51,7 +50,7 @@ fn (mut s Session) stop() {
 
 fn (mut s Session) activate() {
 	mut redis := vredis2.connect('localhost:6379') or { panic("Couldn't connect to redis client")}
-	active_session := redis.get('tmux:active_session') or {panic(" - Couldn't get tmux:active_session")}
+	active_session := redis.get('tmux:active_session') or {" - Couldn't get tmux:active_session"}
 	if s.name != active_session {
 		os.exec('tmux switch -t $s.name') or {
 			os.Result{
@@ -72,13 +71,14 @@ fn (mut s Session) window_exist(name string) bool {
 	return name.to_lower() in s.windows
 }
 
-fn (mut s Session) window_get(name string) Window {
+pub fn (mut s Session) window_get(name string) Window {
 	name_l := name.to_lower()
+	mut window := Window{}
 	if name_l in s.windows {
-		w := s.windows[name_l]
-		return w
+		window = s.windows[name_l]
 	} else {
-		s.windows[name_l] = init_window(s, name_l, 0, false, 0)
-		return s.windows[name_l]
+		window = init_window(s, name_l, 0, false, 0)
+		s.windows[name_l] = window
 	}
+	return window
 }
