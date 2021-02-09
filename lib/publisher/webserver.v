@@ -23,7 +23,8 @@ struct App{
  	vweb.Context
 pub mut:
  	cnt      int
-	config 	myconfig.ConfigRoot	 
+	config 	myconfig.ConfigRoot
+	website string
 }
 
 struct ErrorJson{
@@ -46,6 +47,7 @@ pub fn (mut app App) init_once() {
 
 // Initialization code goes here (with each request)
 pub fn (mut app App) init() {
+
 
 }
 
@@ -72,9 +74,30 @@ fn (mut app App) site_config_get(name string)? myconfig.SiteConfig{
 		if site.name.to_lower() == "info_"+name2.to_lower(){
 			return site
 		}
+		if site.name.to_lower() == name2.to_lower(){
+			return site
+		}		
 	}
 	return error("Cannot find wiki site with name: $name2")
 }
+
+
+fn (mut app App) static_check()bool {
+	if app.website != "" {
+		return true
+	}
+	return false	
+}
+
+[get]
+fn (mut app App) static_return() vweb.Result {
+	site_config := app.site_config_get(app.website) or {panic(err)}
+	path := "${app.config.paths.publish}/${app.website}/${app.req.url}"
+	println(" - static: '$path'")
+	mut f := os.read_file( path) or {return app.not_found()}
+	return app.ok(f)	
+}
+
 
 fn (mut app App) path_get(site string, name string)? (FileType, string) {
 
@@ -157,11 +180,21 @@ fn (mut app App) path_get(site string, name string)? (FileType, string) {
 [get]
 ['/:sitename']
 pub fn (mut app App) get_wiki(sitename string) vweb.Result {
-	_ := app.site_config_get(sitename) or {
+
+	if app.static_check(){
+		return app.static_return()
+	}
+	site_config := app.site_config_get(sitename) or {
 		app.set_status(501,"$err")
 		println(" >> **ERROR: $err")
 		return app.ok("$err")
 	}
+
+	//now check if is static website
+	if site_config.cat == myconfig.SiteCat.web{
+		app.website = site_config.name
+	}
+
 	path := os.join_path(app.config.paths.publish, sitename, "index.html")
 	if ! os.exists(path){
 		panic ("need to have index.html file in the wiki repo")
@@ -178,6 +211,10 @@ pub fn (mut app App) get_wiki(sitename string) vweb.Result {
 ['/:sitename/:filename']
 pub fn (mut app App) get_wiki_file(sitename string, filename string) vweb.Result {
 
+	if app.static_check(){
+		return app.static_return()
+	}
+
 	_, path := app.path_get(sitename, filename) or {
 		app.set_status(501,"$err")
 		println(" >> **ERROR: $err")
@@ -190,6 +227,9 @@ pub fn (mut app App) get_wiki_file(sitename string, filename string) vweb.Result
 [get]
 ['/:sitename/img/:filename']
 pub fn (mut app App) get_wiki_img(sitename string, filename string) vweb.Result {
+	if app.static_check(){
+		return app.static_return()
+	}
 	return app.get_wiki_file(sitename, filename)
 }
 

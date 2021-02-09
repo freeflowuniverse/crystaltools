@@ -2,6 +2,10 @@ module publisher
 
 //this webserver is used for doing development on wiki
 
+
+//IMPORTANT NEED TO MODIFY WEBSERVER.V TO ALSO SUPPORT GETTING INFO FROM THE PUBLISHING TOOLS DIRECTLY
+
+
 // import os
 // import vweb
 // import myconfig
