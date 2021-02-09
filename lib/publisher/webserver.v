@@ -91,7 +91,7 @@ fn (mut app App) static_check()bool {
 
 [get]
 fn (mut app App) static_return() vweb.Result {
-	site_config := app.site_config_get(app.website) or {panic(err)}
+	// site_config := app.site_config_get(app.website) or {panic(err)}
 	path := "${app.config.paths.publish}/${app.website}/${app.req.url}"
 	println(" - static: '$path'")
 	mut f := os.read_file( path) or {return app.not_found()}
@@ -161,11 +161,12 @@ fn (mut app App) path_get(site string, name string)? (FileType, string) {
 		name2 = 'navbar.md'
 	}
 
+	path2 = os.join_path(app.config.paths.publish, sitename, name2)
+
 	if name2 == 'readme.md' && (!os.exists(path2)){
 		name2 = "sidebar.md"
 	}
 
-	path2 = os.join_path(app.config.paths.publish, sitename, name2)
 
 	println("  > get: $path2 ($name)")
 
