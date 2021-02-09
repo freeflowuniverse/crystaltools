@@ -3,7 +3,8 @@
 fo in terminal do:
 
 ```bash
-ssh-keygen -t ed25519
+#remplace sam to your name
+ssh-keygen -t ed25519 -f ~/.ssh/sam
 ```
 
 - give meaningful name
