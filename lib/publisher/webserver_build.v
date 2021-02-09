@@ -162,21 +162,15 @@ pub fn (mut app App) get_wiki(sitename string) vweb.Result {
 		println(" >> **ERROR: $err")
 		return app.ok("$err")
 	}
-	// path := os.join_path(configdata.paths.publish, sitename, "index.html")
-	// if ! os.exists(path){
-	reponame := siteconfig.name
-	repourl := siteconfig.url
-	return $vweb.html()
-	// }
-	// file := os.read_file(path) or {return app.not_found()}
-	// app.set_content_type('text/html')
-	// return app.ok(file)
-}
-
-[get]
-pub fn (app mut App) get() {
-	println(app.req)
-	panic("s")
+	path := os.join_path(app.config.paths.publish, sitename, "index.html")
+	if ! os.exists(path){
+		reponame := siteconfig.name
+		repourl := siteconfig.url
+		return $vweb.html()
+	}
+	file := os.read_file(path) or {return app.not_found()}
+	app.set_content_type('text/html')
+	return app.ok(file)
 }
 
 [get]
