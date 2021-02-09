@@ -162,9 +162,10 @@ fn (mut app App) path_get(site string, name string)? (FileType, string) {
 	}
 
 	path2 = os.join_path(app.config.paths.publish, sitename, name2)
-
+	
 	if name2 == 'readme.md' && (!os.exists(path2)){
 		name2 = "sidebar.md"
+		path2 = os.join_path(app.config.paths.publish, sitename, name2)
 	}
 
 
@@ -181,6 +182,10 @@ fn (mut app App) path_get(site string, name string)? (FileType, string) {
 [get]
 ['/:sitename']
 pub fn (mut app App) get_wiki(sitename string) vweb.Result {
+	siteconfig := app.site_config_get(sitename) or {
+		app.set_status(501,"$err")
+		return app.not_found()
+	}
 
 	if app.static_check(){
 		return app.static_return()
@@ -198,10 +203,13 @@ pub fn (mut app App) get_wiki(sitename string) vweb.Result {
 
 	path := os.join_path(app.config.paths.publish, sitename, "index.html")
 	if ! os.exists(path){
-		panic ("need to have index.html file in the wiki repo")
-		// reponame := siteconfig.name
-		// repourl := siteconfig.url
-		// return $vweb.html()
+		// panic ("need to have index.html file in the wiki repo")
+		reponame := siteconfig.name
+		repourl := siteconfig.url
+		theme_simple := "https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css"
+		docsify_tabs := "https://cdn.jsdelivr.net/npm/docsify-tabs@1"
+		docsify_themable := "https://cdn.jsdelivr.net/npm/docsify-themeable@0"
+		return $vweb.html()
 	}
 	file := os.read_file(path) or {return app.not_found()}
 	app.set_content_type('text/html')

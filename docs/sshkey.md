@@ -3,7 +3,8 @@
 fo in terminal do:
 
 ```bash
-ssh-keygen -t ed25519
+#remplace sam to your name
+ssh-keygen -t ed25519 -f ~/.ssh/sam
 ```
 
 - give meaningful name
@@ -36,6 +37,15 @@ ssh-add -l
 this needs to be added in https://github.com/settings/keys
 
 see screen what needs to be done, basically just upload your previously generated key
+
+to see your key do
+
+```bash
+#make sure to use the public key
+cat ~/.ssh/sam.pub
+```
+
+select the 1line represeing your key and paste in github
 
 ## more info
 

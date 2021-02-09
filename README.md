@@ -85,6 +85,11 @@ remarks
 
 see [instructions](docs/sshkey.md)
 
+## recommended tools
+
+- sourectree (manage your git repositories)
+- ms visual studio code
+
 ## advanced usage
 
 ```bash
