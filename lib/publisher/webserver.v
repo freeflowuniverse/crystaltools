@@ -162,9 +162,10 @@ fn (mut app App) path_get(site string, name string)? (FileType, string) {
 	}
 
 	path2 = os.join_path(app.config.paths.publish, sitename, name2)
-
+	
 	if name2 == 'readme.md' && (!os.exists(path2)){
 		name2 = "sidebar.md"
+		path2 = os.join_path(app.config.paths.publish, sitename, name2)
 	}
 
 
