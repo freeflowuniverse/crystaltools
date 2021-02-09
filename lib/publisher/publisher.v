@@ -59,7 +59,6 @@ pub fn name_fix_keepext(name string) string {
 	return pagename
 }
 
-
 // return (sitename,pagename)
 pub fn site_page_names_get(name string) ?(string, string) {
 	mut pagename := name.trim(' ')
@@ -159,9 +158,9 @@ pub fn (mut publisher Publisher) site_locations_get() [][]string {
 	return res
 }
 
-struct PublisherErrors{
+struct PublisherErrors {
 pub mut:
-	site_errors  []SiteError
+	site_errors []SiteError
 	page_errors map[string][]PageError
 }
 
@@ -170,12 +169,11 @@ pub fn (mut publisher Publisher) flatten(destination string) {
 	println(' - flatten wiki to $destination')
 
 	mut errors := PublisherErrors{}
-	mut dest_file := ""
+	mut dest_file := ''
 
-	publisher.check() //makes sure we checked all
+	publisher.check() // makes sure we checked all
 
 	for mut site in publisher.sites {
-
 		errors = PublisherErrors{}
 
 		site.files_process(mut publisher) or { panic(err) }
@@ -184,58 +182,52 @@ pub fn (mut publisher Publisher) flatten(destination string) {
 		mut dest_dir := '$destination/$site.name'
 		// dest_path[site.id] = dest
 
-		//collect all errors in a datastruct
-		for err in site.errors{
+		// collect all errors in a datastruct
+		for err in site.errors {
 			// errors.site_errors << err
-			//TODO: clearly not ok, the duplicates files check is not there
-			if err.cat != SiteErrorCategory.duplicatefile && err.cat != SiteErrorCategory.duplicatepage {
+			// TODO: clearly not ok, the duplicates files check is not there
+			if err.cat != SiteErrorCategory.duplicatefile
+				&& err.cat != SiteErrorCategory.duplicatepage {
 				errors.site_errors << err
 			}
 		}
-				
-		for name, _ in site.pages{
+
+		for name, _ in site.pages {
 			page := site.page_get(name, mut publisher) or { panic(err) }
-			if page.errors.len > 0{
+			if page.errors.len > 0 {
 				errors.page_errors[name] = page.errors
 			}
-		}		
+		}
 
 		if !os.exists(dest_dir) {
 			os.mkdir_all(dest_dir) or { panic(err) }
 		}
-
-		//write the json errors file
-		os.write_file("$dest_dir/errors.json",json.encode(errors)) or {panic(err)}
+		// write the json errors file
+		os.write_file('$dest_dir/errors.json', json.encode(errors)) or { panic(err) }
 
 		mut special := ['readme.md', 'README.md', '_sidebar.md', 'index.html', '_navbar.md']
 
-	
-		for file in special {	
+		for file in special {
 			dest_file = file
 			if os.exists('$site.path/$file') {
-				if dest_file.starts_with('_'){
-					dest_file = dest_file[1..] //remove the _
+				if dest_file.starts_with('_') {
+					dest_file = dest_file[1..] // remove the _
 				}
 				os.cp('$site.path/$file', '$dest_dir/$dest_file') or { panic(err) }
 			}
 		}
 
 		for name, _ in site.pages {
-			mut page := site.page_get(name, mut publisher) or { panic(err)}
+			mut page := site.page_get(name, mut publisher) or { panic(err) }
 			content := page.content
 			dest_file = os.join_path(dest_dir, os.file_name(page.path))
 			os.write_file(dest_file, content) or { panic(err) }
 		}
-		
+
 		for name, _ in site.files {
 			mut fileobj := site.file_get(name, mut publisher) or { panic(err) }
 			dest_file = os.join_path(dest_dir, os.file_name(fileobj.path))
-			os.cp(fileobj.path_get(mut publisher), dest_file) or {panic(err)}
+			os.cp(fileobj.path_get(mut publisher), dest_file) or { panic(err) }
 		}
-
 	}
-
-
 }
-
-

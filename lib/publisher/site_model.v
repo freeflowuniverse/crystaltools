@@ -36,7 +36,8 @@ pub enum SiteState {
 
 struct SiteConfig {
 	// name of the wiki site
-	name string
+	name  string
+	alias string
 	// depends on which other wiki sites
 	depends      []string
 	replace      []string

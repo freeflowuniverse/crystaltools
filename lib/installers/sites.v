@@ -15,11 +15,15 @@ pub fn sites_list(cmd &cli.Command) ? {
 		change := repo.changes() or {
 			return error('cannot detect if there are changes on repo.\n$err')
 		}
+		mut changed := ""
+		mut alias := ""
 		if change {
-			println(' - $site.name (CHANGES)')
-		} else {
-			println(' - $site.name')
+			changed = " (CHANGED)"
+		} 
+		if site.alias != ""{
+			alias = "$site.alias="
 		}
+		println(' - ${alias}$site.name $changed')
 	}
 }
 
@@ -60,11 +64,14 @@ fn flag_message_get(cmd cli.Command) string {
 	return msg
 }
 
-fn flag_repo_do(cmd cli.Command, reponame string) bool {
+fn flag_repo_do(cmd cli.Command, reponame string, site myconfig.SiteConfig) bool {
 	for flag in cmd.flags {
 		if flag.name == 'repo' {
 			if flag.value.len > 0 {
+				// println("match $reponame $site.alias")
 				if reponame.to_lower().contains(flag.value[0].to_lower()) {
+					return true
+				}else if site.alias.to_lower().contains(flag.value[0].to_lower()){
 					return true
 				} else {
 					return false
@@ -82,7 +89,7 @@ pub fn sites_pull(cmd cli.Command) ? {
 	mut gt := gittools.new(codepath) or { return error('ERROR: cannot load gittools:$err') }
 	for sc in cfg.sites {
 		mut repo := gt.repo_get(name: sc.name) or { return error('ERROR: cannot get repo:$err') }
-		if ! flag_repo_do(cmd, repo.addr.name) {
+		if ! flag_repo_do(cmd, repo.addr.name, sc) {
 			continue
 		}
 		println(' - pull  $repo.path')
@@ -97,7 +104,7 @@ pub fn sites_push(cmd cli.Command) ? {
 	mut gt := gittools.new(codepath) or { return error('ERROR: cannot load gittools:$err') }
 	for sc in cfg.sites {
 		mut repo := gt.repo_get(name: sc.name) or { return error('ERROR: cannot get repo:$err') }
-		if ! flag_repo_do(cmd, repo.addr.name) {
+		if ! flag_repo_do(cmd, repo.addr.name, sc) {
 			continue
 		}		
 		println(' - push  $repo.path')
@@ -121,7 +128,7 @@ pub fn sites_commit(cmd cli.Command) ? {
 	mut gt := gittools.new(codepath) or { return error('ERROR: cannot load gittools:$err') }
 	for sc in cfg.sites {
 		mut repo := gt.repo_get(name: sc.name) or { return error('ERROR: cannot get repo:$err') }
-		if ! flag_repo_do(cmd, repo.addr.name) {
+		if ! flag_repo_do(cmd, repo.addr.name, sc) {
 			continue
 		}		
 		change := repo.changes() or {
@@ -145,7 +152,7 @@ pub fn sites_pushcommit(cmd cli.Command) ? {
 	msg := flag_message_get(cmd)
 	for sc in cfg.sites {
 		mut repo := gt.repo_get(name: sc.name) or { return error('ERROR: cannot get repo:$err') }
-		if ! flag_repo_do(cmd, repo.addr.name) {
+		if ! flag_repo_do(cmd, repo.addr.name, sc) {
 			continue
 		}		
 		println(' - $repo.path')
@@ -187,7 +194,7 @@ pub fn site_edit(cmd cli.Command) ? {
 	mut gt := gittools.new(codepath) or { return error('ERROR: cannot load gittools:$err') }
 	for sc in cfg.sites {
 		mut repo := gt.repo_get(name: sc.name) or { return error('ERROR: cannot get repo:$err') }
-		if ! flag_repo_do(cmd, repo.addr.name) {
+		if ! flag_repo_do(cmd, repo.addr.name, sc) {
 			continue
 		}		
 		// println(' - $repo.path')

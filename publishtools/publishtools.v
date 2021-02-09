@@ -58,6 +58,7 @@ fn main() {
 	// DEVELOP
 	develop_exec := fn (cmd cli.Command) ? {
 		mut arg := false
+		mut cfg := myconfig.get()
 		for flag in cmd.flags {
 			if flag.name == 'repo' {
 				if flag.value.len > 0 {
@@ -68,6 +69,9 @@ fn main() {
 
 		if ! arg {
 			// publisher.webserver_start_develop()
+			mut publ := publisher.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
+			publ.check()
+			publ.flatten(cfg.paths.publish)			
 			publisher.webserver_run() //would be better to have the develop
 		} else {
 			installers.website_develop(&cmd) ?
@@ -106,7 +110,7 @@ fn main() {
 	}
 	mut build_cmd := cli.Command{
 		name: 'build'
-		usage: 'specify name of website or wiki to run'
+		usage: 'specify name of website or wiki to build'
 		execute: build_exec
 		required_args: 0
 	}
@@ -188,11 +192,26 @@ fn main() {
 		execute: twin_exec
 	}
 
+
+	// UPDATE
+	update_exec := fn (cmd cli.Command) ? {
+		installers.publishtools_update() ?
+		installers.sites_pull(&cmd) ?
+	}
+	mut update_cmd := cli.Command{
+		name: 'update'
+		usage: 'update the tool'
+		execute: update_exec
+		required_args: 0
+	}
+
+
+
 	// MAIN
 	mut main_cmd := cli.Command{
 		name: 'installer'
 		commands: [install_cmd, run_cmd, build_cmd, list_cmd, develop_cmd, twin_cmd, pull_cmd,
-			commit_cmd, push_cmd, pushcommit_cmd,edit_cmd]
+			commit_cmd, push_cmd, pushcommit_cmd, edit_cmd, update_cmd]
 		description: '
 
         Publishing Tool Installer

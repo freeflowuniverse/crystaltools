@@ -70,6 +70,7 @@ fn site_config(mut c ConfigRoot) {
 	}
 	c.sites << SiteConfig{
 		name: 'info_tfgrid_sdk'
+		alias: 'manual'
 		url: 'https://github.com/threefoldfoundation/info_tfgrid_sdk'
 	}
 	c.sites << SiteConfig{
