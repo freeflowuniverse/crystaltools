@@ -196,7 +196,7 @@ pub fn process_input(mut client Redis, mut instance RedisInstance, value RedisVa
 		if command == rh.command {
 			println("Process: $command")
 			data := rh.handler(value, instance)
-			client.encode_send(data)
+			client.encode_send(data)?
 			return true
 		}
 	}
@@ -209,12 +209,12 @@ pub fn process_input(mut client Redis, mut instance RedisInstance, value RedisVa
 	println("")
 
 	err := value_error("Unknown command")
-	client.encode_send(err)
+	client.encode_send(err)?
 
 	return false
 }
 
-pub fn new_client(conn net.TcpConn, mut main RedisInstance)? {
+pub fn new_client(mut conn net.TcpConn, mut main RedisInstance)? {
 	// create a client on the existing socket
 	mut client := Redis{socket: conn}
 
@@ -232,13 +232,13 @@ pub fn new_client(conn net.TcpConn, mut main RedisInstance)? {
 			// should not receive anything else than
 			// array with commands and args
 			println("Wrong request from client, rejecting")
-			conn.close()
+			conn.close()?
 			return
 		}
 
 		if value.list[0].datatype != RedisValTypes.str {
 			println("Wrong request from client, rejecting")
-			conn.close()
+			conn.close()?
 			return
 		}
 
