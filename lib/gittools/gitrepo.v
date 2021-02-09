@@ -16,7 +16,7 @@ fn (mut repo GitRepo) url_get() string {
 }
 
 // if there are changes then will return 'true', otherwise 'false'
-fn (mut repo GitRepo) changes() ?bool {
+pub fn (mut repo GitRepo) changes() ?bool {
 	cmd := 'cd $repo.addr.path_get() && git status'
 	out := process.execute_silent(cmd) or {
 		return error('Could not execute command to check git status on $repo.path\ncannot execute $cmd')
@@ -37,13 +37,13 @@ fn (mut repo GitRepo) changes() ?bool {
 	return true
 }
 
-struct PullArgs {
+pub struct PullArgs {
 	force bool
 }
 
 // pulls remote content in, will fail if there are local changes
 // when using force:true it means we reset, overwrite all changes
-fn (mut repo GitRepo) pull(args PullArgs) ? {
+pub fn (mut repo GitRepo) pull(args PullArgs) ? {
 	mut cmd := ''
 
 	if os.exists(repo.path_get()) {
@@ -75,7 +75,7 @@ fn (mut repo GitRepo) pull(args PullArgs) ? {
 			cmd += ' -b $repo.addr.branch'
 		}
 		if repo.addr.depth != 0 {
-			cmd += " --depth=${repo.addr.depth}  && cd ${repo.addr.name} && git fetch"
+			cmd += ' --depth=$repo.addr.depth  && cd $repo.addr.name && git fetch'
 		}
 	}
 	process.execute_silent(cmd) or {
@@ -83,9 +83,31 @@ fn (mut repo GitRepo) pull(args PullArgs) ? {
 	}
 }
 
-fn (mut repo GitRepo) commit(msg string) ? {
-	// cmd := "cd ${repo.addr.path_get()} && git add . -A && git commit -m \"${msg}\""
-	// println(builder.execute_cmd(cmd).output or {return(err)})
+pub fn (mut repo GitRepo) commit(msg string) ? {
+	change := repo.changes() or {
+		return error('cannot detect if there are changes on repo.\n$err')
+	}
+	if change {
+		cmd := '
+		cd $repo.addr.path_get()
+		set +e
+		git add . -A
+		git commit -m \"$msg\"
+		echo ""
+		'
+		process.execute_silent(cmd) or {
+			return error('Cannot commit repo: ${repo.path}. Error was $err')
+		}
+	} else {
+		println('     > no change')
+	}
+}
+
+pub fn (mut repo GitRepo) push() ? {
+	cmd := 'cd $repo.addr.path_get() && git push'
+	process.execute_silent(cmd) or {
+		return error('Cannot push repo: ${repo.path}. Error was $err')
+	}
 }
 
 // make sure we use ssh instead of https in the config file

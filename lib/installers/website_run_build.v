@@ -34,14 +34,6 @@ fn website_conf_repo_get(cmd &cli.Command) ?(myconfig.ConfigRoot, &gittools.GitR
 	return conf, repo
 }
 
-pub fn sites_list(cmd &cli.Command) ? {
-	mut conf := myconfig.get()
-
-	for site in conf.sites {
-		println(' - $site.name')
-	}
-}
-
 pub fn website_develop(cmd &cli.Command) ? {
 	_, repo := website_conf_repo_get(cmd) ?
 	println(' - start website: $repo.path')
@@ -67,7 +59,7 @@ pub fn website_build(cmd &cli.Command) ? {
 	} else {
 		_, repo := website_conf_repo_get(cmd) ?
 		println(' - build website: $repo.path')
-		//be careful process stops after interactive execute
+		// be careful process stops after interactive execute
 		process.execute_interactive('$repo.path/build.sh') ?
 	}
 }

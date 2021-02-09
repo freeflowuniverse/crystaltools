@@ -10,20 +10,37 @@ fn main() {
 	// INSTALL
 	pullflag := cli.Flag{
 		name: 'pull'
+		abbrev: 'p'
 		description: "do you want to pull the git repo's"
 		flag: cli.FlagType.bool
 	}
 
 	resetflag := cli.Flag{
 		name: 'reset'
-		description: 'will reset the env before installing'
+		abbrev: 'r'
+		description: 'will reset the env before installing or pulling'
 		flag: cli.FlagType.bool
 	}
 
 	cleanflag := cli.Flag{
 		name: 'clean'
+		abbrev: 'c'
 		description: 'will clean the env before'
 		flag: cli.FlagType.bool
+	}
+
+	messageflag := cli.Flag{
+		name: 'message'
+		abbrev: 'm'
+		description: 'commit message'
+		flag: cli.FlagType.string
+	}
+
+	repoflag := cli.Flag{
+		name: 'repo'
+		abbrev: 'r'
+		description: 'repository name, can be part of name'
+		flag: cli.FlagType.string
 	}
 
 	install_exec := fn (cmd cli.Command) ? {
@@ -42,8 +59,8 @@ fn main() {
 	develop_exec := fn (cmd cli.Command) ? {
 		if cmd.args.len == 0 {
 			publisher.webserver_start_develop()
-			println(" ERROR: need to implement webserver_start_develop")
-		}else{
+			println(' ERROR: need to implement webserver_start_develop')
+		} else {
 			installers.website_develop(&cmd) ?
 		}
 	}
@@ -60,7 +77,7 @@ fn main() {
 		mut publ := publisher.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
 		publ.flatten(cfg.paths.publish)
-		//TODO: now we need to run a webserver which exposes all flattened directories
+		// TODO: now we need to run a webserver which exposes all flattened directories
 		// publisher.webserver_start_build()
 	}
 	mut run_cmd := cli.Command{
@@ -95,6 +112,61 @@ fn main() {
 		execute: list_exec
 	}
 
+	// PULL
+	pull_exec := fn (cmd cli.Command) ? {
+		installers.sites_pull(&cmd) ?
+	}
+	mut pull_cmd := cli.Command{
+		name: 'pull'
+		execute: pull_exec
+	}
+	pull_cmd.add_flag(resetflag)
+	pull_cmd.add_flag(repoflag)
+
+	// EDIT
+	edit_exec := fn (cmd cli.Command) ? {
+		installers.site_edit(&cmd) ?
+	}
+	mut edit_cmd := cli.Command{
+		name: 'edit'
+		execute: edit_exec
+	}
+	edit_cmd.add_flag(repoflag)
+
+
+	// pushcommit
+	pushcommit_exec := fn (cmd cli.Command) ? {
+		installers.sites_pushcommit(&cmd) ?
+	}
+	mut pushcommit_cmd := cli.Command{
+		name: 'pushcommit'
+		execute: pushcommit_exec
+	}
+	pushcommit_cmd.add_flag(messageflag)
+	pushcommit_cmd.add_flag(repoflag)
+
+	// commit
+	commit_exec := fn (cmd cli.Command) ? {
+		installers.sites_commit(&cmd) ?
+	}
+	mut commit_cmd := cli.Command{
+		name: 'commit'
+		execute: commit_exec
+	}
+	commit_cmd.add_flag(messageflag)
+	commit_cmd.add_flag(repoflag)
+
+	// PUSH
+	push_exec := fn (cmd cli.Command) ? {
+		installers.sites_push(&cmd) ?
+	}
+	mut push_cmd := cli.Command{
+		name: 'push'
+		execute: push_exec
+	}
+	push_cmd.add_flag(resetflag)
+	push_cmd.add_flag(repoflag)
+
 	// DIGITAL TWIN
 	twin_exec := fn (cmd cli.Command) ? {
 		mut cfg := installers.config_get(cmd) ?
@@ -110,7 +182,8 @@ fn main() {
 	// MAIN
 	mut main_cmd := cli.Command{
 		name: 'installer'
-		commands: [install_cmd, run_cmd, build_cmd, list_cmd, develop_cmd, twin_cmd]
+		commands: [install_cmd, run_cmd, build_cmd, list_cmd, develop_cmd, twin_cmd, pull_cmd,
+			commit_cmd, push_cmd, pushcommit_cmd,edit_cmd]
 		description: '
 
         Publishing Tool Installer
@@ -122,5 +195,5 @@ fn main() {
 	main_cmd.setup()
 	main_cmd.parse(os.args)
 
-	println(' - OK')
+	// println(' - OK')
 }

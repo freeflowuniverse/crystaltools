@@ -19,6 +19,8 @@ Make sure your ssh-key is loaded and you have it in your github account
 
 ## quick instructions
 
+### install & run
+
 ```bash
 #install the publishtools
 publishtools install
@@ -40,6 +42,39 @@ publishtools build cloud
 ```
 
 > remark: this will checkout all relevant repo's on ~/codewww <BR>
+
+### develop / commit
+
+```bash
+#list repo's show if there are changes
+publishtools list
+#commit changes, specify repo name
+publishtools commit -r info_cloud
+#commit changes, specify part of repo name
+publishtools commit -r info_
+#commit changes, specify commit message
+publishtools commit -r info_ -m 'my message'
+#commit changes, specify commit message, no quotes, cannot have spaces then
+publishtools commit -r info_ -m mymessage
+#commit same message on all repo's
+publishtools commit -m mymessage
+#commit & push changes (message & repo are optional)
+publishtools pushcommit -r info_ -m 'my message'
+#pull changes from github (repo name is optional)
+publishtools pull -r info_
+#push changes to github (repo name is optional)
+publishtools push -r info_
+#open code editor (vistual studio code)
+publishtools edit -r legal
+
+```
+
+remarks
+
+- when specifying a name for edit, will open the first repo it finds which matches the name
+- for using edit, you need visual studio code installed with command line integration
+  - see https://code.visualstudio.com/docs/setup/mac the launching from command line
+- make sure your ssh-agent is loaded !
 
 ## work with your ssh keys
 
