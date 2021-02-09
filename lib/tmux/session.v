@@ -5,12 +5,14 @@ import vredis2
 
 struct Session {
 pub mut:
+	factory Tmux
 	windows map[string]Window
 	name    string
 }
 
-fn init_session(s_name string) Session {
+fn init_session(factory &Tmux, s_name string) Session {
 	mut s := Session{
+		factory: factory
 		name: s_name
 	}
 	os.log('tmux session: $s.name')
@@ -20,17 +22,11 @@ fn init_session(s_name string) Session {
 }
 
 fn (mut s Session) create() {
-	os.exec("tmux new-session -d -s $s.name 'sh'") or {
-		os.Result{
-			exit_code: 1
-			output: 'cannot create tmux session $s.name'
-		}
+	s.factory.node.executor.exec("tmux new-session -d -s $s.name 'sh'") or {
+		panic("Can't create tmux session $s.name")
 	}
-	os.exec("tmux rename-window -t 0 'notused'") or {
-		os.Result{
-			exit_code: 1
-			output: ''
-		}
+	s.factory.node.executor.exec("tmux rename-window -t 0 'notused'") or {
+		"Can't rename window 0 to notused"
 	}
 }
 
@@ -40,25 +36,19 @@ fn (mut s Session) restart() {
 }
 
 fn (mut s Session) stop() {
-	os.exec('tmux kill-session -t $s.name') or {
-		os.Result{
-			exit_code: 1
-			output: ''
-		}
+	s.factory.node.executor.exec('tmux kill-session -t $s.name') or {
+		panic("Can't delete session $s.name")
 	}
 }
 
 fn (mut s Session) activate() {
-	mut redis := vredis2.connect('localhost:6379') or { panic("Couldn't connect to redis client")}
-	active_session := redis.get('tmux:active_session') or {" - Couldn't get tmux:active_session"}
+	mut redis := vredis2.connect('localhost:6379') or { panic("Couldn't connect to redis client") }
+	active_session := redis.get('tmux:active_session') or { " - Couldn't get tmux:active_session" }
 	if s.name != active_session {
-		os.exec('tmux switch -t $s.name') or {
-			os.Result{
-				exit_code: 1
-				output: ''
-			}
+		s.factory.node.executor.exec('tmux switch -t $s.name') or {
+			panic("Can't switch to session $s.name")
 		}
-		redis.set('tmux:active_session', s.name) or {panic("Failed to set tmux:active_session")}
+		redis.set('tmux:active_session', s.name) or { panic('Failed to set tmux:active_session') }
 	}
 }
 

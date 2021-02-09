@@ -2,15 +2,18 @@ module tmux
 
 import os
 import vredis2
+import builder
 
 struct Tmux {
 mut:
 	sessions map[string]Session
+	node     builder.Node
 }
 
-pub fn new() Tmux {
+pub fn new(args builder.NodeArguments) Tmux {
 	mut t := Tmux{
 		sessions: map[string]Session{}
+		node: builder.node_get(args) or { panic(err) }
 	}
 	os.log('scan')
 	t.scan()
@@ -23,7 +26,7 @@ pub fn (mut t Tmux) session_get(name string, restart bool) Session {
 	if name_l in t.sessions {
 		session = t.sessions[name_l]
 	} else {
-		session = init_session(name_l)
+		session = init_session(t, name_l)
 		t.sessions[name_l] = session
 	}
 	if restart {
@@ -33,25 +36,19 @@ pub fn (mut t Tmux) session_get(name string, restart bool) Session {
 }
 
 pub fn (mut t Tmux) scan() {
-	exec_list := os.exec('tmux list-sessions') or { os.Result{
-		exit_code: 1
-		output: ''
-	} }
+	exec_list := t.node.executor.exec('tmux list-sessions') or { '1' }
 
-	if exec_list.exit_code != 0 {
+	if exec_list == '1' {
 		// No server running
 		return
 	}
 
 	mut done := map[string]bool{}
 
-	out := os.exec("tmux list-windows -a -F '#{session_name}|#{window_name}|#{window_id}|#{pane_active}|#{pane_pid}|#{pane_start_command}'") or {
-		os.Result{
-			exit_code: 1
-			output: ''
-		}
+	out := t.node.executor.exec("tmux list-windows -a -F '#{session_name}|#{window_name}|#{window_id}|#{pane_active}|#{pane_pid}|#{pane_start_command}'") or {
+		panic("Can't execute")
 	}
-	for line in out.output.split_into_lines() {
+	for line in out.split_into_lines() {
 		if line.contains('|') {
 			line_arr := line.split('|')
 			session_name := line_arr[0]
