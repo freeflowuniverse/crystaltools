@@ -7,7 +7,7 @@ starting point to run all wiki's and websites on your local machine
 
 ## to install
 
-copy the folling in your terminal
+copy the following in your terminal, will install the tools (OSX only for now).
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/crystaluniverse/publishtools/master/scripts/install.sh)"
@@ -37,7 +37,7 @@ publishtools develop cloud
 publishtools develop
 #build all websites, will take long time
 publishtools build
-#specify to build for 1 specific websote
+#specify to build for 1 specific website
 publishtools build cloud
 ```
 
@@ -64,7 +64,12 @@ publishtools pushcommit -r info_ -m 'my message'
 publishtools pull -r info_
 #push changes to github (repo name is optional)
 publishtools push -r info_
-#open code editor (vistual studio code)
+```
+
+## edit code for a website/wiki
+
+```bash
+#open code editor (visual studio code)
 publishtools edit -r legal
 
 ```
