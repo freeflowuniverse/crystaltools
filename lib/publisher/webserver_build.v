@@ -12,11 +12,18 @@ const (
 	port = 9998
 )
 
+
+enum FileType{
+	wiki
+	file
+	image
+	html
+}
 struct App{
  	vweb.Context
 pub mut:
  	cnt      int
- 	publisherobj Publisher	 
+	config 	myconfig.ConfigRoot	 
 }
 
 struct ErrorJson{
@@ -33,18 +40,22 @@ pub fn webserver_start_build() {
 
 // Initialize (load wikis) only once when server starts
 pub fn (mut app App) init_once() {
-	//nothing to do because was already build in a step before, to the flattened directory
+	app.config = myconfig.get()
+	// app.handle_static('.')
 }
 
 // Initialization code goes here (with each request)
-pub fn (mut app App) init() {}
+pub fn (mut app App) init() {
+
+}
 
 // Index (List of wikis) -- reads index.html
 pub fn (mut app App) index() vweb.Result {
 	mut wikis := []string{}
-	configdata := myconfig.get()
-	path := os.join_path(configdata.paths.publish)
+	path := os.join_path(app.config.paths.publish)
 	list := os.ls(path) or {panic(err)}
+
+	app.enable_chunked_transfer(40)
 
 	for item in list{
 			wikis << item
@@ -53,105 +64,166 @@ pub fn (mut app App) index() vweb.Result {
 	return $vweb.html()
 }
 
+fn (mut app App) site_config_get(name string)? myconfig.SiteConfig{
+
+	name2 := name_fix_keepext(name)
+
+	for site in app.config.sites{
+		if site.name.to_lower() == "info_"+name2.to_lower(){
+			return site
+		}
+	}
+	return error("Cannot find wiki site with name: $name2")
+}
+
+fn (mut app App) path_get(site string, name string)? (FileType, string) {
+
+	site_config := app.site_config_get(site) ?
+	mut name2 := name.to_lower().trim(" ")
+	mut path2 := ""
+	extension := os.file_ext(name2).trim(".")
+	mut sitename := site_config.name
+	if sitename.starts_with("wiki_") || sitename.starts_with("info_"){
+		sitename = sitename[5..]
+	}
+
+	if name.starts_with("file__") || name.starts_with("page__") || name.starts_with("html__"){
+		splitted := name.split("__")
+		if splitted.len != 3{
+			return error("filename not well formatted. Needs to have 3 parts. Now $name2 .")
+		}
+		name2 = splitted[2]
+		if sitename != splitted[1]{
+			return error("Sitename in name should correspond to ${sitename}. Now $name2 .")
+		}
+	}
+
+	mut filetype := FileType{}
+	if name2.starts_with("file__"){
+		// app.set_content_type('text/html')
+		app.set_content_type('image/' + extension)
+		filetype = FileType.file
+	}else if name2.starts_with("page__"){
+		app.set_content_type('text/html')
+		filetype = FileType.wiki
+	}else if name2.starts_with("html__"){
+		app.set_content_type('text/html')
+		filetype = FileType.html
+	} else if name2.ends_with(".md"){
+		app.set_content_type('text/html')
+		filetype = FileType.wiki		
+	} else if name2.ends_with(".html"){
+		app.set_content_type('text/html')
+		filetype = FileType.html		
+	}else {
+		//consider all to be files (images)
+		app.set_content_type('image/' + extension)
+		filetype = FileType.file
+	}
+
+	//use known extensions for mime_types
+	if ".$extension" in vweb.mime_types{
+		app.set_content_type(vweb.mime_types[".$extension"])
+	}
+
+	println( " - ${app.req.url}")
+
+	name2 = name_fix_keepext(name2)
+
+	if name2 == '_sidebar.md'{
+		name2 = 'sidebar.md'
+	}
+
+	if name2 == '_navbar.md'{
+		name2 = 'navbar.md'
+	}
+
+	if name2 == 'readme.md' && (!os.exists(path2)){
+		name2 = "sidebar.md"
+	}
+
+	path2 = os.join_path(app.config.paths.publish, sitename, name2)
+
+	println("  > get: $path2 ($name)")
+
+	if ! os.exists(path2){
+		return error("cannot find file in: $path2")
+	}	
+
+	return filetype, path2
+
+}
+
 [get]
 ['/:sitename']
 pub fn (mut app App) get_wiki(sitename string) vweb.Result {
-	configdata := myconfig.get()
-	path := os.join_path(configdata.paths.publish, sitename, "index.html")
-	file := os.read_file(path) or {return app.not_found()}
-	app.set_content_type('text/html')
-	return app.ok(file)
+	siteconfig := app.site_config_get(sitename) or {
+		app.set_status(501,"$err")
+		println(" >> **ERROR: $err")
+		return app.ok("$err")
+	}
+	// path := os.join_path(configdata.paths.publish, sitename, "index.html")
+	// if ! os.exists(path){
+	reponame := siteconfig.name
+	repourl := siteconfig.url
+	return $vweb.html()
+	// }
+	// file := os.read_file(path) or {return app.not_found()}
+	// app.set_content_type('text/html')
+	// return app.ok(file)
+}
+
+[get]
+pub fn (app mut App) get() {
+	println(app.req)
+	panic("s")
 }
 
 [get]
 ['/:sitename/:filename']
 pub fn (mut app App) get_wiki_file(sitename string, filename string) vweb.Result {
-	configdata := myconfig.get()
 
-	if filename.starts_with("file__"){
-		splitted := filename.split("__")
-		if splitted.len != 3{
-			return app.not_found() 
-		}
-		return app.get_wiki_img(splitted[1], splitted[2])
+	filetype, path := app.path_get(sitename, filename) or {
+		app.set_status(501,"$err")
+		println(" >> **ERROR: $err")
+		return app.not_found()
 	}
-	
-	if filename.starts_with("page__"){
-		splitted := filename.split("__")
-		if splitted.len != 3{
-			return app.not_found() 
-		}
-		return app.get_wiki_file(splitted[1], splitted[2])
-	}
-
-	if filename.starts_with("html__"){
-		mut splitted := filename.split("__")
-
-		if splitted.len < 3{
-			return app.not_found() 
-		}
-
-		path := os.join_path(configdata.paths.publish, splitted[1], splitted[2..].join("/"))
-		mut f := os.read_file( path) or {return app.not_found()}
-		app.set_content_type('text/html')
-		return app.ok(f)	
-	}
-
-	root := os.join_path(configdata.paths.publish, sitename)
-	if filename.starts_with('_') {//why do we do this?
-		mut file := os.read_file(os.join_path(root, filename)) or { return app.not_found() }
-		app.set_content_type('text/html')
-		return app.ok(file)
-	} else {
-		mut file := ''
-		if filename.ends_with('.md') {
-			app.set_content_type('text/html')
-			file = os.read_file(os.join_path(root, filename)) or {
-				if filename == 'README.md' {
-					file = os.read_file(os.join_path(root, '_sidebar.md')) or {
-						return app.not_found()
-					}
-					app.set_content_type('text/html')
-					return app.ok('# $sitename\n' + file)
-				}
-				return app.not_found()
-			}
-			return app.ok(file)
-
-		} else {
-			extension := filename.split('.')[1]
-			app.set_content_type('image/' + extension)
-			
-
-		}
-		
-	}
-	return app.not_found()
+	mut f := os.read_file( path) or {return app.not_found()}
+	return app.ok(f)
 }
 
 [get]
 ['/:sitename/img/:filename']
 pub fn (mut app App) get_wiki_img(sitename string, filename string) vweb.Result {
-	configdata := myconfig.get()
-	path := os.join_path(configdata.paths.publish, sitename, filename)
-	file := os.read_file(path) or {return app.not_found()}
-	extension := filename.split('.')[1]
-	app.set_content_type('image/' + extension)
-	return app.ok(file)
+	return app.get_wiki_file(sitename, filename)
 }
 
 [get]
 ['/:sitename/errors']
 pub fn (mut app App) errors(sitename string) vweb.Result {
-	configdata := myconfig.get()
-	path := os.join_path(configdata.paths.publish, sitename, "errors.json")
-	err_file := os.read_file(path) or {return app.not_found()}
+	siteconfig := app.site_config_get(sitename) or {
+		app.set_status(501,"$err")
+		return app.not_found()
+	}
+
+	path := os.join_path(app.config.paths.publish, sitename, "errors.json")
+	err_file := os.read_file(path) or {
+			println(" >> **ERROR: could not find errors file on $path")
+			app.set_status(501,"could not find errors file on $path")
+			return app.not_found()
+		}
 	
-	errors := json.decode(ErrorJson, err_file) or {return app.not_found()}
+	errors := json.decode(ErrorJson, err_file) or {
+			println(" >> **ERROR: json not well formatted on $path")
+			app.set_status(501,"json not well formatted on $path")
+			return app.not_found()
+		}
 	
 	mut site_errors := errors.site_errors
 	mut page_errors := errors.page_errors
 
 	return $vweb.html()
 }
+
+
 

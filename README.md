@@ -28,17 +28,17 @@ publishtools install
 publishtools install -reset
 #re-install and pull newest website code in
 publishtools install -reset -pull
-#list the know sites
+#list the known sites(will show if changes in the repo)
 publishtools list
 #start development mode of website cloud (specify part of name of website is good enough)
 #is using gridsome
-publishtools develop cloud
+publishtools develop -r cloud
 #run the webserver for the wiki's
 publishtools develop
-#build all websites, will take long time
+#build all websites & wiki's, will take long time
 publishtools build
-#specify to build for 1 specific website
-publishtools build cloud
+#specify to build for 1 specific website (name is part of name)
+publishtools build -r cloud
 ```
 
 > remark: this will checkout all relevant repo's on ~/codewww <BR>
