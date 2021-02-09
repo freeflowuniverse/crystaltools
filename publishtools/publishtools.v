@@ -57,8 +57,17 @@ fn main() {
 
 	// DEVELOP
 	develop_exec := fn (cmd cli.Command) ? {
-		if cmd.args.len == 0 {
-			publisher.webserver_start_develop()
+		mut arg := false
+		for flag in cmd.flags {
+			if flag.name == 'repo' {
+				if flag.value.len > 0 {
+					arg = true
+				}
+			}
+		}
+
+		if ! arg {
+			// publisher.webserver_start_develop()
 			println(' ERROR: need to implement webserver_start_develop')
 		} else {
 			installers.website_develop(&cmd) ?
@@ -66,10 +75,10 @@ fn main() {
 	}
 	mut develop_cmd := cli.Command{
 		name: 'develop'
-		usage: 'specify name of website to develop on'
+		usage: 'specify name of website to develop on, if not specified will show the wiki'
 		execute: develop_exec
-		required_args: 0
 	}
+	develop_cmd.add_flag(repoflag)
 
 	// RUN
 	run_exec := fn (cmd cli.Command) ? {
@@ -77,8 +86,7 @@ fn main() {
 		mut publ := publisher.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
 		publ.flatten(cfg.paths.publish)
-		// TODO: now we need to run a webserver which exposes all flattened directories
-		// publisher.webserver_start_build()
+		publisher.webserver_start_build()
 	}
 	mut run_cmd := cli.Command{
 		description: 'run all websites & wikis, they need to be build first'
@@ -102,6 +110,7 @@ fn main() {
 		execute: build_exec
 		required_args: 0
 	}
+	build_cmd.add_flag(repoflag)
 
 	// LIST
 	list_exec := fn (cmd cli.Command) ? {

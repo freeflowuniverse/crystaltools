@@ -76,7 +76,7 @@ fn flag_repo_do(cmd cli.Command, reponame string) bool {
 			}
 		}
 	}
-	return false
+	return true
 }
 
 pub fn sites_pull(cmd cli.Command) ? {
