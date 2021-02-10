@@ -57,7 +57,7 @@ pub fn (mut node Node) platform_prepare() ? {
 		println('ubuntu prepare')
 		for x in ['mc', 'git', 'rsync', 'curl'] {
 			if !node.cmd_exists(x) {
-				node.package_install(name: 'x') ?
+				node.package_install(name: x) ?
 			}
 		}
 	} else {
