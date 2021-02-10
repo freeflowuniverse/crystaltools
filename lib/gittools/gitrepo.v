@@ -103,6 +103,29 @@ pub fn (mut repo GitRepo) commit(msg string) ? {
 	}
 }
 
+pub fn (mut repo GitRepo) remove_changes() ? {
+	change := repo.changes() or {
+		return error('cannot detect if there are changes on repo.\n$err')
+	}
+	if change {
+		println(" - remove change repo.name")
+		cmd := '
+		cd $repo.addr.path_get()
+		set +e
+		#checkout . -f
+		git reset HEAD --hard
+		git clean -fd
+		echo ""
+		'
+		process.execute_silent(cmd) or {
+			return error('Cannot commit repo: ${repo.path}. Error was $err')
+		}
+	} else {
+		println('     > no change  ${repo.path}')
+	}
+}
+
+
 pub fn (mut repo GitRepo) push() ? {
 	cmd := 'cd $repo.addr.path_get() && git push'
 	process.execute_silent(cmd) or {

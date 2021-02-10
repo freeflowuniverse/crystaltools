@@ -146,6 +146,15 @@ fn main() {
 	}
 	edit_cmd.add_flag(repoflag)
 
+	// VERSION
+	version_exec := fn (cmd cli.Command) ? {
+		println("1.0.2")
+	}
+	mut version_cmd := cli.Command{
+		name: 'version'
+		execute: version_exec
+	}
+
 
 	// pushcommit
 	pushcommit_exec := fn (cmd cli.Command) ? {
@@ -206,12 +215,24 @@ fn main() {
 	}
 
 
+	// removechanges
+	removechanges_exec := fn (cmd cli.Command) ? {
+		installers.sites_removechanges(&cmd) ?
+	}
+	mut removechangese_cmd := cli.Command{
+		name: 'removechanges'
+		usage: 'remove changes made'
+		execute: removechanges_exec
+		required_args: 0
+	}
+
+
 
 	// MAIN
 	mut main_cmd := cli.Command{
 		name: 'installer'
 		commands: [install_cmd, run_cmd, build_cmd, list_cmd, develop_cmd, twin_cmd, pull_cmd,
-			commit_cmd, push_cmd, pushcommit_cmd, edit_cmd, update_cmd]
+			commit_cmd, push_cmd, pushcommit_cmd, edit_cmd, update_cmd,version_cmd,removechangese_cmd]
 		description: '
 
         Publishing Tool Installer

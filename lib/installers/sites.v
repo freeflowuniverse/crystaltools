@@ -187,6 +187,22 @@ pub fn sites_cleanup(cmd cli.Command) ? {
 	}
 }
 
+pub fn sites_removechanges(cmd cli.Command) ? {
+	mut cfg := config_get(cmd) ?
+	codepath := cfg.paths.code
+	mut gt := gittools.new(codepath) or { return error('ERROR: cannot load gittools:$err') }
+	println(' - remove changes')
+	for sc in cfg.sites {
+		mut repo := gt.repo_get(name: sc.name) or { return error('ERROR: cannot get repo:$err') }
+		if ! flag_repo_do(cmd, repo.addr.name, sc) {
+			continue
+		}		
+		repo.remove_changes() ?
+	}
+}
+
+
+
 
 pub fn site_edit(cmd cli.Command) ? {
 	mut cfg := config_get(cmd) ?
