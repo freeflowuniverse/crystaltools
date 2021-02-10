@@ -15,7 +15,7 @@ fn print_req_info(mut req ctx.Req, mut res ctx.Resp) {
 }
 
 struct MyContext {
-   config  myconfig.ConfigRoot
+   config  &myconfig.ConfigRoot
    // now you can inject other stuff also
 }
 
@@ -32,7 +32,7 @@ pub fn webserver_run() {
     mut app := router.new()
 
 	config := myconfig.get()
-	mycontext := &MyContext{config: config}
+	mycontext := &MyContext{config: &config}
 	app.inject(mycontext)
 
 
