@@ -12,10 +12,10 @@ pub mut:
 	pid     int
 }
 
-fn init_window(session &Session, name string, id int, active bool, pid int) Window {
+fn init_window(session &Session, w_name string, id int, active bool, pid int) Window {
 	mut w := Window{
 		session: session
-		name: name.to_lower()
+		name: w_name.to_lower()
 		id: id
 		active: active
 		pid: pid
@@ -27,9 +27,10 @@ fn init_window(session &Session, name string, id int, active bool, pid int) Wind
 fn (mut w Window) create() {
 	w.session.activate()
 	if w.active == false {
-		w.session.factory.node.executor.exec('tmux new-window -t $w.session.name -n $w.name') or {
+		w.session.tmux.node.executor.exec('tmux new-window -t $w.session.name -n $w.name') or {
 			panic("Can't create new window $w.name")
 		}
+		os.log('WINDOW - Window: $w.name created in session: $w.session.name')
 	}
 }
 
@@ -38,9 +39,9 @@ fn (mut w Window) restart() {
 	w.create()
 }
 
-fn (mut w Window) stop() {
+pub fn (mut w Window) stop() {
 	if w.pid > 0 {
-		w.session.factory.node.executor.exec('kill -9 $w.pid') or {
+		w.session.tmux.node.executor.exec('kill -9 $w.pid') or {
 			panic("Can't kill window with pid:$w.pid")
 		}
 	}
@@ -51,31 +52,36 @@ fn (mut w Window) stop() {
 
 fn (mut w Window) activate() {
 	mut redis := vredis2.connect('localhost:6379') or { panic("Couldn't connect to redis client") }
+	redis.selectdb(10) or { panic("Couldn't select database'") }
 	key := '$w.session.name:$w.name'
-	active_window := redis.get('tmux:active_window') or { " - Couldn't get tmux:active_window" }
+	active_window := redis.get('tmux:active_window') or { 'No active window found' }
 	if active_window != key || !w.active || w.pid == 0 {
 		w.session.activate()
 		if !w.active || w.pid == 0 {
-			w.create()
+			w.restart()
+			w.active = true
 		}
-		w.session.factory.node.executor.exec('tmux select-window -t $w.name') or {
+		w.session.tmux.node.executor.exec('tmux select-window -t $w.id') or {
 			panic("Couldn't select window $w.name'")
 		}
-		redis.set('tmux:active_window', key) or { panic(" - Couldn't set tmux:active_window") }
+		redis.set('tmux:active_window', key) or { panic("Couldn't set tmux:active_window") }
+		os.log('WINDOW - Window: $w.name activated ')
+	} else {
+		os.log('WINDOW - Window $w.name already active')
 	}
 }
 
-fn (mut w Window) execute(cmd string, check string, reset bool) {
+pub fn (mut w Window) execute(cmd string, check string, reset bool) {
 	w.activate()
-	os.log('window:$w.name execute:$cmd')
 	if reset {
 		w.restart()
 	}
-	w.session.factory.node.executor.exec('tmux send-keys -t $w.session.name $cmd Enter') or {
-		panic("Couldn't execute cmd: $cmd'")
+	w.session.tmux.node.executor.exec("tmux send-keys -t $w.session.name'.'$w.id '$cmd' Enter") or {
+		panic("Couldn't execute cmd: $cmd")
 	}
+	os.log('WINDOW - Window: $w.name execute: $cmd')
 	if check != '' {
 		error('implement')
-		w.session.factory.node.executor.exec('tmux') or { panic(err) }
+		w.session.tmux.node.executor.exec('tmux') or { panic(err) }
 	}
 }
