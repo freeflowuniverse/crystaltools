@@ -45,7 +45,6 @@ pub fn (mut s Session) activate() {
 	mut redis := vredis2.connect('localhost:6379') or { panic("Couldn't connect to redis client") }
 	redis.selectdb(10) or { panic("Couldn't select database'") }
 	active_session := redis.get('tmux:active_session') or { 'No active session found' }
-	os.log('SESSION - Current active session: $active_session')
 	if active_session != 'No active session found' && s.name != active_session {
 		s.tmux.node.executor.exec('tmux attach-session -t $active_session') or {
 			panic('Fail to attach to current active session: $active_session')
