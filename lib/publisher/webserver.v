@@ -1,17 +1,11 @@
 module publisher
 
 import os
-
-import nedpals.vex.router
-import nedpals.vex.server
-import nedpals.vex.ctx
-
+import vweb
 import myconfig
 import json
 
 //this webserver is used for looking at the builded results
-
-
 
 
 const (
@@ -25,12 +19,10 @@ enum FileType{
 	image
 	html
 }
-
-
-
-struct Router2{
- 	nedpals.vex.Router
+struct App{
+ 	vweb.Context
 pub mut:
+ 	cnt      int
 	config 	myconfig.ConfigRoot
 	website string
 }
@@ -41,27 +33,23 @@ struct ErrorJson{
 			page_errors map [string][]PageError
 	}
 
-fn print_req_info(mut req ctx.Req, mut res ctx.Resp) {
-	println(red_log('${req.method} ${req.path}'))
-}
-
-
-fn helloworld (req &ctx.Req, mut res ctx.Resp) {
-		res.send('Hello World!', 200)
-	}
 
 // Run server
 pub fn webserver_run() {	
-    mut app := router.Router2({})
-    app.use(print_req_info)
-
-	app.route(.get, '/hello',helloworld )	
-
-    server.serve(app, 6789)	
-
+	vweb.run<App>(port){}
 }
 
+// Initialize (load wikis) only once when server starts
+pub fn (mut app App) init_once() {
 	app.config = myconfig.get()
+	// app.handle_static('.')
+}
+
+// Initialization code goes here (with each request)
+pub fn (mut app App) init() {
+
+
+}
 
 // Index (List of wikis) -- reads index.html
 pub fn (mut app App) index() vweb.Result {
@@ -194,7 +182,7 @@ fn (mut app App) path_get(site string, name string)? (FileType, string) {
 [get]
 ['/:sitename']
 pub fn (mut app App) get_wiki(sitename string) vweb.Result {
-	_ := app.site_config_get(sitename) or {
+	siteconfig := app.site_config_get(sitename) or {
 		app.set_status(501,"$err")
 		return app.not_found()
 	}
@@ -216,8 +204,8 @@ pub fn (mut app App) get_wiki(sitename string) vweb.Result {
 	path := os.join_path(app.config.paths.publish, sitename, "index.html")
 	if ! os.exists(path){
 		// panic ("need to have index.html file in the wiki repo")
-		reponame := site_config.name
-		repourl := site_config.url
+		reponame := siteconfig.name
+		repourl := siteconfig.url
 		theme_simple := "https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css"
 		docsify_tabs := "https://cdn.jsdelivr.net/npm/docsify-tabs@1"
 		docsify_themable := "https://cdn.jsdelivr.net/npm/docsify-themeable@0"
@@ -280,6 +268,5 @@ pub fn (mut app App) errors(sitename string) vweb.Result {
 
 	return $vweb.html()
 }
-
 
 
