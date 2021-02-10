@@ -86,6 +86,10 @@ fn site_config(mut c ConfigRoot) {
 		url: 'https://github.com/threefoldtech/info_tftech'
 	}
 	c.sites << SiteConfig{
+		name: 'info_digitaltwin'
+		url: 'https://github.com/threefoldfoundation/info_digitaltwin.git'
+	}
+	c.sites << SiteConfig{
 		name: 'data_threefold'
 		url: 'https://github.com/threefoldfoundation/data_threefold'
 		cat: SiteCat.data
