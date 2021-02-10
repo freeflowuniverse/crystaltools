@@ -15,7 +15,7 @@ fn print_req_info(mut req ctx.Req, mut res ctx.Resp) {
 }
 
 struct MyContext {
-   config &myconfig.ConfigRoot
+   config myconfig.ConfigRoot
    // now you can inject other stuff also
 }
 
