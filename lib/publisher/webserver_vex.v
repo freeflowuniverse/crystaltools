@@ -198,20 +198,25 @@ fn site_wiki_deliver(mut config myconfig.ConfigRoot, site string, path string, r
 fn site_www_deliver(mut config myconfig.ConfigRoot, site string, path string, req &ctx.Req, mut res ctx.Resp) {
 	mut site_path := config.path_publish_web_get(site)or {res.send("Cannot find site: $site\n$err", 404) return}
 	mut path2 := path
+	
 	if path2.trim("/")==""{
 		path2="index.html"
 		res.headers['Content-Type'] = ['text/html']
 	}
 	path2 = os.join_path(site_path,path2)
+	
 	if ! os.exists(path2){
 		println(" - ERROR: cannot find path:$path2")
 		res.send("cannot find path:$path2", 404) 
 		return
 	}else{
+		if os.is_dir(path2){
+			path2 = os.join_path(path2, "index.html")
+			res.headers['Content-Type'] = ['text/html']
+		}
 		// println("deliver: '$path2'")
 		content := os.read_file(path2) or {res.send("Cannot find file: $path2\n$err", 404) return}
 		//NOT GOOD NEEDS TO BE NOT LIKE THIS: TODO: find way how to send file
-		println(path2)
 		if path2.ends_with(".css"){
 			res.headers['Content-Type'] = ['text/css']
 		}
