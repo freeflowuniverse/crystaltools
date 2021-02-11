@@ -40,7 +40,7 @@ fn (mut self ReplaceInstructions) add(regex_find_str string, replace_with string
 // does the matching line per line
 // will use dedent function, on text
 fn (mut self ReplaceInstructions) replace(text string) ?string {
-	mut gi := 0
+	// mut gi := 0
 	mut text2 := dedent(text)
 	mut line2 := ''
 	mut res := []string{}

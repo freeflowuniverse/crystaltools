@@ -151,7 +151,7 @@ fn main() {
 
 	// VERSION
 	version_exec := fn (cmd cli.Command) ? {
-		println("1.0.2")
+		println("1.0.3")
 	}
 	mut version_cmd := cli.Command{
 		name: 'version'
@@ -208,7 +208,7 @@ fn main() {
 	// UPDATE
 	update_exec := fn (cmd cli.Command) ? {
 		installers.publishtools_update() ?
-		installers.sites_pull(&cmd) ?
+		// installers.sites_pull(&cmd) ?
 	}
 	mut update_cmd := cli.Command{
 		name: 'update'
