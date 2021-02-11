@@ -2,6 +2,12 @@ module myconfig
 
 fn site_config(mut c ConfigRoot) {
 	c.sites << SiteConfig{
+		name: 'www_threefold_io'
+		alias: 'threefold_main'
+		url: 'https://github.com/threefoldfoundation/www_threefold_io'
+		cat: SiteCat.web
+	}
+	c.sites << SiteConfig{
 		name: 'www_threefold_cloud'
 		alias: 'cloud'
 		url: 'https://github.com/threefoldfoundation/www_threefold_cloud'
@@ -47,6 +53,11 @@ fn site_config(mut c ConfigRoot) {
 		name: 'info_foundation'
 		alias: 'foundation'
 		url: 'https://github.com/threefoldfoundation/info_foundation'
+	}
+	c.sites << SiteConfig{
+		name: 'info_marketplace'
+		alias: 'marketplace'
+		url: 'https://github.com/threefoldfoundation/info_marketplace'
 	}
 	c.sites << SiteConfig{
 		name: 'info_tfgrid_sdk'
