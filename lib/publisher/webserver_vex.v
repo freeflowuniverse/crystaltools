@@ -223,6 +223,22 @@ fn site_www_deliver(mut config myconfig.ConfigRoot, site string, path string, re
 		if path2.ends_with(".js"){
 			res.headers['Content-Type'] = ['text/javascript']
 		}
+		if path2.ends_with(".svg"){
+			res.headers['Content-Type'] = ['image/svg+xml']
+		}
+		if path2.ends_with(".png"){
+			res.headers['Content-Type'] = ['image/png']
+		}
+		if path2.ends_with(".jpg"){
+			res.headers['Content-Type'] = ['image/jpg']
+		}
+		if path2.ends_with(".jpeg"){
+			res.headers['Content-Type'] = ['image/jpeg']
+		}
+		if path2.ends_with(".gif"){
+			res.headers['Content-Type'] = ['image/gif']
+		}
+
 
 		res.send(content, 200)
 	}
