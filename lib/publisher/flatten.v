@@ -56,19 +56,19 @@ pub fn (mut publisher Publisher) flatten()? {
 
 		index_wiki_save(dest_dir,site.name,site_config.url)
 
-		mut special := ['readme.md', 'README.md', 'sidebar.md', 'navbar.md']
+		mut special := ['readme.md', 'README.md', '_sidebar.md', '_navbar.md','sidebar.md', 'navbar.md']
 
-		renameitems := [["_sidebar.md","sidebar.md"],["_navbar.md","navbar.md"]]
-		for ffrom,tto in renameitems{
-			if os.exists('$site.path/$ffrom'){
-				if os.exists('$site.path/$tto'){
-					os.rm('$site.path/$ffrom') ?
-				}else{
-					os.cp('$site.path/$ffrom','$site.path/$tto')?
-				}				
-				os.rm('$site.path/$ffrom')?
-			}
-		}
+		// renameitems := [["_sidebar.md","sidebar.md"],["_navbar.md","navbar.md"]]
+		// for ffrom,tto in renameitems{
+		// 	if os.exists('$site.path/$ffrom'){
+		// 		if os.exists('$site.path/$tto'){
+		// 			os.rm('$site.path/$ffrom') ?
+		// 		}else{
+		// 			os.cp('$site.path/$ffrom','$site.path/$tto')?
+		// 		}				
+		// 		os.rm('$site.path/$ffrom')?
+		// 	}
+		// }
 
 		for file in special {
 			dest_file = file
@@ -76,6 +76,7 @@ pub fn (mut publisher Publisher) flatten()? {
 				if dest_file.starts_with('_') {
 					dest_file = dest_file[1..] // remove the _
 				}
+				println("copy: $site.path/$file $dest_dir/$dest_file")
 				os.cp('$site.path/$file', '$dest_dir/$dest_file') ?
 			}
 		}
