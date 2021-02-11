@@ -142,6 +142,7 @@ fn index_root(req &ctx.Req, mut res ctx.Resp) {
 	for item in list {
 		wikis << item
 	}
+	res.headers['Content-Type'] = ['text/html']
 	res.send(index_template(wikis), 200)
 }
 
@@ -192,6 +193,7 @@ fn site_www_deliver(mut config myconfig.ConfigRoot, site string, path string, re
 	mut path2 := path
 	if path2.trim("/")==""{
 		path2="index.html"
+		res.headers['Content-Type'] = ['text/html']
 	}
 	path2 = os.join_path(site_path,path2)
 	if ! os.exists(path2){
@@ -202,8 +204,15 @@ fn site_www_deliver(mut config myconfig.ConfigRoot, site string, path string, re
 		// println("deliver: '$path2'")
 		content := os.read_file(path2) or {res.send("Cannot find file: $path2\n$err", 404) return}
 		//NOT GOOD NEEDS TO BE NOT LIKE THIS: TODO: find way how to send file
+		println(path2)
+		if path2.ends_with(".css"){
+			res.headers['Content-Type'] = ['text/css']
+		}
+		if path2.ends_with(".js"){
+			res.headers['Content-Type'] = ['text/javascript']
+		}
+
 		res.send(content, 200)
-		// res.send_file(path2,200)
 	}
 }
 
