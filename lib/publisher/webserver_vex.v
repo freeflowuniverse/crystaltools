@@ -118,7 +118,7 @@ fn path_wiki_get(mut config myconfig.ConfigRoot, site string, name string) ?(Fil
 	return filetype, path2
 }
 
-fn index_template(wikis []string) string{
+fn index_template(wikis []string, sites []string) string{
 	return $tmpl('index_root.html')
 }
 fn error_template(sitename string, path string) string{
@@ -137,13 +137,19 @@ fn error_template(sitename string, path string) string{
 fn index_root(req &ctx.Req, mut res ctx.Resp) {
 	config := (&MyContext(req.ctx)).config
 	mut wikis := []string{}
+	mut sites := []string{}
+
 	path := os.join_path(config.paths.publish)
 	list := os.ls(path) or { panic(err) }
 	for item in list {
-		wikis << item
+		if item.starts_with("wiki_"){
+			wikis << item
+		}else if item.starts_with("www_"){
+			sites << item.replace("www_", "")
+		}
 	}
 	res.headers['Content-Type'] = ['text/html']
-	res.send(index_template(wikis), 200)
+	res.send(index_template(wikis, sites), 200)
 }
 
 fn return_wiki_errors(sitename string, req &ctx.Req, mut res ctx.Resp) {
@@ -172,6 +178,7 @@ fn site_wiki_deliver(mut config myconfig.ConfigRoot, site string, path string, r
 	println(" - '$site:$name' -> $path2")
 	if filetype == FileType.wiki{
 		content := os.read_file(path2) or {res.send("Cannot find file: $path2\n$err", 404) return}
+		res.headers['Content-Type'] = ['text/html']
 		res.send(content, 200)
 	}else{
 		if ! os.exists(path2){
