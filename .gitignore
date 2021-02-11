@@ -7,5 +7,4 @@ examples/gittools
 publisher/publish
 install_publisher
 .vmodules/
-publishtools
 vex_webserver

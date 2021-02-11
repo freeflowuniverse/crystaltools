@@ -1,6 +1,6 @@
 module publisher
 import os
-fn index_wiki_get(reponame string, repourl string) string {
+fn template_wiki_root(reponame string, repourl string) string {
 
     index_wiki := r'
     <!DOCTYPE html>
@@ -140,8 +140,8 @@ fn index_wiki_get(reponame string, repourl string) string {
     return out
 }
 
-fn index_wiki_save(destdir string, reponame string, repourl string){
-    out := index_wiki_get(reponame, repourl)
+fn template_wiki_root_save(destdir string, reponame string, repourl string){
+    out := template_wiki_root(reponame, repourl)
     os.write_file("$destdir/index.html",out) or {panic(err)}
 }
 
