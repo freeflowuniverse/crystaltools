@@ -21,8 +21,6 @@ struct MyContext {
 
 
 fn helloworld (req &ctx.Req, mut res ctx.Resp) {
-		//I NEED THIS config to be available here, we cannot fetch it for each request thats too inefficient
-		//are there globals? or ways how to do this?
 		myconfig := (&MyContext(req.ctx)).config
 		res.send('Hello World! ${myconfig.paths.base}', 200)
 	}
@@ -34,7 +32,6 @@ pub fn webserver_run() {
 	config := myconfig.get()
 	mycontext := &MyContext{config: &config}
 	app.inject(mycontext)
-
 
     app.use(print_req_info)
 

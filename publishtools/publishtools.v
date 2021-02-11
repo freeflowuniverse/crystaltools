@@ -71,7 +71,10 @@ fn main() {
 			// publisher.webserver_start_develop()
 			mut publ := publisher.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 			publ.check()
-			publ.flatten(cfg.paths.publish)			
+			publ.flatten()	or { 
+					println ("ERROR: cannot flatten wiki\n$err")
+					exit(1)
+					}		
 			publisher.webserver_run() //would be better to have the develop
 		} else {
 			installers.website_develop(&cmd) ?
@@ -89,7 +92,7 @@ fn main() {
 		cfg := myconfig.get()
 		mut publ := publisher.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
-		publ.flatten(cfg.paths.publish)
+		publ.flatten()?
 		publisher.webserver_run()
 	}
 	mut run_cmd := cli.Command{
@@ -104,7 +107,7 @@ fn main() {
 		cfg := myconfig.get()
 		mut publ := publisher.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
-		publ.flatten(cfg.paths.publish)
+		publ.flatten() ?
 
 		installers.website_build(&cmd) ?
 	}
