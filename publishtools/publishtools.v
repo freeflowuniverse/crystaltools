@@ -92,7 +92,7 @@ fn main() {
 		cfg := myconfig.get()
 		mut publ := publisher.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
-		// publ.flatten()?
+		publ.flatten()?
 		publisher.webserver_run()
 	}
 	mut run_cmd := cli.Command{

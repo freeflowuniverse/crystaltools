@@ -76,7 +76,7 @@ pub fn (mut publisher Publisher) flatten()? {
 				if dest_file.starts_with('_') {
 					dest_file = dest_file[1..] // remove the _
 				}
-				println("copy: $site.path/$file $dest_dir/$dest_file")
+				// println("copy: $site.path/$file $dest_dir/$dest_file")
 				os.cp('$site.path/$file', '$dest_dir/$dest_file') ?
 			}
 		}

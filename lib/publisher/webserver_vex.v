@@ -147,7 +147,7 @@ fn index_root(req &ctx.Req, mut res ctx.Resp) {
 
 fn return_wiki_errors(sitename string, req &ctx.Req, mut res ctx.Resp) {
 	config := (&MyContext(req.ctx)).config
-	path := os.join_path(config.paths.publish, sitename, "errors.json")
+	path := os.join_path(config.paths.publish, "wiki_$sitename", "errors.json")
 	t := error_template(sitename,path)
 	if t.starts_with("ERROR:") { 
 			res.send(t, 501) 
@@ -189,7 +189,11 @@ fn site_wiki_deliver(mut config myconfig.ConfigRoot, site string, path string, r
 
 fn site_www_deliver(mut config myconfig.ConfigRoot, site string, path string, req &ctx.Req, mut res ctx.Resp) {
 	mut site_path := config.path_publish_web_get(site)or {res.send("Cannot find site: $site\n$err", 404) return}
-	path2 := os.join_path(site_path,path)
+	mut path2 := path
+	if path2.trim("/")==""{
+		path2="index.html"
+	}
+	path2 = os.join_path(site_path,path2)
 	if ! os.exists(path2){
 		println(" - ERROR: cannot find path:$path2")
 		res.send("cannot find path:$path2", 404) 
@@ -208,23 +212,17 @@ fn site_deliver(req &ctx.Req, mut res ctx.Resp) {
 	mut path := req.params["path"]
 	splitted := path.trim("/").split("/")
 	mut site := splitted[0].to_lower()
-	path = splitted[1..].join("/n").trim("/").trim(" ")
-	if os.exists(config.paths.publish+"/wiki_${site}"){
-		site_wiki_deliver(mut config,site,path,req,mut res)
-	}else if os.exists(config.paths.publish+"/web_${site}"){
-		site_www_deliver(mut config,site,path,req,mut res)
-	}else if os.exists(config.paths.publish+"/${site}"){
-		if site.starts_with("www_"){
-			site = site[4..]
-			site_www_deliver(mut config,site,path,req,mut res)		
-		}else if site.starts_with("wiki_"){
-			site = site[5..]
-			site_wiki_deliver(mut config,site,path,req,mut res)		
-		}else{
-			res.send("Could not find site: $site", 404)	
-		}
+	path = splitted[1..].join("/").trim("/").trim(" ")
+
+	if site.starts_with("www_"){
+		site = site[4..]
+		site_www_deliver(mut config,site,path,req,mut res)		
+	}else if site.starts_with("wiki_"){
+		site = site[5..]
+		site_wiki_deliver(mut config,site,path,req,mut res)		
 	}else{
-		res.send("Could not find site: $site", 404)
+		//if no wiki or www used then its a website
+		site_www_deliver(mut config,site,path,req,mut res)
 	}
 }
 
@@ -249,94 +247,3 @@ pub fn webserver_run() {
 	server.serve(app, 9998)
 }
 
-
-
-// [get]
-// ['/:sitename']
-// pub fn (mut app App) get_wiki(sitename string) vweb.Result {
-// 	_ := site_config_get(sitename) or {
-// 		app.set_status(501,"$err")
-// 		return app.not_found()
-// 	}
-
-// 	if app.static_check(){
-// 		return app.static_return()
-// 	}
-// 	site_config := site_config_get(sitename) or {
-// 		app.set_status(501,"$err")
-// 		println(" >> **ERROR: $err")
-// 		return app.ok("$err")
-// 	}
-
-// 	//now check if is static website
-// 	if site_config.cat == myconfig.SiteCat.web{
-// 		app.website = site_config.name
-// 	}
-
-// 	path := os.join_path(config.paths.publish, sitename, "index.html")
-// 	if ! os.exists(path){
-// 		// panic ("need to have index.html file in the wiki repo")
-// 		reponame := site_config.name
-// 		repourl := site_config.url
-// 		theme_simple := "https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css"
-// 		docsify_tabs := "https://cdn.jsdelivr.net/npm/docsify-tabs@1"
-// 		docsify_themable := "https://cdn.jsdelivr.net/npm/docsify-themeable@0"
-// 		return $vweb.html()
-// 	}
-// 	file := os.read_file(path) or {return app.not_found()}
-// 	app.set_content_type('text/html')
-// 	return app.ok(file)
-// }
-
-// [get]
-// ['/:sitename/:filename']
-// pub fn (mut app App) get_wiki_file(sitename string, filename string) vweb.Result {
-
-// 	if app.static_check(){
-// 		return app.static_return()
-// 	}
-
-// 	_, path := app.path_get(sitename, filename) or {
-// 		app.set_status(501,"$err")
-// 		println(" >> **ERROR: $err")
-// 		return app.not_found()
-// 	}
-// 	mut f := os.read_file( path) or {return app.not_found()}
-// 	return app.ok(f)
-// }
-
-// [get]
-// ['/:sitename/img/:filename']
-// pub fn (mut app App) get_wiki_img(sitename string, filename string) vweb.Result {
-// 	if app.static_check(){
-// 		return app.static_return()
-// 	}
-// 	return app.get_wiki_file(sitename, filename)
-// }
-
-// [get]
-// ['/:sitename/errors']
-// pub fn (mut app App) errors(sitename string) vweb.Result {
-// 	siteconfig := site_config_get(sitename) or {
-// 		app.set_status(501,"$err")
-// 		return app.not_found()
-// 	}
-
-// 	path := os.join_path(config.paths.publish, sitename, "errors.json")
-// 	err_file := os.read_file(path) or {
-// 			println(" >> **ERROR: could not find errors file on $path")
-// 			app.set_status(501,"could not find errors file on $path")
-// 			return app.not_found()
-// 		}
-
-// 	errors := json.decode(ErrorJson, err_file) or {
-// 			println(" >> **ERROR: json not well formatted on $path")
-// 			app.set_status(501,"json not well formatted on $path")
-// 			return app.not_found()
-// 		}
-
-// 	mut site_errors := errors.site_errors
-// 	mut page_errors := errors.page_errors
-
-// 	return $vweb.html()
-// }
