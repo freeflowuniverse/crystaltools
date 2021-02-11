@@ -30,7 +30,7 @@ publishtools install -reset
 publishtools install -reset -pull
 #list the known sites(will show if changes in the repo)
 publishtools list
-#see current version you are on
+#see current publishtools version you are on
 publishtools version
 #see published version of the site (production)
 publishtools run
