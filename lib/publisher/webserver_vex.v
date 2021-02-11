@@ -45,7 +45,7 @@ fn path_wiki_get(mut config myconfig.ConfigRoot, site string, name string) ?(Fil
 	mut name2 := name.to_lower().trim(' ').trim(".").trim(' ')
 	mut path2 := ''
 	extension := os.file_ext(name2).trim('.')
-	mut sitename := site_config.name
+	mut sitename := site_config.alias
 	if sitename.starts_with('wiki_') || sitename.starts_with('info_') {
 		sitename = sitename[5..]
 	}
@@ -138,7 +138,7 @@ fn site_wiki_deliver(mut config myconfig.ConfigRoot, site string, path string, r
 	name := os.base(path)
 	filetype, path2 := path_wiki_get(mut config,site,name) or { 
 		println("could not get path for: $site:$name\n$err")
-		res.send("$err", 460) 
+		res.send("$err", 404) 
 		return
 		}
 	println(" - '$site:$name' -> $path2")
