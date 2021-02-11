@@ -118,10 +118,21 @@ fn path_wiki_get(mut config myconfig.ConfigRoot, site string, name string) ?(Fil
 	return filetype, path2
 }
 
-
 fn index_template(wikis []string) string{
 	return $tmpl('index_root.html')
 }
+fn error_template(sitename string, path string) string{
+	err_file := os.read_file(path) or {
+			return "ERROR: could not find errors file on $path"
+		}
+	errors := json.decode(ErrorJson, err_file) or {
+			return "ERROR: json not well formatted on $path"
+		}
+	mut site_errors := errors.site_errors
+	mut page_errors := errors.page_errors	
+	return $tmpl('errors.html')
+}
+
 // Index (List of wikis) -- reads index.html
 fn index_root(req &ctx.Req, mut res ctx.Resp) {
 	config := (&MyContext(req.ctx)).config
@@ -134,8 +145,24 @@ fn index_root(req &ctx.Req, mut res ctx.Resp) {
 	res.send(index_template(wikis), 200)
 }
 
+fn return_wiki_errors(sitename string, req &ctx.Req, mut res ctx.Resp) {
+	config := (&MyContext(req.ctx)).config
+	path := os.join_path(config.paths.publish, sitename, "errors.json")
+	t := error_template(sitename,path)
+	if t.starts_with("ERROR:") { 
+			res.send(t, 501) 
+			return
+		}
+	// println(t)
+	res.send(t, 200)
+}
+
 fn site_wiki_deliver(mut config myconfig.ConfigRoot, site string, path string, req &ctx.Req, mut res ctx.Resp) {
 	name := os.base(path)
+	if path.ends_with("errors") || path.ends_with("error") {
+		return_wiki_errors(site,req,mut res)
+		return
+	}
 	filetype, path2 := path_wiki_get(mut config,site,name) or { 
 		println("could not get path for: $site:$name\n$err")
 		res.send("$err", 404) 
