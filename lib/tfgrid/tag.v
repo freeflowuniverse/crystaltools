@@ -2,7 +2,7 @@ module tfgrid
 
 
 struct Tags {
-	tags Tag[]
+	tags []Tag
 }
 
 struct Tag {

@@ -59,20 +59,16 @@ enum WorkloadType {
 }
 
 //signs the signature given the private key
-fn (mut Workload) sign (user User) ?{
+fn (mut wl Workload) sign (user User) ?{
 
 }
 
 //verifies user signature
-fn (mut Workload) verify (user User) ?{
+fn (mut wl  Workload) verify (user User) ?{
 
 }
 
-fn (mut Workload) tag_append (tag Tag) ?{
-
-}
-
-fn (mut Workload) tag_append (tag Tag) ?{
+fn (mut wl  Workload) tag_append (tag Tag) ?{
 
 }
 
