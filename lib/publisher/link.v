@@ -58,13 +58,13 @@ fn (link Link) original_get() string {
 // return how to represent link on server
 fn (link Link) server_get() string {
 	if link.cat == LinkType.page {
-		return '[$link.description](page__${link.site}__${link.filename}.md)'
+		return '[$link.description](page__${link.site}__${link.filename}.md ${link.extra})'
 	}
 	if link.cat == LinkType.file {
 		if link.isimage {
-			return '![$link.description](file__${link.site}__$link.filename)'
+			return '![$link.description](file__${link.site}__$link.filename  ${link.extra})'
 		} else {
-			return '[$link.description](file__${link.site}__${link.filename}.md)'
+			return '[$link.description](file__${link.site}__${link.filename}.md ${link.extra})'
 		}
 	}
 	return link.original_get()
