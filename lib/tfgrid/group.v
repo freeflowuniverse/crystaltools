@@ -12,7 +12,7 @@ struct Group{
 //return users who make up the group
 // need to use the recursive behaviour
 pub fn (mut group Group) users_get() ?[]User{
-	return []
+	return []User{}
 }
 
 
