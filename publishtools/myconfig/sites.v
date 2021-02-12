@@ -50,19 +50,19 @@ fn site_config(mut c ConfigRoot) {
 		cat: SiteCat.web
 	}
 	c.sites << SiteConfig{
-		name: 'info_foundation'
-		alias: 'foundation'
-		url: 'https://github.com/threefoldfoundation/info_foundation'
+		name: 'info_threefold'
+		alias: 'threefold'
+		url: 'https://github.com/threefoldfoundation/info_threefold'
 	}
+	// c.sites << SiteConfig{
+	// 	name: 'info_marketplace'
+	// 	alias: 'marketplace'
+	// 	url: 'https://github.com/threefoldfoundation/info_marketplace'
+	// }
 	c.sites << SiteConfig{
-		name: 'info_marketplace'
-		alias: 'marketplace'
-		url: 'https://github.com/threefoldfoundation/info_marketplace'
-	}
-	c.sites << SiteConfig{
-		name: 'info_tfgrid_sdk'
+		name: 'info_sdk'
 		alias: 'sdk'
-		url: 'https://github.com/threefoldfoundation/info_tfgrid_sdk'
+		url: 'https://github.com/threefoldfoundation/info_sdk'
 	}
 	c.sites << SiteConfig{
 		name: 'info_legal'
