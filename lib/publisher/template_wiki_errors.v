@@ -1,5 +1,4 @@
 module publisher
-import os
 fn template_wiki_errors(reponame string, repourl string) string {
     out := r'
 <!DOCTYPE html>

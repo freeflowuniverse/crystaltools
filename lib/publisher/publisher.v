@@ -1,7 +1,6 @@
 module publisher
 
 import os
-import json
 
 // the factory, get your tools here
 // use path="" if you want to go from os.home_dir()/code/
