@@ -6,6 +6,7 @@ fn site_config(mut c ConfigRoot) {
 		alias: 'wwwtf'
 		url: 'https://github.com/threefoldfoundation/www_threefold_io'
 		cat: SiteCat.web
+		// dns: ["www.threefold.io","www.threefold.me"]
 	}
 	c.sites << SiteConfig{
 		name: 'www_threefold_cloud'

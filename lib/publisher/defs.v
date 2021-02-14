@@ -24,7 +24,7 @@ fn defs_init(mut publisher Publisher){
 			out << "## $firstletter_found"
 			out << ""
 			out << "| def | description |"
-			out << "| _____ | _____ |"
+			out << "| ___ | ___ |"
 			firstletter = firstletter_found
 		}
 		mut page := publisher.page_get_by_id(pageid) or {panic(err)}
