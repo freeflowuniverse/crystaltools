@@ -10,6 +10,18 @@ pub mut:
 	page_errors map[string][]PageError
 }
 
+struct PublisherDefs {
+mut:
+	defs []PublisherDef
+}
+
+struct PublisherDef {
+	def string
+	page string
+	site string
+}
+
+
 // destination is the destination path for the flatten operation
 pub fn (mut publisher Publisher) flatten()? {
 
@@ -19,6 +31,14 @@ pub fn (mut publisher Publisher) flatten()? {
 	mut config := myconfig.get()
 
 	publisher.check() // makes sure we checked all
+
+	//process all definitions, will do over all sites
+	mut pd := PublisherDefs{}
+	for def,pageid_def in publisher.defs{
+		page_def := publisher.page_get_by_id(pageid_def)?
+		site_def := page_def.site_get(mut publisher)?
+		pd.defs << PublisherDef{def:def,page:page_def.name, site:site_def.name}
+	}	
 
 	for mut site in publisher.sites {
 		errors = PublisherErrors{}
@@ -51,6 +71,9 @@ pub fn (mut publisher Publisher) flatten()? {
 		}
 		// write the json errors file
 		os.write_file('$dest_dir/errors.json', json.encode(errors)) ?
+
+		// write the json errors file
+		os.write_file('$dest_dir/defs.json', json.encode(pd)) ?
 
 		mut site_config := config.site_wiki_get(site.name) ?
 
@@ -85,7 +108,7 @@ pub fn (mut publisher Publisher) flatten()? {
 			mut page := site.page_get(name, mut publisher) ?
 			//write processed content
 			content := page.content
-			dest_file = os.join_path(dest_dir, os.file_name(page.path))
+			dest_file = os.join_path(dest_dir, os.file_name(page.path_get(mut publisher)))
 			os.write_file(dest_file, content) ?
 		}
 
@@ -94,5 +117,8 @@ pub fn (mut publisher Publisher) flatten()? {
 			dest_file = os.join_path(dest_dir, os.file_name(fileobj.path))
 			os.cp(fileobj.path_get(mut publisher), dest_file) ?
 		}
+
 	}
+
+
 }

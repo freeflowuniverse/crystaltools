@@ -2,10 +2,6 @@ module publisher
 
 import os
 
-pub fn (page Page) path_get(mut publisher Publisher) string {
-	site_path := publisher.sites[page.site_id].path
-	return os.join_path(site_path, page.path)
-}
 
 pub fn (page Page) write(mut publisher Publisher, content string) {
 	os.write_file(page.path_get(mut publisher), content) or { panic('cannot write, $err') }
@@ -48,7 +44,7 @@ pub fn (mut page Page) process(mut publisher Publisher) ?bool {
 		return error('Failed to open $path_source\nerror:$err')
 	}
 
-	page.process_links(mut publisher) ? // first find all the links
+	page.process_lines(mut publisher) ? // first find all the links
 	page.process_includes(mut publisher) ? // should be recursive now
 
 	// if page.state == PageStatus.reprocess{
@@ -62,12 +58,12 @@ pub fn (mut page Page) process(mut publisher Publisher) ?bool {
 }
 
 // walk over each line in the page and do the link parsing on it
+// will also look for definitions
 // happens line per line
-fn (mut page Page) process_links(mut publisher Publisher) ? {
+fn (mut page Page) process_lines(mut publisher Publisher) ? {
 	mut nr := 0
 	mut lines_source := '' // needs to be written to the file where we loaded from, is returned as string
 	mut lines_server := '' // the return of the process, will go back to page.content
-
 	mut sourceline := '' // what we will replace with on source
 	mut serverline := ''
 
@@ -95,6 +91,29 @@ fn (mut page Page) process_links(mut publisher Publisher) ? {
 
 		sourceline = line // what we will replace with on source
 		serverline = line
+
+		if line.trim(' ').starts_with("!!!def"){
+			if ":" in line{
+				splitted := line.split(":")
+				if splitted.len == 2{
+					for defname in splitted[1].split(","){
+						defname2 := name_fix_no_underscore(defname)
+						if defname2 in publisher.defs{
+							// println(publisher.defs[defname2])
+							pageid_double := publisher.defs[defname2]
+							otherpage := publisher.page_get_by_id(pageid_double)? {panic("cannot find page by id")}
+							page.error_add({line:line,linenr:nr,msg:"duplicate definition: $defname, already exists in $otherpage.name"}, mut publisher)
+						} else {
+							publisher.defs[defname2] = page.id
+							continue
+						}
+					}
+				}else{
+					page.error_add({line:line,linenr:nr,msg:"syntax error in def macro"}, mut publisher)						
+				}
+			}
+			continue
+		}
 
 		links_parser_result = link_parser(line)
 
@@ -197,4 +216,16 @@ fn (mut page Page) process_includes(mut publisher Publisher) ?string {
 	}
 	page.content = lines
 	return page.content
+}
+
+
+fn (mut page Page)title() string {
+	for line in page.content.split("\n"){
+		mut line2 := line.trim(" ")
+		if line2.starts_with("#"){
+			line2 = line2.trim("#").trim(" ")
+			return line2
+		}
+	}
+	return "NO TITLE"
 }

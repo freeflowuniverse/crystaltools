@@ -1,4 +1,5 @@
 module myconfig
+import os
 
 pub struct SiteConfig {
 pub mut:
@@ -8,6 +9,7 @@ pub mut:
 	pull   bool
 	cat    SiteCat
 	alias  string
+	path_code string
 }
 
 pub enum SiteCat {
@@ -25,6 +27,7 @@ fn (mut config ConfigRoot) site_get(name string) ?SiteConfig {
 	}
 	return error('Cannot find wiki site with name: $name')
 }
+
 
 
 //return using alias or name (will first use alias)
@@ -70,4 +73,17 @@ pub fn (mut config ConfigRoot) site_wiki_get(name string) ?SiteConfig {
 		}
 	}
 	return error('Cannot find wiki site with name: $name')
+}
+
+
+//return using alias or name (will first use alias)
+pub fn (mut config ConfigRoot) sites_get() []SiteConfig {	
+	mut sites := []SiteConfig{}
+	for site in config.sites {
+		path := site.path_code
+		if os.exists(path){
+			sites<<site
+		}
+	}
+	return sites
 }

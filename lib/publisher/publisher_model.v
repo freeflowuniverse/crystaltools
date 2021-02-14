@@ -7,7 +7,9 @@ pub mut:
 	sites        []Site
 	pages 		 []Page	
 	files 		 []File
-	site_names map[string]int	
+	site_names map[string]int
+	//maps definition name to page id
+	defs map[string]int
 }
 
 pub fn (mut publisher Publisher) site_get_by_id(id int) ?&Site {
@@ -136,3 +138,15 @@ pub fn (mut publisher Publisher) page_get(name string) ?&Page {
 		return publisher.page_get_by_id(res[0])
 	}	
 }
+
+////////////// GET BY NAME
+
+pub fn (mut publisher Publisher) def_page_get(name string) ?&Page {
+	name2 := name_fix(name).replace("_","")
+	if name2 in publisher.defs{
+		pageid := publisher.defs[name2]
+		return &publisher.pages[pageid]
+	}
+	return error('cannot find def: $name')
+}
+

@@ -6,7 +6,11 @@ import cli
 import publisher
 import myconfig
 
+
 fn main() {
+
+
+
 	// INSTALL
 	pullflag := cli.Flag{
 		name: 'pull'

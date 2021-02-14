@@ -22,6 +22,11 @@ pub fn name_fix(name string) string {
 	return pagename
 }
 
+pub fn name_fix_no_underscore(name string) string {
+	mut pagename := name_fix_keepext(name)
+	return pagename.replace("_","")
+}
+
 pub fn name_fix_keepext(name string) string {
 	mut pagename := name.to_lower()
 	if '#' in pagename {
@@ -67,6 +72,7 @@ pub fn (mut publisher Publisher) check() {
 	for mut site in publisher.sites {
 		site.load(mut publisher)
 	}
+	defs_init(mut publisher)
 }
 
 

@@ -1,6 +1,7 @@
 module myconfig
 
 import os
+import gittools
 
 pub fn get() ConfigRoot {
 	mut c := ConfigRoot{}
@@ -28,4 +29,23 @@ pub fn get() ConfigRoot {
 	return c
 }
 
+
+pub fn myconfig_get()? ConfigRoot{
+	mut conf := myconfig.get()
+	mut gt := gittools.new(conf.paths.code) or {
+		return error('ERROR: cannot load gittools:$err')
+	}
+	for mut site in conf.sites {
+		if site.path_code == ""{
+			mut repo := gt.repo_get(name: site.name) or {
+				// return error('ERROR: cannot find repo: $site.name\n$err')
+				//do NOTHING, just ignore the site to work with
+				// println("- ignore: $site.name, path not found")
+				continue
+			}
+			site.path_code = repo.path_get()
+		}
+	}
+	return conf
+}
 

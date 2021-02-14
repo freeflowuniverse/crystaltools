@@ -3,49 +3,49 @@ module myconfig
 fn site_config(mut c ConfigRoot) {
 	c.sites << SiteConfig{
 		name: 'www_threefold_io'
-		alias: 'threefold_main'
+		alias: 'wwwtf'
 		url: 'https://github.com/threefoldfoundation/www_threefold_io'
 		cat: SiteCat.web
 	}
 	c.sites << SiteConfig{
 		name: 'www_threefold_cloud'
-		alias: 'cloud'
+		alias: 'wwwcloud'
 		url: 'https://github.com/threefoldfoundation/www_threefold_cloud'
 		cat: SiteCat.web
 	}
 	c.sites << SiteConfig{
 		name: 'www_threefold_farming'
-		alias: 'farming'
+		alias: 'wwwfarming'
 		url: 'https://github.com/threefoldfoundation/www_threefold_farming'
 		cat: SiteCat.web
 	}
 	c.sites << SiteConfig{
 		name: 'www_threefold_twin'
-		alias: 'twin'
+		alias: 'wwwtwin'
 		url: 'https://github.com/threefoldfoundation/www_threefold_twin'
 		cat: SiteCat.web
 	}
 	c.sites << SiteConfig{
 		name: 'www_threefold_marketplace'
-		alias: 'marketplace'
+		alias: 'wwwmarketplace'
 		url: 'https://github.com/threefoldfoundation/www_threefold_marketplace'
 		cat: SiteCat.web
 	}
 	c.sites << SiteConfig{
 		name: 'www_conscious_internet'
-		alias: 'conscious_internet'
+		alias: 'wwwconscious_internet'
 		url: 'https://github.com/threefoldfoundation/www_conscious_internet'
 		cat: SiteCat.web
 	}
 	c.sites << SiteConfig{
 		name: 'www_threefold_tech'
-		alias: 'tech'
+		alias: 'wwwtech'
 		url: 'https://github.com/threefoldtech/www_threefold_tech'
 		cat: SiteCat.web
 	}
 	c.sites << SiteConfig{
 		name: 'www_examplesite'
-		alias: 'examplesite'
+		alias: 'wwwexample'
 		url: 'https://github.com/threefoldfoundation/www_examplesite'
 		cat: SiteCat.web
 	}

@@ -8,9 +8,9 @@ import readline
 import os
 
 pub fn sites_list(cmd &cli.Command) ? {
-	mut conf := myconfig.get()
+	mut conf :=myconfig.myconfig_get()?
 	mut gt := gittools.new(conf.paths.code) or { return error('cannot load gittools:$err') }
-	for site in conf.sites {
+	for site in conf.sites_get() {
 		mut repo := gt.repo_get(name: site.name) or { return error('ERROR: cannot get repo:$err') }
 		change := repo.changes() or {
 			return error('cannot detect if there are changes on repo.\n$err')
@@ -21,20 +21,22 @@ pub fn sites_list(cmd &cli.Command) ? {
 			changed = " (CHANGED)"
 		} 
 		if site.alias != ""{
-			alias = "$site.alias="
+			alias = "$site.alias:  "
 		}
 		println(' - ${alias}$site.name $changed')
 	}
 }
 
-pub fn sites_get(cmd cli.Command) ? {
+pub fn sites_download(cmd cli.Command) ? {
 	mut cfg := config_get(cmd) ?
 	mut gt := gittools.new(cfg.paths.code) or { return error('cannot load gittools:$err') }
 	println(' - get all code repositories.')
 
 	for sc in cfg.sites {
 		println(' - get:$sc.url')
-		gt.repo_get_from_url(url: sc.url, pull: sc.pull) ?
+		gt.repo_get_from_url(url: sc.url, pull: sc.pull) or {
+			println(" - WARNING: could not download site $sc.url, do you have rights?")
+		}
 	}
 }
 
@@ -42,7 +44,8 @@ pub fn sites_install(cmd cli.Command) ? {
 	mut cfg := config_get(cmd) ?
 	println(' - sites install.')
 	mut first := true
-	for sc in cfg.sites {
+	sites_download(cmd)?
+	for sc in cfg.sites_get() {
 		if sc.cat == myconfig.SiteCat.web {
 			website_install(sc.name, first, &cfg) ?
 			first = false
@@ -87,7 +90,7 @@ pub fn sites_pull(cmd cli.Command) ? {
 	println(' - sites pull.')
 	codepath := cfg.paths.code
 	mut gt := gittools.new(codepath) or { return error('ERROR: cannot load gittools:$err') }
-	for sc in cfg.sites {
+	for sc in cfg.sites_get() {
 		mut repo := gt.repo_get(name: sc.name) or { return error('ERROR: cannot get repo:$err') }
 		if ! flag_repo_do(cmd, repo.addr.name, sc) {
 			continue
@@ -102,7 +105,7 @@ pub fn sites_push(cmd cli.Command) ? {
 	println(' - sites push.')
 	codepath := cfg.paths.code
 	mut gt := gittools.new(codepath) or { return error('ERROR: cannot load gittools:$err') }
-	for sc in cfg.sites {
+	for sc in cfg.sites_get() {
 		mut repo := gt.repo_get(name: sc.name) or { return error('ERROR: cannot get repo:$err') }
 		if ! flag_repo_do(cmd, repo.addr.name, sc) {
 			continue
@@ -126,7 +129,7 @@ pub fn sites_commit(cmd cli.Command) ? {
 	msg := flag_message_get(cmd)
 	codepath := cfg.paths.code
 	mut gt := gittools.new(codepath) or { return error('ERROR: cannot load gittools:$err') }
-	for sc in cfg.sites {
+	for sc in cfg.sites_get() {
 		mut repo := gt.repo_get(name: sc.name) or { return error('ERROR: cannot get repo:$err') }
 		if ! flag_repo_do(cmd, repo.addr.name, sc) {
 			continue
@@ -150,7 +153,7 @@ pub fn sites_pushcommit(cmd cli.Command) ? {
 	codepath := cfg.paths.code
 	mut gt := gittools.new(codepath) or { return error('ERROR: cannot load gittools:$err') }
 	msg := flag_message_get(cmd)
-	for sc in cfg.sites {
+	for sc in cfg.sites_get() {
 		mut repo := gt.repo_get(name: sc.name) or { return error('ERROR: cannot get repo:$err') }
 		if ! flag_repo_do(cmd, repo.addr.name, sc) {
 			continue
@@ -178,7 +181,7 @@ pub fn sites_cleanup(cmd cli.Command) ? {
 	mut publisher := publisher.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 	publisher.check()
 	println(' - cleanup websites.')
-	for sc in cfg.sites {
+	for sc in cfg.sites_get() {
 		if sc.cat == myconfig.SiteCat.web {
 			website_cleanup(sc.name, &cfg) ?
 		} else if sc.cat == myconfig.SiteCat.wiki {
@@ -192,7 +195,7 @@ pub fn sites_removechanges(cmd cli.Command) ? {
 	codepath := cfg.paths.code
 	mut gt := gittools.new(codepath) or { return error('ERROR: cannot load gittools:$err') }
 	println(' - remove changes')
-	for sc in cfg.sites {
+	for sc in cfg.sites_get() {
 		mut repo := gt.repo_get(name: sc.name) or { return error('ERROR: cannot get repo:$err') }
 		if ! flag_repo_do(cmd, repo.addr.name, sc) {
 			continue
@@ -208,7 +211,7 @@ pub fn site_edit(cmd cli.Command) ? {
 	mut cfg := config_get(cmd) ?
 	codepath := cfg.paths.code
 	mut gt := gittools.new(codepath) or { return error('ERROR: cannot load gittools:$err') }
-	for sc in cfg.sites {
+	for sc in cfg.sites_get() {
 		mut repo := gt.repo_get(name: sc.name) or { return error('ERROR: cannot get repo:$err') }
 		if ! flag_repo_do(cmd, repo.addr.name, sc) {
 			continue

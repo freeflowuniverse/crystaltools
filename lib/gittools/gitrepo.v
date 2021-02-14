@@ -3,7 +3,7 @@ module gittools
 import os
 import process
 
-fn (mut repo GitRepo) path_get() string {
+pub fn (mut repo GitRepo) path_get() string {
 	if repo.path == '' {
 		return repo.addr.path_get()
 	} else {
