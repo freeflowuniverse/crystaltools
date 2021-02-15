@@ -2,7 +2,6 @@ module publishermod
 
 import os
 
-
 // remember the file, so we know if we have duplicates
 fn (mut site Site) file_remember(path string, name string, mut publisher Publisher) ? {
 	mut namelower := publisher.name_fix_alias_file(name) ?
@@ -104,18 +103,13 @@ pub fn (mut site Site) load(mut publisher Publisher) {
 	if !os.exists(imgnotusedpath) {
 		os.mkdir(imgnotusedpath) or { panic(err) }
 	}
-	// imgdoubleusedpath := site.path + '/img_multiple_use'
-	// if !os.exists(imgdoubleusedpath) {
-	// 	os.mkdir(imgdoubleusedpath) or { panic(err) }
-	// }
-	// if site.pages
-	for _, id in site.pages {
-		mut p := publisher.page_get_by_id(id) or {
-			panic(err)
-			// eprintln(err)
-			// continue
-		}
 
+	for _, id in site.pages {
+		mut p := publisher.page_get_by_id(id) or { panic(err) }
+		p.load(mut publisher) or { panic(err) }
+	}
+	for _, id in site.pages {
+		mut p := publisher.page_get_by_id(id) or { panic(err) }
 		p.process(mut publisher) or { panic(err) }
 	}
 	for _, id in site.files {

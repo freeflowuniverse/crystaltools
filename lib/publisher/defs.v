@@ -57,11 +57,16 @@ fn (mut publisher Publisher) def_page_get(name string) ?Page {
 	name2 := name_fix_no_underscore(name)
 	if name2 in publisher.defs {
 		pageid := publisher.defs[name2]
+		// println(publisher.pages.map(it.id))
+		// println(':::$pageid:::')
 		if pageid in publisher.pages.map(it.id) {
 			return publisher.pages[pageid]
 		} else {
-			return error('Cannot find page with $pageid in pages, for def:$name\n')
+			panic('BUG: Cannot find page with $pageid in pages, for def:$name\n')
 		}
+	}
+	if publisher.defs.len == 0 {
+		panic('defs need to be loaded first')
 	}
 	return error("Cannot find page for def:'$name'\n")
 }
@@ -73,8 +78,11 @@ fn (mut publisher Publisher) def_page_exists(name string) bool {
 		if pageid in publisher.pages.map(it.id) {
 			return true
 		} else {
-			return false
+			panic('BUG: Cannot find page with $pageid in pages, for def:$name\n')
 		}
+	}
+	if publisher.defs.len == 0 {
+		panic('defs need to be loaded first')
 	}
 	return false
 }

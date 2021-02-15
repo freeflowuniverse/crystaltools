@@ -21,7 +21,7 @@ fn (mut publ Publisher) name_fix_alias_word(name string) ?string {
 }
 
 // check the name and fix if needed
-pub fn (mut publisher Publisher) name_fix(name string, site_id int) ?string {
+pub fn (mut publisher Publisher) name_update(name string, site_id int) ?string {
 	mut name2 := name
 	mut ps := PageState.error
 

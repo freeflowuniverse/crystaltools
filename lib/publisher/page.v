@@ -4,7 +4,12 @@ import os
 import texttools
 
 pub fn (page Page) write(mut publisher Publisher, content string) {
-	os.write_file(page.path_get(mut publisher), content) or { panic('cannot write, $err') }
+	mut path := page.path_get(mut publisher)
+	if path.ends_with('.md') {
+		path = path[..path.len - 3]
+	}
+	path += '.test.md'
+	os.write_file(path, content) or { panic('cannot write, $err') }
 }
 
 // will load the content, check everything, return true if ok
@@ -33,7 +38,7 @@ fn (mut page Page) error_add(error PageError, mut publisher Publisher) {
 // process the markdown content and include other files, find links, ...
 // find errors
 // if it returns false, it means was already processed
-pub fn (mut page Page) process(mut publisher Publisher) ?bool {
+pub fn (mut page Page) load(mut publisher Publisher) ?bool {
 	if page.state == PageStatus.ok {
 		// means was already processed, content is available
 		return false
@@ -44,11 +49,23 @@ pub fn (mut page Page) process(mut publisher Publisher) ?bool {
 		return error('Failed to open $path_source\nerror:$err')
 	}
 
-	page.process_lines(mut publisher) ? // first find all the links
+	// loads the defs
+	page.process_lines(mut publisher, true) ?
 
-	// if page.state == PageStatus.reprocess{
-	// 	page.process(mut publisher) or {return error(err)}
-	// }
+	return true
+}
+
+pub fn (mut page Page) process(mut publisher Publisher) ?bool {
+	if page.state == PageStatus.ok {
+		// means was already processed, content is available
+		return false
+	}
+
+	if page.content == '' {
+		panic('should never process page before loaded')
+	}
+
+	page.process_lines(mut publisher, false) ? // first find all the links
 
 	// make sure we only execute this once !
 	page.state = PageStatus.ok
@@ -95,7 +112,7 @@ fn (mut state LineProcessorState) sourceline_change(ffrom string, tto string) {
 // walk over each line in the page and do the link parsing on it
 // will also look for definitions
 // happens line per line
-fn (mut page Page) process_lines(mut publisher Publisher) ? {
+fn (mut page Page) process_lines(mut publisher Publisher, dodefs bool) ? {
 	mut state := LineProcessorState{
 		site: &publisher.sites[page.site_id]
 		publisher: publisher
@@ -128,29 +145,32 @@ fn (mut page Page) process_lines(mut publisher Publisher) ? {
 			continue
 		}
 
-		if linestrip.starts_with('!!!def') {
-			if ':' in line {
-				splitted := line.split(':')
-				if splitted.len == 2 {
-					for defname in splitted[1].split(',') {
-						defname2 := name_fix_no_underscore(defname)
-						if defname2 in publisher.defs {
-							// println(publisher.defs[defname2])
-							page_def_double_id := publisher.defs[defname2]
-							page_def_double := publisher.page_get_by_id(page_def_double_id) ?
-							{
-								panic('cannot find page by id')
+		if dodefs {
+			if linestrip.starts_with('!!!def') {
+				if ':' in line {
+					splitted := line.split(':')
+					if splitted.len == 2 {
+						for defname in splitted[1].split(',') {
+							defname2 := name_fix_no_underscore(defname)
+							if defname2 in publisher.defs {
+								// println(publisher.defs[defname2])
+								page_def_double_id := publisher.defs[defname2]
+								page_def_double := publisher.page_get_by_id(page_def_double_id) ?
+								{
+									panic('cannot find page by id')
+								}
+								state.error('duplicate definition: $defname, already exists in $page_def_double.name')
+							} else {
+								publisher.defs[defname2] = page.id
 							}
-							state.error('duplicate definition: $defname, already exists in $page_def_double.name')
-						} else {
-							publisher.defs[defname2] = page.id
 						}
+					} else {
+						state.error('syntax error in def macro: $line')
 					}
 				} else {
-					state.error('syntax error in def macro: $line')
+					state.error('syntax error in def macro (no ":"): $line')
 				}
-			} else {
-				state.error('syntax error in def macro (no ":"): $line')
+				continue
 			}
 			continue
 		}
@@ -159,8 +179,9 @@ fn (mut page Page) process_lines(mut publisher Publisher) ? {
 			mut page_name_include := linestrip['!!!include'.len + 1..]
 			// println('-includes-- $page_name_include')
 
-			page_name_include2 := publisher.name_fix(page_name_include, state.site.id) or {
-				panic(err)
+			page_name_include2 := publisher.name_update(page_name_include, state.site.id) or {
+				state.error('include, cannot find page: $page_name_include\n$err')
+				continue
 			}
 
 			if page_name_include2 != page_name_include {
@@ -206,6 +227,9 @@ fn (mut page Page) process_lines(mut publisher Publisher) ? {
 		} // end of the walk over all links
 	} // end of the line walk
 
+	if dodefs {
+		return
+	}
 	page.content = state.lines_server.join('\n')
 
 	if state.changed_source {
