@@ -99,7 +99,6 @@ pub fn (mut ri ReplaceInstructions) add(replacelist []string) ? {
 	}
 }
 
-
 // does the matching line per line
 // will use dedent function, on text
 pub fn (mut self ReplaceInstructions) replace(text string) ?string {
@@ -133,7 +132,6 @@ pub fn (mut self ReplaceInstructions) replace(text string) ?string {
 	// println('AAA2\n$text2\nBBB2\n')
 	return res.join('\n')
 }
-
 
 pub fn regex_instructions_new() ?ReplaceInstructions {
 	return ReplaceInstructions{}

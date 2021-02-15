@@ -1,0 +1,8 @@
+(?d)lost+found
+(?d).DS_Store
+(?d)Thumbs.db
+._*
+(?d).Spotlight-V100
+(?d).Trashes
+(?d)desktop.ini
+.git

@@ -1,68 +1,80 @@
 module publishermod
 
-fn (mut publisher Publisher) defs_pages_init(){
-
-	mut firstletter := " "
+fn (mut publisher Publisher) defs_pages_init() {
+	mut firstletter := ' '
 	mut out := []string{}
-	mut firstletter_found := ""
+	mut firstletter_found := ''
 
-	out << "# Definitions & Concepts"
-	out << ""
+	out << '# Definitions & Concepts'
+	out << ''
 
 	mut def_names := []string{}
 
-	for defname,_ in publisher.defs{
+	for defname, _ in publisher.defs {
 		def_names << defname
-	}	
+	}
 	def_names.sort()
 
-	for defname in def_names{
-		pageid :=  publisher.defs[defname]
+	for defname in def_names {
+		pageid := publisher.defs[defname]
 		firstletter_found = defname[0].ascii_str()
-		if  firstletter_found != firstletter{
-			out << ""
-			out << "## $firstletter_found"
-			out << ""
-			out << "| def | description |"
-			out << "| ---- | ---- |"
+		if firstletter_found != firstletter {
+			out << ''
+			out << '## $firstletter_found'
+			out << ''
+			out << '| def | description |'
+			out << '| ---- | ---- |'
 			firstletter = firstletter_found
 		}
-		mut page := publisher.page_get_by_id(pageid) or {panic(err)}
-		site := page.site_get(mut publisher) or {panic(err)}
+		mut page := publisher.page_get_by_id(pageid) or { panic(err) }
+		site := page.site_get(mut publisher) or { panic(err) }
 
 		deftitle := page.title()
 
-		out << "| [${defname}](page__${site.name}__${page.name}.md) | ${deftitle} |"
+		out << '| [$defname](page__${site.name}__${page.name}.md) | $deftitle |'
 	}
 
-	out << ""
+	out << ''
 
-	content := out.join("\n")
+	content := out.join('\n')
 
-	//attach this page to the sites in the publisher
+	// attach this page to the sites in the publisher
 	for mut site in publisher.sites {
 		page := Page{
 			id: publisher.pages.len
 			site_id: site.id
-			name: "defs"
+			name: 'defs'
 			content: content
-			path: "defs.md"
+			path: 'defs.md'
 		}
 		publisher.pages << page
-		site.pages["defs"] = publisher.pages.len - 1
+		site.pages['defs'] = publisher.pages.len - 1
 		page.write(mut publisher, page.content)
 	}
 }
 
-fn (mut publisher Publisher) def_page_get(name string)? Page{
+fn (mut publisher Publisher) def_page_get(name string) ?Page {
 	name2 := name_fix_no_underscore(name)
-	if name2 in publisher.defs{
-		pageid := publisher.defs[name2]]
-		if pageid in publisher.pages{
+	if name2 in publisher.defs {
+		pageid := publisher.defs[name2]
+		if pageid in publisher.pages {
 			return publisher.pages[pageid]
-		}else{
-			return error("Cannot find page with $pageid in pages, for def:$name\n$err")
+		} else {
+			return error('Cannot find page with $pageid in pages, for def:$name\n$err')
 		}
 	}
 	return error("Cannot find page for def:'$name'\n$err")
-} 
+}
+
+fn (mut publisher Publisher) def_page_exists(name string) bool {
+	name2 := name_fix_no_underscore(name)
+	if name2 in publisher.defs {
+		pageid := publisher.defs[name2]
+		if pageid in publisher.pages {
+			return true
+		} else {
+			return false
+		}
+	}
+	return false
+}

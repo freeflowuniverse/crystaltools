@@ -124,7 +124,7 @@ pub fn (mut publisher Publisher) file_get(name string) ?&File {
 
 // name in form: 'sitename:pagename' or 'pagename'
 pub fn (mut publisher Publisher) page_get(name string) ?&Page {
-	mut sitename, itemname := name_split(name) ?
+	mut sitename, itemname := name_split(name) or { return error('namesplit issue on $name\n$err') }
 	println(' - page get: $sitename:$itemname')
 	mut res := []int{}
 	if sitename == '' {
@@ -135,7 +135,9 @@ pub fn (mut publisher Publisher) page_get(name string) ?&Page {
 		}
 		// return error("Could not find page, site not specified: '$name'")
 	} else {
-		site := publisher.site_get(sitename) ?
+		site := publisher.site_get(sitename) or {
+			return error('site not found for $sitename\n$err')
+		}
 		if itemname in site.pages {
 			return publisher.page_get_by_id(site.pages[itemname])
 		}
@@ -149,13 +151,26 @@ pub fn (mut publisher Publisher) page_get(name string) ?&Page {
 	}
 }
 
-////////////// GET BY NAME
+enum PageState {
+	ok
+	double
+	notfound
+	namespliterror
+	error
+}
 
-pub fn (mut publisher Publisher) def_page_get(name string) ?&Page {
-	name2 := name_fix(name).replace('_', '')
-	if name2 in publisher.defs {
-		pageid := publisher.defs[name2]
-		return &publisher.pages[pageid]
+pub fn (mut publisher Publisher) page_state(name string) PageState {
+	_ := publisher.page_get(name) or {
+		if err.contains('Could not find page') {
+			return PageState.notfound
+		} else if err.contains('site not found') {
+			return PageState.notfound
+		} else if err.contains('Found more than 1 page') {
+			return PageState.double
+		} else if err.contains('namesplit issue') {
+			return PageState.namespliterror
+		}
+		return PageState.error
 	}
-	return error('cannot find def: $name')
+	return PageState.ok
 }
