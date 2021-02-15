@@ -53,7 +53,8 @@ fn site_config(mut c ConfigRoot) {
 	c.sites << SiteConfig{
 		name: 'info_threefold'
 		alias: 'threefold'
-		url: 'https://github.com/threefoldfoundation/info_threefold'
+		// url: 'https://github.com/threefoldfoundation/info_threefold'
+		url: 'https://github.com/threefoldfoundation/info_foundation_archive'
 	}
 	// c.sites << SiteConfig{
 	// 	name: 'info_marketplace'
