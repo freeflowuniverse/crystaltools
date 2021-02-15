@@ -1,14 +1,7 @@
-module publisher
+module publishermod
 
 import os
 
-pub fn (file File) path_get(mut publisher Publisher) string {
-	if file.site_id > publisher.sites.len {
-		panic('cannot find site: $file.site_id, not enough elements in list.')
-	}
-	site_path := publisher.sites[file.site_id].path
-	return os.join_path(site_path, file.path)
-}
 
 // need to create smaller sizes if needed and change the name
 // also need to make sure its in right directory

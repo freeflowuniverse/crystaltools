@@ -11,7 +11,7 @@ fn decode<T>(data string) T {
     $for field in T.fields {
         $if field.typ is string {
             // $(string_expr) produces an identifier
-            result.$(field.name) = "a"
+            result.$(field.name) = data
         } $else $if field.typ is int {
             result.$(field.name) = 1
         }
@@ -19,9 +19,9 @@ fn decode<T>(data string) T {
     return result
 }
 
-println(@LINE)
+// println(@LINE)
 
-// decode<User>
+println(decode<User>("s"))
 
 // `decode<User>` generates:
 // fn decode_User(data string) User {
@@ -29,4 +29,11 @@ println(@LINE)
 //     result.name = get_string(data, 'name')
 //     result.age = get_int(data, 'age')
 //     return result
+// }
+
+//PRINTS:
+
+// User{
+//     name: 'a'
+//     age: 1
 // }

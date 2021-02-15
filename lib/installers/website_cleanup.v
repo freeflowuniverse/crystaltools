@@ -74,6 +74,7 @@ pub fn website_cleanup(name string, conf &myconfig.ConfigRoot) ? {
 	git pull
 	rm -f install.sh
 	rm -f run.sh
+	rm -f build.sh
 	rm -f install_gridsome.sh
 	
 	if ! [ "$name" = "www_examplesite" ]; then
@@ -86,6 +87,7 @@ pub fn website_cleanup(name string, conf &myconfig.ConfigRoot) ? {
 	git add . -A
 	git commit -m "installer cleanup"
 	set -e
+	git pull
 	git push
 
 	#git checkout master

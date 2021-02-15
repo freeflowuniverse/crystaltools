@@ -30,6 +30,10 @@ publishtools install -reset
 publishtools install -reset -pull
 #list the known sites(will show if changes in the repo)
 publishtools list
+#see current publishtools version you are on
+publishtools version
+#see published version of the site (production)
+publishtools run
 #start development mode of website cloud (specify part of name of website is good enough)
 #is using gridsome
 publishtools develop -r cloud
@@ -84,6 +88,11 @@ remarks
 ## work with your ssh keys
 
 see [instructions](docs/sshkey.md)
+
+## recommended tools
+
+- sourectree (manage your git repositories)
+- ms visual studio code
 
 ## advanced usage
 

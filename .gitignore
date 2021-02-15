@@ -9,4 +9,6 @@ examples/vredis2
 publisher/publish
 install_publisher
 .vmodules/
-publishtools
+vex_webserver
+publishtools/publishtools
+.vscode

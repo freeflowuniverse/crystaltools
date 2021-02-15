@@ -3,21 +3,21 @@ import regex
 fn main() {
 
 	mut text := '
-[core]
-        repositoryformatversion = 0
-        filemode = true
-        bare = false
-        logallrefupdates = true
-        ignorecase = true
-        precomposeunicode = true
-[remote "origin"]
-        url = https://github.com/crystaluniverse/crystaltools
-        fetch = +refs/heads/*:refs/remotes/origin/*
-[branch "master"]
-        remote = origin
-        merge = refs/heads/master
+	[core]
+			repositoryformatversion = 0
+			filemode = true
+			bare = false
+			logallrefupdates = true
+			ignorecase = true
+			precomposeunicode = true
+	[remote "origin"]
+			url = https://github.com/crystaluniverse/crystaltools
+			fetch = +refs/heads/*:refs/remotes/origin/*
+	[branch "master"]
+			remote = origin
+			merge = refs/heads/master
 
-'
+	'
 
 
 	query := r'url *= *https:.*'

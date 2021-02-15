@@ -1,16 +1,13 @@
-module publisher
+module publishermod
 
-//this webserver is used for doing development on wiki
+// this webserver is used for doing development on wiki
 
-
-//IMPORTANT NEED TO MODIFY WEBSERVER.V TO ALSO SUPPORT GETTING INFO FROM THE PUBLISHING TOOLS DIRECTLY
-
+// IMPORTANT NEED TO MODIFY WEBSERVER.V TO ALSO SUPPORT GETTING INFO FROM THE PUBLISHING TOOLS DIRECTLY
 
 // import os
 // import vweb
 // import myconfig
 // // import json
-
 
 // const (
 // 	port2 = 9999
@@ -32,7 +29,7 @@ module publisher
 // // Initialize (load wikis) only once when server starts
 // pub fn (mut app App2) init_once() {
 // 	app.config := myconfig.get()
-// 	app.publisher = publisher.new(configdata.paths.code) or { panic('cannot init publisher. $err') }
+// 	app.publisher = publishermod.new(configdata.paths.code) or { panic('cannot init publisher. $err') }
 // 	app.publisher.check()
 
 // }
@@ -72,7 +69,7 @@ module publisher
 // 		}
 // 		return app.get_wiki_img(splitted[1], splitted[2])
 // 	}
-	
+
 // 	if filename.starts_with("page__"){
 // 		splitted := filename.split("__")
 // 		if splitted.len != 3{
@@ -90,16 +87,14 @@ module publisher
 
 // 		mut site := app.publisher.site_get(splitted[1]) or { return app.not_found() }
 // 		mut path := os.join_path(site.path, splitted[2..].join("/"))
-		
+
 // 		mut f := os.read_file( path) or {return app.not_found()}
 // 		app.set_content_type('text/html')
 // 		return app.ok(f)	
 // 	}
 
-
-
 // 	mut site := app.publisher.site_get(sitename) or { return app.not_found() }
-	
+
 // 	root := site.path
 // 	if filename.starts_with('_') {//why do we do this?
 // 		mut file := os.read_file(os.join_path(root, filename)) or { return app.not_found() }
@@ -157,9 +152,9 @@ module publisher
 // 			site_errors << err
 // 		}
 // 	}
-	
+
 // 	mut page_errors := map[string][]PageError{}
-	
+
 // 	for name, _ in site.pages{
 // 		page := site.page_get(name, mut &app.publisher) or { return app.not_found() }
 // 		if page.errors.len > 0{
