@@ -1,24 +1,23 @@
-module publisher
-
-import regex
+module publishermod
 
 struct Site {
 	id int [skip]
 pub mut: // id and index in the Publisher.sites array
 	// not in json if we would serialize
-	errors  []SiteError
-	path    string
-	name    string
-	files   map[string]int
-	pages   map[string]int
-	state   SiteState
-	replace SiteReplace
-	config  SiteConfig
+	errors []SiteError
+	path   string
+	name   string
+	files  map[string]int
+	pages  map[string]int
+	state  SiteState
+	config SiteConfig
 }
 
 pub enum SiteErrorCategory {
 	duplicatefile
 	duplicatepage
+	emptypage
+	unknown
 }
 
 struct SiteError {
@@ -40,116 +39,12 @@ struct SiteConfig {
 	alias string
 	// depends on which other wiki sites
 	depends      []string
-	replace      []string
-	filechanges  []string
+	wordreplace  []string
+	filereplace  []string
+	sitereplace  []string
 	error_ignore []string
 }
 
-pub struct SiteReplace {
-pub mut:
-	replace_items []ReplaceItem
-	namechanges   []NameChange
-}
-
-pub struct NameChange {
-pub mut:
-	name    string
-	replace string
-}
-
-pub struct ReplaceItem {
-pub mut:
-	query   regex.RE
-	replace string
-}
-
-fn (mut config SiteReplace) replace_add(query string, replace string) {
-	mut re := regex.new()
-	re.compile_opt('${query.trim(' ')}') or { panic(err) }
-	config.replace_items << ReplaceItem{
-		query: re
-		replace: replace.trim(' ')
-	}
-}
-
-fn (mut config SiteReplace) name_change(name string, replace string) {
-	mut name2 := name_fix(name)
-	mut replace2 := name_fix(replace)
-	config.namechanges << NameChange{
-		name: name2
-		replace: replace2
-	}
-}
-
-pub fn (mut site Site) replace(text string) string {
-	mut out := text
-	mut found := ''
-	for mut item in site.replace.replace_items {
-		mut gi := 0
-		mut all := item.query.find_all(text)
-		// println("Query : ${item.query.get_query()}")
-		for gi < all.len {
-			found = text[all[gi]..all[gi + 1]]
-			// println('...:$found:')
-			out = out.replace(found, item.replace)
-			gi += 2
-		}
-		// println('')		
-	}
-	return out
-}
-
-// check there is a name change
-pub fn (mut site Site) name_change_check(name string) bool {
-	mut name2 := name_fix(name)
-	for mut item in site.replace.namechanges {
-		if name2 == item.name {
-			return true
-		}
-	}
-	return false
-}
-
-// check there is a name change (return empty string if not)
-pub fn (mut site Site) name_fix_alias(name string) string {
-	mut name2 := name_fix(name)
-	for mut item in site.replace.namechanges {
-		if name2 == item.name {
-			return item.replace
-		}
-	}
-	return name2
-}
-
-// init all replace items in the config file, populate the regex'es
-pub fn (mut site Site) replace_init() ? {
-	site.replace = SiteReplace{}
-	for filechange in site.config.filechanges {
-		if ':' in filechange {
-			splitted := filechange.split(':')
-			if splitted.len != 2 {
-				return error("there can only be 1 : in replace, now '$filechange'")
-			}
-			site.replace.name_change(splitted[0], splitted[1])
-		} else {
-			return error("need to have : in filechange, now '$filechange'")
-		}
-	}
-
-	for rename in site.config.replace {
-		if ':' in rename {
-			splitted := rename.split(':')
-			if splitted.len != 2 {
-				return error("there can only be 1 : in rename, now '$rename'")
-			}
-			site.replace.replace_add(splitted[0], splitted[1])
-		} else {
-			return error("need to have : in rename, now '$rename'")
-		}
-	}
-}
-
-// check there is a name change (return empty string if not)
 pub fn (mut site Site) error_ignore_check(name string) bool {
 	for mut item in site.config.error_ignore {
 		if name_fix(name) == name_fix(item) {

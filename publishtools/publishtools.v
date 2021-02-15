@@ -3,14 +3,10 @@ module main
 import installers
 import os
 import cli
-import publisher
+import publishermod
 import myconfig
 
-
 fn main() {
-
-
-
 	// INSTALL
 	pullflag := cli.Flag{
 		name: 'pull'
@@ -71,15 +67,16 @@ fn main() {
 			}
 		}
 
-		if ! arg {
+		if !arg {
 			// publisher.webserver_start_develop()
-			mut publ := publisher.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
+			mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 			publ.check()
-			publ.flatten()	or { 
-					println ("ERROR: cannot flatten wiki\n$err")
-					exit(1)
-					}		
-			publisher.webserver_run() //would be better to have the develop
+			publ.develop = true
+			// publ.flatten() or {
+			// 	println('ERROR: cannot flatten wiki\n$err')
+			// 	exit(1)
+			// }
+			publishermod.webserver_run(publ) // would be better to have the develop
 		} else {
 			installers.website_develop(&cmd) ?
 		}
@@ -94,10 +91,10 @@ fn main() {
 	// RUN
 	run_exec := fn (cmd cli.Command) ? {
 		cfg := myconfig.get()
-		mut publ := publisher.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
+		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
-		publ.flatten()?
-		publisher.webserver_run()
+		publ.flatten() ?
+		publishermod.webserver_run(publ)
 	}
 	mut run_cmd := cli.Command{
 		description: 'run all websites & wikis, they need to be build first'
@@ -109,7 +106,7 @@ fn main() {
 	// BUILD
 	build_exec := fn (cmd cli.Command) ? {
 		cfg := myconfig.get()
-		mut publ := publisher.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
+		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
 		publ.flatten() ?
 
@@ -155,13 +152,12 @@ fn main() {
 
 	// VERSION
 	version_exec := fn (cmd cli.Command) ? {
-		println("1.0.3")
+		println('1.0.3')
 	}
 	mut version_cmd := cli.Command{
 		name: 'version'
 		execute: version_exec
 	}
-
 
 	// pushcommit
 	pushcommit_exec := fn (cmd cli.Command) ? {
@@ -208,7 +204,6 @@ fn main() {
 		execute: twin_exec
 	}
 
-
 	// UPDATE
 	update_exec := fn (cmd cli.Command) ? {
 		installers.publishtools_update() ?
@@ -221,7 +216,6 @@ fn main() {
 		required_args: 0
 	}
 
-
 	// removechanges
 	removechanges_exec := fn (cmd cli.Command) ? {
 		installers.sites_removechanges(&cmd) ?
@@ -233,13 +227,11 @@ fn main() {
 		required_args: 0
 	}
 
-
-
 	// MAIN
 	mut main_cmd := cli.Command{
 		name: 'installer'
 		commands: [install_cmd, run_cmd, build_cmd, list_cmd, develop_cmd, twin_cmd, pull_cmd,
-			commit_cmd, push_cmd, pushcommit_cmd, edit_cmd, update_cmd,version_cmd,removechangese_cmd]
+			commit_cmd, push_cmd, pushcommit_cmd, edit_cmd, update_cmd, version_cmd, removechangese_cmd]
 		description: '
 
         Publishing Tool Installer

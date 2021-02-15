@@ -1,4 +1,4 @@
-module publisher
+module publishermod
 fn template_wiki_errors(reponame string, repourl string) string {
     out := r'
 <!DOCTYPE html>

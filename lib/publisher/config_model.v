@@ -1,4 +1,4 @@
-module publisher
+module publishermod
 
 pub struct Config {
 pub mut:

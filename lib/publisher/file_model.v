@@ -1,4 +1,5 @@
-module publisher
+module publishermod
+
 import os
 
 pub enum FileStatus {
@@ -8,37 +9,33 @@ pub enum FileStatus {
 }
 
 pub struct File {
-id        int 	[skip]
-site_id   int 	[skip]
+	id      int [skip]
+	site_id int [skip]
 pub mut:
-	name         string
-	path         string
-	state        FileStatus
-	usedby 		 []int //names of pages which use this file
+	name   string
+	path   string
+	state  FileStatus
+	usedby []int // names of pages which use this file
 }
 
-
-pub fn (file File) site_get(mut publisher &Publisher) ?&Site {
+pub fn (file File) site_get(mut publisher Publisher) ?&Site {
 	return publisher.site_get_by_id(file.site_id)
 }
 
-
 pub fn (file File) path_relative_get(mut publisher Publisher) string {
-	if file.path == ""{
-		panic("file path should never be empty, is bug")
+	if file.path == '' {
+		panic('file path should never be empty, is bug')
 	}
 	return file.path
 }
-
 
 pub fn (file File) path_get(mut publisher Publisher) string {
 	if file.site_id > publisher.sites.len {
 		panic('cannot find site: $file.site_id, not enough elements in list.')
 	}
-	if file.path == ""{
-		panic("file path should never be empty, is bug. For file\n$file")
+	if file.path == '' {
+		panic('file path should never be empty, is bug. For file\n$file')
 	}
 	site_path := publisher.sites[file.site_id].path
 	return os.join_path(site_path, file.path)
 }
-

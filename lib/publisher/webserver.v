@@ -1,4 +1,4 @@
-module publisher
+module publishermod
 
 // import os
 // import vweb
@@ -7,11 +7,9 @@ module publisher
 
 // //this webserver is used for looking at the builded results
 
-
 // const (
 // 	port = 9998
 // )
-
 
 // enum FileType{
 // 	wiki
@@ -27,12 +25,11 @@ module publisher
 // 	website string
 // }
 
-// struct ErrorJson{
+// struct PublisherErrors{
 // 		pub:
 // 			site_errors []SiteError
 // 			page_errors map [string][]PageError
 // 	}
-
 
 // // Run server
 // pub fn webserver_run() {	
@@ -47,7 +44,6 @@ module publisher
 
 // // Initialization code goes here (with each request)
 // pub fn (mut app App) init() {
-
 
 // }
 
@@ -81,7 +77,6 @@ module publisher
 // 	return error("Cannot find wiki site with name: $name2")
 // }
 
-
 // fn (mut app App) static_check()bool {
 // 	if app.website != "" {
 // 		return true
@@ -97,7 +92,6 @@ module publisher
 // 	mut f := os.read_file( path) or {return app.not_found()}
 // 	return app.ok(f)	
 // }
-
 
 // fn (mut app App) path_get(site string, name string)? (FileType, string) {
 
@@ -162,12 +156,11 @@ module publisher
 // 	}
 
 // 	path2 = os.join_path(app.config.paths.publish, sitename, name2)
-	
+
 // 	if name2 == 'readme.md' && (!os.exists(path2)){
 // 		name2 = "sidebar.md"
 // 		path2 = os.join_path(app.config.paths.publish, sitename, name2)
 // 	}
-
 
 // 	println("  > get: $path2 ($name)")
 
@@ -256,17 +249,15 @@ module publisher
 // 			app.set_status(501,"could not find errors file on $path")
 // 			return app.not_found()
 // 		}
-	
-// 	errors := json.decode(ErrorJson, err_file) or {
+
+// 	errors := json.decode(PublisherErrors, err_file) or {
 // 			println(" >> **ERROR: json not well formatted on $path")
 // 			app.set_status(501,"json not well formatted on $path")
 // 			return app.not_found()
 // 		}
-	
+
 // 	mut site_errors := errors.site_errors
 // 	mut page_errors := errors.page_errors
 
 // 	return $vweb.html()
 // }
-
-

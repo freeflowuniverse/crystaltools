@@ -1,4 +1,4 @@
-module publisher
+module publishermod
 import os
 fn template_wiki_root(reponame string, repourl string) string {
 

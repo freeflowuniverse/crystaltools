@@ -1,4 +1,4 @@
-module publisher
+module publishermod
 import os
 pub enum PageStatus {
 	unknown

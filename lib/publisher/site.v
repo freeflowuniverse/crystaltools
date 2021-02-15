@@ -1,10 +1,11 @@
-module publisher
+module publishermod
 
 import os
 
+
 // remember the file, so we know if we have duplicates
 fn (mut site Site) file_remember(path string, name string, mut publisher Publisher) ? {
-	mut namelower := site.name_fix_alias(name)
+	mut namelower := publisher.name_fix_alias_file(name) ?
 	mut pathfull_fixed := os.join_path(path, namelower)
 	mut pathfull := os.join_path(path, name)
 	if pathfull_fixed != pathfull {
@@ -39,7 +40,15 @@ fn (mut site Site) file_remember(path string, name string, mut publisher Publish
 }
 
 fn (mut site Site) page_remember(path string, name string, mut publisher Publisher) ? {
-	mut namelower := site.name_fix_alias(name)
+	mut namelower := publisher.name_fix_alias_name(name) ?
+	if namelower.trim(' ') == '' {
+		site.errors << SiteError{
+			path: path
+			error: 'empty page pagename'
+			cat: SiteErrorCategory.emptypage
+		}
+		// panic('empty page name:$path + $name')
+	}
 	mut pathfull := os.join_path(path, name)
 	mut pathfull_fixed := os.join_path(path, namelower) + '.md'
 	if pathfull_fixed != pathfull {
@@ -48,6 +57,7 @@ fn (mut site Site) page_remember(path string, name string, mut publisher Publish
 	}
 	pathrelative := pathfull[site.path.len..]
 	if site.page_exists(namelower) {
+		// panic('duplicate path: ' + path + '/' + name)
 		site.errors << SiteError{
 			path: pathrelative
 			error: 'duplicate page $pathrelative'
@@ -86,14 +96,18 @@ pub fn (mut site Site) load(mut publisher Publisher) {
 		site.files_process(mut publisher) or { panic(err) }
 	}
 
+	publisher.replacer.site.add(site.config.sitereplace) or { panic(err) }
+	publisher.replacer.word.add(site.config.wordreplace) or { panic(err) }
+	publisher.replacer.file.add(site.config.filereplace) or { panic(err) }
+
 	imgnotusedpath := site.path + '/img_notused'
 	if !os.exists(imgnotusedpath) {
 		os.mkdir(imgnotusedpath) or { panic(err) }
 	}
-	imgdoubleusedpath := site.path + '/img_multiple_use'
-	if !os.exists(imgdoubleusedpath) {
-		os.mkdir(imgdoubleusedpath) or { panic(err) }
-	}
+	// imgdoubleusedpath := site.path + '/img_multiple_use'
+	// if !os.exists(imgdoubleusedpath) {
+	// 	os.mkdir(imgdoubleusedpath) or { panic(err) }
+	// }
 	// if site.pages
 	for _, id in site.pages {
 		mut p := publisher.page_get_by_id(id) or {
@@ -135,7 +149,9 @@ fn (mut site Site) files_process_recursive(path string, mut publisher Publisher)
 		} else {
 			if item.starts_with('.') {
 				continue
-			} else if item.starts_with('_') {
+			} else if item.starts_with('_') && !(item.starts_with('_sidebar'))
+				&& !(item.starts_with('_glossary')) && !(item.starts_with('_navbar')) {
+				// println('SKIP: $item')
 				continue
 			} else {
 				// for names we do everything case insensitive

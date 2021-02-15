@@ -1,5 +1,5 @@
-module publisher
-
+module publishermod
+import texttools
 import os
 
 // the factory, get your tools here
@@ -8,10 +8,12 @@ import os
 pub fn new(path string) ?Publisher {
 	mut publisher := Publisher{}
 	publisher.gitlevel = 0
+	publisher.replacer.site = texttools.regex_instructions_new() or {panic(err)}
+	publisher.replacer.file = texttools.regex_instructions_new() or {panic(err)}
+	publisher.replacer.word = texttools.regex_instructions_new() or {panic(err)}
 	publisher.load_all(path.replace('~', os.home_dir())) ?
 	return publisher
 }
-
 
 // make sure that the names are always normalized so its easy to find them back
 pub fn name_fix(name string) string {
@@ -24,7 +26,7 @@ pub fn name_fix(name string) string {
 
 pub fn name_fix_no_underscore(name string) string {
 	mut pagename := name_fix_keepext(name)
-	return pagename.replace("_","")
+	return pagename.replace('_', '')
 }
 
 pub fn name_fix_keepext(name string) string {
@@ -38,12 +40,12 @@ pub fn name_fix_keepext(name string) string {
 	pagename = pagename.replace('__', '_') // needs to be 2x because can be 3 to 2 to 1
 	pagename = pagename.replace(';', ':')
 	pagename = pagename.replace('::', ':')
-	pagename = pagename.trim(' .:')
+	pagename = pagename.trim(' .:_')
 	return pagename
 }
 
 // return (sitename,pagename)
-pub fn site_page_names_get(name string) ?(string, string) {
+pub fn name_split(name string) ?(string, string) {
 	mut pagename := name.trim(' ')
 	if pagename.starts_with('file__') || pagename.starts_with('page__') {
 		pagename = pagename[6..]
@@ -72,9 +74,8 @@ pub fn (mut publisher Publisher) check() {
 	for mut site in publisher.sites {
 		site.load(mut publisher)
 	}
-	defs_init(mut publisher)
+	publisher.defs_pages_init()
 }
-
 
 // returns the found locations for the sites, will return [[name,path]]
 pub fn (mut publisher Publisher) site_locations_get() [][]string {
@@ -84,5 +85,3 @@ pub fn (mut publisher Publisher) site_locations_get() [][]string {
 	}
 	return res
 }
-
-

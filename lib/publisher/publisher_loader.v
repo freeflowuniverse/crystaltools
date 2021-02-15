@@ -1,4 +1,5 @@
-module publisher
+module publishermod
+
 import os
 import json
 
@@ -16,7 +17,6 @@ fn (mut publisher Publisher) load(config SiteConfig, path string) ? {
 			name: sitename
 		}
 		site.config = config
-		site.replace_init() ? // make sure we init the replace arguments
 		publisher.sites << site
 		publisher.site_names[sitename] = id
 	} else {

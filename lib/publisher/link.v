@@ -1,4 +1,4 @@
-module publisher
+module publishermod
 
 import os
 
@@ -39,7 +39,7 @@ pub mut:
 	cat         LinkType
 	isimage     bool // means started with !
 	description string
-	filename    string
+	filename    string // no : inside for site definition
 	url         string
 	site        string
 	state       LinkState
@@ -58,13 +58,13 @@ fn (link Link) original_get() string {
 // return how to represent link on server
 fn (link Link) server_get() string {
 	if link.cat == LinkType.page {
-		return '[$link.description](page__${link.site}__${link.filename}.md ${link.extra})'
+		return '[$link.description](page__${link.site}__${link.filename}.md $link.extra)'
 	}
 	if link.cat == LinkType.file {
 		if link.isimage {
-			return '![$link.description](file__${link.site}__$link.filename  ${link.extra})'
+			return '![$link.description](file__${link.site}__$link.filename  $link.extra)'
 		} else {
-			return '[$link.description](file__${link.site}__${link.filename}.md ${link.extra})'
+			return '[$link.description](file__${link.site}__${link.filename}.md $link.extra)'
 		}
 	}
 	return link.original_get()
@@ -206,10 +206,16 @@ fn (mut link Link) check(mut publisher Publisher, mut page Page, linenr int, lin
 	filename_complete = '$link.site:$link.filename'
 
 	if link.cat in [LinkType.file, LinkType.page] {
-		if site.name_change_check(link.filename) {
-			// the name of the link changed, will remove .md and will get the alias					
-			// println("Found link with name to replace: '($link.filename)'")
-			link.filename = site.name_fix_alias(link.filename)
+		// check if there are pagename or sitename changes
+		if link.site != '' {
+			sitename_replaced := publisher.replacer.site.replace(link.site) or { panic(err) }
+			if link.site != sitename_replaced {
+				link.site = sitename_replaced
+			}
+		}
+		filename_replaced := publisher.replacer.file.replace(link.filename) or { panic(err) }
+		if link.filename != filename_replaced {
+			link.filename = filename_replaced
 		}
 	}
 

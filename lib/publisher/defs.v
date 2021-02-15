@@ -1,6 +1,6 @@
-module publisher
+module publishermod
 
-fn defs_init(mut publisher Publisher){
+fn (mut publisher Publisher) defs_pages_init(){
 
 	mut firstletter := " "
 	mut out := []string{}
@@ -24,7 +24,7 @@ fn defs_init(mut publisher Publisher){
 			out << "## $firstletter_found"
 			out << ""
 			out << "| def | description |"
-			out << "| ___ | ___ |"
+			out << "| ---- | ---- |"
 			firstletter = firstletter_found
 		}
 		mut page := publisher.page_get_by_id(pageid) or {panic(err)}
@@ -32,7 +32,7 @@ fn defs_init(mut publisher Publisher){
 
 		deftitle := page.title()
 
-		out << "|[${defname}](page__${site.name}__${page.name}.md)|${deftitle}|"
+		out << "| [${defname}](page__${site.name}__${page.name}.md) | ${deftitle} |"
 	}
 
 	out << ""
@@ -53,3 +53,16 @@ fn defs_init(mut publisher Publisher){
 		page.write(mut publisher, page.content)
 	}
 }
+
+fn (mut publisher Publisher) def_page_get(name string)? Page{
+	name2 := name_fix_no_underscore(name)
+	if name2 in publisher.defs{
+		pageid := publisher.defs[name2]]
+		if pageid in publisher.pages{
+			return publisher.pages[pageid]
+		}else{
+			return error("Cannot find page with $pageid in pages, for def:$name\n$err")
+		}
+	}
+	return error("Cannot find page for def:'$name'\n$err")
+} 
