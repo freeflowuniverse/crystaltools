@@ -76,6 +76,16 @@ publishtools push -r info_
 #open code editor (visual studio code)
 publishtools edit -r legal
 
+#run develop to open all wikis
+publishtools develop
+
+#from there:
+#shows all definitions & concepts
+http://localhost:8080/devs
+
+#shows all wiki errors
+http://localhost:8080/errors  
+
 ```
 
 remarks
