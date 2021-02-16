@@ -138,7 +138,7 @@ fn error_template(req &ctx.Req, sitename string) string {
 		}
 	}
 	mut site_errors := errors.site_errors
-	mut page_errors := errors.page_errors
+	mut page_errors := errors.page_errors.clone()
 	return $tmpl('errors.html')
 }
 
