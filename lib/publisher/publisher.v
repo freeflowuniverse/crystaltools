@@ -1,4 +1,5 @@
 module publishermod
+
 import texttools
 import os
 
@@ -8,9 +9,9 @@ import os
 pub fn new(path string) ?Publisher {
 	mut publisher := Publisher{}
 	publisher.gitlevel = 0
-	publisher.replacer.site = texttools.regex_instructions_new() or {panic(err)}
-	publisher.replacer.file = texttools.regex_instructions_new() or {panic(err)}
-	publisher.replacer.word = texttools.regex_instructions_new() or {panic(err)}
+	publisher.replacer.site = texttools.regex_instructions_new() or { panic(err) }
+	publisher.replacer.file = texttools.regex_instructions_new() or { panic(err) }
+	publisher.replacer.word = texttools.regex_instructions_new() or { panic(err) }
 	publisher.load_all(path.replace('~', os.home_dir())) ?
 	return publisher
 }
@@ -45,6 +46,7 @@ pub fn name_fix_keepext(name string) string {
 }
 
 // return (sitename,pagename)
+// works for files & pages
 pub fn name_split(name string) ?(string, string) {
 	mut pagename := name.trim(' ')
 	if pagename.starts_with('file__') || pagename.starts_with('page__') {
@@ -73,6 +75,9 @@ pub fn name_split(name string) ?(string, string) {
 pub fn (mut publisher Publisher) check() {
 	for mut site in publisher.sites {
 		site.load(mut publisher)
+	}
+	for mut site in publisher.sites {
+		site.process(mut publisher)
 	}
 	publisher.defs_pages_init()
 }

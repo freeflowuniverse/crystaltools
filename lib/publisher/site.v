@@ -104,14 +104,30 @@ pub fn (mut site Site) load(mut publisher Publisher) {
 		os.mkdir(imgnotusedpath) or { panic(err) }
 	}
 
+	println(' - load pages for site: $site.name')
 	for _, id in site.pages {
 		mut p := publisher.page_get_by_id(id) or { panic(err) }
 		p.load(mut publisher) or { panic(err) }
 	}
+
+	site.state = SiteState.loaded
+}
+
+pub fn (mut site Site) process(mut publisher Publisher) {
+	if site.state == SiteState.ok {
+		return
+	}
+
+	if site.state != SiteState.loaded {
+		panic('need to make sure site is always loaded before doing process')
+	}
+
+	println(' - process pages for site: $site.name')
 	for _, id in site.pages {
 		mut p := publisher.page_get_by_id(id) or { panic(err) }
 		p.process(mut publisher) or { panic(err) }
 	}
+	println(' - process file for site: $site.name')
 	for _, id in site.files {
 		mut f := publisher.file_get_by_id(id) or {
 			eprintln(err)
@@ -119,9 +135,12 @@ pub fn (mut site Site) load(mut publisher Publisher) {
 		}
 		f.process(mut publisher)
 	}
+
+	site.state = SiteState.ok
 }
 
 // process files in the site (find all files)
+// they will not be processed yet
 pub fn (mut site Site) files_process(mut publisher Publisher) ? {
 	if !os.exists(site.path) {
 		return error("cannot find site on path:'$site.path'")
@@ -143,6 +162,8 @@ fn (mut site Site) files_process_recursive(path string, mut publisher Publisher)
 		} else {
 			if item.starts_with('.') {
 				continue
+			} else if item.contains('.test') {
+				os.rm(os.join_path(path, item)) ?
 			} else if item.starts_with('_') && !(item.starts_with('_sidebar'))
 				&& !(item.starts_with('_glossary')) && !(item.starts_with('_navbar')) {
 				// println('SKIP: $item')

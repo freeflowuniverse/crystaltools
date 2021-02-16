@@ -125,7 +125,11 @@ pub fn (mut publisher Publisher) file_get(name string) ?&File {
 // name in form: 'sitename:pagename' or 'pagename'
 pub fn (mut publisher Publisher) page_get(name string) ?&Page {
 	mut sitename, itemname := name_split(name) or { return error('namesplit issue on $name\n$err') }
-	println(' - page get: $sitename:$itemname')
+	// if sitename == '' {
+	// 	println(' - page get: $itemname')
+	// } else {
+	// 	println(' - page get: $sitename:$itemname')
+	// }
 	mut res := []int{}
 	if sitename == '' {
 		for site in publisher.sites {
@@ -151,7 +155,7 @@ pub fn (mut publisher Publisher) page_get(name string) ?&Page {
 	}
 }
 
-enum PageState {
+enum ExistState {
 	ok
 	double
 	notfound
@@ -159,18 +163,45 @@ enum PageState {
 	error
 }
 
-pub fn (mut publisher Publisher) page_state(name string) PageState {
+// try and get if page exists and return state of how it did exist
+pub fn (mut publisher Publisher) page_exists_state(name string) ExistState {
 	_ := publisher.page_get(name) or {
 		if err.contains('Could not find page') {
-			return PageState.notfound
+			return ExistState.notfound
 		} else if err.contains('site not found') {
-			return PageState.notfound
+			return ExistState.notfound
 		} else if err.contains('Found more than 1 page') {
-			return PageState.double
+			return ExistState.double
 		} else if err.contains('namesplit issue') {
-			return PageState.namespliterror
+			return ExistState.namespliterror
 		}
-		return PageState.error
+		return ExistState.error
 	}
-	return PageState.ok
+	return ExistState.ok
+}
+
+// try and get if file exists and return state of how it did exist
+pub fn (mut publisher Publisher) file_exists_state(name string) ExistState {
+	_ := publisher.file_get(name) or {
+		if err.contains('Could not find file') {
+			return ExistState.notfound
+		} else if err.contains('site not found') {
+			return ExistState.notfound
+		} else if err.contains('Found more than 1 file') {
+			return ExistState.double
+		} else if err.contains('namesplit issue') {
+			return ExistState.namespliterror
+		}
+		return ExistState.error
+	}
+	return ExistState.ok
+}
+
+// try and get if page or file exists and return state of how it did exist
+pub fn (mut publisher Publisher) page_file_exists_state(name string, ispage bool) ExistState {
+	if ispage {
+		return publisher.page_exists_state(name)
+	} else {
+		return publisher.file_exists_state(name)
+	}
 }

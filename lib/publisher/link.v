@@ -154,7 +154,8 @@ fn (mut link Link) init() {
 				link.site = name_fix(splitted2[0])
 				link.filename = splitted2[1]
 			} else {
-				panic('link can only have 1 x :')
+				link.state = LinkState.error
+				link.error_msg = 'link can only have 1 x ":"/n$link'
 			}
 		}
 
@@ -218,17 +219,6 @@ fn (mut link Link) check(mut publisher Publisher, mut page Page, linenr int, lin
 			link.filename = filename_replaced
 		}
 	}
-
-	if link.state == LinkState.error {
-		page.error_add({
-			line: line
-			linenr: linenr
-			msg: link.error_msg
-			cat: PageErrorCat.brokenlink
-		}, mut publisher)
-		// println(link)
-		return
-	}
 	// this can't work, no idea what to do with this, lets see TODO:
 	if link.cat == LinkType.html {
 		// splitted := link.link.split(" ")
@@ -249,56 +239,47 @@ fn (mut link Link) check(mut publisher Publisher, mut page Page, linenr int, lin
 
 	if link.filename == '' {
 		if !link.original_link.trim(' ').starts_with('#') {
-			page.error_add({
-				line: line
-				linenr: linenr
-				msg: "EMPTY LINK: for '$link.original_get()'"
-				cat: PageErrorCat.brokenlink
-			}, mut publisher)
-			link.state = LinkState.missing
+			link.state = LinkState.error
+			link.error_msg = "EMPTY LINK: for '$link.original_get()'"
 			return
 		}
 	}
-
-	if link.cat == LinkType.page {
-		if !publisher.page_exists(filename_complete) {
-			page.error_add({
-				line: line
-				linenr: linenr
-				msg: "CANNOT FIND PAGE: '$link.filename' for $link.original_get()"
-				cat: PageErrorCat.brokenlink
-			}, mut publisher)
-			link.state = LinkState.missing
-			// println(link)
-			return
-		}
-		return
-	}
-
-	if link.cat == LinkType.file {
-		// println('filename_complete:$filename_complete')
-		if !publisher.file_exists(filename_complete) {
-			page.error_add({
-				line: line
-				linenr: linenr
-				msg: "CANNOT FIND FILE: '$link.filename' for $link.original_get()"
-				cat: PageErrorCat.brokenlink
-			}, mut publisher)
-			link.state = LinkState.missing
-			// println(link)
-			return
-		}
-
-		mut file := publisher.file_get(filename_complete) or {
-			panic('should not be possible because file existed, error:$err')
-		}
-		// remember in file that this page uses it
-		if !(page.id in file.usedby) {
-			file.usedby << page.id
-		}
-
-		return
-	}
+	// if link.cat == LinkType.page {
+	// 	if !publisher.page_exists(filename_complete) {
+	// 		page.error_add({
+	// 			line: line
+	// 			linenr: linenr
+	// 			msg: "CANNOT FIND PAGE: '$link.filename' for $link.original_get()"
+	// 			cat: PageErrorCat.brokenlink
+	// 		}, mut publisher)
+	// 		link.state = LinkState.missing
+	// 		// println(link)
+	// 		return
+	// 	}
+	// 	return
+	// }
+	// if link.cat == LinkType.file {
+	// 	// println('filename_complete:$filename_complete')
+	// 	if !publisher.file_exists(filename_complete) {
+	// 		page.error_add({
+	// 			line: line
+	// 			linenr: linenr
+	// 			msg: "CANNOT FIND FILE: '$link.filename' for $link.original_get()"
+	// 			cat: PageErrorCat.brokenlink
+	// 		}, mut publisher)
+	// 		link.state = LinkState.missing
+	// 		// println(link)
+	// 		return
+	// 	}
+	// 	mut file := publisher.file_get(filename_complete) or {
+	// 		panic('should not be possible because file existed, error:$err')
+	// 	}
+	// 	// remember in file that this page uses it
+	// 	if !(page.id in file.usedby) {
+	// 		file.usedby << page.id
+	// 	}
+	// 	return
+	// }
 }
 
 // DO NOT CHANGE THE WAY HOW THIS WORKS, THIS HAS BEEN DONE AS A STATEFUL PARSER BY DESIGN

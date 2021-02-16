@@ -61,12 +61,8 @@ pub fn (mut page Page) process(mut publisher Publisher) ?bool {
 		return false
 	}
 
-	if page.content == '' {
-		panic('should never process page before loaded')
-	}
-
 	page.process_lines(mut publisher, false) ? // first find all the links
-
+	// println(page.content)
 	// make sure we only execute this once !
 	page.state = PageStatus.ok
 
@@ -95,6 +91,7 @@ fn (mut state LineProcessorState) error(msg string) {
 	state.page.error_add(page_error, mut state.publisher)
 	state.lines_source << '> **ERROR: $page_error.msg **<BR>\n\n'
 	state.lines_server << '> **ERROR: $page_error.msg **<BR>\n\n'
+	println(' > Error: $state.page.name: $msg')
 }
 
 fn (mut state LineProcessorState) serverline_change(ffrom string, tto string) {
@@ -179,11 +176,19 @@ fn (mut page Page) process_lines(mut publisher Publisher, dodefs bool) ? {
 			mut page_name_include := linestrip['!!!include'.len + 1..]
 			// println('-includes-- $page_name_include')
 
-			page_name_include2 := publisher.name_update(page_name_include, state.site.id) or {
-				state.error('include, cannot find page: $page_name_include\n$err')
-				continue
+			if ':' in page_name_include {
+				page_name_include = page_name_include.split(':')[0]
 			}
 
+			page_name_include2 := publisher.name_fix_check_page(page_name_include, state.site.id) or {
+				e1 := '$err'.contains('Could not find')
+				if e1 {
+					state.error('include, cannot find page: $page_name_include')
+				} else {
+					state.error('include, cannot find page: $page_name_include\n$err')
+				}
+				continue
+			}
 			if page_name_include2 != page_name_include {
 				// means we need to change
 				state.serverline_change(page_name_include, page_name_include2)
@@ -191,7 +196,8 @@ fn (mut page Page) process_lines(mut publisher Publisher, dodefs bool) ? {
 
 			mut page_linked := publisher.page_get(page_name_include2) or {
 				// should not happen because page was already found in the name_fix
-				panic(err)
+				state.error('$page_name_include2: $err')
+				continue
 			}
 			if page_linked.path_get(mut publisher) == page.path_get(mut publisher) {
 				state.error('recursive include: ${page_linked.path_get(mut publisher)}')
@@ -218,12 +224,38 @@ fn (mut page Page) process_lines(mut publisher Publisher, dodefs bool) ? {
 			link.init()
 			link.check(mut publisher, mut page, state.nr, line)
 
-			if link.state == LinkState.ok {
-				if link.original_get() != link.source_get(state.site.name) {
-					state.sourceline_change(link.original_get(), link.source_get(state.site.name))
-				}
+			if link.state != LinkState.ok {
+				state.error('link:' + link.error_msg)
+				continue
 			}
-			state.serverline_change(link.original_get(), link.source_get(state.site.name))
+
+			if link.cat == LinkType.page || link.cat == LinkType.file {
+				mut ispage := false
+				if link.cat == LinkType.page {
+					ispage = true
+				}
+
+				name_to_find := link.original_link
+
+				namefound := publisher.name_fix_check(name_to_find, state.site.id, ispage) or {
+					e2 := '$err'.contains('Could not find')
+					if e2 {
+						state.error('cannot find link: $name_to_find')
+					} else {
+						state.error('cannot find link: $name_to_find\n$err')
+					}
+					continue
+				}
+
+				link.filename = namefound
+
+				if link.state == LinkState.ok {
+					if link.original_get() != link.source_get(state.site.name) {
+						state.sourceline_change(link.original_get(), link.source_get(state.site.name))
+					}
+				}
+				state.serverline_change(link.original_get(), link.source_get(state.site.name))
+			}
 		} // end of the walk over all links
 	} // end of the line walk
 
