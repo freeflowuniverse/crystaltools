@@ -101,7 +101,7 @@ see [instructions](docs/sshkey.md)
 
 ## recommended tools
 
-- [sourectree](https://www.sourcetreeapp.com/) (manage your git repositories and branches)
+- [sourcetree](https://www.sourcetreeapp.com/) (manage your git repositories and branches)
 - ms [visual studio code](https://code.visualstudio.com/)
 
 ## advanced usage
