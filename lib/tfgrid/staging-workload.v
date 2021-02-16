@@ -2,7 +2,7 @@ module tfgrid
 
 import json
 
-type WorkloadImpl = Container | Kubernetes | Network | PublicIP | Volume | ZDB
+pub type WorkloadImpl = Container | Kubernetes | Network | PublicIP | Volume | ZDB
 
 pub fn (w WorkloadImpl) challenge() string {
 	return match w {
@@ -34,11 +34,11 @@ const (
 
 // challenger interface allows implementors to generate a challenge that can
 // be used for signature input.
-interface Challenger {
+pub interface Challenger {
 	challenge() string
 }
 
-struct Volume {
+pub struct Volume {
 	size  u64
 	vtype string [json: 'type']
 }
@@ -47,11 +47,11 @@ pub fn (volume &Volume) challenge() string {
 	return '$volume.size' + '$volume.vtype'
 }
 
-struct VolumeResult {
+pub struct VolumeResult {
 	volume_id string
 }
 
-struct Network {
+pub struct Network {
 	name                     string
 	network_iprange          string
 	subnet                   string
@@ -71,7 +71,7 @@ pub fn (n &Network) challenge() string {
 	return out
 }
 
-struct Peer {
+pub struct Peer {
 	subnet        string
 	wg_public_key string
 	allowed_ips   []string
@@ -86,7 +86,7 @@ pub fn (peer &Peer) challenge() string {
 	return out
 }
 
-struct ZDB {
+pub struct ZDB {
 	size      u64
 	mode      string
 	password  string
@@ -99,13 +99,13 @@ pub fn (zdb &ZDB) challenge() string {
 	return '$zdb.size' + '$zdb.mode' + '$zdb.password' + '$zdb.disk_type' + '$zdb.public'
 }
 
-struct ZDBResult {
+pub struct ZDBResult {
 	namespace string
 	ips       []string
 	port      u32
 }
 
-struct PublicIP {
+pub struct PublicIP {
 	ip string
 }
 
@@ -113,7 +113,7 @@ pub fn (ip &PublicIP) challenge() string {
 	return '$ip.ip'
 }
 
-struct Member {
+pub struct Member {
 	network_id   string
 	ips          []string
 	public_ip6   string
@@ -131,7 +131,7 @@ pub fn (member &Member) challenge() string {
 	return c
 }
 
-struct Mount {
+pub struct Mount {
 	volume_id  string
 	mountpoint string
 }
@@ -140,24 +140,24 @@ pub fn (mount &Mount) challenge() string {
 	return '$mount.volume_id' + '$mount.mountpoint'
 }
 
-struct Logs {
+pub struct Logs {
 	logs_type string   [json: 'type']
 	data      LogsData
 }
 
-struct LogsData {
+pub struct LogsData {
 	stdout        string
 	stderr        string
 	secret_stdout string
 	secret_stderr string
 }
 
-struct Stats {
+pub struct Stats {
 	stats_type string [json: 'type']
 	endpoint   string
 }
 
-struct ContainerCapacity {
+pub struct ContainerCapacity {
 	cpu       u32
 	memory    u64
 	disk_type string
@@ -168,7 +168,7 @@ pub fn (cp &ContainerCapacity) challenge() string {
 	return '$cp.cpu' + '$cp.memory' + '$cp.disk_type' + '$cp.disk_size'
 }
 
-struct Container {
+pub struct Container {
 	flist       string
 	hub_url     string
 	env         map[string]string
@@ -213,18 +213,18 @@ pub fn (c &Container) challenge() string {
 	return out
 }
 
-struct ContainerResult {
+pub struct ContainerResult {
 	id    string
 	ipv6  string
 	ipv4  string
 	ipygg string
 }
 
-struct PublicIPResult {
+pub struct PublicIPResult {
 	ip string
 }
 
-struct Kubernetes {
+pub struct Kubernetes {
 	size          u16
 	networkid     string
 	ip            string
@@ -250,12 +250,12 @@ pub fn (k &Kubernetes) challenge() string {
 	return out
 }
 
-struct KubernetesResult {
+pub struct KubernetesResult {
 	id string
 	ip string
 }
 
-struct Result {
+pub struct Result {
 	id        string
 	created   int
 	state     int
@@ -264,7 +264,7 @@ struct Result {
 	signature string
 }
 
-struct Workload {
+pub struct Workload {
 	version       int
 	id            string
 	user          string
