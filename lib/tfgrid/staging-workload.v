@@ -39,7 +39,7 @@ pub interface Challenger {
 }
 
 pub struct Volume {
-	pub:
+pub:
 	size  u64
 	vtype string [json: 'type']
 }
@@ -49,12 +49,12 @@ pub fn (volume &Volume) challenge() string {
 }
 
 pub struct VolumeResult {
-	pub:
+pub:
 	volume_id string
 }
 
 pub struct Network {
-	pub:
+pub:
 	name                     string
 	network_iprange          string
 	subnet                   string
@@ -75,7 +75,7 @@ pub fn (n &Network) challenge() string {
 }
 
 pub struct Peer {
-	pub:
+pub:
 	subnet        string
 	wg_public_key string
 	allowed_ips   []string
@@ -91,7 +91,7 @@ pub fn (peer &Peer) challenge() string {
 }
 
 pub struct ZDB {
-	pub:
+pub:
 	size      u64
 	mode      string
 	password  string
@@ -105,14 +105,14 @@ pub fn (zdb &ZDB) challenge() string {
 }
 
 pub struct ZDBResult {
-	pub:
+pub:
 	namespace string
 	ips       []string
 	port      u32
 }
 
 pub struct PublicIP {
-	pub:
+pub:
 	ip string
 }
 
@@ -121,7 +121,7 @@ pub fn (ip &PublicIP) challenge() string {
 }
 
 pub struct Member {
-	pub:
+pub:
 	network_id   string
 	ips          []string
 	public_ip6   string
@@ -140,7 +140,7 @@ pub fn (member &Member) challenge() string {
 }
 
 pub struct Mount {
-	pub:
+pub:
 	volume_id  string
 	mountpoint string
 }
@@ -150,13 +150,13 @@ pub fn (mount &Mount) challenge() string {
 }
 
 pub struct Logs {
-	pub:
+pub:
 	logs_type string   [json: 'type']
 	data      LogsData
 }
 
 pub struct LogsData {
-	pub:
+pub:
 	stdout        string
 	stderr        string
 	secret_stdout string
@@ -164,13 +164,13 @@ pub struct LogsData {
 }
 
 pub struct Stats {
-	pub:
+pub:
 	stats_type string [json: 'type']
 	endpoint   string
 }
 
 pub struct ContainerCapacity {
-	pub:
+pub:
 	cpu       u32
 	memory    u64
 	disk_type string
@@ -182,7 +182,7 @@ pub fn (cp &ContainerCapacity) challenge() string {
 }
 
 pub struct Container {
-	pub:
+pub:
 	flist       string
 	hub_url     string
 	env         map[string]string
@@ -228,7 +228,7 @@ pub fn (c &Container) challenge() string {
 }
 
 pub struct ContainerResult {
-	pub:
+pub:
 	id    string
 	ipv6  string
 	ipv4  string
@@ -236,12 +236,12 @@ pub struct ContainerResult {
 }
 
 pub struct PublicIPResult {
-	pub:
+pub:
 	ip string
 }
 
 pub struct Kubernetes {
-	pub:
+pub:
 	size          u16
 	networkid     string
 	ip            string
@@ -268,13 +268,13 @@ pub fn (k &Kubernetes) challenge() string {
 }
 
 pub struct KubernetesResult {
-	pub:
+pub:
 	id string
 	ip string
 }
 
 pub struct Result {
-	pub:
+pub:
 	id        string
 	created   int
 	state     int
@@ -284,7 +284,7 @@ pub struct Result {
 }
 
 pub struct Workload {
-	pub:
+pub:
 	version       int
 	id            string
 	user          string
@@ -312,7 +312,7 @@ pub fn (w &Workload) challenge() string {
 }
 
 pub fn (w &Workload) workload_data() ?WorkloadImpl {
-	mut t := workload_types[w.workload_type] or { return error('unknown workload') }
+	mut t := tfgrid.workload_types[w.workload_type] or { return error('unknown workload') }
 	match t {
 		Container {
 			x := json.decode(Container, w.data) or { return error('failed to decode container') }
