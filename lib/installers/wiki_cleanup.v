@@ -10,8 +10,8 @@ pub fn wiki_cleanup(name string, conf &myconfig.ConfigRoot) ? {
 	codepath := conf.paths.code
 
 	mut gt := gittools.new(codepath) or { return error('ERROR: cannot load gittools:$err') }
-
-	mut repo := gt.repo_get(name: name) or { return error('ERROR: cannot load gittools:$err') }
+	reponame := conf.reponame(name) ?
+	mut repo := gt.repo_get(name: reponame) or { return error('ERROR: cannot load gittools:$err') }
 	println(' - cleanup wiki $repo.path')
 
 	gitignore := '

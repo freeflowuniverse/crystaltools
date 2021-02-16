@@ -6,9 +6,8 @@ import gittools
 import cli
 
 fn website_conf_repo_get(cmd &cli.Command) ?(myconfig.ConfigRoot, &gittools.GitRepo) {
-
-	mut name := ""
-	mut conf :=myconfig.myconfig_get()?
+	mut name := ''
+	mut conf := myconfig.myconfig_get() ?
 
 	for flag in cmd.flags {
 		if flag.name == 'repo' {
@@ -18,15 +17,15 @@ fn website_conf_repo_get(cmd &cli.Command) ?(myconfig.ConfigRoot, &gittools.GitR
 		}
 	}
 
-	if name ==""{
+	if name == '' {
 		return error("please specify repo name with '-r name', can be part of name")
 	}
 
 	mut res := []string{}
-	for site in conf.sites_get() {
+	for mut site in conf.sites_get() {
 		if site.cat == myconfig.SiteCat.web {
 			if site.name.contains(name) {
-				res << site.name
+				res << site.reponame()
 			}
 		}
 	}
@@ -42,7 +41,10 @@ fn website_conf_repo_get(cmd &cli.Command) ?(myconfig.ConfigRoot, &gittools.GitR
 	}
 
 	mut gt := gittools.new(conf.paths.code) or { return error('ERROR: cannot load gittools:$err') }
-	mut repo := gt.repo_get(name: name) or { return error('ERROR: cannot find repo: $name\n$err') }
+	reponame := conf.reponame(name) ?
+	mut repo := gt.repo_get(name: reponame) or {
+		return error('ERROR: cannot find repo: $name\n$err')
+	}
 
 	return conf, repo
 }
@@ -63,9 +65,9 @@ pub fn website_build(cmd &cli.Command) ? {
 		}
 	}
 
-	if ! arg {
+	if !arg {
 		println(' - build all websites')
-		mut conf :=myconfig.myconfig_get()?
+		mut conf := myconfig.myconfig_get() ?
 		mut gt := gittools.new(conf.paths.code) or {
 			return error('ERROR: cannot load gittools:$err')
 		}

@@ -160,7 +160,7 @@ fn (mut site Site) files_process_recursive(path string, mut publisher Publisher)
 				site.files_process_recursive(os.join_path(path, item), mut publisher) ?
 			}
 		} else {
-			if item.starts_with('.') {
+			if item.starts_with('.') || item.to_lower() == 'defs.md' {
 				continue
 			} else if item.contains('.test') {
 				os.rm(os.join_path(path, item)) ?

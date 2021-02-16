@@ -29,18 +29,17 @@ pub fn get() ConfigRoot {
 	return c
 }
 
-
-pub fn myconfig_get()? ConfigRoot{
-	mut conf := myconfig.get()
-	mut gt := gittools.new(conf.paths.code) or {
-		return error('ERROR: cannot load gittools:$err')
-	}
+pub fn myconfig_get() ?ConfigRoot {
+	mut conf := get()
+	mut gt := gittools.new(conf.paths.code) or { return error('ERROR: cannot load gittools:$err') }
 	for mut site in conf.sites {
-		if site.path_code == ""{
-			mut repo := gt.repo_get(name: site.name) or {
+		if site.path_code == '' {
+			// println(' < $site.reponame() ')
+			mut repo := gt.repo_get(name: site.reponame()) or {
 				// return error('ERROR: cannot find repo: $site.name\n$err')
-				//do NOTHING, just ignore the site to work with
-				// println("- ignore: $site.name, path not found")
+				// do NOTHING, just ignore the site to work with
+				// print(err)
+				println(' - WARNING: ignore site: $site.name, $err')
 				continue
 			}
 			site.path_code = repo.path_get()
@@ -48,4 +47,3 @@ pub fn myconfig_get()? ConfigRoot{
 	}
 	return conf
 }
-

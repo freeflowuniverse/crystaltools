@@ -13,8 +13,8 @@ pub fn website_install(name string, first bool, conf &myconfig.ConfigRoot) ? {
 	nodejspath := conf.nodejs.path
 
 	mut gt := gittools.new(codepath) or { return error('ERROR: cannot load gittools:$err') }
-
-	mut repo := gt.repo_get(name: name) or { return error('ERROR: cannot load gittools:$err') }
+	reponame := conf.reponame(name) ?
+	mut repo := gt.repo_get(name: reponame) or { return error('ERROR: cannot load gittools:$err') }
 	println(' - install website on $repo.path')
 
 	if conf.reset {
@@ -27,7 +27,7 @@ pub fn website_install(name string, first bool, conf &myconfig.ConfigRoot) ? {
 		rm -f src/errors.md
 
 		'
-		println('   > reset') 
+		println('   > reset')
 		process.execute_silent(script6) or {
 			return error('cannot install node modules for ${name}.\n$err')
 		}
@@ -42,10 +42,8 @@ pub fn website_install(name string, first bool, conf &myconfig.ConfigRoot) ? {
 
 		'
 		println('   > pull')
-		process.execute_silent(script7) or {
-			return error('cannot pull code for ${name}.\n$err')
-		}
-	}	
+		process.execute_silent(script7) or { return error('cannot pull code for ${name}.\n$err') }
+	}
 
 	if os.exists('$repo.path/.installed') {
 		return

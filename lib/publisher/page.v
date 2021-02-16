@@ -89,7 +89,7 @@ fn (mut state LineProcessorState) error(msg string) {
 		cat: PageErrorCat.brokeninclude
 	}
 	state.page.error_add(page_error, mut state.publisher)
-	state.lines_source << '> **ERROR: $page_error.msg **<BR>\n\n'
+	// state.lines_source << '> **ERROR: $page_error.msg **<BR>\n\n'
 	state.lines_server << '> **ERROR: $page_error.msg **<BR>\n\n'
 	println(' > Error: $state.page.name: $msg')
 }
