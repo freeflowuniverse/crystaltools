@@ -103,7 +103,9 @@ pub fn (mut publisher Publisher) file_get(name string) ?&File {
 		for site in publisher.sites {
 			for file in publisher.files {
 				if file.name == itemname {
-					res << site.files[itemname]
+					if !(site.files[itemname] in res) {
+						res << site.files[itemname]
+					}
 				}
 			}
 		}
