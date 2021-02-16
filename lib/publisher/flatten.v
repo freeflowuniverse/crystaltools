@@ -33,8 +33,8 @@ pub fn (mut publisher Publisher) errors_get(site Site) ?PublisherErrors {
 		}
 	}
 
-	for name, _ in site.pages {
-		page := site.page_get(name, mut publisher) ?
+	for name, page_id in site.pages {
+		page := publisher.page_get_by_id(page_id) ?
 		if page.errors.len > 0 {
 			errors.page_errors[name] = page.errors
 		}

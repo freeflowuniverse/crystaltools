@@ -156,7 +156,6 @@ fn index_root(req &ctx.Req, mut res ctx.Resp) {
 		for site in publisherobj.sites {
 			wikis << 'wiki_$site.config.name'
 		}
-		println(sites)
 	} else {
 		path := os.join_path(config.paths.publish)
 		list := os.ls(path) or {
