@@ -39,6 +39,7 @@ pub interface Challenger {
 }
 
 pub struct Volume {
+	pub:
 	size  u64
 	vtype string [json: 'type']
 }
@@ -48,10 +49,12 @@ pub fn (volume &Volume) challenge() string {
 }
 
 pub struct VolumeResult {
+	pub:
 	volume_id string
 }
 
 pub struct Network {
+	pub:
 	name                     string
 	network_iprange          string
 	subnet                   string
@@ -72,6 +75,7 @@ pub fn (n &Network) challenge() string {
 }
 
 pub struct Peer {
+	pub:
 	subnet        string
 	wg_public_key string
 	allowed_ips   []string
@@ -87,6 +91,7 @@ pub fn (peer &Peer) challenge() string {
 }
 
 pub struct ZDB {
+	pub:
 	size      u64
 	mode      string
 	password  string
@@ -100,12 +105,14 @@ pub fn (zdb &ZDB) challenge() string {
 }
 
 pub struct ZDBResult {
+	pub:
 	namespace string
 	ips       []string
 	port      u32
 }
 
 pub struct PublicIP {
+	pub:
 	ip string
 }
 
@@ -114,6 +121,7 @@ pub fn (ip &PublicIP) challenge() string {
 }
 
 pub struct Member {
+	pub:
 	network_id   string
 	ips          []string
 	public_ip6   string
@@ -132,6 +140,7 @@ pub fn (member &Member) challenge() string {
 }
 
 pub struct Mount {
+	pub:
 	volume_id  string
 	mountpoint string
 }
@@ -141,11 +150,13 @@ pub fn (mount &Mount) challenge() string {
 }
 
 pub struct Logs {
+	pub:
 	logs_type string   [json: 'type']
 	data      LogsData
 }
 
 pub struct LogsData {
+	pub:
 	stdout        string
 	stderr        string
 	secret_stdout string
@@ -153,11 +164,13 @@ pub struct LogsData {
 }
 
 pub struct Stats {
+	pub:
 	stats_type string [json: 'type']
 	endpoint   string
 }
 
 pub struct ContainerCapacity {
+	pub:
 	cpu       u32
 	memory    u64
 	disk_type string
@@ -169,6 +182,7 @@ pub fn (cp &ContainerCapacity) challenge() string {
 }
 
 pub struct Container {
+	pub:
 	flist       string
 	hub_url     string
 	env         map[string]string
@@ -214,6 +228,7 @@ pub fn (c &Container) challenge() string {
 }
 
 pub struct ContainerResult {
+	pub:
 	id    string
 	ipv6  string
 	ipv4  string
@@ -221,10 +236,12 @@ pub struct ContainerResult {
 }
 
 pub struct PublicIPResult {
+	pub:
 	ip string
 }
 
 pub struct Kubernetes {
+	pub:
 	size          u16
 	networkid     string
 	ip            string
@@ -251,11 +268,13 @@ pub fn (k &Kubernetes) challenge() string {
 }
 
 pub struct KubernetesResult {
+	pub:
 	id string
 	ip string
 }
 
 pub struct Result {
+	pub:
 	id        string
 	created   int
 	state     int
@@ -265,6 +284,7 @@ pub struct Result {
 }
 
 pub struct Workload {
+	pub:
 	version       int
 	id            string
 	user          string
