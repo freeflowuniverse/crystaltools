@@ -32,10 +32,10 @@ publishtools version
 publishtools install
 
 #re-install (if something is wrong, do an install -reset)
-publishtools install -reset
+publishtools install --reset
 
 #re-install and pull newest website code in
-publishtools install -reset -pull
+publishtools install --reset -pull
 
 #list the known sites(will show if changes in the repo)
 publishtools list
