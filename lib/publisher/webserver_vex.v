@@ -145,16 +145,18 @@ fn error_template(req &ctx.Req, sitename string) string {
 // Index (List of wikis) -- reads index.html
 fn index_root(req &ctx.Req, mut res ctx.Resp) {
 	config := (&MyContext(req.ctx)).config
-	publisherobj := (&MyContext(req.ctx)).publisher
+	mut publisherobj := (&MyContext(req.ctx)).publisher
 	mut wikis := []string{}
 	mut sites := []string{}
 
 	res.headers['Content-Type'] = ['text/html']
 
 	if publisherobj.develop {
+		publisherobj.check()
 		for site in publisherobj.sites {
-			sites << site.config.alias
+			wikis << 'wiki_$site.config.name'
 		}
+		println(sites)
 	} else {
 		path := os.join_path(config.paths.publish)
 		list := os.ls(path) or {
