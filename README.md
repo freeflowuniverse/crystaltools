@@ -22,6 +22,10 @@ Make sure your ssh-key is loaded and you have it in your github account
 ### install & run
 
 ```bash
+#update to latest publishtools version
+publishtools update
+#see publishtools version you're currently on
+publishtools version
 #install the publishtools
 publishtools install
 #re-install (if something is wrong, do an install -reset)
@@ -30,8 +34,8 @@ publishtools install -reset
 publishtools install -reset -pull
 #list the known sites(will show if changes in the repo)
 publishtools list
-#see current publishtools version you are on
-publishtools version
+#pull in latest changes for all repos (make sure you do this regulary to avoid conflicts)
+publishtools list
 #see published version of the site (production)
 publishtools run
 #start development mode of website cloud (specify part of name of website is good enough)
