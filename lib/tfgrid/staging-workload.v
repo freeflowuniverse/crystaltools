@@ -1,4 +1,4 @@
-module main
+module tfgrid
 
 import json
 
@@ -31,37 +31,6 @@ const (
 		publicip_type:   WorkloadImpl(PublicIP{})
 	}
 )
-
-fn main() {
-	z := ZDB{
-		size: 42
-		mode: 'seq'
-		password: 'encryptedpass'
-		disk_type: 'hdd'
-		public: true
-	}
-	w := Workload{
-		version: 3,
-		id: '1245-1',
-		user: 'lee.3bot',
-		workload_type: 'zdb',
-		data: json.encode(z),
-		created: 1600000000,
-		to_delete: false,
-		metadata: 'blaldfjsadfdp',
-		description: 'some fake test thingy',
-		signature: '4933rjdfsahdfdqe3',
-		result: Result {
-			id: '1245-1',
-			created: 1600000001,
-			state: 2,
-			error: '',
-			data: '{}',
-			signature: 'afdpjsoadfj323845',
-		}
-	}
-	println(w.challenge())
-}
 
 // challenger interface allows implementors to generate a challenge that can
 // be used for signature input.
