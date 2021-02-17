@@ -42,7 +42,7 @@ pub fn name_fix_keepext(name string) string {
 	pagename = pagename.replace('__', '_') // needs to be 2x because can be 3 to 2 to 1
 	pagename = pagename.replace(';', ':')
 	pagename = pagename.replace('::', ':')
-	pagename = pagename.trim(' .:_')
+	pagename = pagename.trim(' .:')
 	return pagename
 }
 
