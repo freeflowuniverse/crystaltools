@@ -1,15 +1,22 @@
-<h1>WIKIS</h1>
-
-@for wiki in wikis
+<h1>WEBSITES</h1>
+@for site, domains in sites
 	<div>
-		<a href="@wiki">@wiki</a>  &nbsp;&nbsp;&nbsp;<a class=topic href="@wiki/errors">error check</a>
+		<b>@site</b> &nbsp;&nbsp;&nbsp;&nbsp;
+		@for domain in domains
+			<a href="//@domain@port_str">@domain@port_str</a>&nbsp;&nbsp;
+		@end
+		
 	</div>
 @end
 
-<br>
-<h1>WEBSITES</h1>
-@for site in sites
+
+<h1>WIKIS</h1>
+@for wiki, domains in wikis
 	<div>
-		<a href="@site">@site</a>
+		<b>@wiki</b> &nbsp;&nbsp;&nbsp;&nbsp;
+		@for domain in domains
+			<a href="//@domain@port_str">@domain@port_str</a>&nbsp;&nbsp;
+		@end
+		
 	</div>
 @end

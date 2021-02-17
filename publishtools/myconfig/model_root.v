@@ -10,6 +10,7 @@ pub mut:
 	pull   bool
 	debug  bool
 	redis  bool
+	port   int = 9998
 }
 
 pub struct Paths {
@@ -40,5 +41,23 @@ pub fn (mut config ConfigRoot) path_publish_wiki_get(name string) ?string {
 
 pub fn (mut config ConfigRoot) path_publish_web_get(name string) ?string {
 	config_web := config.site_web_get(name) ?
-	return '$config.paths.publish/www_$config_web.alias'
+	return '$config.paths.publish/$config_web.name'
+}
+
+pub fn (mut config ConfigRoot) path_publish_web_get_domain(domain string)? string {
+	for s in config.sites{
+		if domain in s.domains{
+			return config.path_publish_web_get(s.alias)
+		}
+	}
+	return error('Cannot find wiki site with domain: $domain')	
+}
+
+pub fn (mut config ConfigRoot) publish_web_get_name(domain string)? string {
+	for s in config.sites{
+		if domain in s.domains{
+			return s.name
+		}
+	}
+	return error('Cannot find wiki site with domain: $domain')	
 }
