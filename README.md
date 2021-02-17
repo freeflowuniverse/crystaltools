@@ -37,6 +37,9 @@ publishtools install -reset
 #re-install and pull newest website code in
 publishtools install -reset -pull
 
+#revert old changes
+publishtools removechanges
+
 #list the known sites(will show if changes in the repo)
 publishtools list
 
