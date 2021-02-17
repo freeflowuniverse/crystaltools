@@ -1,6 +1,8 @@
 module tfgrid
 
 import json
+import libsodium
+import strconv
 
 pub type WorkloadImpl = Container | Kubernetes | Network | PublicIP | Volume | ZDB
 
@@ -30,6 +32,7 @@ const (
 		kubernetes_type: WorkloadImpl(Kubernetes{})
 		publicip_type:   WorkloadImpl(PublicIP{})
 	}
+	sig_len         = 64
 )
 
 // challenger interface allows implementors to generate a challenge that can
@@ -39,7 +42,7 @@ pub interface Challenger {
 }
 
 pub struct Volume {
-pub:
+pub mut:
 	size  u64
 	vtype string [json: 'type']
 }
@@ -49,12 +52,12 @@ pub fn (volume &Volume) challenge() string {
 }
 
 pub struct VolumeResult {
-pub:
+pub mut:
 	volume_id string
 }
 
 pub struct Network {
-pub:
+pub mut:
 	name                     string
 	network_iprange          string
 	subnet                   string
@@ -75,7 +78,7 @@ pub fn (n &Network) challenge() string {
 }
 
 pub struct Peer {
-pub:
+pub mut:
 	subnet        string
 	wg_public_key string
 	allowed_ips   []string
@@ -91,7 +94,7 @@ pub fn (peer &Peer) challenge() string {
 }
 
 pub struct ZDB {
-pub:
+pub mut:
 	size      u64
 	mode      string
 	password  string
@@ -105,14 +108,14 @@ pub fn (zdb &ZDB) challenge() string {
 }
 
 pub struct ZDBResult {
-pub:
+pub mut:
 	namespace string
 	ips       []string
 	port      u32
 }
 
 pub struct PublicIP {
-pub:
+pub mut:
 	ip string
 }
 
@@ -121,7 +124,7 @@ pub fn (ip &PublicIP) challenge() string {
 }
 
 pub struct Member {
-pub:
+pub mut:
 	network_id   string
 	ips          []string
 	public_ip6   string
@@ -140,7 +143,7 @@ pub fn (member &Member) challenge() string {
 }
 
 pub struct Mount {
-pub:
+pub mut:
 	volume_id  string
 	mountpoint string
 }
@@ -150,13 +153,13 @@ pub fn (mount &Mount) challenge() string {
 }
 
 pub struct Logs {
-pub:
+pub mut:
 	logs_type string   [json: 'type']
 	data      LogsData
 }
 
 pub struct LogsData {
-pub:
+pub mut:
 	stdout        string
 	stderr        string
 	secret_stdout string
@@ -164,13 +167,13 @@ pub:
 }
 
 pub struct Stats {
-pub:
+pub mut:
 	stats_type string [json: 'type']
 	endpoint   string
 }
 
 pub struct ContainerCapacity {
-pub:
+pub mut:
 	cpu       u32
 	memory    u64
 	disk_type string
@@ -182,7 +185,7 @@ pub fn (cp &ContainerCapacity) challenge() string {
 }
 
 pub struct Container {
-pub:
+pub mut:
 	flist       string
 	hub_url     string
 	env         map[string]string
@@ -228,7 +231,7 @@ pub fn (c &Container) challenge() string {
 }
 
 pub struct ContainerResult {
-pub:
+pub mut:
 	id    string
 	ipv6  string
 	ipv4  string
@@ -236,12 +239,12 @@ pub:
 }
 
 pub struct PublicIPResult {
-pub:
+pub mut:
 	ip string
 }
 
 pub struct Kubernetes {
-pub:
+pub mut:
 	size          u16
 	networkid     string
 	ip            string
@@ -268,13 +271,13 @@ pub fn (k &Kubernetes) challenge() string {
 }
 
 pub struct KubernetesResult {
-pub:
+pub mut:
 	id string
 	ip string
 }
 
 pub struct Result {
-pub:
+pub mut:
 	id        string
 	created   int
 	state     int
@@ -284,7 +287,7 @@ pub:
 }
 
 pub struct Workload {
-pub:
+pub mut:
 	version       int
 	id            string
 	user          string
@@ -340,4 +343,32 @@ pub fn (w &Workload) workload_data() ?WorkloadImpl {
 		}
 	}
 	return t
+}
+
+pub fn (mut w Workload) sign(sk libsodium.SigningKey) {
+	// sig prepends the signature to the plaintext of the input, so split it off
+	sig := sk.sign(w.challenge().bytes())[..tfgrid.sig_len]
+	w.signature = sig.hex()
+	println(w.signature)
+}
+
+pub fn (w &Workload) verify(pk libsodium.VerifyKey) ? {
+	// verify expects the signature to be sig + plaintext, so reconstruct first	
+	mut sig := bytes_from_hex(w.signature)
+	sig << w.challenge().bytes()
+	println(sig.hex())
+	if !pk.verify(sig) {
+		return error('invalid signature')
+	}
+}
+
+// bytes_from_hex converts a hex string into its byte representation. Panics if
+// the input is not valid hex.
+fn bytes_from_hex(input string) []byte {
+	mut out := []byte{len: input.len / 2}
+	for i := 0; i < input.len; i += 2 {
+		b := strconv.parse_uint(input[i..i + 2], 16, 8)
+		out[i / 2] = byte(b)
+	}
+	return out
 }
