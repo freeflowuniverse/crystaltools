@@ -172,14 +172,27 @@ fn (mut site Site) files_process_recursive(path string, mut publisher Publisher)
 				// for names we do everything case insensitive
 				mut itemlower := item.to_lower()
 				mut ext := os.file_ext(itemlower)
+
+				mut item2 := item
+
+				filename_new := publisher.name_fix_alias_file(item2) ?
+				if item2 != filename_new {
+					// means file name not ok
+					a := os.join_path(path, item2)
+					b := os.join_path(path, filename_new)
+					// println(' -- $a -> $b')
+					os.mv(a, b) ?
+					item2 = filename_new
+				}
+
 				if ext != '' {
 					// only process files which do have extension
 					ext2 := ext[1..]
 					if ext2 == 'md' {
-						site.page_remember(path, item, mut publisher) ?
+						site.page_remember(path, item2, mut publisher) ?
 					}
 					if ext2 in ['jpg', 'png', 'svg', 'jpeg', 'gif'] {
-						site.file_remember(path, item, mut publisher) ?
+						site.file_remember(path, item2, mut publisher) ?
 					}
 				}
 			}

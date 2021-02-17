@@ -35,6 +35,7 @@ pub fn name_fix_keepext(name string) string {
 	if '#' in pagename {
 		pagename = pagename.split('#')[0]
 	}
+	// need to replace . to _ but not the last one (because is ext) (TODO:)
 	pagename = pagename.replace(' ', '_')
 	pagename = pagename.replace('-', '_')
 	pagename = pagename.replace('__', '_')

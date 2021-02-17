@@ -112,6 +112,7 @@ pub fn (mut publisher Publisher) flatten() ? {
 
 		for name, _ in site.pages {
 			mut page := site.page_get(name, mut publisher) ?
+			println(' >> $name: $page.path')
 			// write processed content
 			content := page.content_defs_replaced(mut publisher) ?
 			dest_file = os.join_path(dest_dir, os.file_name(page.path_get(mut publisher)))

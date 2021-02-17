@@ -8,7 +8,7 @@ pub fn (page Page) write(mut publisher Publisher, content string) {
 	if path.ends_with('.md') {
 		path = path[..path.len - 3]
 	}
-	path += '.test.md'
+	path += '.md'
 	os.write_file(path, content) or { panic('cannot write, $err') }
 }
 

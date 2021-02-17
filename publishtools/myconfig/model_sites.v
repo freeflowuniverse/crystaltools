@@ -11,6 +11,7 @@ pub mut:
 	cat       SiteCat
 	alias     string
 	path_code string
+	domains   []string
 }
 
 pub enum SiteCat {

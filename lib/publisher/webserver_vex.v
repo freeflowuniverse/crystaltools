@@ -24,7 +24,7 @@ enum FileType {
 }
 
 fn print_req_info(mut req ctx.Req, mut res ctx.Resp) {
-	println('$utils.red_log() $req.method $req.path')
+	println(utils.red_log('req.method $req.path'))
 }
 
 fn helloworld(req &ctx.Req, mut res ctx.Resp) {
