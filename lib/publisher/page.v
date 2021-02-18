@@ -90,8 +90,10 @@ fn (mut state LineProcessorState) error(msg string) {
 	}
 	state.page.error_add(page_error, mut state.publisher)
 	// state.lines_source << '> **ERROR: $page_error.msg **<BR>\n\n'
-	state.lines_server << '> **ERROR: $page_error.msg **<BR>\n\n'
-	// println(' > Error: $state.page.name: $msg')
+	if !(state.page.name in ["sidebar","navbar"]){
+		state.lines_server << '> **ERROR: $page_error.msg **<BR>\n\n'
+		// println(' > Error: $state.page.name: $msg')
+	}
 }
 
 fn (mut state LineProcessorState) serverline_change(ffrom string, tto string) {

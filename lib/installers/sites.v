@@ -8,7 +8,7 @@ import readline
 import os
 
 pub fn sites_list(cmd &cli.Command) ? {
-	mut conf := myconfig.myconfig_get() ?
+	mut conf := myconfig.get() ?
 	mut gt := gittools.new(conf.paths.code) or { return error('cannot load gittools:$err') }
 	for mut site in conf.sites_get() {
 		mut repo := gt.repo_get(name: site.reponame()) or {

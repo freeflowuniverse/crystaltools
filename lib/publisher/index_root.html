@@ -1,22 +1,26 @@
+<h1>WIKIs</h1>
+
+@for site in sites
+	<div>
+		@if site.cat == .wiki
+		
+		<a href="//@{site.domains[0]}">@{site.name}</a> 
+		&nbsp;&nbsp;	
+		<a href="//@{site.domains[0]}/errors">errors check</a>
+		@end	
+	</div>
+@end
+
+
 <h1>WEBSITES</h1>
-@for site, domains in sites
-	<div>
-		<b>@site</b> &nbsp;&nbsp;&nbsp;&nbsp;
-		@for domain in domains
-			<a href="//@domain@port_str">@domain@port_str</a>&nbsp;&nbsp;
-		@end
-		
-	</div>
+
+@for site in sites
+<div>
+	@if site.cat == .web
+	<a href="//@{site.domains[0]}">@{site.name}</a>
+	&nbsp;&nbsp;
+	@end
+</div>
 @end
 
 
-<h1>WIKIS</h1>
-@for wiki, domains in wikis
-	<div>
-		<b>@wiki</b> &nbsp;&nbsp;&nbsp;&nbsp;
-		@for domain in domains
-			<a href="//@domain@port_str">@domain@port_str</a>&nbsp;&nbsp;
-		@end
-		
-	</div>
-@end

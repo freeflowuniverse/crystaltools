@@ -9,7 +9,7 @@ import json
 
 fn website_conf_repo_get(cmd &cli.Command) ?(myconfig.ConfigRoot, &gittools.GitRepo) {
 	mut name := ''
-	mut conf := myconfig.myconfig_get() ?
+	mut conf := myconfig.get() ?
 
 	for flag in cmd.flags {
 		if flag.name == 'repo' {
@@ -67,8 +67,7 @@ pub fn website_build(cmd &cli.Command) ? {
 		}
 	}
 
-	
-	mut conf := myconfig.myconfig_get() ?
+	mut conf := myconfig.get() ?
 	mut sites := conf.sites_get()
 
 	if !arg {
@@ -83,7 +82,9 @@ pub fn website_build(cmd &cli.Command) ? {
 				}
 				println(' - build website: $repo2.path')
 				process.execute_stdout('$repo2.path/build.sh') ?
-				os.write_file('$conf.paths.publish/$site.name/.domains.json', json.encode({"domains": site.domains})) ?
+				os.write_file('$conf.paths.publish/$site.name/.domains.json', json.encode(map{
+					'domains': site.domains
+				})) ?
 			}
 		}
 	} else {
@@ -92,8 +93,10 @@ pub fn website_build(cmd &cli.Command) ? {
 		// be careful process stops after interactive execute
 		// process.execute_interactive('$repo.path/build.sh') ?
 		for site in sites {
-			if site.name == repo.addr.name{
-				os.write_file('$conf.paths.publish/$site.name/.domains.json', json.encode({"domains": site.domains})) ?
+			if site.name == repo.addr.name {
+				os.write_file('$conf.paths.publish/$site.name/.domains.json', json.encode(map{
+					'domains': site.domains
+				})) ?
 				break
 			}
 		}

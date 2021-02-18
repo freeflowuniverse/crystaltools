@@ -10,7 +10,7 @@ pub mut:
 	pull   bool
 	debug  bool
 	redis  bool
-	port   int = 9998
+	port   int = 80
 }
 
 pub struct Paths {

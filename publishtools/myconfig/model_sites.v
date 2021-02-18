@@ -86,6 +86,9 @@ pub fn (mut config ConfigRoot) sites_get() []SiteConfig {
 	mut sites := []SiteConfig{}
 	for site in config.sites {
 		path := site.path_code
+		if path == '' {
+			panic('code path should not be empty.')
+		}
 		if os.exists(path) {
 			sites << site
 		}

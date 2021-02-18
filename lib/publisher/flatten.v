@@ -47,7 +47,7 @@ pub fn (mut publisher Publisher) errors_get(site Site) ?PublisherErrors {
 pub fn (mut publisher Publisher) flatten() ? {
 	mut dest_file := ''
 
-	mut config := myconfig.get()
+	mut config := myconfig.get() ?
 
 	publisher.check() // makes sure we checked all
 
@@ -77,9 +77,11 @@ pub fn (mut publisher Publisher) flatten() ? {
 		}
 		// write the json errors file
 		os.write_file('$dest_dir/errors.json', json.encode(errors2)) ?
-		for c in config.sites{
-			if c.alias == site.name{
-				os.write_file('$dest_dir/.domains.json', json.encode({"domains": c.domains})) ?
+		for c in config.sites {
+			if c.alias == site.name {
+				os.write_file('$dest_dir/.domains.json', json.encode(map{
+					'domains': c.domains
+				})) ?
 				break
 			}
 		}
