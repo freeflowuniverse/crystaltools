@@ -4,7 +4,7 @@ cp publishermod/index_root.html .
 cp publishermod/errors.html .
 
 # sudo v run publishtools.v run
-sudo v run publishtools.v develop
+v run publishtools.v develop
 
-rm -f index_root.html
-rm -f errors.html
+#rm -f index_root.html
+#rm -f errors.html

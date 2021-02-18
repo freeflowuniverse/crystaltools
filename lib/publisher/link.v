@@ -204,6 +204,8 @@ fn (mut link Link) init() {
 			link.state = LinkState.error
 		}
 	}
+
+	if ":" in link.filename{panic("should not have ':' in link for page or file (2).\n$link")}
 }
 
 fn (mut link Link) check(mut publisher Publisher, mut page Page, linenr int, line string) {

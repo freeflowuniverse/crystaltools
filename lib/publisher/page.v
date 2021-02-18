@@ -244,7 +244,10 @@ fn (mut page Page) process_lines(mut publisher Publisher, dodefs bool) ? {
 					}
 					continue
 				}
-				link.filename = namefound
+				if namefound != link.filename{
+					link.filename = namefound
+					link.init()
+				}
 				if link.state == LinkState.ok {
 					if link.original_get() != link.source_get(state.site.name) {
 						state.sourceline_change(link.original_get(), link.source_get(state.site.name))
