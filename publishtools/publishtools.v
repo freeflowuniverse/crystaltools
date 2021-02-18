@@ -233,10 +233,10 @@ fn main() {
 		mut args := os.args.clone()
 		if args.len == 3 {
 			if args[2] == 'off' {
-				publishermod.dns_on(true)
+				publishermod.dns_off(true)
 				return
 			} else if args[2] == 'on' {
-				publishermod.dns_off(true)
+				publishermod.dns_on(true)
 				return
 			}
 		}
