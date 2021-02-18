@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex
+# set -ex
 cp publishermod/index_root.html .
 cp publishermod/errors.html .
 

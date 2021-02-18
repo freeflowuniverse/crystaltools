@@ -32,7 +32,7 @@ pub fn load() HostsFile{
 	return   obj
 }
 
-pub  fn (mut hostsfile HostsFile) save() &HostsFile{
+pub  fn (mut hostsfile HostsFile) save(sudo bool) &HostsFile{
 	mut str := ""
 	for section, items in hostsfile.hosts{
 		if section != ""{
@@ -46,7 +46,11 @@ pub  fn (mut hostsfile HostsFile) save() &HostsFile{
 		}
 		str = str + "\n\n"
 	}
-	process.execute_interactive("sudo -- sh -c -e \"echo '$str' > /etc/hosts\"") or {panic(err)}
+	if sudo {
+		process.execute_interactive("sudo -- sh -c -e \"echo '$str' > /etc/hosts\"") or {panic(err)}
+	}else{
+		os.write_file("/etc/hosts",str) or {panic(err)}
+	}
 	return hostsfile
 }
 

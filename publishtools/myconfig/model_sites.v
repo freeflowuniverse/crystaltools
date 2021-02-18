@@ -28,11 +28,15 @@ pub fn (mut site SiteConfig) reponame() string {
 	return name2
 }
 
-fn (config ConfigRoot) site_get(name string) ?SiteConfig {
+pub fn (config ConfigRoot) site_get(name string) ?SiteConfig {
 	for site in config.sites {
+		// println(" >> $site.name ${name.to_lower()}")
 		if site.name.to_lower() == name.to_lower() {
 			return site
 		}
+		if site.alias.to_lower() == name.to_lower() {
+			return site
+		}		
 	}
 	return error('Cannot find wiki site with name: $name')
 }

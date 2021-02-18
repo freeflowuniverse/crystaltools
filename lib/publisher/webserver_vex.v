@@ -356,8 +356,15 @@ fn site_deliver(req &ctx.Req, mut res ctx.Resp) {
 
 // Run server
 pub fn webserver_run(publisher &Publisher) {
+
 	mut app := router.new()
 	mut config := myconfig.get() or { panic(err) }
+
+	defer {
+		dns_off(false)
+	}
+
+	dns_on(false)
 
 	mycontext := &MyContext{
 		config: &config
@@ -369,4 +376,6 @@ pub fn webserver_run(publisher &Publisher) {
 	app.route(.get, '/*path', site_deliver)
 
 	server.serve(app, 80)
+
+	dns_off(false)
 }

@@ -47,8 +47,8 @@ pub fn (mut publisher Publisher) file_get_by_id(id int) ?&File {
 ////////////////////////////////////////////////////////////////
 
 pub fn (mut publisher Publisher) site_exists(name string) bool {
-	pagename := name_fix(name)
-	return pagename in publisher.site_names
+	name2 := name_fix(name)
+	return name2 in publisher.site_names
 }
 
 pub fn (mut publisher Publisher) file_exists(name string) bool {
@@ -87,6 +87,7 @@ pub fn (mut publisher Publisher) site_get(name string) ?&Site {
 	sitename := name_fix(name)
 	if sitename in publisher.site_names {
 		mut site := publisher.site_get_by_id(publisher.site_names[sitename]) or {
+			// println(publisher.site_names)
 			return error('cannot find site: $sitename')
 		}
 		return site

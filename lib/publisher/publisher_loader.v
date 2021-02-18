@@ -2,13 +2,18 @@ module publishermod
 
 import os
 import json
+import myconfig
 
 // load a site into the publishing tools
 // name of the site needs to be unique
 fn (mut publisher Publisher) load(config SiteConfig, path string) ? {
+	mut cfg := myconfig.get()?	
 	sitename := name_fix(config.name)
+	mut _ := cfg.site_get(sitename) or {
+		return error("$cfg\n -- ERROR: sitename in config file ($sitename) on repo in git, does not correspond with configname publishtools config.")
+	}
 	path2 := path.replace('~', os.home_dir())
-	println(' - load publisher: $path2')
+	println(' - load publisher: $sitename - $path2')
 	if !publisher.site_exists(sitename) {
 		id := publisher.sites.len
 		mut site := Site{

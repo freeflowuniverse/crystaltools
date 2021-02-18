@@ -5,7 +5,6 @@ import os
 import cli
 import publishermod
 import myconfig
-import hostsfile
 
 fn main() {
 	// INSTALL
@@ -231,26 +230,13 @@ fn main() {
 	// DNS
 
 	dns_execute := fn (cmd cli.Command) ? {
-		mut domains := []string{}
-		mut myconfig := myconfig.get() ?
-		for site in myconfig.sites {
-			for domain in site.domains {
-				domains << domain
-			}
-		}
-		mut hostsfile := hostsfile.load()
 		mut args := os.args.clone()
 		if args.len == 3 {
 			if args[2] == 'off' {
-				hostsfile.delete_section('pubtools')
-				hostsfile.save()
+				publishermod.dns_on(true)
 				return
 			} else if args[2] == 'on' {
-				hostsfile.delete_section('pubtools')
-				for domain in domains {
-					hostsfile.add('127.0.0.1', domain, 'pubtools')
-				}
-				hostsfile.save()
+				publishermod.dns_off(true)
 				return
 			}
 		}
