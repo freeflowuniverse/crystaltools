@@ -70,9 +70,12 @@ fn (link Link) server_get() string {
 	return link.original_get()
 }
 
+
 // return how to represent link on source
-fn (link Link) source_get(sitename string) string {
+fn (mut link Link) source_get(sitename string) string {
+
 	if link.cat == LinkType.page {
+		if ":" in link.filename{panic("should not have ':' in link for page or file.\n$link")}
 		if sitename == link.site {
 			return '[$link.description]($link.filename)'
 		} else {
@@ -80,6 +83,7 @@ fn (link Link) source_get(sitename string) string {
 		}
 	}
 	if link.cat == LinkType.file {
+		if ":" in link.filename{panic("should not have in link for page or file.\n$link")}
 		mut filename := ''
 
 		if link.site == sitename && link.isimage {
@@ -103,9 +107,7 @@ fn (link Link) source_get(sitename string) string {
 		if link.isimage {
 			j = '!$j'
 		}
-		if j.split(":").len>2{
-			panic("link should not have 2x : $j")
-		}
+
 		return j
 	}
 	return link.original_get()
@@ -113,6 +115,7 @@ fn (link Link) source_get(sitename string) string {
 
 // replace original link content in text with $replacewith
 fn (link Link) replace(text string, replacewith string) string {
+
 	return text.replace(link.original_get(), replacewith)
 }
 
@@ -155,9 +158,13 @@ fn (mut link Link) init() {
 			splitted2 := link.filename.split(':')
 			if splitted2.len == 2 {
 				link.site = name_fix(splitted2[0])
-			} else {
+				link.filename = splitted2[1]
+			} else if splitted2.len > 2 {
 				link.state = LinkState.error
 				link.error_msg = 'link can only have 1 x ":"/n$link'
+				link.state = LinkState.error
+			} else{
+				panic("should never be here")
 			}
 		}
 
@@ -194,6 +201,7 @@ fn (mut link Link) init() {
 			// link.cat = LinkType.page
 			link.state = LinkState.error
 			link.error_msg = "$link.original_link (no match), ext was:'$ext'"
+			link.state = LinkState.error
 		}
 	}
 }
@@ -282,6 +290,7 @@ fn (mut link Link) check(mut publisher Publisher, mut page Page, linenr int, lin
 	// 	}
 	// 	return
 	// }
+
 }
 
 // DO NOT CHANGE THE WAY HOW THIS WORKS, THIS HAS BEEN DONE AS A STATEFUL PARSER BY DESIGN
