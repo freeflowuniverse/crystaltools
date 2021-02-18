@@ -40,7 +40,7 @@ pub fn (mut publisher Publisher) name_fix_check(name string, site_id int, ispage
 	mut sitename, mut pagename := name_split(name2) ?
 	if pagename.trim(" ") == "" {return error("pagename empty")}
 
-	println(" >> namefix: '$sitename' '$pagename'")
+	// println(" >> namefix: '$sitename' '$pagename'")
 
 	// make sure we don't have the e.g. img/ in
 	if pagename.ends_with("/"){
@@ -123,6 +123,6 @@ pub fn (mut publisher Publisher) name_fix_check(name string, site_id int, ispage
 		sitename5 := site5.name
 		return '$sitename5:$name5'
 	}
-	println(" ---> $namedest")
+	// println(" ---> $namedest")
 	return '$namedest'
 }
