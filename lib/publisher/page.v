@@ -178,9 +178,6 @@ fn (mut page Page) process_lines(mut publisher Publisher, dodefs bool) ? {
 			mut page_name_include := linestrip['!!!include'.len + 1..]
 			// println('-includes-- $page_name_include')
 
-			if ':' in page_name_include {
-				page_name_include = page_name_include.split(':')[0]
-			}
 
 			page_name_include2 := publisher.name_fix_check_page(page_name_include, state.site.id) or {
 				e1 := '$err'.contains('Could not find')

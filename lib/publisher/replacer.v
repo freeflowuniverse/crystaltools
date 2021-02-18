@@ -38,10 +38,17 @@ pub fn (mut publisher Publisher) name_fix_check(name string, site_id int, ispage
 	mut ps := ExistState.error
 
 	mut sitename, mut pagename := name_split(name2) ?
+	if pagename.trim(" ") == "" {return error("pagename empty")}
+
+	println(" >> namefix: '$sitename' '$pagename'")
 
 	// make sure we don't have the e.g. img/ in
+	if pagename.ends_with("/"){
+		return error("pagename cannot end with /: now '$pagename'")
+	}
 	if '/' in pagename {
 		pagename = os.base(pagename)
+		if pagename.trim(" ") == "" {return error("pagename empty for os.base")}
 	}
 
 	if sitename == '' {
@@ -61,6 +68,7 @@ pub fn (mut publisher Publisher) name_fix_check(name string, site_id int, ispage
 	if ps != ExistState.ok {
 		sitename_replaced := publisher.replacer.site.replace(sitename) ?
 		pagename_replaced := publisher.replacer.file.replace(pagename) ?
+		if pagename_replaced.trim(" ") == "" {panic("pagename empty: pagename_replaced")}
 		name2 = '$sitename_replaced:$pagename_replaced'
 		ps = publisher.page_file_exists_state(name2, ispage)
 	}
@@ -77,6 +85,7 @@ pub fn (mut publisher Publisher) name_fix_check(name string, site_id int, ispage
 			pagename3 := page3.name
 			site3 := publisher.site_get_by_id(page3.site_id) ?
 			sitename3 := site3.name
+			if pagename3.trim(" ") == "" {panic("pagename empty")}
 			name2 = '$sitename3:$pagename3'
 			ps = publisher.page_file_exists_state(name2, ispage)
 		}
@@ -85,6 +94,7 @@ pub fn (mut publisher Publisher) name_fix_check(name string, site_id int, ispage
 			pagename_replaced := publisher.replacer.file.replace(pagename) ?
 			page4 := publisher.def_page_get(pagename_replaced) ?
 			pagename4 := page4.name
+			if pagename4.trim(" ") == "" {panic("pagename empty")}
 			site4 := publisher.site_get_by_id(page4.site_id) ?
 			sitename4 := site4.name
 			name2 = '$sitename4:$pagename4'
@@ -113,5 +123,6 @@ pub fn (mut publisher Publisher) name_fix_check(name string, site_id int, ispage
 		sitename5 := site5.name
 		return '$sitename5:$name5'
 	}
+	println(" ---> $namedest")
 	return '$namedest'
 }

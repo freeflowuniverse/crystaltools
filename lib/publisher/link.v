@@ -103,6 +103,9 @@ fn (link Link) source_get(sitename string) string {
 		if link.isimage {
 			j = '!$j'
 		}
+		if j.split(":").len>2{
+			panic("link should not have 2x : $j")
+		}
 		return j
 	}
 	return link.original_get()
@@ -152,7 +155,6 @@ fn (mut link Link) init() {
 			splitted2 := link.filename.split(':')
 			if splitted2.len == 2 {
 				link.site = name_fix(splitted2[0])
-				link.filename = splitted2[1]
 			} else {
 				link.state = LinkState.error
 				link.error_msg = 'link can only have 1 x ":"/n$link'
