@@ -31,6 +31,9 @@ publishtools version
 #install the publishtools
 publishtools install
 
+#reset your environment
+publishtools install -c
+
 #re-install (if something is wrong, do an install -reset)
 publishtools install -reset
 
