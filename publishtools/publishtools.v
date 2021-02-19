@@ -57,6 +57,7 @@ fn main() {
 
 	// DEVELOP
 	develop_exec := fn (cmd cli.Command) ? {
+		installers.sites_download(cmd) ?
 		mut arg := false
 		mut cfg := myconfig.get() ?
 		for flag in cmd.flags {
@@ -90,6 +91,7 @@ fn main() {
 
 	// RUN
 	run_exec := fn (cmd cli.Command) ? {
+		installers.sites_download(cmd) ?
 		cfg := myconfig.get() ?
 		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
@@ -105,6 +107,7 @@ fn main() {
 
 	// BUILD
 	build_exec := fn (cmd cli.Command) ? {
+		installers.sites_download(cmd) ?
 		cfg := myconfig.get() ?
 		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
@@ -131,6 +134,7 @@ fn main() {
 
 	// PULL
 	pull_exec := fn (cmd cli.Command) ? {
+		installers.sites_download(cmd) ?
 		installers.sites_pull(&cmd) ?
 	}
 	mut pull_cmd := cli.Command{
@@ -152,7 +156,7 @@ fn main() {
 
 	// VERSION
 	version_exec := fn (cmd cli.Command) ? {
-		println('1.0.5')
+		println('1.0.6')
 	}
 	mut version_cmd := cli.Command{
 		name: 'version'
@@ -218,6 +222,7 @@ fn main() {
 
 	// removechanges
 	removechanges_exec := fn (cmd cli.Command) ? {
+		installers.sites_download(cmd) ?
 		installers.sites_removechanges(&cmd) ?
 	}
 	mut removechangese_cmd := cli.Command{

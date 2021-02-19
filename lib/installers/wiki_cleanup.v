@@ -35,7 +35,22 @@ pub fn wiki_cleanup(name string, conf &myconfig.ConfigRoot) ? {
 	
 	cd $repo.path
 
-	git checkout development
+	rm -rf .vscode
+	rm -rf .cache		
+	rm -rf modules
+	rm -f .installed	
+
+	#git reset HEAD --hard
+	#git clean -fd	
+
+	#loose all changes
+	git fetch origin
+	#git reset HEAD --hard
+	git reset --hard @{u}
+	#git reset --hard origin/development
+	git clean -fd	
+
+	#remove again	
 
 	rm -rf .vscode
 	rm -rf .cache		
@@ -51,6 +66,7 @@ pub fn wiki_cleanup(name string, conf &myconfig.ConfigRoot) ? {
 	git add . -A
 	git commit -m "wiki reformat"
 	set -e
+	git pull
 	git push
 	'
 

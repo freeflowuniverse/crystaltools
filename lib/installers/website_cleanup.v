@@ -54,15 +54,14 @@ pub fn website_cleanup(name string, conf &myconfig.ConfigRoot) ? {
 	> please make sure you work in line with instructions above
 
 	'
-	os.write_file('$repo.path/readme.md', texttools.dedent(readme)) or {
-		return error('cannot write to $repo.path/README.md\n$err')
+	if ! os.exists('$repo.path/readme.md'){
+		os.write_file('$repo.path/readme.md', texttools.dedent(readme)) or {
+			return error('cannot write to $repo.path/README.md\n$err')
+		}
 	}
-
 	script_cleanup := '
 	
 	cd $repo.path
-
-	git checkout development
 
 	rm -f yarn.lock
 	rm -rf .cache		
@@ -70,7 +69,27 @@ pub fn website_cleanup(name string, conf &myconfig.ConfigRoot) ? {
 	rm -f .installed
 	rm -rf dist
 	rm -f package-lock.json
-	
+
+	#loose all changes
+	git fetch origin
+	#git reset HEAD --hard
+	git reset --hard @{u}
+	#git reset --hard origin/development
+	git clean -fd	
+
+	#remove again
+	rm -f yarn.lock
+	rm -rf .cache		
+	rm -rf modules
+	rm -f .installed
+	rm -rf dist
+	rm -f package-lock.json	
+
+	git add . -A
+	set +e
+	git commit -m "cleanup" 
+	set -e
+
 	git pull
 	rm -f install.sh
 	rm -f run.sh

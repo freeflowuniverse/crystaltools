@@ -6,6 +6,7 @@ import myconfig
 import publishermod
 import readline
 import os
+// import process
 
 pub fn sites_list(cmd &cli.Command) ? {
 	mut conf := myconfig.get() ?
@@ -209,6 +210,22 @@ pub fn sites_removechanges(cmd cli.Command) ? {
 		mut repo := gt.repo_get(name: sc.reponame()) or {
 			return error('ERROR: cannot get repo:$err')
 		}
+
+		// script_cleanup := '
+		// set -e
+		// echo " - cleanup: $repo.path"
+		// cd $repo.path
+
+		// rm -f yarn.lock
+		// rm -rf .cache		
+		// rm -rf modules
+		// rm -f .installed
+		// rm -rf dist
+		// rm -f package-lock.json
+		// '
+
+		// process.execute_stdout(script_cleanup) or { return error('cannot cleanup for ${repo.path}.\n$err') }
+
 		if !flag_repo_do(cmd, repo.addr.name, sc) {
 			continue
 		}

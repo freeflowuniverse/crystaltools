@@ -18,9 +18,7 @@ fn get2() ConfigRoot {
 	c.reset = false
 	c.pull = false
 	c.debug = true
-
 	c.redis = false
-
 	c.web_hostnames = false
 
 	c.init()
@@ -42,7 +40,7 @@ pub fn get() ?ConfigRoot {
 				// return error('ERROR: cannot find repo: $site.name\n$err')
 				// do NOTHING, just ignore the site to work with
 				// print(err)
-				println(' - WARNING: ignore site: $site.name, $err')
+				println(' - WARNING: did not find site: $site.name, $err')				
 				continue
 			}
 			site.path_code = repo.path_get()
