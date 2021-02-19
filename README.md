@@ -1,4 +1,4 @@
-# tools to run ThreeFold web env
+# Tools to run ThreeFold web environment
 
 starting point to run all wiki's and websites on your local machine
 
