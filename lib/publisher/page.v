@@ -90,7 +90,7 @@ fn (mut state LineProcessorState) error(msg string) {
 	}
 	state.page.error_add(page_error, mut state.publisher)
 	// state.lines_source << '> **ERROR: $page_error.msg **<BR>\n\n'
-	if !(state.page.name in ["sidebar","navbar"]){
+	if !(state.page.name in ['sidebar', 'navbar']) {
 		state.lines_server << '> **ERROR: $page_error.msg **<BR>\n\n'
 		// println(' > Error: $state.page.name: $msg')
 	}
@@ -178,7 +178,6 @@ fn (mut page Page) process_lines(mut publisher Publisher, dodefs bool) ? {
 			mut page_name_include := linestrip['!!!include'.len + 1..]
 			// println('-includes-- $page_name_include')
 
-
 			page_name_include2 := publisher.name_fix_check_page(page_name_include, state.site.id) or {
 				e1 := '$err'.contains('Could not find')
 				if e1 {
@@ -244,7 +243,7 @@ fn (mut page Page) process_lines(mut publisher Publisher, dodefs bool) ? {
 					}
 					continue
 				}
-				if namefound != link.filename{
+				if namefound != link.filename {
 					link.filename = namefound
 					link.init()
 				}

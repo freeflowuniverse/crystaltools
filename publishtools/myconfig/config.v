@@ -21,6 +21,8 @@ fn get2() ConfigRoot {
 
 	c.redis = false
 
+	c.web_hostnames = false
+
 	c.init()
 
 	// add the site configurations to it

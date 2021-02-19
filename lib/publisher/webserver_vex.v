@@ -11,6 +11,7 @@ import json
 // this webserver is used for looking at the builded results
 
 struct MyContext {
+pub:
 	config    &myconfig.ConfigRoot
 	publisher &Publisher
 }
@@ -165,7 +166,7 @@ fn return_wiki_errors(sitename string, req &ctx.Req, mut res ctx.Resp) {
 }
 
 fn site_wiki_deliver(mut config myconfig.ConfigRoot, domain string, path string, req &ctx.Req, mut res ctx.Resp) ? {
-	mut sitename := config.publish_web_get_name(domain) or {
+	mut sitename := config.name_web_get(domain) or {
 		res.send('Cannot find domain: $domain\n$err', 404)
 		return
 	}
@@ -297,22 +298,41 @@ fn site_www_deliver(mut config myconfig.ConfigRoot, domain string, path string, 
 
 fn site_deliver(req &ctx.Req, mut res ctx.Resp) {
 	mut config := (&MyContext(req.ctx)).config
-	mut path := req.params['path']
-	splitted := path.trim('/').split('/')
-	path = splitted[0..].join('/').trim('/').trim(' ')
 	mut publisherobj := (&MyContext(req.ctx)).publisher
 
-	if !('Host' in req.headers) {
-		panic('Host Header is required')
-	}
+	// what is this doing?
+	mut path := req.params['path']
+	mut domain := ''
 
-	if req.headers['Host'].len == 0 {
-		panic('Host is missing')
-	}
+	if config.web_hostnames {
+		if !('Host' in req.headers) {
+			panic('Host Header is required')
+		}
 
-	mut host := req.headers['Host'][0]
-	mut splitted2 := host.split(':')
-	mut domain := splitted2[0]
+		if req.headers['Host'].len == 0 {
+			panic('Host is missing')
+		}
+
+		mut host := req.headers['Host'][0]
+		mut splitted2 := host.split(':')
+		domain = splitted2[0]
+	} else {
+		splitted := path.trim('/').split('/')
+
+		alias := splitted[0]
+		path = splitted[1..].join('/').trim('/').trim(' ')
+
+		if alias == ""{
+			domain ="localhost"
+		}else{
+
+			domain = config.domain_web_get(alias) or {			
+				res.send('unknown domain for $alias', 404)
+				return
+			}
+			println("DOMAIN:$domain")
+		}
+	}
 
 	if domain == 'localhost' {
 		index_root(req, mut res)
@@ -356,7 +376,6 @@ fn site_deliver(req &ctx.Req, mut res ctx.Resp) {
 
 // Run server
 pub fn webserver_run(publisher &Publisher) {
-
 	mut app := router.new()
 	mut config := myconfig.get() or { panic(err) }
 
@@ -370,5 +389,4 @@ pub fn webserver_run(publisher &Publisher) {
 	app.route(.get, '/*path', site_deliver)
 
 	server.serve(app, config.port)
-
 }

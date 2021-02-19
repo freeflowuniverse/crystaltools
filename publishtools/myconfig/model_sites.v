@@ -12,6 +12,7 @@ pub mut:
 	alias     string
 	path_code string
 	domains   []string
+	descr	 string
 }
 
 pub enum SiteCat {
