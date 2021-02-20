@@ -2,10 +2,20 @@ module publishermod
 
 import os
 
+fn (mut file File) consumer_page_register(consumer_page_id int, mut publisher Publisher) {
+	page := publisher.page_get_by_id(consumer_page_id) or { panic(err) }
+	if page.site_id != file.site_id {
+		panic('can only register page for same site, is bug')
+	}
+	if !(consumer_page_id in file.usedby) {
+		file.usedby << consumer_page_id
+	}
+}
 
 // need to create smaller sizes if needed and change the name
 // also need to make sure its in right directory
-pub fn (mut file File) process(mut publisher Publisher) {
+// do this after the loading/checking of all pages & files
+fn (mut file File) relocate(mut publisher Publisher) {
 	if file.site_id > publisher.sites.len {
 		panic('cannot find site: $file.site_id, not enough elements in list.')
 	}

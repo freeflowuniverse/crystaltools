@@ -53,14 +53,14 @@ fn (mut publisher Publisher) defs_pages_init() {
 	}
 }
 
-fn (mut publisher Publisher) def_page_get(name string) ?Page {
+fn (mut publisher Publisher) def_page_get(name string) ?&Page {
 	name2 := name_fix_no_underscore(name)
 	if name2 in publisher.defs {
 		pageid := publisher.defs[name2]
 		// println(publisher.pages.map(it.id))
 		// println(':::$pageid:::')
 		if pageid in publisher.pages.map(it.id) {
-			return publisher.pages[pageid]
+			return &publisher.pages[pageid]
 		} else {
 			panic('BUG: Cannot find page with $pageid in pages, for def:$name\n')
 		}

@@ -39,3 +39,13 @@ pub fn (file File) path_get(mut publisher Publisher) string {
 	site_path := publisher.sites[file.site_id].path
 	return os.join_path(site_path, file.path)
 }
+
+// get the name of the file with or without site prefix, depending if file is in the site
+pub fn (file File) name_get(mut publisher Publisher, site_id int) string {
+	site := file.site_get(mut publisher) or { panic(err) }
+	if site.id == site_id {
+		return file.name
+	} else {
+		return '$site.name:$file.name'
+	}
+}

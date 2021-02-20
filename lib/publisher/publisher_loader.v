@@ -4,9 +4,21 @@ import os
 import json
 import myconfig
 
+
+// use path="" if you want to go from os.home_dir()/code/	
+fn (mut publisher Publisher) find_sites(path string) ? {
+	publisher.gitlevel = -2 // we do this gitlevel to make sure we don't go too deep in the directory level
+	publisher.find_sites_recursive(path) ?
+}
+
+
+///////////////////////////////////////////////////////// INTERNAL BELOW ////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+
+
 // load a site into the publishing tools
 // name of the site needs to be unique
-fn (mut publisher Publisher) load(config SiteConfig, path string) ? {
+fn (mut publisher Publisher) load_site(config SiteConfig, path string) ? {
 	mut cfg := myconfig.get()?	
 	sitename := name_fix(config.name)
 	mut _ := cfg.site_get(sitename) or {
@@ -29,14 +41,8 @@ fn (mut publisher Publisher) load(config SiteConfig, path string) ? {
 	}
 }
 
-// use path="" if you want to go from os.home_dir()/code/	
-fn (mut publisher Publisher) load_all(path string) ? {
-	publisher.gitlevel = -2 // we do this gitlevel to make sure we don't go too deep in the directory level
-	publisher.load_all_private(path) ?
-}
-
 // find all wiki's, this goes very fast, no reason to cache
-fn (mut publisher Publisher) load_all_private(path string) ? {
+fn (mut publisher Publisher) find_sites_recursive(path string) ? {
 	mut path1 := ''
 	if path == '' {
 		path1 = '$os.home_dir()/code/'
@@ -65,7 +71,7 @@ fn (mut publisher Publisher) load_all_private(path string) ? {
 					// eprintln()
 					return error('Failed to decode json ${os.join_path(pathnew, 'wikiconfig.json')}')
 				}
-				publisher.load(config, pathnew) or { panic(err) }
+				publisher.load_site(config, pathnew) or { panic(err) }
 				continue
 			}
 			if item == '.git' {
@@ -81,7 +87,7 @@ fn (mut publisher Publisher) load_all_private(path string) ? {
 			if item.starts_with('_') {
 				continue
 			}
-			publisher.load_all_private(pathnew) or { panic(err) }
+			publisher.find_sites_recursive(pathnew) or { panic(err) }
 		}
 	}
 	publisher.gitlevel--

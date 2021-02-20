@@ -83,8 +83,8 @@ pub fn (mut publisher Publisher) page_exists(name string) bool {
 
 ////////////// GET BY NAME
 
-pub fn (mut publisher Publisher) site_get(name string) ?&Site {
-	sitename := name_fix(name)
+pub fn (mut publisher Publisher) site_get(namefull string) ?&Site {
+	sitename := name_fix(namefull)
 	if sitename in publisher.site_names {
 		mut site := publisher.site_get_by_id(publisher.site_names[sitename]) or {
 			// println(publisher.site_names)
@@ -95,66 +95,73 @@ pub fn (mut publisher Publisher) site_get(name string) ?&Site {
 	return error('cannot find site: $sitename')
 }
 
-// name in form: 'sitename:filename' or 'filename'
-pub fn (mut publisher Publisher) file_get(name string) ?&File {
-	n := name.trim_left('.')
-	sitename, itemname := name_split(n) ?
-	mut res := []int{}
-	if sitename == '' {
-		for site in publisher.sites {
-			for file in publisher.files {
-				if file.name == itemname {
-					if !(site.files[itemname] in res) {
-						res << site.files[itemname]
-					}
-				}
+// namefull is name with : if needed
+pub fn (mut publisher Publisher) files_get(namefull string) []&File {
+	sitename, itemname := name_split(namefull) or { panic(err) }
+	site_id := publisher.site_names[sitename]
+	mut res := []&File{}
+	for x in 0 .. publisher.files.len {
+		file := publisher.files[x]
+		if sitename != '' && file.site_id != site_id {
+			// no need to check more, check next file
+			continue
+		}
+		if file.name == itemname {
+			file_found := publisher.file_get_by_id(x) or { panic(err) }
+			if !(file_found in res) {
+				res << file_found
 			}
 		}
-	} else {
-		site := publisher.site_get(sitename) ?
-		if itemname in site.files {
-			return publisher.file_get_by_id(site.files[itemname])
+	}
+	return res
+}
+
+// namefull is name with : if needed
+pub fn (mut publisher Publisher) pages_get(namefull string) []&Page {
+	sitename, itemname := name_split(namefull) or { panic(err) }
+	site_id := publisher.site_names[sitename]
+	mut res := []&Page{}
+	for x in 0 .. publisher.pages.len {
+		page := publisher.pages[x]
+		if sitename != '' && page.site_id != site_id {
+			// no need to check more, check next page
+			continue
+		}
+		if page.name == itemname {
+			page_found := publisher.page_get_by_id(x) or { panic(err) }
+			if !(page_found in res) {
+				res << page_found
+			}
 		}
 	}
+	return res
+}
+
+// name in form: 'sitename:filename' or 'filename'
+pub fn (mut publisher Publisher) file_get(namefull string) ?&File {
+	sitename, itemname := publisher.name_split_alias(namefull) ?
+	println(" >> file_get:'$sitename':'$itemname'")
+	res := publisher.files_get(namefull)
 	if res.len == 0 {
-		return error("Could not find file: '$name'")
+		return error("Could not find file: '$namefull'")
 	} else if res.len > 1 {
-		return error("Found more than 1 file with name: '$name'")
+		return error("Found more than 1 file with name: '$namefull'")
 	} else {
-		return publisher.file_get_by_id(res[0])
+		return res[0]
 	}
 }
 
 // name in form: 'sitename:pagename' or 'pagename'
-pub fn (mut publisher Publisher) page_get(name string) ?&Page {
-	mut sitename, itemname := name_split(name) or { return error('namesplit issue on $name\n$err') }
-	// if sitename == '' {
-	// 	println(' - page get: $itemname')
-	// } else {
-	// 	println(' - page get: $sitename:$itemname')
-	// }
-	mut res := []int{}
-	if sitename == '' {
-		for site in publisher.sites {
-			if itemname in site.pages {
-				res << site.pages[itemname]
-			}
-		}
-		// return error("Could not find page, site not specified: '$name'")
-	} else {
-		site := publisher.site_get(sitename) or {
-			return error('site not found for $sitename\n$err')
-		}
-		if itemname in site.pages {
-			return publisher.page_get_by_id(site.pages[itemname])
-		}
-	}
+pub fn (mut publisher Publisher) page_get(namefull string) ?&Page {
+	sitename, itemname := publisher.name_split_alias(namefull) ?
+	println(" >> page_get:'$sitename':'$itemname'")
+	res := publisher.pages_get(namefull)
 	if res.len == 0 {
-		return error("Could not find page: '$name'")
+		return error("Could not find page: '$namefull'")
 	} else if res.len > 1 {
-		return error("Found more than 1 page with name (maybe wrong specified site or none): '$name'")
+		return error("Found more than 1 page with name: '$namefull'")
 	} else {
-		return publisher.page_get_by_id(res[0])
+		return res[0]
 	}
 }
 
@@ -169,11 +176,11 @@ enum ExistState {
 // try and get if page exists and return state of how it did exist
 pub fn (mut publisher Publisher) page_exists_state(name string) ExistState {
 	_ := publisher.page_get(name) or {
-		if err.contains('Could not find page') {
+		if err.contains('not find page') {
 			return ExistState.notfound
 		} else if err.contains('site not found') {
 			return ExistState.notfound
-		} else if err.contains('Found more than 1 page') {
+		} else if err.contains('more than 1 page') {
 			return ExistState.double
 		} else if err.contains('namesplit issue') {
 			return ExistState.namespliterror
@@ -186,11 +193,11 @@ pub fn (mut publisher Publisher) page_exists_state(name string) ExistState {
 // try and get if file exists and return state of how it did exist
 pub fn (mut publisher Publisher) file_exists_state(name string) ExistState {
 	_ := publisher.file_get(name) or {
-		if err.contains('Could not find file') {
+		if err.contains('not find file') {
 			return ExistState.notfound
 		} else if err.contains('site not found') {
 			return ExistState.notfound
-		} else if err.contains('Found more than 1 file') {
+		} else if err.contains('more than 1 file') {
 			return ExistState.double
 		} else if err.contains('namesplit issue') {
 			return ExistState.namespliterror

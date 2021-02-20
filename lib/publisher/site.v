@@ -3,8 +3,9 @@ module publishermod
 import os
 
 // remember the file, so we know if we have duplicates
-fn (mut site Site) file_remember(path string, name string, mut publisher Publisher) ? {
-	mut namelower := publisher.name_fix_alias_file(name) ?
+// also fixes the name
+fn (mut site Site) file_remember(path string, name string, mut publisher Publisher) &File {
+	mut namelower := publisher.name_fix_alias_file(name) or { panic(err) }
 	mut pathfull_fixed := os.join_path(path, namelower)
 	mut pathfull := os.join_path(path, name)
 	if pathfull_fixed != pathfull {
@@ -36,10 +37,17 @@ fn (mut site Site) file_remember(path string, name string, mut publisher Publish
 		publisher.files << file
 		site.files[namelower] = publisher.files.len - 1
 	}
+	return &publisher.files[(publisher.files.len - 1)]
+}
+
+// remember the file, so we know if we have duplicates
+// also fixes the name
+fn (mut site Site) file_remember_full_path(full_path string, mut publisher Publisher) &File {
+	return site.file_remember(os.dir(full_path), os.base(full_path), mut publisher)
 }
 
 fn (mut site Site) page_remember(path string, name string, mut publisher Publisher) ? {
-	mut namelower := publisher.name_fix_alias_name(name) ?
+	mut namelower := publisher.name_fix_alias_page(name) or { panic(err) }
 	if namelower.trim(' ') == '' {
 		site.errors << SiteError{
 			path: path
@@ -103,6 +111,10 @@ pub fn (mut site Site) load(mut publisher Publisher) {
 	if !os.exists(imgnotusedpath) {
 		os.mkdir(imgnotusedpath) or { panic(err) }
 	}
+	imgtosortpath := site.path + '/img_tosort'
+	if !os.exists(imgtosortpath) {
+		os.mkdir(imgtosortpath) or { panic(err) }
+	}
 
 	println(' - load pages for site: $site.name')
 	for _, id in site.pages {
@@ -133,7 +145,7 @@ pub fn (mut site Site) process(mut publisher Publisher) {
 			eprintln(err)
 			continue
 		}
-		f.process(mut publisher)
+		f.relocate(mut publisher)
 	}
 
 	site.state = SiteState.ok
@@ -141,7 +153,7 @@ pub fn (mut site Site) process(mut publisher Publisher) {
 
 // process files in the site (find all files)
 // they will not be processed yet
-pub fn (mut site Site) files_process(mut publisher Publisher) ? {
+fn (mut site Site) files_process(mut publisher Publisher) ? {
 	if !os.exists(site.path) {
 		return error("cannot find site on path:'$site.path'")
 	}
@@ -191,7 +203,9 @@ fn (mut site Site) files_process_recursive(path string, mut publisher Publisher)
 					if ext2 == 'md' {
 						site.page_remember(path, item2, mut publisher) ?
 					}
+
 					if ext2 in ['jpg', 'png', 'svg', 'jpeg', 'gif'] {
+						// println(path+"/"+item2)
 						site.file_remember(path, item2, mut publisher) ?
 					}
 				}

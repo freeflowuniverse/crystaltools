@@ -12,15 +12,15 @@ pub fn (page Page) write(mut publisher Publisher, content string) {
 	os.write_file(path, content) or { panic('cannot write, $err') }
 }
 
-// will load the content, check everything, return true if ok
-pub fn (mut page Page) check(mut publisher Publisher) bool {
-	page.process(mut publisher) or { panic(err) }
+// // will load the content, check everything, return true if ok
+// pub fn (mut page Page) check(mut publisher Publisher) bool {
+// 	page.process(mut publisher) or { panic(err) }
 
-	if page.state == PageStatus.error {
-		return false
-	}
-	return true
-}
+// 	if page.state == PageStatus.error {
+// 		return false
+// 	}
+// 	return true
+// }
 
 fn (mut page Page) error_add(error PageError, mut publisher Publisher) {
 	if page.state != PageStatus.error {
@@ -35,8 +35,7 @@ fn (mut page Page) error_add(error PageError, mut publisher Publisher) {
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 
-// process the markdown content and include other files, find links, ...
-// find errors
+// load the page & find defs
 // if it returns false, it means was already processed
 pub fn (mut page Page) load(mut publisher Publisher) ?bool {
 	if page.state == PageStatus.ok {
@@ -55,6 +54,8 @@ pub fn (mut page Page) load(mut publisher Publisher) ?bool {
 	return true
 }
 
+// process the markdown content and include other files, find links, ...
+// find errors
 pub fn (mut page Page) process(mut publisher Publisher) ?bool {
 	if page.state == PageStatus.ok {
 		// means was already processed, content is available
@@ -118,6 +119,8 @@ fn (mut page Page) process_lines(mut publisher Publisher, dodefs bool) ? {
 		page: page
 	}
 
+	mut page_linked := Page{}
+
 	// first we need to do the links, then the process_includes
 
 	state.site = &publisher.sites[page.site_id]
@@ -178,30 +181,21 @@ fn (mut page Page) process_lines(mut publisher Publisher, dodefs bool) ? {
 			mut page_name_include := linestrip['!!!include'.len + 1..]
 			// println('-includes-- $page_name_include')
 
-			page_name_include2 := publisher.name_fix_check_page(page_name_include, state.site.id) or {
-				e1 := '$err'.contains('Could not find')
-				if e1 {
-					state.error('include, cannot find page: $page_name_include')
-				} else {
-					state.error('include, cannot find page: $page_name_include\n$err')
-				}
+			page_linked = publisher.page_check_find(page_name_include, state.site.id) or {
+				state.error('include, cannot find page: ${page_name_include}.\n$err')
 				continue
-			}
-			if page_name_include2 != page_name_include {
-				// means we need to change
-				state.serverline_change(page_name_include, page_name_include2)
 			}
 
-			mut page_linked := publisher.page_get(page_name_include2) or {
-				// should not happen because page was already found in the name_fix
-				state.error('$page_name_include2: $err')
-				continue
-			}
 			if page_linked.path_get(mut publisher) == page.path_get(mut publisher) {
 				state.error('recursive include: ${page_linked.path_get(mut publisher)}')
 				continue
 			}
-			// TODO: does this work? was a reference returned?
+
+			if page_linked.name_get(mut publisher, state.site.id) != page_name_include {
+				// means we need to change
+				state.serverline_change(page_name_include, page_linked.name_get(mut publisher,
+					state.site.id))
+			}
 			page_linked.nrtimes_inluded++
 
 			// make sure the page we include has been processed
@@ -209,6 +203,8 @@ fn (mut page Page) process_lines(mut publisher Publisher, dodefs bool) ? {
 				state.error('cannot process page: ${page.name}.\n$err\n')
 				continue
 			}
+
+			// do the include
 			for line_include in page_linked.content.split('\n') {
 				state.lines_server << line_include
 			}
@@ -219,7 +215,7 @@ fn (mut page Page) process_lines(mut publisher Publisher, dodefs bool) ? {
 
 		// there can be more than 1 link on 1 line
 		for mut link in links_parser_result.links {
-			link.init()
+			mut linkname := ''
 			link.check(mut publisher, mut page, state.nr, line)
 
 			if link.state != LinkState.ok {
@@ -227,45 +223,41 @@ fn (mut page Page) process_lines(mut publisher Publisher, dodefs bool) ? {
 				continue
 			}
 
-			if link.cat == LinkType.page || link.cat == LinkType.file {
-				mut ispage := false
-				if link.cat == LinkType.page {
-					ispage = true
-				}
-
-				name_to_find := link.original_link
-				namefound := publisher.name_fix_check(name_to_find, state.site.id, ispage) or {
-					e2 := '$err'.contains('Could not find')
-					if e2 {
-						state.error('cannot find link: $name_to_find')
-					} else {
-						state.error('cannot find link: $name_to_find\n$err')
-					}
+			if link.cat == LinkType.page {
+				page_linked = publisher.page_check_find(link.original_link, state.site.id) or {
+					state.error('link, cannot find page: ${link.original_link}.\n$err')
 					continue
 				}
-				if namefound != link.filename {
-					link.filename = namefound
-					link.init()
+				linkname = page_linked.name_get(mut publisher, state.site.id)
+			}
+
+			if link.cat == LinkType.file {
+				mut file_linked := publisher.file_check_find(link.original_link, state.site.id) or {
+					state.error('link, cannot find file: ${link.original_link}.\n$err')
+					continue
+				}
+				linkname = file_linked.name_get(mut publisher, state.site.id)
+				if !(page.id in file_linked.usedby) {
+					file_linked.usedby << page.id
+				}
+			}
+
+			if link.cat == LinkType.page || link.cat == LinkType.file {
+				// only process links if page or file
+
+				if linkname != link.filename {
+					link.filename = linkname
+					link.init_()
 				}
 				if link.state == LinkState.ok {
 					if link.original_get() != link.source_get(state.site.name) {
 						state.sourceline_change(link.original_get(), link.source_get(state.site.name))
 					}
+					state.serverline_change(link.original_get(), link.source_get(state.site.name))
 				}
-				state.serverline_change(link.original_get(), link.source_get(state.site.name))
 			}
 		} // end of the walk over all links
 	} // end of the line walk
-
-	if dodefs {
-		return
-	}
-	page.content = state.lines_server.join('\n')
-
-	if state.changed_source {
-		page.write(mut publisher, state.lines_source.join('\n'))
-		// println(lines_source)
-	}
 }
 
 fn (mut page Page) title() string {
