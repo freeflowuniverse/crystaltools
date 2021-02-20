@@ -73,15 +73,18 @@ fn (mut publisher Publisher) file_check_find(name2find string, consumer_page_id 
 	// didn't find a better way how to do it, more complicated than it should I believe 
 	for x in 0 .. 3 {
 		if x == 0 {
-			return publisher.file_check_fix(name2find, consumer_page_id) or { continue }
+			zzz := publisher.file_check_fix(name2find, consumer_page_id) or { continue }
+			return zzz
 		}
 		_, mut objname := name_split(name2find) or { panic(err) }
 		if x == 1 {
-			return publisher.file_check_fix(objname, consumer_page_id) or { continue }
+			zzz := publisher.file_check_fix(objname, consumer_page_id) or { continue }
+			return zzz
 		}
 		objname_replaced := publisher.replacer.file.replace(objname) or { panic(err) }
 		if x == 2 {
-			return publisher.file_check_fix(objname_replaced, consumer_page_id) or { continue }
+			zzz := publisher.file_check_fix(objname_replaced, consumer_page_id) or { continue }
+			return zzz
 		}
 	}
 
@@ -120,25 +123,30 @@ fn (mut publisher Publisher) page_check_find(name2find string, consumer_page_id 
 	// didn't find a better way how to do it, more complicated than it should I believe 
 	for x in 0 .. 5 {
 		if x == 0 {
-			return publisher.page_check_fix(name2find, consumer_page_id) or { continue }
+			zzz := publisher.page_check_fix(name2find, consumer_page_id) or { continue }
+			return zzz
 		}
 
 		if x == 1 {
-			return publisher.page_check_fix(objname, consumer_page_id) or { continue }
+			zzz := publisher.page_check_fix(objname, consumer_page_id) or { continue }
+			return zzz
 		}
 
 		if x == 2 {
-			return publisher.page_check_fix(objname_replaced, consumer_page_id) or { continue }
+			zzz := publisher.page_check_fix(objname_replaced, consumer_page_id) or { continue }
+			return zzz
 		}
 
 		if x == 3 {
 			// lets now try if we can get if from definitions
-			return publisher.def_page_get(objname) or { continue }
+			zzz := publisher.def_page_get(objname) or { continue }
+			return zzz
 		}
 
 		if x == 4 {
 			// lets now try if we can get if from definitions
-			return publisher.def_page_get(objname_replaced) or { continue }
+			zzz := publisher.def_page_get(objname_replaced) or { continue }
+			return zzz
 		}
 	}
 	// we did not manage to find a page, not even after replace
