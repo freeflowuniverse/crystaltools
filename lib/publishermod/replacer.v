@@ -46,10 +46,10 @@ fn (mut publisher Publisher) file_check_fix(name2find string, consumer_page_id i
 		return error('cannot find the file: $name2find')
 	}
 	for mut f in filesres {
-		if f.site_id == consumer_site.id {
+		if (*f).site_id == consumer_site.id {
 			// we found a file in the right site, nothing to do
 			f.consumer_page_register(consumer_page_id, mut publisher)
-			file2 := publisher.file_get_by_id(f.id) ?
+			file2 := publisher.file_get_by_id((*f).id) ?
 			// println(file2)
 			return file2
 		}
