@@ -206,7 +206,7 @@ fn (mut site Site) files_process_recursive(path string, mut publisher Publisher)
 
 					if ext2 in ['jpg', 'png', 'svg', 'jpeg', 'gif'] {
 						// println(path+"/"+item2)
-						site.file_remember(path, item2, mut publisher) ?
+						site.file_remember(path, item2, mut publisher)
 					}
 				}
 			}

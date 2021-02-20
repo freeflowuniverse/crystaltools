@@ -66,7 +66,8 @@ pub fn (site Site) page_get(name string, mut publisher Publisher) ?&Page {
 pub fn (site Site) file_get(name string, mut publisher Publisher) ?&File {
 	mut namelower := name_fix(name)
 	if namelower in site.files {
-		return publisher.file_get_by_id(site.files[namelower])
+		file := publisher.file_get_by_id(site.files[namelower]) ?
+		return file
 	}
 	return error('cannot find file with name $name')
 }

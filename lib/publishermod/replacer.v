@@ -38,31 +38,34 @@ fn (mut publ Publisher) name_split_alias(name string) ?(string, string) {
 // check if the file can be found and add the file to the site if needed
 // it will also rename the file if needed
 fn (mut publisher Publisher) file_check_fix(name2find string, consumer_page_id int) ?&File {
-	consumer_page := publisher.page_get_by_id(consumer_page_id) or { panic(err) }
-	mut consumer_site := consumer_page.site_get(mut publisher) or { panic(err) }
+	return error('cannot find the file: $name2find')
+	// consumer_page := publisher.page_get_by_id(consumer_page_id) or { panic(err) }
+	// mut consumer_site := consumer_page.site_get(mut publisher) or { panic(err) }
 
-	mut filesres := publisher.files_get(name2find)
-	if filesres.len == 0 {
-		return error('cannot find the file: $name2find')
-	}
-	for mut f in filesres {
-		if f.site_id == consumer_site.id {
-			// we found a file in the right site, nothing to do
-			f.consumer_page_register(consumer_page_id, mut publisher)
-			return f
-		}
-	}
-	// means we found files but we don't have it in our site, we need to copy
-	file_source := filesres[0]
-	file_source_path := file_source.path_get(mut publisher)
-	dest := '$consumer_site.path/img_tosort/${os.base(file_source_path)}'
-	os.cp(file_source_path, dest) or { panic(err) }
+	// mut filesres := publisher.files_get(name2find)
+	// if filesres.len == 0 {
+	// 	return error('cannot find the file: $name2find')
+	// }
+	// for mut f in filesres {
+	// 	if f.site_id == consumer_site.id {
+	// 		// we found a file in the right site, nothing to do
+	// 		f.consumer_page_register(consumer_page_id, mut publisher)
+	// 		file2 := publisher.file_get_by_id(f.id) ?
+	// 		// println(file2)
+	// 		return file2
+	// 	}
+	// }
+	// // means we found files but we don't have it in our site, we need to copy
+	// file_source := filesres[0]
+	// file_source_path := file_source.path_get(mut publisher)
+	// dest := '$consumer_site.path/img_tosort/${os.base(file_source_path)}'
+	// os.cp(file_source_path, dest) or { panic(err) }
 
-	// will remember new file and will make sure rename if needed happens, but should already be ok
-	file := consumer_site.file_remember_full_path(dest, mut publisher)
+	// // will remember new file and will make sure rename if needed happens, but should already be ok
+	// file := consumer_site.file_remember_full_path(dest, mut publisher)
 
-	// we know the name is in right site
-	return file
+	// // we know the name is in right site
+	// return file
 }
 
 // check if we can find the file, if not copy to site if found in other site
@@ -89,25 +92,26 @@ fn (mut publisher Publisher) file_check_find(name2find string, consumer_page_id 
 
 // check if the page can be found over all sites
 fn (mut publisher Publisher) page_check_fix(name2find string, consumer_page_id int) ?&Page {
-	mut consumer_page := publisher.page_get_by_id(consumer_page_id) or { panic(err) }
-	// mut consumer_site := consumer_page.site_get(mut publisher) or {panic(err)}
+	return error('cannot find the file: $name2find')
+	// mut consumer_page := publisher.page_get_by_id(consumer_page_id) or { panic(err) }
+	// // mut consumer_site := consumer_page.site_get(mut publisher) or {panic(err)}
 
-	mut res := publisher.pages_get(name2find)
+	// mut res := publisher.pages_get(name2find)
 
-	if res.len == 0 {
-		return error('cannot find the page: $name2find')
-	}
-	if res.len > 1 {
-		// we found more than 1 result, not ok cannot continue
-		mut msg := 'we found more than 1 page for $name2find in $consumer_page.name, doubles found:\n '
-		for p in res {
-			msg += '$p.name ,'
-		}
-		msg = msg.trim(',')
-		consumer_page.error_add({ msg: msg, cat: PageErrorCat.doublepage }, mut publisher)
-		return error('found more than 1 page: $name2find')
-	}
-	return res[0]
+	// if res.len == 0 {
+	// 	return error('cannot find the page: $name2find')
+	// }
+	// if res.len > 1 {
+	// 	// we found more than 1 result, not ok cannot continue
+	// 	mut msg := 'we found more than 1 page for $name2find in $consumer_page.name, doubles found:\n '
+	// 	for p in res {
+	// 		msg += '$p.name ,'
+	// 	}
+	// 	msg = msg.trim(',')
+	// 	consumer_page.error_add({ msg: msg, cat: PageErrorCat.doublepage }, mut publisher)
+	// 	return error('found more than 1 page: $name2find')
+	// }
+	// return res[0]
 }
 
 // check if we can find the page, page can be on another site
