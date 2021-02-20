@@ -1,6 +1,6 @@
-module publishermod
-
 import os
+
+module publishermod
 
 // make sure that the names are always normalized so its easy to find them back
 pub fn name_fix(name string) string {
