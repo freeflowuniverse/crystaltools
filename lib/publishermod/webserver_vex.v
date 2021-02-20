@@ -11,6 +11,7 @@ import json
 // this webserver is used for looking at the builded results
 
 struct MyContext {
+pub:
 	config    &myconfig.ConfigRoot
 	publisher &Publisher
 }
@@ -24,7 +25,7 @@ enum FileType {
 }
 
 fn print_req_info(mut req ctx.Req, mut res ctx.Resp) {
-	println('$utils.red_log() $req.method $req.path')
+	println(utils.red_log('req.method $req.path'))
 }
 
 fn helloworld(req &ctx.Req, mut res ctx.Resp) {
@@ -34,12 +35,12 @@ fn helloworld(req &ctx.Req, mut res ctx.Resp) {
 
 fn path_wiki_get(mut config myconfig.ConfigRoot, sitename string, name string) ?(FileType, string) {
 	filetype, mut name2 := filetype_name_get(mut config, sitename, name) ?
-
-	mut path2 := os.join_path(config.paths.publish, 'wiki_' + sitename, name2)
+	mut path2 := os.join_path(config.paths.publish, sitename.replace('info_', 'wiki_'),
+		name2)
 
 	if name2 == 'readme.md' && (!os.exists(path2)) {
 		name2 = 'sidebar.md'
-		path2 = os.join_path(config.paths.publish, 'wiki_' + sitename, name2)
+		path2 = os.join_path(config.paths.publish, sitename, name2)
 	}
 	// println('  > get: $path2 ($name)')
 
@@ -114,11 +115,6 @@ fn filetype_name_get(mut config myconfig.ConfigRoot, site string, name string) ?
 	return filetype, name2
 }
 
-fn index_template(wikis []string, sites []string) string {
-
-	return $tmpl('index_root.html')
-}
-
 fn error_template(req &ctx.Req, sitename string) string {
 	config := (&MyContext(req.ctx)).config
 	mut publisherobj := (&MyContext(req.ctx)).publisher
@@ -138,40 +134,25 @@ fn error_template(req &ctx.Req, sitename string) string {
 		}
 	}
 	mut site_errors := errors.site_errors
-	mut page_errors := errors.page_errors
+	mut page_errors := errors.page_errors.clone()
 	return $tmpl('errors.html')
+}
+
+fn index_template(req &ctx.Req) string {
+	mut config := (&MyContext(req.ctx)).config
+	mut publisherobj := (&MyContext(req.ctx)).publisher
+	mut sites := config.sites_get()
+	mut port_str := ''
+	if config.port != 80 {
+		port_str = ':$config.port'
+	}
+	return $tmpl('index_root.html')
 }
 
 // Index (List of wikis) -- reads index.html
 fn index_root(req &ctx.Req, mut res ctx.Resp) {
-	config := (&MyContext(req.ctx)).config
-	publisherobj := (&MyContext(req.ctx)).publisher
-	mut wikis := []string{}
-	mut sites := []string{}
-
 	res.headers['Content-Type'] = ['text/html']
-
-	if publisherobj.develop {
-		for site in publisherobj.sites {
-			sites << site.config.alias
-		}
-	} else {
-		path := os.join_path(config.paths.publish)
-		list := os.ls(path) or {
-			msg := 'cannot find path for publisher:\n$err'
-			res.send(msg, 404)
-			return
-		}
-		for item in list {
-			if item.starts_with('wiki_') {
-				wikis << item
-			} else if item.starts_with('www_') {
-				sites << item.replace('www_', '')
-			}
-		}
-	}
-
-	res.send(index_template(wikis, sites), 200)
+	res.send(index_template(req), 200)
 }
 
 fn return_wiki_errors(sitename string, req &ctx.Req, mut res ctx.Resp) {
@@ -184,7 +165,11 @@ fn return_wiki_errors(sitename string, req &ctx.Req, mut res ctx.Resp) {
 	res.send(t, 200)
 }
 
-fn site_wiki_deliver(mut config myconfig.ConfigRoot, sitename string, path string, req &ctx.Req, mut res ctx.Resp) ? {
+fn site_wiki_deliver(mut config myconfig.ConfigRoot, domain string, path string, req &ctx.Req, mut res ctx.Resp) ? {
+	mut sitename := config.name_web_get(domain) or {
+		res.send('Cannot find domain: $domain\n$err', 404)
+		return
+	}
 	name := os.base(path)
 	mut publisherobj := (&MyContext(req.ctx)).publisher
 	if path.ends_with('errors') || path.ends_with('error') || path.ends_with('errors.md')
@@ -278,9 +263,9 @@ fn content_type_get(path string) ?string {
 	return error('cannot find content type for $path')
 }
 
-fn site_www_deliver(mut config myconfig.ConfigRoot, site string, path string, req &ctx.Req, mut res ctx.Resp) ? {
-	mut site_path := config.path_publish_web_get(site) or {
-		res.send('Cannot find site: $site\n$err', 404)
+fn site_www_deliver(mut config myconfig.ConfigRoot, domain string, path string, req &ctx.Req, mut res ctx.Resp) ? {
+	mut site_path := config.path_publish_web_get_domain(domain) or {
+		res.send('Cannot find domain: $domain\n$err', 404)
 		return
 	}
 	mut path2 := path
@@ -301,49 +286,88 @@ fn site_www_deliver(mut config myconfig.ConfigRoot, site string, path string, re
 			res.headers['Content-Type'] = ['text/html']
 		}
 		// println("deliver: '$path2'")
+		// NOT GOOD NEEDS TO BE NOT LIKE THIS: TODO: find way how to send file
 		content := os.read_file(path2) or {
 			res.send('Cannot find file: $path2\n$err', 404)
 			return
 		}
-
-		ct := content_type_get(path2) ?
-		res.headers['Content-Type'] = [ct]
-
+		res.headers['Content-Type'] = [content_type_get(path2)]
 		res.send(content, 200)
 	}
 }
 
 fn site_deliver(req &ctx.Req, mut res ctx.Resp) {
 	mut config := (&MyContext(req.ctx)).config
-	mut path := req.params['path']
-	splitted := path.trim('/').split('/')
-	mut site := splitted[0].to_lower()
-	path = splitted[1..].join('/').trim('/').trim(' ')
 	mut publisherobj := (&MyContext(req.ctx)).publisher
 
-	if site.starts_with('www_') {
-		if publisherobj.develop {
-			res.send('websites cannot be shown in development mode', 404)
-			return
+	// what is this doing?
+	mut path := req.params['path']
+	mut domain := ''
+
+	if config.web_hostnames {
+		if !('Host' in req.headers) {
+			panic('Host Header is required')
 		}
-		site = site[4..]
-		site_www_deliver(mut config, site, path, req, mut res) or {
-			res.send('unknown error.\n$err', 501)
-			return
+
+		if req.headers['Host'].len == 0 {
+			panic('Host is missing')
 		}
-	} else if site.starts_with('wiki_') {
-		site = site[5..]
-		site_wiki_deliver(mut config, site, path, req, mut res) or {
-			res.send('unknown error.\n$err', 501)
-			return
-		}
+
+		mut host := req.headers['Host'][0]
+		mut splitted2 := host.split(':')
+		domain = splitted2[0]
 	} else {
-		// if no wiki or www used then its a website
+		splitted := path.trim('/').split('/')
+
+		alias := splitted[0]
+		path = splitted[1..].join('/').trim('/').trim(' ')
+
+		if alias == ""{
+			domain ="localhost"
+		}else{
+
+			domain = config.domain_web_get(alias) or {			
+				res.send('unknown domain for $alias', 404)
+				return
+			}
+			println("DOMAIN:$domain")
+		}
+	}
+
+	if domain == 'localhost' {
+		index_root(req, mut res)
+		return
+	}
+
+	mut iswiki := true
+
+	mut domainfound := false
+	for siteconfig in config.sites {
+		if domain in siteconfig.domains {
+			domainfound = true
+			if siteconfig.cat == myconfig.SiteCat.web {
+				iswiki = false
+			}
+			break
+		}
+	}
+
+	if !domainfound {
+		res.send('unknown domain $domain', 404)
+		return
+	}
+
+	if !iswiki {
 		if publisherobj.develop {
 			res.send('websites cannot be shown in development mode', 404)
 			return
 		}
-		site_www_deliver(mut config, site, path, req, mut res) or {
+		site_www_deliver(mut config, domain, path, req, mut res) or {
+			res.send('unknown error.\n$err', 501)
+			return
+		}
+	} else if iswiki {
+		site_wiki_deliver(mut config, domain, path, req, mut res) or {
 			res.send('unknown error.\n$err', 501)
 			return
 		}
@@ -353,8 +377,8 @@ fn site_deliver(req &ctx.Req, mut res ctx.Resp) {
 // Run server
 pub fn webserver_run(publisher &Publisher) {
 	mut app := router.new()
+	mut config := myconfig.get() or { panic(err) }
 
-	config := myconfig.get()
 	mycontext := &MyContext{
 		config: &config
 		publisher: publisher
@@ -362,10 +386,7 @@ pub fn webserver_run(publisher &Publisher) {
 	app.inject(mycontext)
 
 	app.use(print_req_info)
-
-	app.route(.get, '/', index_root)
-	app.route(.get, '/hello', helloworld)
 	app.route(.get, '/*path', site_deliver)
 
-	server.serve(app, 9998)
+	server.serve(app, config.port)
 }

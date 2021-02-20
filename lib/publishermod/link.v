@@ -47,6 +47,16 @@ pub mut:
 	error_msg   string
 }
 
+fn link_new(original_descr string, original_link string, isimage bool) Link {
+	mut link := Link{
+		original_descr: original_descr.trim(' ')
+		original_link: original_link.trim(' ')
+		isimage: isimage
+	}
+	link.init_()
+	return link
+}
+
 fn (link Link) original_get() string {
 	mut l := '[$link.original_descr]($link.original_link)'
 	if link.isimage {
@@ -71,8 +81,11 @@ fn (link Link) server_get() string {
 }
 
 // return how to represent link on source
-fn (link Link) source_get(sitename string) string {
+fn (mut link Link) source_get(sitename string) string {
 	if link.cat == LinkType.page {
+		if ':' in link.filename {
+			panic("should not have ':' in link for page or file.\n$link")
+		}
 		if sitename == link.site {
 			return '[$link.description]($link.filename)'
 		} else {
@@ -80,6 +93,9 @@ fn (link Link) source_get(sitename string) string {
 		}
 	}
 	if link.cat == LinkType.file {
+		if ':' in link.filename {
+			panic('should not have in link for page or file.\n$link')
+		}
 		mut filename := ''
 
 		if link.site == sitename && link.isimage {
@@ -103,6 +119,7 @@ fn (link Link) source_get(sitename string) string {
 		if link.isimage {
 			j = '!$j'
 		}
+
 		return j
 	}
 	return link.original_get()
@@ -113,7 +130,7 @@ fn (link Link) replace(text string, replacewith string) string {
 	return text.replace(link.original_get(), replacewith)
 }
 
-fn (mut link Link) init() {
+fn (mut link Link) init_() {
 	// see if its an external link or internal
 	// mut linkstate := LinkState.init
 	if link.original_link.contains('://') {
@@ -153,8 +170,12 @@ fn (mut link Link) init() {
 			if splitted2.len == 2 {
 				link.site = name_fix(splitted2[0])
 				link.filename = splitted2[1]
+			} else if splitted2.len > 2 {
+				link.state = LinkState.error
+				link.error_msg = 'link can only have 1 x ":"/n$link'
+				link.state = LinkState.error
 			} else {
-				panic('link can only have 1 x :')
+				panic('should never be here')
 			}
 		}
 
@@ -191,10 +212,16 @@ fn (mut link Link) init() {
 			// link.cat = LinkType.page
 			link.state = LinkState.error
 			link.error_msg = "$link.original_link (no match), ext was:'$ext'"
+			link.state = LinkState.error
 		}
+	}
+
+	if ':' in link.filename {
+		panic("should not have ':' in link for page or file (2).\n$link")
 	}
 }
 
+// used by the line processor on page (page walks over content line by line to parts links, checks if valid here)
 fn (mut link Link) check(mut publisher Publisher, mut page Page, linenr int, line string) {
 	mut filename_complete := ''
 	mut site := &publisher.sites[page.site_id]
@@ -218,17 +245,6 @@ fn (mut link Link) check(mut publisher Publisher, mut page Page, linenr int, lin
 			link.filename = filename_replaced
 		}
 	}
-
-	if link.state == LinkState.error {
-		page.error_add({
-			line: line
-			linenr: linenr
-			msg: link.error_msg
-			cat: PageErrorCat.brokenlink
-		}, mut publisher)
-		// println(link)
-		return
-	}
 	// this can't work, no idea what to do with this, lets see TODO:
 	if link.cat == LinkType.html {
 		// splitted := link.link.split(" ")
@@ -249,56 +265,47 @@ fn (mut link Link) check(mut publisher Publisher, mut page Page, linenr int, lin
 
 	if link.filename == '' {
 		if !link.original_link.trim(' ').starts_with('#') {
-			page.error_add({
-				line: line
-				linenr: linenr
-				msg: "EMPTY LINK: for '$link.original_get()'"
-				cat: PageErrorCat.brokenlink
-			}, mut publisher)
-			link.state = LinkState.missing
+			link.state = LinkState.error
+			link.error_msg = "EMPTY LINK: for '$link.original_get()'"
 			return
 		}
 	}
-
-	if link.cat == LinkType.page {
-		if !publisher.page_exists(filename_complete) {
-			page.error_add({
-				line: line
-				linenr: linenr
-				msg: "CANNOT FIND PAGE: '$link.filename' for $link.original_get()"
-				cat: PageErrorCat.brokenlink
-			}, mut publisher)
-			link.state = LinkState.missing
-			// println(link)
-			return
-		}
-		return
-	}
-
-	if link.cat == LinkType.file {
-		// println('filename_complete:$filename_complete')
-		if !publisher.file_exists(filename_complete) {
-			page.error_add({
-				line: line
-				linenr: linenr
-				msg: "CANNOT FIND FILE: '$link.filename' for $link.original_get()"
-				cat: PageErrorCat.brokenlink
-			}, mut publisher)
-			link.state = LinkState.missing
-			// println(link)
-			return
-		}
-
-		mut file := publisher.file_get(filename_complete) or {
-			panic('should not be possible because file existed, error:$err')
-		}
-		// remember in file that this page uses it
-		if !(page.id in file.usedby) {
-			file.usedby << page.id
-		}
-
-		return
-	}
+	// if link.cat == LinkType.page {
+	// 	if !publisher.page_exists(filename_complete) {
+	// 		page.error_add({
+	// 			line: line
+	// 			linenr: linenr
+	// 			msg: "CANNOT FIND PAGE: '$link.filename' for $link.original_get()"
+	// 			cat: PageErrorCat.brokenlink
+	// 		}, mut publisher)
+	// 		link.state = LinkState.missing
+	// 		// println(link)
+	// 		return
+	// 	}
+	// 	return
+	// }
+	// if link.cat == LinkType.file {
+	// 	// println('filename_complete:$filename_complete')
+	// 	if !publisher.file_exists(filename_complete) {
+	// 		page.error_add({
+	// 			line: line
+	// 			linenr: linenr
+	// 			msg: "CANNOT FIND FILE: '$link.filename' for $link.original_get()"
+	// 			cat: PageErrorCat.brokenlink
+	// 		}, mut publisher)
+	// 		link.state = LinkState.missing
+	// 		// println(link)
+	// 		return
+	// 	}
+	// 	mut file := publisher.file_get(filename_complete) or {
+	// 		panic('should not be possible because file existed, error:$err')
+	// 	}
+	// 	// remember in file that this page uses it
+	// 	if !(page.id in file.usedby) {
+	// 		file.usedby << page.id
+	// 	}
+	// 	return
+	// }
 }
 
 // DO NOT CHANGE THE WAY HOW THIS WORKS, THIS HAS BEEN DONE AS A STATEFUL PARSER BY DESIGN
@@ -365,12 +372,9 @@ pub fn link_parser(text string) ParseResult {
 				// original += char
 				if char == ')' {
 					// end of capture group
-
-					parseresult.links << Link{
-						original_descr: capturegroup_pre.trim(' ')
-						original_link: capturegroup_post.trim(' ')
-						isimage: isimage
-					}
+					mut link := link_new(capturegroup_pre.trim(' '), capturegroup_post.trim(' '),
+						isimage)
+					parseresult.links << link
 					capturegroup_pre = ''
 					capturegroup_post = ''
 					isimage = false

@@ -1,9 +1,11 @@
 #!/bin/bash
+# set -ex
+cp publishermod/index_root.html .
+# cp publishermod/index_root_prefix.html .
+cp publishermod/errors.html .
 
-cp publisher/index_root.html .
-cp publisher/errors.html .
+# sudo v run publishtools.v run
+v run publishtools.v develop
 
-v run publishtools.v run
-
-# rm -f index_root.html
-# rm -f errors.html
+#rm -f index_root.html
+#rm -f errors.html

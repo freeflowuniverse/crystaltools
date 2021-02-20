@@ -33,8 +33,8 @@ pub fn (mut publisher Publisher) errors_get(site Site) ?PublisherErrors {
 		}
 	}
 
-	for name, _ in site.pages {
-		page := site.page_get(name, mut publisher) ?
+	for name, page_id in site.pages {
+		page := publisher.page_get_by_id(page_id) ?
 		if page.errors.len > 0 {
 			errors.page_errors[name] = page.errors
 		}
@@ -47,7 +47,7 @@ pub fn (mut publisher Publisher) errors_get(site Site) ?PublisherErrors {
 pub fn (mut publisher Publisher) flatten() ? {
 	mut dest_file := ''
 
-	mut config := myconfig.get()
+	mut config := myconfig.get() ?
 
 	publisher.check() // makes sure we checked all
 
@@ -77,6 +77,14 @@ pub fn (mut publisher Publisher) flatten() ? {
 		}
 		// write the json errors file
 		os.write_file('$dest_dir/errors.json', json.encode(errors2)) ?
+		for c in config.sites {
+			if c.alias == site.name {
+				os.write_file('$dest_dir/.domains.json', json.encode(map{
+					'domains': c.domains
+				})) ?
+				break
+			}
+		}
 
 		// write the defs file
 		os.write_file('$dest_dir/defs.json', json.encode(pd)) ?
@@ -112,6 +120,7 @@ pub fn (mut publisher Publisher) flatten() ? {
 
 		for name, _ in site.pages {
 			mut page := site.page_get(name, mut publisher) ?
+			// println(' >> $name: $page.path')
 			// write processed content
 			content := page.content_defs_replaced(mut publisher) ?
 			dest_file = os.join_path(dest_dir, os.file_name(page.path_get(mut publisher)))

@@ -57,8 +57,9 @@ fn main() {
 
 	// DEVELOP
 	develop_exec := fn (cmd cli.Command) ? {
+		installers.sites_download(cmd) ?
 		mut arg := false
-		mut cfg := myconfig.get()
+		mut cfg := myconfig.get() ?
 		for flag in cmd.flags {
 			if flag.name == 'repo' {
 				if flag.value.len > 0 {
@@ -90,7 +91,8 @@ fn main() {
 
 	// RUN
 	run_exec := fn (cmd cli.Command) ? {
-		cfg := myconfig.get()
+		installers.sites_download(cmd) ?
+		cfg := myconfig.get() ?
 		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
 		publ.flatten() ?
@@ -105,7 +107,8 @@ fn main() {
 
 	// BUILD
 	build_exec := fn (cmd cli.Command) ? {
-		cfg := myconfig.get()
+		installers.sites_download(cmd) ?
+		cfg := myconfig.get() ?
 		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
 		publ.flatten() ?
@@ -131,6 +134,7 @@ fn main() {
 
 	// PULL
 	pull_exec := fn (cmd cli.Command) ? {
+		installers.sites_download(cmd) ?
 		installers.sites_pull(&cmd) ?
 	}
 	mut pull_cmd := cli.Command{
@@ -152,7 +156,7 @@ fn main() {
 
 	// VERSION
 	version_exec := fn (cmd cli.Command) ? {
-		println('1.0.3')
+		println('1.0.6')
 	}
 	mut version_cmd := cli.Command{
 		name: 'version'
@@ -218,6 +222,7 @@ fn main() {
 
 	// removechanges
 	removechanges_exec := fn (cmd cli.Command) ? {
+		installers.sites_download(cmd) ?
 		installers.sites_removechanges(&cmd) ?
 	}
 	mut removechangese_cmd := cli.Command{
@@ -227,11 +232,36 @@ fn main() {
 		required_args: 0
 	}
 
+	// DNS
+
+	dns_execute := fn (cmd cli.Command) ? {
+		mut args := os.args.clone()
+		if args.len == 3 {
+			if args[2] == 'off' {
+				publishermod.dns_off(true)
+				return
+			} else if args[2] == 'on' {
+				publishermod.dns_on(true)
+				return
+			}
+		}
+		println('usage: publishtools dns on/off')
+	}
+
+	mut dns_cmd := cli.Command{
+		usage: '<name>'
+		description: 'Manage dns records for publish tools'
+		name: 'dns'
+		execute: dns_execute
+	}
+
 	// MAIN
 	mut main_cmd := cli.Command{
 		name: 'installer'
 		commands: [install_cmd, run_cmd, build_cmd, list_cmd, develop_cmd, twin_cmd, pull_cmd,
-			commit_cmd, push_cmd, pushcommit_cmd, edit_cmd, update_cmd, version_cmd, removechangese_cmd]
+			commit_cmd, push_cmd, pushcommit_cmd, edit_cmd, update_cmd, version_cmd, removechangese_cmd,
+			dns_cmd,
+		]
 		description: '
 
         Publishing Tool Installer
