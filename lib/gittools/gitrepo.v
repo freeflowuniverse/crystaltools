@@ -108,7 +108,7 @@ pub fn (mut repo GitRepo) remove_changes() ? {
 		return error('cannot detect if there are changes on repo.\n$err')
 	}
 	if change {
-		println(" - remove change repo.name")
+		println(' - remove change $repo.path')
 		cmd := '
 		cd $repo.addr.path_get()
 		set +e
@@ -121,10 +121,9 @@ pub fn (mut repo GitRepo) remove_changes() ? {
 			return error('Cannot commit repo: ${repo.path}. Error was $err')
 		}
 	} else {
-		println('     > no change  ${repo.path}')
+		println('     > no change  $repo.path')
 	}
 }
-
 
 pub fn (mut repo GitRepo) push() ? {
 	cmd := 'cd $repo.addr.path_get() && git push'

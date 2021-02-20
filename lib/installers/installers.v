@@ -8,7 +8,7 @@ import process
 import nodejs
 
 pub fn main(cmd cli.Command) ? {
-	cfg := myconfig.myconfig_get()?
+	cfg := myconfig.get() ?
 
 	mut ourreset := false
 	mut clean := false
@@ -29,7 +29,9 @@ pub fn main(cmd cli.Command) ? {
 	}
 	base() or { return error(' ** ERROR: cannot prepare system. Error was:\n$err') }
 
-	sites_download(cmd) or { return error(' ** ERROR: cannot get web & wiki sites. Error was:\n$err') }
+	sites_download(cmd) or {
+		return error(' ** ERROR: cannot get web & wiki sites. Error was:\n$err')
+	}
 
 	nodejs.install(cfg) or { return error(' ** ERROR: cannot install nodejs. Error was:\n$err') }
 
@@ -41,7 +43,7 @@ pub fn main(cmd cli.Command) ? {
 }
 
 pub fn base() ? {
-	myconfig :=myconfig.myconfig_get()?
+	myconfig := myconfig.get() ?
 	base := myconfig.paths.base
 
 	mut node := builder.node_get({}) or {
@@ -57,7 +59,7 @@ pub fn base() ? {
 }
 
 pub fn config_get(cmd cli.Command) ?myconfig.ConfigRoot {
-	mut cfg :=myconfig.myconfig_get()?
+	mut cfg := myconfig.get() ?
 	for flag in cmd.flags {
 		if flag.name == 'pull' && flag.value.len > 0 {
 			cfg.pull = true
@@ -73,7 +75,7 @@ pub fn config_get(cmd cli.Command) ?myconfig.ConfigRoot {
 }
 
 pub fn reset() ? {
-	myconfig :=myconfig.myconfig_get()?
+	myconfig := myconfig.get() ?
 	base := myconfig.paths.base
 	assert base.len > 10 // just to make sure we don't erase all
 	script := '
@@ -87,13 +89,11 @@ pub fn reset() ? {
 	println(' - removed the ~/.publishtools')
 }
 
-
 pub fn publishtools_update() ? {
 	script := '
 	rm -f /usr/local/bin/publishtools
 	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/crystaluniverse/publishtools/master/scripts/install.sh)"
 	'
 	process.execute_silent(script) ?
-	println (" -update done")
-
+	println(' -update done')
 }

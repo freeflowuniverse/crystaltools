@@ -4,11 +4,12 @@ import myconfig
 import process
 import gittools
 import cli
+import os
+import json
 
 fn website_conf_repo_get(cmd &cli.Command) ?(myconfig.ConfigRoot, &gittools.GitRepo) {
-
-	mut name := ""
-	mut conf :=myconfig.myconfig_get()?
+	mut name := ''
+	mut conf := myconfig.get() ?
 
 	for flag in cmd.flags {
 		if flag.name == 'repo' {
@@ -18,15 +19,15 @@ fn website_conf_repo_get(cmd &cli.Command) ?(myconfig.ConfigRoot, &gittools.GitR
 		}
 	}
 
-	if name ==""{
+	if name == '' {
 		return error("please specify repo name with '-r name', can be part of name")
 	}
 
 	mut res := []string{}
-	for site in conf.sites_get() {
+	for mut site in conf.sites_get() {
 		if site.cat == myconfig.SiteCat.web {
 			if site.name.contains(name) {
-				res << site.name
+				res << site.reponame()
 			}
 		}
 	}
@@ -42,7 +43,10 @@ fn website_conf_repo_get(cmd &cli.Command) ?(myconfig.ConfigRoot, &gittools.GitR
 	}
 
 	mut gt := gittools.new(conf.paths.code) or { return error('ERROR: cannot load gittools:$err') }
-	mut repo := gt.repo_get(name: name) or { return error('ERROR: cannot find repo: $name\n$err') }
+	reponame := conf.reponame(name) ?
+	mut repo := gt.repo_get(name: reponame) or {
+		return error('ERROR: cannot find repo: $name\n$err')
+	}
 
 	return conf, repo
 }
@@ -63,25 +67,38 @@ pub fn website_build(cmd &cli.Command) ? {
 		}
 	}
 
-	if ! arg {
+	mut conf := myconfig.get() ?
+	mut sites := conf.sites_get()
+
+	if !arg {
 		println(' - build all websites')
-		mut conf :=myconfig.myconfig_get()?
 		mut gt := gittools.new(conf.paths.code) or {
 			return error('ERROR: cannot load gittools:$err')
 		}
-		for site in conf.sites_get() {
+		for site in sites {
 			if site.cat == myconfig.SiteCat.web {
 				mut repo2 := gt.repo_get(name: site.name) or {
 					return error('ERROR: cannot find repo: $site.name\n$err')
 				}
 				println(' - build website: $repo2.path')
 				process.execute_stdout('$repo2.path/build.sh') ?
+				os.write_file('$conf.paths.publish/$site.name/.domains.json', json.encode(map{
+					'domains': site.domains
+				})) ?
 			}
 		}
 	} else {
 		_, repo := website_conf_repo_get(cmd) ?
 		println(' - build website: $repo.path')
 		// be careful process stops after interactive execute
-		process.execute_interactive('$repo.path/build.sh') ?
+		// process.execute_interactive('$repo.path/build.sh') ?
+		for site in sites {
+			if site.name == repo.addr.name {
+				os.write_file('$conf.paths.publish/$site.name/.domains.json', json.encode(map{
+					'domains': site.domains
+				})) ?
+				break
+			}
+		}
 	}
 }
