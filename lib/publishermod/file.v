@@ -5,7 +5,7 @@ import os
 fn (mut file File) consumer_page_register(consumer_page_id int, mut publisher Publisher) {
 	page := publisher.page_get_by_id(consumer_page_id) or { panic(err) }
 	if page.site_id != file.site_id {
-		panic('can only register page for same site, is bug')
+		panic('can only register page for same site, is bug (site:$file.name:$file.site_id)\n$page\n')
 	}
 	if !(consumer_page_id in file.usedby) {
 		file.usedby << consumer_page_id

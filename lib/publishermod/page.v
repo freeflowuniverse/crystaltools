@@ -23,6 +23,13 @@ pub fn (page Page) write(mut publisher Publisher, content string) {
 // }
 
 fn (mut page Page) error_add(error PageError, mut publisher Publisher) {
+
+	for error_existing in page.errors{
+		if error_existing.msg.trim(" ") == error.msg.trim(" "){
+			return
+		}
+	}
+
 	if page.state != PageStatus.error {
 		// only add when not in error mode yet, because means check was already done
 		// println(' - ERROR: $error.msg')
@@ -93,7 +100,12 @@ fn (mut state LineProcessorState) error(msg string) {
 	// state.lines_source << '> **ERROR: $page_error.msg **<BR>\n\n'
 	if !(state.page.name in ['sidebar', 'navbar']) {
 		state.lines_server << '> **ERROR: $page_error.msg **<BR>\n\n'
-		// println(' > Error: $state.page.name: $msg')
+		// if msg.contains("disclaimer") && state.page.name == "humanity"{
+		// 	eprintln(state.page.name)
+		// 	eprintln(page_error)
+		// 	panic("s")
+		// }
+		// println(' > Error: $state.page.name:  $msg\n$page_error')
 	}
 }
 
@@ -112,7 +124,7 @@ fn (mut state LineProcessorState) sourceline_change(ffrom string, tto string) {
 // walk over each line in the page and do the link parsing on it
 // will also look for definitions
 // happens line per line
-fn (mut page Page) process_lines(mut publisher Publisher, dodefs bool) ? {
+fn (mut page Page) process_lines(mut publisher Publisher, do_defs bool) ? {
 	mut state := LineProcessorState{
 		site: &publisher.sites[page.site_id]
 		publisher: publisher
@@ -131,7 +143,7 @@ fn (mut page Page) process_lines(mut publisher Publisher, dodefs bool) ? {
 	}
 
 	for line in page.content.split_into_lines() {
-		// println ("LINK: $line")
+		// eprintln (" >> LINE: $line")
 
 		// the default has been done, which means the source & server have the last line
 		// now its up to the future to replace that last line or not
@@ -147,7 +159,7 @@ fn (mut page Page) process_lines(mut publisher Publisher, dodefs bool) ? {
 			continue
 		}
 
-		if dodefs {
+		if do_defs {
 			if linestrip.starts_with('!!!def') {
 				if ':' in line {
 					splitted := line.split(':')
@@ -181,7 +193,7 @@ fn (mut page Page) process_lines(mut publisher Publisher, dodefs bool) ? {
 			mut page_name_include := linestrip['!!!include'.len + 1..]
 			// println('-includes-- $page_name_include')
 
-			page_linked = publisher.page_check_find(page_name_include, state.site.id) or {
+			page_linked = publisher.page_check_find(page_name_include, state.page.id) or {
 				state.error('include, cannot find page: ${page_name_include}.\n$err')
 				continue
 			}
@@ -224,7 +236,7 @@ fn (mut page Page) process_lines(mut publisher Publisher, dodefs bool) ? {
 			}
 
 			if link.cat == LinkType.page {
-				page_linked = publisher.page_check_find(link.original_link, state.site.id) or {
+				page_linked = publisher.page_check_find(link.original_link, state.page.id) or {
 					state.error('link, cannot find page: ${link.original_link}.\n$err')
 					continue
 				}

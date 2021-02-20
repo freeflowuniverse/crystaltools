@@ -37,7 +37,11 @@ fn (mut site Site) file_remember(path string, name string, mut publisher Publish
 		publisher.files << file
 		site.files[namelower] = publisher.files.len - 1
 	}
-	return &publisher.files[(publisher.files.len - 1)]
+	file0 := site.file_get(namelower, mut publisher) or { panic(err) }
+	if file0.site_id > 1000 {
+		panic('cannot be')
+	}
+	return file0
 }
 
 // remember the file, so we know if we have duplicates

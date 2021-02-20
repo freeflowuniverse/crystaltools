@@ -74,7 +74,7 @@ pub fn name_split(name string) ?(string, string) {
 		return error('objname empty')
 	}
 
-	eprintln(" >> namesplit: '$sitename' '$objname'")
+	// eprintln(" >> namesplit: '$sitename' '$objname'")
 
 	return sitename, objname
 }
