@@ -67,11 +67,14 @@ pub fn name_split(name string) ?(string, string) {
 		}
 	}
 	// make sure we don't have the e.g. img/ in
+	if objname.trim('/ ') == '' {
+		return error('objname empty: $name')
+	}
 	if objname.ends_with('/') {
-		return error("objname cannot end with /: now '$objname'")
+		return error("objname cannot end with /: now '$name'")
 	}
 	if objname.trim(' ') == '' {
-		return error('objname empty')
+		return error('objname empty: $name')
 	}
 
 	// eprintln(" >> namesplit: '$sitename' '$objname'")

@@ -199,7 +199,7 @@ fn (mut page Page) process_lines(mut publisher Publisher, do_defs bool) ? {
 			}
 
 			if page_linked.path_get(mut publisher) == page.path_get(mut publisher) {
-				state.error('recursive include: ${page_linked.path_get(mut publisher)}')
+				state.error('recursive include: ${page_linked.path_get(mut publisher)}\n${ page.path_get(mut publisher)}')
 				continue
 			}
 
@@ -244,7 +244,7 @@ fn (mut page Page) process_lines(mut publisher Publisher, do_defs bool) ? {
 			}
 
 			if link.cat == LinkType.file {
-				mut file_linked := publisher.file_check_find(link.original_link, state.site.id) or {
+				mut file_linked := publisher.file_check_find(link.original_link, state.page.id) or {
 					state.error('link, cannot find file: ${link.original_link}.\n$err')
 					continue
 				}
@@ -290,7 +290,7 @@ fn (mut page Page) content_defs_replaced(mut publisher Publisher) ?string {
 	tr := texttools.tokenize(page.content)
 	mut text2 := page.content
 	for def, pageid in publisher.defs {
-		page_def := publisher.page_get_by_id(pageid) or { panic(err) }
+		page_def := publisher.page_get_by_id(pageid) or { panic("page get by id:$pageid\n$err") }
 		// don't replace on your own page
 		if page_def.name != page.name {
 			for item in tr.items {
