@@ -57,7 +57,7 @@ pub fn (mut node Node) platform_prepare() ? {
 		println('ubuntu prepare')
 		for x in ['mc', 'git', 'rsync', 'curl'] {
 			if !node.cmd_exists(x) {
-				node.package_install(name: 'x') ?
+				node.package_install(name: x) ?
 			}
 		}
 	} else {
@@ -66,7 +66,7 @@ pub fn (mut node Node) platform_prepare() ? {
 }
 
 pub fn (mut node Node) package_install(package Package) ? {
-	name := package.name
+	name := package.namePaca
 	node.platform_load()
 	if node.platform == PlatformType.osx {
 		node.executor.exec('brew install $name') or {
