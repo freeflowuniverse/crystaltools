@@ -3,7 +3,7 @@ module myconfig
 fn site_config(mut c ConfigRoot) {
 	c.sites << SiteConfig{
 		name: 'www_threefold_io'
-		alias: 'tf'
+		shortname: 'tf'
 		url: 'https://github.com/threefoldfoundation/www_threefold_io'
 		cat: SiteCat.web
 		descr: 'is our entry point for everyone, redirect to the detailed websites underneith.'
@@ -11,7 +11,7 @@ fn site_config(mut c ConfigRoot) {
 	}
 	c.sites << SiteConfig{
 		name: 'www_threefold_cloud'
-		alias: 'cloud'
+		shortname: 'cloud'
 		url: 'https://github.com/threefoldfoundation/www_threefold_cloud'
 		cat: SiteCat.web
 		domains: ['cloud.threefold.io', 'cloud.threefold.me']
@@ -19,7 +19,7 @@ fn site_config(mut c ConfigRoot) {
 	}
 	c.sites << SiteConfig{
 		name: 'www_threefold_farming'
-		alias: 'farming'
+		shortname: 'farming'
 		url: 'https://github.com/threefoldfoundation/www_threefold_farming'
 		cat: SiteCat.web
 		domains: ['farming.threefold.io', 'farming.threefold.me']
@@ -27,7 +27,7 @@ fn site_config(mut c ConfigRoot) {
 	}
 	c.sites << SiteConfig{
 		name: 'www_threefold_twin'
-		alias: 'twin'
+		shortname: 'twin'
 		url: 'https://github.com/threefoldfoundation/www_threefold_twin'
 		cat: SiteCat.web
 		domains: ['twin.threefold.io', 'twin.threefold.me']
@@ -35,7 +35,7 @@ fn site_config(mut c ConfigRoot) {
 	}
 	c.sites << SiteConfig{
 		name: 'www_threefold_marketplace'
-		alias: 'marketplace'
+		shortname: 'marketplace'
 		url: 'https://github.com/threefoldfoundation/www_threefold_marketplace'
 		cat: SiteCat.web
 		domains: ['now.threefold.io', 'marketplace.threefold.io', 'now.threefold.me', 'marketplace.threefold.me']
@@ -43,7 +43,7 @@ fn site_config(mut c ConfigRoot) {
 	}
 	c.sites << SiteConfig{
 		name: 'www_conscious_internet'
-		alias: 'conscious_internet'
+		shortname: 'conscious_internet'
 		url: 'https://github.com/threefoldfoundation/www_conscious_internet'
 		cat: SiteCat.web
 		domains: ['www.consciousinternet.org', 'eco.threefold.io', 'community.threefold.io', 'eco.threefold.me',
@@ -53,7 +53,7 @@ fn site_config(mut c ConfigRoot) {
 	}
 	c.sites << SiteConfig{
 		name: 'www_threefold_tech'
-		alias: 'tech'
+		shortname: 'tech'
 		url: 'https://github.com/threefoldtech/www_threefold_tech'
 		cat: SiteCat.web
 		domains: ['www.threefold.tech']
@@ -61,7 +61,7 @@ fn site_config(mut c ConfigRoot) {
 	}
 	c.sites << SiteConfig{
 		name: 'www_examplesite'
-		alias: 'example'
+		shortname: 'example'
 		url: 'https://github.com/threefoldfoundation/www_examplesite'
 		cat: SiteCat.web
 		domains: ['example.threefold.io']
@@ -69,7 +69,7 @@ fn site_config(mut c ConfigRoot) {
 	}
 	c.sites << SiteConfig{
 		name: 'info_threefold'
-		alias: 'threefold'
+		shortname: 'threefold'
 		//will be moved to this url
 		// url: 'https://github.com/threefoldfoundation/info_threefold'
 		url: 'https://github.com/threefoldfoundation/info_foundation_archive'
@@ -78,47 +78,47 @@ fn site_config(mut c ConfigRoot) {
 	}
 	// c.sites << SiteConfig{
 	// 	name: 'info_marketplace'
-	// 	alias: 'marketplace'
+	// 	shortname: 'marketplace'
 	// 	url: 'https://github.com/threefoldfoundation/info_marketplace'
 	// }
 	c.sites << SiteConfig{
 		name: 'info_sdk'
-		alias: 'sdk'
+		shortname: 'sdk'
 		url: 'https://github.com/threefoldfoundation/info_sdk'
 		domains: ['sdk.threefold.io', 'sdk_info.threefold.io']
 		descr: 'for IAC, devops, how to do Infrastruture As Code, 3bot, Ansible, tfgrid-sdk, ...'
 	}
 	c.sites << SiteConfig{
 		name: 'info_legal'
-		alias: 'legal'
+		shortname: 'legal'
 		url: 'https://github.com/threefoldfoundation/info_legal'
 		domains: ['legal.threefold.io', 'legal_info.threefold.io']
 		descr :''
 	}
 	c.sites << SiteConfig{
 		name: 'info_cloud'
-		alias: 'cloud'
+		shortname: 'cloud'
 		url: 'https://github.com/threefoldfoundation/info_cloud'
 		domains: ['cloud_info.threefold.io']
 		descr :'how to use the cloud for deploying apps: evdc, kubernetes, planetary fs, ... + marketplace solutions '
 	}
 	c.sites << SiteConfig{
 		name: 'info_tftech'
-		alias: 'tftech'
+		shortname: 'tftech'
 		url: 'https://github.com/threefoldtech/info_tftech'
 		domains: ['info.threefold.tech']
 		descr :''
 	}
 	c.sites << SiteConfig{
 		name: 'info_digitaltwin'
-		alias: 'twin'
+		shortname: 'twin'
 		url: 'https://github.com/threefoldfoundation/info_digitaltwin.git'
 		domains: ['twin_info.threefold.io']
 		descr :''
 	}
 	c.sites << SiteConfig{
 		name: 'data_threefold'
-		alias: 'data'
+		shortname: 'data'
 		url: 'https://github.com/threefoldfoundation/data_threefold'
 		cat: SiteCat.data
 		domains: []string{}

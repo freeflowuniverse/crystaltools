@@ -3,9 +3,9 @@
 @for site in sites
 	<div>
 		@if site.cat == .wiki
-		<a href="@{site.alias}/">@{site.name}</a> 
+		<a href="@{site.shortname}/">@{site.name}</a> 
 		&nbsp;&nbsp;	
-		<a href="@{site.alias}/errors">errors check</a>
+		<a href="@{site.shortname}/errors">errors check</a>
 		@end	
 	</div>
 @end

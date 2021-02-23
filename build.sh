@@ -1,8 +1,8 @@
 set -ex
 cd publishtools
 
-cp publishermod/index_root.html .
-cp publishermod/errors.html .
+#cp publishermod/index_root.html .
+#cp publishermod/errors.html .
 
 v -prod  publishtools.v
 #v  publishtools.v

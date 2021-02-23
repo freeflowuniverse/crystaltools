@@ -68,25 +68,22 @@ fn (link Link) original_get() string {
 // return how to represent link on server
 fn (link Link) server_get() string {
 	if link.cat == LinkType.page {
-		return '[$link.description](page__${link.site}__${link.filename}.md $link.extra)'
+		return '[$link.description](${link.site}__${link.filename}.md)'
 	}
 	if link.cat == LinkType.file {
-		if link.isimage {
-			return '![$link.description](file__${link.site}__$link.filename  $link.extra)'
-		} else {
-			return '[$link.description](file__${link.site}__${link.filename}.md $link.extra)'
-		}
+		return '![$link.description](${link.site}__$link.filename  $link.extra)'
 	}
 	return link.original_get()
 }
 
 // return how to represent link on source
 fn (mut link Link) source_get(sitename string) string {
+	// println(" >>< $sitename $link.site")
 	if link.cat == LinkType.page {
 		if ':' in link.filename {
 			panic("should not have ':' in link for page or file.\n$link")
 		}
-		if sitename == link.site {
+		if sitename == link.site{
 			return '[$link.description]($link.filename)'
 		} else {
 			return '[$link.description]($link.site:$link.filename)'
@@ -169,6 +166,9 @@ fn (mut link Link) init_() {
 			splitted2 := link.filename.split(':')
 			if splitted2.len == 2 {
 				link.site = name_fix(splitted2[0])
+				if link.site.starts_with("info_"){
+					link.site = link.site[5..]
+				}
 				link.filename = splitted2[1]
 			} else if splitted2.len > 2 {
 				link.state = LinkState.error
@@ -223,14 +223,12 @@ fn (mut link Link) init_() {
 
 // used by the line processor on page (page walks over content line by line to parts links, checks if valid here)
 fn (mut link Link) check(mut publisher Publisher, mut page Page, linenr int, line string) {
-	mut filename_complete := ''
-	mut site := &publisher.sites[page.site_id]
+	// mut filename_complete := ''
+	// mut site := &publisher.sites[page.site_id]
 
 	link.description = link.original_descr
-	if link.site == '' {
-		link.site = site.name
-	}
-	filename_complete = '$link.site:$link.filename'
+
+	// filename_complete = '$link.site:$link.filename'
 
 	if link.cat in [LinkType.file, LinkType.page] {
 		// check if there are pagename or sitename changes

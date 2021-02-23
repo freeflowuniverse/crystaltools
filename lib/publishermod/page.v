@@ -107,6 +107,7 @@ fn (mut state LineProcessorState) error(msg string) {
 		// }
 		// println(' > Error: $state.page.name:  $msg\n$page_error')
 	}
+	// println(page_error)
 }
 
 fn (mut state LineProcessorState) serverline_change(ffrom string, tto string) {
@@ -131,12 +132,19 @@ fn (mut page Page) process_lines(mut publisher Publisher, do_defs bool) ? {
 		page: page
 	}
 
+	mut debug:=false
+
 	mut page_linked := Page{}
 
 	// first we need to do the links, then the process_includes
 
 	state.site = &publisher.sites[page.site_id]
 	state.publisher = publisher
+
+	// println(state.site.name + " " + state.page.name)
+	// if state.site.name == "sdk" && state.page.name.starts_with("sidebar"){
+	// 	debug = true
+	// }
 
 	if state.site.error_ignore_check(page.name) {
 		return
@@ -157,6 +165,10 @@ fn (mut page Page) process_lines(mut publisher Publisher, do_defs bool) ? {
 		if linestrip.trim(' ').starts_with('> **ERROR') {
 			// these are error messages which will be rewritten if errors are still there
 			continue
+		}
+
+		if debug{
+			println(" >> $line")
 		}
 
 		if do_defs {
@@ -254,8 +266,26 @@ fn (mut page Page) process_lines(mut publisher Publisher, do_defs bool) ? {
 				}
 			}
 
+
 			if link.cat == LinkType.page || link.cat == LinkType.file {
 				// only process links if page or file
+
+				if ":" in linkname{
+					mut sitename9,_ := name_split(linkname) or {panic(err)}
+					link.site = sitename9
+				}
+
+				if link.site == "" {
+					link.site = state.site.name
+				}
+
+				if debug{
+					println(" >>>> process link \n$link")
+					println(" >>< sitename:$state.site.name linksitename:$link.site")	
+					// if link.filename.contains("disclaimer"){
+					// 	panic("s")
+					// }				
+				}
 
 				if linkname != link.filename {
 					link.filename = linkname
@@ -264,12 +294,26 @@ fn (mut page Page) process_lines(mut publisher Publisher, do_defs bool) ? {
 				if link.state == LinkState.ok {
 					if link.original_get() != link.source_get(state.site.name) {
 						state.sourceline_change(link.original_get(), link.source_get(state.site.name))
+						if debug{
+							println(" >>>> ${link.original_get()} -> ${link.source_get(state.site.name)}")
+						}
 					}
-					state.serverline_change(link.original_get(), link.source_get(state.site.name))
+					state.serverline_change(link.original_get(), link.server_get())
+					if debug{
+						println(" >>>> server: ${link.original_get()} -> ${link.server_get()}")
+					}
 				}
 			}
 		} // end of the walk over all links
 	} // end of the line walk
+
+	// now we need to rewrite the source & server lines
+	page.content = state.lines_server.join("\n")
+
+	if state.changed_source{
+		os.write_file(page.path_get(mut publisher),state.lines_source.join("\n")) or {panic(err)}
+	}
+
 }
 
 fn (mut page Page) title() string {

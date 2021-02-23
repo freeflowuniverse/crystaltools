@@ -18,26 +18,26 @@ fn (mut publisher Publisher) find_sites(path string) ? {
 
 // load a site into the publishing tools
 // name of the site needs to be unique
-fn (mut publisher Publisher) load_site(config SiteConfig, path string) ? {
+fn (mut publisher Publisher) load_site(repoconfig SiteRepoConfig, path string) ? {
 	mut cfg := myconfig.get()?	
-	sitename := name_fix(config.name)
-	mut _ := cfg.site_get(sitename) or {
-		return error("$cfg\n -- ERROR: sitename in config file ($sitename) on repo in git, does not correspond with configname publishtools config.")
+	repoconfig_site := name_fix(repoconfig.name)
+	mut myconfig_site := cfg.site_get(repoconfig_site) or {
+		return error("$cfg\n -- ERROR: sitename in config file ($repoconfig_site) on repo in git, does not correspond with configname publishtools config.")
 	}
 	path2 := path.replace('~', os.home_dir())
-	println(' - load publisher: $sitename - $path2')
-	if !publisher.site_exists(sitename) {
+	println(' - load publisher: $repoconfig_site -> $myconfig_site.shortname - $path2')
+	if !publisher.site_exists(myconfig_site.shortname) {
 		id := publisher.sites.len
 		mut site := Site{
 			id: id
 			path: path2
-			name: sitename
+			name: myconfig_site.shortname
 		}
-		site.config = config
+		site.config = repoconfig
 		publisher.sites << site
-		publisher.site_names[sitename] = id
+		publisher.site_names[myconfig_site.shortname] = id
 	} else {
-		return error("should not load on same name 2x: '$sitename'")
+		return error("should not load on same name 2x: '$myconfig_site.shortname'")
 	}
 }
 
@@ -67,11 +67,11 @@ fn (mut publisher Publisher) find_sites_recursive(path string) ? {
 				content := os.read_file(os.join_path(pathnew, 'wikiconfig.json')) or {
 					return error('Failed to load json ${os.join_path(pathnew, 'wikiconfig.json')}')
 				}
-				config := json.decode(SiteConfig, content) or {
+				repoconfig := json.decode(SiteRepoConfig, content) or {
 					// eprintln()
 					return error('Failed to decode json ${os.join_path(pathnew, 'wikiconfig.json')}')
 				}
-				publisher.load_site(config, pathnew) or { panic(err) }
+				publisher.load_site(repoconfig, pathnew) or { panic(err) }
 				continue
 			}
 			if item == '.git' {

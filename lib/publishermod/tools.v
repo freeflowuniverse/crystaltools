@@ -16,20 +16,30 @@ pub fn name_fix_no_underscore(name string) string {
 	return pagename.replace('_', '')
 }
 
-pub fn name_fix_keepext(name string) string {
-	mut pagename := name.to_lower()
-	if '#' in pagename {
-		pagename = pagename.split('#')[0]
+pub fn name_fix_keepext(name_ string) string {
+	mut name := name_.to_lower()
+	if '#' in name {
+		name = name.split('#')[0]
 	}
-	// need to replace . to _ but not the last one (because is ext) (TODO:)
-	pagename = pagename.replace(' ', '_')
-	pagename = pagename.replace('-', '_')
-	pagename = pagename.replace('__', '_')
-	pagename = pagename.replace('__', '_') // needs to be 2x because can be 3 to 2 to 1
-	pagename = pagename.replace(';', ':')
-	pagename = pagename.replace('::', ':')
-	pagename = pagename.trim(' .:')
-	return pagename
+	
+	name = name.replace(' ', '_')
+	name = name.replace('-', '_')
+	name = name.replace(';', ':')
+	name = name.replace('::', ':')
+	name = name.trim(' .:')
+
+	// need to replace . to _ but not the last one (because is ext) 
+	extension := os.file_ext(name).trim('.')
+	if extension != "" {
+		name = name[..(name.len-extension.len-1)]
+		name = name.replace('.', '_')
+		name += ".$extension"
+	}
+
+	name = name.replace('__', '_')
+	name = name.replace('__', '_') // needs to be 2x because can be 3 to 2 to 1	
+
+	return name
 }
 
 // return (sitename,pagename)
@@ -37,12 +47,15 @@ pub fn name_fix_keepext(name string) string {
 pub fn name_split(name string) ?(string, string) {
 	mut objname := name.trim(' ')
 	objname = objname.trim_left('.')
-	if objname.starts_with('file__') || objname.starts_with('page__') {
-		objname = objname[6..]
-		sitename := objname.split('__')[0]
-		itemname := objname.split('__')[1]
-		objname = '$sitename:$itemname'
+
+	if "__" in name {
+		parts := name.split("__")
+		if parts.len != 2{
+			return error('filename not well formatted. Needs to have 2 parts around "__". Now ${name}.')
+		}
+		objname = '${parts[0].trim(" ")}:${parts[1].trim(" ")}'
 	}
+
 	// to deal with things like "img/tf_world.jpg ':size=300x160'"
 	splitted0 := objname.split(' ')
 	if splitted0.len > 0 {

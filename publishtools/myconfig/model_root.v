@@ -30,7 +30,7 @@ pub mut:
 
 pub fn (mut config ConfigRoot) path_publish_wiki_get(name string) ?string {
 	config_site := config.site_wiki_get(name) ?
-	return '$config.paths.publish/wiki_$config_site.alias'
+	return '$config.paths.publish/wiki_$config_site.shortname'
 }
 
 // NOT WORKING YET
@@ -48,7 +48,7 @@ pub fn (mut config ConfigRoot) path_publish_web_get(name string) ?string {
 pub fn (mut config ConfigRoot) path_publish_web_get_domain(domain string) ?string {
 	for s in config.sites {
 		if domain in s.domains {
-			return config.path_publish_web_get(s.alias)
+			return config.path_publish_web_get(s.shortname)
 		}
 	}
 	return error('Cannot find wiki site with domain: $domain')
@@ -57,19 +57,19 @@ pub fn (mut config ConfigRoot) path_publish_web_get_domain(domain string) ?strin
 pub fn (mut config ConfigRoot) name_web_get(domain string) ?string {
 	for s in config.sites {
 		if domain in s.domains {
-			return s.name
+			return s.shortname
 		}
 	}
 	return error('Cannot find wiki site with domain: $domain')
 }
 
-//get the domain starting from the alias
+//get the domain starting from the shortname
 //only for wiki's
-pub fn (mut config ConfigRoot) domain_web_get(alias string) ?string {
+pub fn (mut config ConfigRoot) domain_web_get(shortname string) ?string {
 	for s in config.sites {
-		if alias == s.alias && s.cat == SiteCat.wiki{
+		if shortname == s.shortname && s.cat == SiteCat.wiki{
 			return s.domains[0]
 		}
 	}
-	return error('Cannot find wiki site with alias: $alias')
+	return error('Cannot find wiki site with shortname: $shortname')
 }

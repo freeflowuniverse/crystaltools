@@ -31,7 +31,7 @@ fn (mut publisher Publisher) defs_pages_init() {
 
 		deftitle := page.title()
 
-		out << '| [$defname](page__${site.name}__${page.name}.md) | $deftitle |'
+		out << '| [$defname](${site.name}:${page.name}.md) | $deftitle |'
 	}
 
 	out << ''
@@ -49,7 +49,7 @@ fn (mut publisher Publisher) defs_pages_init() {
 		}
 		publisher.pages << page
 		site.pages['defs'] = publisher.pages.len - 1
-		page.write(mut publisher, page.content)
+		// page.write(mut publisher, page.content)
 	}
 }
 

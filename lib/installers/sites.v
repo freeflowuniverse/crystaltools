@@ -19,14 +19,14 @@ pub fn sites_list(cmd &cli.Command) ? {
 			return error('cannot detect if there are changes on repo.\n$err')
 		}
 		mut changed := ''
-		mut alias := ''
+		mut shortname := ''
 		if change {
 			changed = ' (CHANGED)'
 		}
-		if site.alias != '' {
-			alias = '$site.alias:  '
+		if site.shortname != '' {
+			shortname = '$site.shortname:  '
 		}
-		println(' - $alias$site.name $changed')
+		println(' - $shortname$site.name $changed')
 	}
 }
 
@@ -74,10 +74,10 @@ fn flag_repo_do(cmd cli.Command, reponame string, site myconfig.SiteConfig) bool
 	for flag in cmd.flags {
 		if flag.name == 'repo' {
 			if flag.value.len > 0 {
-				// println("match $reponame $site.alias")
+				// println("match $reponame $site.shortname")
 				if reponame.to_lower().contains(flag.value[0].to_lower()) {
 					return true
-				} else if site.alias.to_lower().contains(flag.value[0].to_lower()) {
+				} else if site.shortname.to_lower().contains(flag.value[0].to_lower()) {
 					return true
 				} else {
 					return false

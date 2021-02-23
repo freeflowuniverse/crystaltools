@@ -9,7 +9,7 @@ pub mut:
 	branch    string = 'default' // means is the default branch
 	pull      bool
 	cat       SiteCat
-	alias     string
+	shortname     string
 	path_code string
 	domains   []string
 	descr	 string
@@ -35,14 +35,14 @@ pub fn (config ConfigRoot) site_get(name string) ?SiteConfig {
 		if site.name.to_lower() == name.to_lower() {
 			return site
 		}
-		if site.alias.to_lower() == name.to_lower() {
+		if site.shortname.to_lower() == name.to_lower() {
 			return site
 		}		
 	}
 	return error('Cannot find wiki site with name: $name')
 }
 
-// return using alias or name (will first use alias)
+// return using shortname or name (will first use shortname)
 pub fn (mut config ConfigRoot) site_web_get(name string) ?SiteConfig {
 	mut name2 := name.to_lower()
 	if name2.starts_with('www_') {
@@ -53,7 +53,7 @@ pub fn (mut config ConfigRoot) site_web_get(name string) ?SiteConfig {
 	}
 	for site in config.sites {
 		if site.cat == SiteCat.web {
-			if site.alias.to_lower() == name2 {
+			if site.shortname.to_lower() == name2 {
 				return site
 			}
 			if site.name.to_lower() == name2 {
@@ -64,7 +64,7 @@ pub fn (mut config ConfigRoot) site_web_get(name string) ?SiteConfig {
 	return error('Cannot find web site with name: $name')
 }
 
-// return using alias or name (will first use alias)
+// return using shortname or name (will first use shortname)
 pub fn (mut config ConfigRoot) site_wiki_get(name string) ?SiteConfig {
 	mut name2 := name.to_lower()
 	if name2.starts_with('wiki_') {
@@ -75,7 +75,7 @@ pub fn (mut config ConfigRoot) site_wiki_get(name string) ?SiteConfig {
 	}
 	for site in config.sites {
 		if site.cat == SiteCat.wiki {
-			if site.alias.to_lower() == name2 {
+			if site.shortname.to_lower() == name2 {
 				return site
 			}
 			if site.name.to_lower() == name2 {
@@ -86,7 +86,7 @@ pub fn (mut config ConfigRoot) site_wiki_get(name string) ?SiteConfig {
 	return error('Cannot find wiki site with name: $name')
 }
 
-// return using alias or name (will first use alias)
+// return using shortname or name (will first use shortname)
 pub fn (mut config ConfigRoot) sites_get() []SiteConfig {
 	mut sites := []SiteConfig{}
 	for site in config.sites {

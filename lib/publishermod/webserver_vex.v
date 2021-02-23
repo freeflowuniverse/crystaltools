@@ -33,86 +33,76 @@ fn helloworld(req &ctx.Req, mut res ctx.Resp) {
 	res.send('Hello World! $myconfig.paths.base', 200)
 }
 
-fn path_wiki_get(mut config myconfig.ConfigRoot, sitename string, name string) ?(FileType, string) {
-	filetype, mut name2 := filetype_name_get(mut config, sitename, name) ?
-	mut path2 := os.join_path(config.paths.publish, sitename.replace('info_', 'wiki_'),
-		name2)
-
-	if name2 == 'readme.md' && (!os.exists(path2)) {
-		name2 = 'sidebar.md'
-		path2 = os.join_path(config.paths.publish, sitename, name2)
+fn path_wiki_get(mut config myconfig.ConfigRoot, sitename_ string, name_ string) ?(FileType, string) {
+	filetype, sitename, mut name := filetype_site_name_get(mut config, sitename_, name_) ?
+	
+	mut path2 := os.join_path(config.paths.publish, sitename, name)
+	if name == 'readme.md' && (!os.exists(path2)) {
+		name = 'sidebar.md'
+		path2 = os.join_path(config.paths.publish, sitename, name)
 	}
 	// println('  > get: $path2 ($name)')
 
 	if !os.exists(path2) {
 		return error('cannot find file in: $path2')
 	}
-
 	return filetype, path2
 }
 
-fn filetype_name_get(mut config myconfig.ConfigRoot, site string, name string) ?(FileType, string) {
+fn filetype_site_name_get(mut config myconfig.ConfigRoot, site string, name_ string) ?(FileType, string,string) {
 	// println(" - wiki get: '$site' '$name'")
 	site_config := config.site_wiki_get(site) ?
-	mut name2 := name.to_lower().trim(' ').trim('.').trim(' ')
-	// mut path2 := ''
-	extension := os.file_ext(name2).trim('.')
-	mut sitename := site_config.alias
+	mut name := name_.to_lower().trim(' ').trim('.').trim(' ')
+	extension := os.file_ext(name).trim('.')
+	mut sitename := site_config.shortname
 	if sitename.starts_with('wiki_') || sitename.starts_with('info_') {
-		sitename = sitename[5..]
+		panic("sitename short cannot start with wiki_ or info_.\n$site_config")
 	}
 
-	if name.starts_with('file__') || name.starts_with('page__') || name.starts_with('html__') {
-		splitted := name.split('__')
-		if splitted.len != 3 {
-			return error('filename not well formatted. Needs to have 3 parts. Now $name2 .')
+	if "__" in name {
+		parts := name.split("__")
+		if parts.len != 2{
+			return error('filename not well formatted. Needs to have 2 parts around "__". Now ${name}.')
 		}
-		name2 = splitted[2]
-		if sitename != splitted[1] {
-			return error('Sitename in name should correspond to ${sitename}. Now $name2 .')
-		}
+		sitename = parts[0].trim(" ")
+		name = parts[1].trim(" ")
 	}
+
 	// println( " - ${app.req.url}")
-	if name2.trim(' ') == '' {
-		name2 = 'index.html'
+	if name.trim(' ') == '' {
+		name = 'index.html'
 	} else {
-		name2 = name_fix_keepext(name2)
+		name = name_fix_keepext(name)
 	}
 
 	mut filetype := FileType{}
-	if name2.starts_with('file__') {
-		// app.set_content_type('text/html')
-		filetype = FileType.file
-	} else if name2.starts_with('page__') {
-		filetype = FileType.wiki
-	} else if name2.starts_with('html__') {
+
+	if name.ends_with('.html') {
 		filetype = FileType.html
-	} else if name2.ends_with('.html') {
-		filetype = FileType.html
-	} else if name2.ends_with('.md') {
+	} else if name.ends_with('.md') {
 		filetype = FileType.wiki
 	} else if extension == '' {
 		filetype = FileType.wiki
 	} else {
-		// consider all to be files (images)
 		filetype = FileType.file
 	}
 
 	if filetype == FileType.wiki {
-		if !name2.ends_with('.md') {
-			name2 += '.md'
+		if !name.ends_with('.md') {
+			name += '.md'
 		}
 	}
 
-	if name2 == '_sidebar.md' {
-		name2 = 'sidebar.md'
+	if name == '_sidebar.md' {
+		name = 'sidebar.md'
 	}
 
-	if name2 == '_navbar.md' {
-		name2 = 'navbar.md'
+	if name == '_navbar.md' {
+		name = 'navbar.md'
 	}
 
-	return filetype, name2
+	// println(" >>>WEB: filetype_site_name_get: $filetype-$sitename-$name")
+	return filetype, sitename, name
 }
 
 fn error_template(req &ctx.Req, sitename string) string {
@@ -179,9 +169,9 @@ fn site_wiki_deliver(mut config myconfig.ConfigRoot, domain string, path string,
 	}
 
 	if publisherobj.develop {
-		filetype, name2 := filetype_name_get(mut config, sitename, name) ?
-		mut site2 := publisherobj.site_get(sitename) or {
-			res.send('Cannot find site: $sitename\n$err', 404)
+		filetype, sitename2, name2 := filetype_site_name_get(mut config, sitename, name) ?
+		mut site2 := publisherobj.site_get(sitename2) or {
+			res.send('Cannot find site: $sitename2\n$err', 404)
 			return
 		}
 		if name2 == 'index.html' {
@@ -319,18 +309,18 @@ fn site_deliver(req &ctx.Req, mut res ctx.Resp) {
 	} else {
 		splitted := path.trim('/').split('/')
 
-		alias := splitted[0]
+		sitename := splitted[0]
 		path = splitted[1..].join('/').trim('/').trim(' ')
 
-		if alias == ""{
+		if sitename == ""{
 			domain ="localhost"
 		}else{
 
-			domain = config.domain_web_get(alias) or {			
-				res.send('unknown domain for $alias', 404)
+			domain = config.domain_web_get(sitename) or {			
+				res.send('unknown domain for $sitename', 404)
 				return
 			}
-			println("DOMAIN:$domain")
+			// println("DOMAIN:$domain")
 		}
 	}
 
