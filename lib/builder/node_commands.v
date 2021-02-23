@@ -66,7 +66,7 @@ pub fn (mut node Node) platform_prepare() ? {
 }
 
 pub fn (mut node Node) package_install(package Package) ? {
-	name := package.namePaca
+	name := package.name
 	node.platform_load()
 	if node.platform == PlatformType.osx {
 		node.executor.exec('brew install $name') or {
