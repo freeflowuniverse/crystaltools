@@ -8,6 +8,9 @@ fn get2() ConfigRoot {
 	c.paths.base = '$os.home_dir()/.publisher'
 	c.paths.publish = '$c.paths.base/publish'
 	c.paths.code = '$os.home_dir()/codewww'
+	if ! os.exists(c.paths.code){
+		os.mkdir(c.paths.code) or {panic(err)}
+	}
 	mut nodejsconfig := NodejsConfig{
 		version: NodejsVersion{
 			cat: NodejsVersionEnum.lts

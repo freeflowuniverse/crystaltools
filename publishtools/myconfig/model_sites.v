@@ -92,7 +92,7 @@ pub fn (mut config ConfigRoot) sites_get() []SiteConfig {
 	for site in config.sites {
 		path := site.path_code
 		if path == '' {
-			panic('code path should not be empty.')
+			panic('we did not find site: $site, was the site downloaded?')
 		}
 		if os.exists(path) {
 			sites << site

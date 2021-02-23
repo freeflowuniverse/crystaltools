@@ -39,6 +39,37 @@ pub fn (mut repo GitRepo) changes() ?bool {
 
 pub struct PullArgs {
 	force bool
+	force_ssh bool
+	force_http bool	
+}
+
+pub fn (mut repo GitRepo) repo_url_get() ? string {
+
+	key_path := "${os.home_dir()}/.ssh/$repo.addr.name"
+
+	// println(" - check keypath: $key_path")
+
+	// println(ssh_agent_key_loaded("info_digitaltwin"))
+	// panic("ss")
+
+	nrkeys, exists := ssh_agent_key_loaded(repo.addr.name)
+	// println(" >>> $nrkeys, $exists")
+
+	if os.exists(key_path){
+		// println(" -- FOUND")
+		if (! exists) || nrkeys>1{
+			ssh_agent_reset() ?
+			ssh_agent_load(key_path) ?
+			return repo.addr.url_ssh_get()
+		}else{
+			return repo.addr.url_http_get()	
+		}
+	}
+	if nrkeys == 1 {
+		return repo.addr.url_ssh_get()
+	}else{
+		return repo.addr.url_http_get()
+	}
 }
 
 // pulls remote content in, will fail if there are local changes
@@ -46,14 +77,20 @@ pub struct PullArgs {
 pub fn (mut repo GitRepo) pull(args PullArgs) ? {
 	mut cmd := ''
 
+	url := repo.repo_url_get() ?	
+
+	println(" - PULL: $url")
+
 	if os.exists(repo.path_get()) {
-		if ssh_agent_loaded() {
-			repo.change_to_ssh() or {
-				if err != '' {
-					return error('cannot change to ssh for $repo.path')
-				}
-			}
-		}
+
+		// LETS NOT DO YET, we first need to make sure that a repo can be loaded with ssh, there needs to be a check
+		// if ssh_agent_loaded() {
+		// 	repo.change_to_ssh() or {
+		// 		if err != '' {
+		// 			return error('cannot change to ssh for $repo.path')
+		// 		}
+		// 	}
+		// }
 
 		if args.force {
 			if repo.addr.branch == '' {
@@ -67,23 +104,25 @@ pub fn (mut repo GitRepo) pull(args PullArgs) ? {
 		}
 		cmd = 'cd $repo.addr.path_get() && git pull'
 	} else {
-		cmd = 'mkdir -p $repo.addr.path_account_get() && cd $repo.addr.path_account_get() && git clone $repo.addr.url_get()'
-
-		// println(cmd)
-
+		cmd = 'mkdir -p $repo.addr.path_account_get() && cd $repo.addr.path_account_get() && git clone $url'
 		if repo.addr.branch != '' {
 			cmd += ' -b $repo.addr.branch'
 		}
 		if repo.addr.depth != 0 {
 			cmd += ' --depth=$repo.addr.depth  && cd $repo.addr.name && git fetch'
 		}
+
+		process.execute_silent(cmd) or {
+			println(" GIT FAILED: $cmd")
+			return error('Cannot pull repo: ${repo.path}. Error was $err')
+		}
+
 	}
-	process.execute_silent(cmd) or {
-		return error('Cannot pull repo: ${repo.path}. Error was $err')
-	}
+
 }
 
 pub fn (mut repo GitRepo) commit(msg string) ? {
+
 	change := repo.changes() or {
 		return error('cannot detect if there are changes on repo.\n$err')
 	}
@@ -104,6 +143,7 @@ pub fn (mut repo GitRepo) commit(msg string) ? {
 }
 
 pub fn (mut repo GitRepo) remove_changes() ? {
+
 	change := repo.changes() or {
 		return error('cannot detect if there are changes on repo.\n$err')
 	}
@@ -126,6 +166,8 @@ pub fn (mut repo GitRepo) remove_changes() ? {
 }
 
 pub fn (mut repo GitRepo) push() ? {
+	repo.repo_url_get() ?
+
 	cmd := 'cd $repo.addr.path_get() && git push'
 	process.execute_silent(cmd) or {
 		return error('Cannot push repo: ${repo.path}. Error was $err')

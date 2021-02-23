@@ -1,3 +1,3 @@
+set -e
 cd publishtools
-v publishtools.v
-./publishtools develop
+v run publishtools.v develop
