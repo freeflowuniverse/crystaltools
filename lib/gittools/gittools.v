@@ -13,11 +13,11 @@ pub fn ssh_agent_loaded() bool{
 }
 
 pub fn ssh_agent_reset() ?{
-	res := os.exec("ssh-add -D")?
+	_ := os.exec("ssh-add -D")?
 }
 
 pub fn ssh_agent_load(keypath string) ?{
-	res := os.exec("ssh-add $keypath")?
+	_ := os.exec("ssh-add $keypath")?
 }
 
 
