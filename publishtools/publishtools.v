@@ -6,6 +6,11 @@ import cli
 import publishermod
 import myconfig
 
+fn flatten(mut publ publishermod.Publisher) bool {
+	publ.flatten() or { return false }
+	return true
+}
+
 fn main() {
 	// INSTALL
 	pullflag := cli.Flag{
@@ -111,7 +116,10 @@ fn main() {
 		cfg := myconfig.get() ?
 		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
-		publ.flatten() ?
+		res := flatten(mut &publ)
+		if !res {
+			flatten(mut &publ)
+		}
 
 		installers.website_build(&cmd) ?
 	}
@@ -220,7 +228,7 @@ fn main() {
 		required_args: 0
 	}
 
-	// removechanges
+	// REMOVE CHANGES
 	removechanges_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd) ?
 		installers.sites_removechanges(&cmd) ?
