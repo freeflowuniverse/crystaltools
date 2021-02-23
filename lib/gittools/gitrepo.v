@@ -61,6 +61,8 @@ pub fn (mut repo GitRepo) repo_url_get() ? string {
 			ssh_agent_reset() ?
 			ssh_agent_load(key_path) ?
 			return repo.addr.url_ssh_get()
+		}else if exists && nrkeys==1{
+			return repo.addr.url_ssh_get()
 		}else{
 			return repo.addr.url_http_get()	
 		}
