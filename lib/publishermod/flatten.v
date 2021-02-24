@@ -78,6 +78,7 @@ pub fn (mut publisher Publisher) flatten() ? {
 		// write the json errors file
 		os.write_file('$dest_dir/errors.json', json.encode(errors2)) ?
 		for c in config.sites {
+			if c.cat == myconfig.SiteCat.web{continue} // ignore websites
 			if c.shortname == site.name {
 				os.write_file('$dest_dir/.domains.json', json.encode(map{
 					'domains': c.domains
