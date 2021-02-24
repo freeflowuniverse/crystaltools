@@ -82,6 +82,12 @@ pub fn (mut publisher Publisher) flatten() ? {
 				os.write_file('$dest_dir/.domains.json', json.encode(map{
 					'domains': c.domains
 				})) ?
+
+				os.write_file('$dest_dir/.acls.json', json.encode(map{
+					'users': []string{},
+					'groups': []string{}
+				})) ?
+
 				break
 			}
 		}

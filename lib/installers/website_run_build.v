@@ -7,6 +7,12 @@ import cli
 import os
 import json
 
+pub struct Group{
+	pub mut:
+		users []string
+		groups []string
+}
+
 fn website_conf_repo_get(cmd &cli.Command) ?(myconfig.ConfigRoot, &gittools.GitRepo) {
 	mut name := ''
 	mut conf := myconfig.get() ?
@@ -69,7 +75,8 @@ pub fn website_build(cmd &cli.Command) ? {
 
 	mut conf := myconfig.get() ?
 	mut sites := conf.sites_get()
-
+	// groups
+	os.write_file('$conf.paths.publish/.groups.json', json.encode(map{'test': Group{}})) ?
 	if !arg {
 		println(' - build all websites')
 		mut gt := gittools.new(conf.paths.code) or {
@@ -85,6 +92,12 @@ pub fn website_build(cmd &cli.Command) ? {
 				os.write_file('$conf.paths.publish/$site.name/.domains.json', json.encode(map{
 					'domains': site.domains
 				})) ?
+				
+				os.write_file('$conf.paths.publish/$site.name/.acls.json', json.encode(map{
+					'users': []string{},
+					'groups': []string{}
+				})) ?
+			
 			}
 		}
 	} else {
@@ -97,6 +110,12 @@ pub fn website_build(cmd &cli.Command) ? {
 				os.write_file('$conf.paths.publish/$site.name/.domains.json', json.encode(map{
 					'domains': site.domains
 				})) ?
+
+				os.write_file('$conf.paths.publish/$site.name/.acls.json', json.encode(map{
+					'users': []string{},
+					'groups': []string{}
+				})) ?
+
 				break
 			}
 		}
