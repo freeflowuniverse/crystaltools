@@ -129,6 +129,9 @@ fn template_wiki_root(reponame string, repourl string) string {
       <script src="//cdn.jsdelivr.net/npm/docsify-copy-code"></script>
       <script src="//unpkg.com/docsify-glossary/dist/docsify-glossary.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.1.5/simple-lightbox.min.js"></script>
+      <script src="//unpkg.com/mermaid/dist/mermaid.js"></script>
+      <script src="//unpkg.com/docsify-mermaid@latest/dist/docsify-mermaid.js"> 
+      <script>mermaid.initialize({ startOnLoad: true });</script>
     </body>
     </html>
     '
