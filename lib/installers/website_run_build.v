@@ -92,6 +92,8 @@ pub fn website_build(cmd &cli.Command) ? {
 				os.write_file('$conf.paths.publish/$site.name/.domains.json', json.encode(map{
 					'domains': site.domains
 				})) ?
+
+				os.write_file('$conf.paths.publish/$site.name/.repo', '$repo2.addr.name') ?
 				
 				os.write_file('$conf.paths.publish/$site.name/.acls.json', json.encode(map{
 					'users': []string{},
@@ -107,9 +109,13 @@ pub fn website_build(cmd &cli.Command) ? {
 		// process.execute_interactive('$repo.path/build.sh') ?
 		for site in sites {
 			if site.name == repo.addr.name {
+				println(' - build website: $repo.path')
+				process.execute_stdout('$repo.path/build.sh') ?
 				os.write_file('$conf.paths.publish/$site.name/.domains.json', json.encode(map{
 					'domains': site.domains
 				})) ?
+
+				os.write_file('$conf.paths.publish/$site.name/.repo', '$repo.addr.name') ?
 
 				os.write_file('$conf.paths.publish/$site.name/.acls.json', json.encode(map{
 					'users': []string{},
