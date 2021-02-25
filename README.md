@@ -35,10 +35,10 @@ publishtools install
 publishtools install -c
 
 #re-install (if something is wrong, do an install -reset)
-publishtools install -reset
+publishtools install --reset
 
 #re-install and pull newest website code in
-publishtools install -reset -pull
+publishtools install --reset --pull
 
 #revert old changes. This removes any changes you might have made, CAREFUL!!!!!
 publishtools removechanges
