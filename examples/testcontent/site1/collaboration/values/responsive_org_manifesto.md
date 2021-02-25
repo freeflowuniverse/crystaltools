@@ -1,1 +1,0 @@
-!!!include:wiki:responsive_org_manifesto

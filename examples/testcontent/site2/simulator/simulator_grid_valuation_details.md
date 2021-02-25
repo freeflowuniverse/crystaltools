@@ -1,3 +1,0 @@
-## Simulator Grid Valuation
-
-- #TODO: 

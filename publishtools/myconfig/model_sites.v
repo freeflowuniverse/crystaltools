@@ -9,10 +9,10 @@ pub mut:
 	branch    string = 'default' // means is the default branch
 	pull      bool
 	cat       SiteCat
-	shortname     string
+	shortname string
 	path_code string
 	domains   []string
-	descr	 string
+	descr     string
 }
 
 pub enum SiteCat {
@@ -37,7 +37,7 @@ pub fn (config ConfigRoot) site_get(name string) ?SiteConfig {
 		}
 		if site.shortname.to_lower() == name.to_lower() {
 			return site
-		}		
+		}
 	}
 	return error('Cannot find wiki site with name: $name')
 }

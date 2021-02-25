@@ -1,15 +1,15 @@
 module myconfig
 
 import os
-import gittools
+import despiegk.crystallib.gittools
 
 fn get2() ConfigRoot {
 	mut c := ConfigRoot{}
 	c.paths.base = '$os.home_dir()/.publisher'
 	c.paths.publish = '$c.paths.base/publish'
 	c.paths.code = '$os.home_dir()/codewww'
-	if ! os.exists(c.paths.code){
-		os.mkdir(c.paths.code) or {panic(err)}
+	if !os.exists(c.paths.code) {
+		os.mkdir(c.paths.code) or { panic(err) }
 	}
 	mut nodejsconfig := NodejsConfig{
 		version: NodejsVersion{
@@ -43,7 +43,7 @@ pub fn get() ?ConfigRoot {
 				// return error('ERROR: cannot find repo: $site.name\n$err')
 				// do NOTHING, just ignore the site to work with
 				// print(err)
-				println(' - WARNING: did not find site: $site.name, $err')				
+				println(' - WARNING: did not find site: $site.name, $err')
 				continue
 			}
 			site.path_code = repo.path_get()

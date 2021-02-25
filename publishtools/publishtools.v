@@ -1,9 +1,9 @@
 module main
 
-import installers
+import despiegk.crystallib.installers
 import os
 import cli
-import publishermod
+import despiegk.crystallib.publishermod
 import myconfig
 
 fn flatten(mut publ publishermod.Publisher) bool {
