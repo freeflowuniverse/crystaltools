@@ -48,6 +48,13 @@ fn main() {
 		flag: cli.FlagType.string
 	}
 
+	pathPrefixflag := cli.Flag{
+		name: 'pathprefix'
+		abbrev: 'p'
+		description: 'Build website(s) with alias prefix'
+		flag: cli.FlagType.bool
+	}
+
 	install_exec := fn (cmd cli.Command) ? {
 		installers.main(cmd) ?
 	}
@@ -144,6 +151,7 @@ fn main() {
 		required_args: 0
 	}
 	build_cmd.add_flag(repoflag)
+	build_cmd.add_flag(pathPrefixflag)
 
 	// LIST
 	list_exec := fn (cmd cli.Command) ? {
