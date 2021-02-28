@@ -4,7 +4,7 @@ import despiegk.crystallib.installers
 import os
 import cli
 import despiegk.crystallib.publishermod
-import myconfig
+import despiegk.crystallib.myconfig
 
 fn flatten(mut publ publishermod.Publisher) bool {
 	publ.flatten() or { return false }
@@ -62,9 +62,7 @@ fn main() {
 
 	// DEVELOP
 	develop_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(cmd) ?
 		mut arg := false
-		mut cfg := myconfig.get() ?
 		for flag in cmd.flags {
 			if flag.name == 'repo' {
 				if flag.value.len > 0 {
@@ -73,16 +71,16 @@ fn main() {
 			}
 		}
 
+		//if arg is true means is for websites, need to get them all, we dont make distinction
+		mut cfg := myconfig.get(arg) ?
+
+		installers.sites_download(cmd,false) ?
+		
 		if !arg {
-			// publisher.webserver_start_develop()
 			mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 			publ.check()
 			publ.develop = true
-			// publ.flatten() or {
-			// 	println('ERROR: cannot flatten wiki\n$err')
-			// 	exit(1)
-			// }
-			publishermod.webserver_run(publ) // would be better to have the develop
+			publishermod.webserver_run(publ, cfg) // would be better to have the develop
 		} else {
 			installers.website_develop(&cmd) ?
 		}
@@ -96,12 +94,12 @@ fn main() {
 
 	// RUN
 	run_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(cmd) ?
-		cfg := myconfig.get() ?
+		installers.sites_download(cmd,false) ?
+		cfg := myconfig.get(false) ?
 		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
 		publ.flatten() ?
-		publishermod.webserver_run(publ)
+		publishermod.webserver_run(publ,cfg)
 	}
 	mut run_cmd := cli.Command{
 		description: 'run all websites & wikis, they need to be build first'
@@ -112,8 +110,8 @@ fn main() {
 
 	// FLATTEN
 	flatten_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(cmd) ?
-		cfg := myconfig.get() ?
+		installers.sites_download(cmd,false) ?
+		cfg := myconfig.get(false) ?
 		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
 		publ.flatten() ?
@@ -128,8 +126,8 @@ fn main() {
 
 	// BUILD
 	build_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(cmd) ?
-		cfg := myconfig.get() ?
+		installers.sites_download(cmd,true) ?
+		cfg := myconfig.get(true) ?
 		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
 		res := flatten(mut &publ)
@@ -149,6 +147,7 @@ fn main() {
 
 	// LIST
 	list_exec := fn (cmd cli.Command) ? {
+		installers.sites_download(&cmd,false) ?		
 		installers.sites_list(&cmd) ?
 	}
 	mut list_cmd := cli.Command{
@@ -158,7 +157,7 @@ fn main() {
 
 	// PULL
 	pull_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(cmd) ?
+		installers.sites_download(cmd,false) ?
 		installers.sites_pull(&cmd) ?
 	}
 	mut pull_cmd := cli.Command{
@@ -180,7 +179,7 @@ fn main() {
 
 	// VERSION
 	version_exec := fn (cmd cli.Command) ? {
-		println('1.0.8')
+		println('1.0.9')
 	}
 	mut version_cmd := cli.Command{
 		name: 'version'
@@ -189,6 +188,7 @@ fn main() {
 
 	// pushcommit
 	pushcommit_exec := fn (cmd cli.Command) ? {
+		installers.sites_download(&cmd,false) ?		
 		installers.sites_pushcommit(&cmd) ?
 	}
 	mut pushcommit_cmd := cli.Command{
@@ -200,6 +200,7 @@ fn main() {
 
 	// commit
 	commit_exec := fn (cmd cli.Command) ? {
+		installers.sites_download(&cmd,false) ?			
 		installers.sites_commit(&cmd) ?
 	}
 	mut commit_cmd := cli.Command{
@@ -211,6 +212,7 @@ fn main() {
 
 	// PUSH
 	push_exec := fn (cmd cli.Command) ? {
+		installers.sites_download(&cmd,false) ?		
 		installers.sites_push(&cmd) ?
 	}
 	mut push_cmd := cli.Command{
@@ -235,7 +237,7 @@ fn main() {
 	// UPDATE
 	update_exec := fn (cmd cli.Command) ? {
 		installers.publishtools_update() ?
-		// installers.sites_pull(&cmd) ?
+		installers.sites_download(&cmd,false) ?
 	}
 	mut update_cmd := cli.Command{
 		name: 'update'
@@ -246,7 +248,7 @@ fn main() {
 
 	// REMOVE CHANGES
 	removechanges_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(cmd) ?
+		installers.sites_download(cmd,false) ?
 		installers.sites_removechanges(&cmd) ?
 	}
 	mut removechangese_cmd := cli.Command{
