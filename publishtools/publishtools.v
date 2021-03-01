@@ -71,11 +71,11 @@ fn main() {
 			}
 		}
 
-		//if arg is true means is for websites, need to get them all, we dont make distinction
+		// if arg is true means is for websites, need to get them all, we dont make distinction
 		mut cfg := myconfig.get(arg) ?
 
-		installers.sites_download(cmd,false) ?
-		
+		installers.sites_download(cmd, false) ?
+
 		if !arg {
 			mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 			publ.check()
@@ -94,12 +94,12 @@ fn main() {
 
 	// RUN
 	run_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(cmd,false) ?
+		installers.sites_download(cmd, false) ?
 		cfg := myconfig.get(false) ?
 		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
 		publ.flatten() ?
-		publishermod.webserver_run(publ,cfg)
+		publishermod.webserver_run(publ, cfg)
 	}
 	mut run_cmd := cli.Command{
 		description: 'run all websites & wikis, they need to be build first'
@@ -110,7 +110,7 @@ fn main() {
 
 	// FLATTEN
 	flatten_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(cmd,false) ?
+		installers.sites_download(cmd, false) ?
 		cfg := myconfig.get(false) ?
 		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
@@ -126,7 +126,7 @@ fn main() {
 
 	// BUILD
 	build_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(cmd,true) ?
+		installers.sites_download(cmd, true) ?
 		cfg := myconfig.get(true) ?
 		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
@@ -147,7 +147,7 @@ fn main() {
 
 	// LIST
 	list_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(&cmd,false) ?		
+		installers.sites_download(&cmd, false) ?
 		installers.sites_list(&cmd) ?
 	}
 	mut list_cmd := cli.Command{
@@ -157,7 +157,7 @@ fn main() {
 
 	// PULL
 	pull_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(cmd,false) ?
+		installers.sites_download(cmd, false) ?
 		installers.sites_pull(&cmd) ?
 	}
 	mut pull_cmd := cli.Command{
@@ -179,7 +179,7 @@ fn main() {
 
 	// VERSION
 	version_exec := fn (cmd cli.Command) ? {
-		println('1.0.9')
+		println('1.0.10')
 	}
 	mut version_cmd := cli.Command{
 		name: 'version'
@@ -188,7 +188,7 @@ fn main() {
 
 	// pushcommit
 	pushcommit_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(&cmd,false) ?		
+		installers.sites_download(&cmd, false) ?
 		installers.sites_pushcommit(&cmd) ?
 	}
 	mut pushcommit_cmd := cli.Command{
@@ -200,7 +200,7 @@ fn main() {
 
 	// commit
 	commit_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(&cmd,false) ?			
+		installers.sites_download(&cmd, false) ?
 		installers.sites_commit(&cmd) ?
 	}
 	mut commit_cmd := cli.Command{
@@ -212,7 +212,7 @@ fn main() {
 
 	// PUSH
 	push_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(&cmd,false) ?		
+		installers.sites_download(&cmd, false) ?
 		installers.sites_push(&cmd) ?
 	}
 	mut push_cmd := cli.Command{
@@ -237,7 +237,7 @@ fn main() {
 	// UPDATE
 	update_exec := fn (cmd cli.Command) ? {
 		installers.publishtools_update() ?
-		installers.sites_download(&cmd,false) ?
+		installers.sites_download(&cmd, false) ?
 	}
 	mut update_cmd := cli.Command{
 		name: 'update'
@@ -248,7 +248,7 @@ fn main() {
 
 	// REMOVE CHANGES
 	removechanges_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(cmd,false) ?
+		installers.sites_download(cmd, false) ?
 		installers.sites_removechanges(&cmd) ?
 	}
 	mut removechangese_cmd := cli.Command{
