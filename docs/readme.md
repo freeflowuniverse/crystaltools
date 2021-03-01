@@ -4,6 +4,7 @@
 
 - [iframe](iframe)
 - [vimeo](vimeo)
+- [youtube](youtube)
 - [include](include)
 - [defs](defs)
 
