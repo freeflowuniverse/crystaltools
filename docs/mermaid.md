@@ -19,3 +19,7 @@ journey
       Go downstairs: 5: Me
       Sit down: 5: Me
 ```
+
+this results in the following
+
+![](img/mermaid2.png)
