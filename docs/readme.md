@@ -8,6 +8,12 @@
 - [include](include)
 - [defs](defs)
 
+## graphs
+
+Mermaid support:
+
+- [mermaid](mermaid)
+
 ## howto
 
 - [how to work with sshkeys](sshkey)
