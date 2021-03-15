@@ -7,6 +7,10 @@
 - [youtube](youtube)
 - [include](include)
 - [defs](defs)
+- [links](links)
+- [images](images)
+- [markdown](markdown)
+- [tabs](tabs)
 
 ## graphs
 
