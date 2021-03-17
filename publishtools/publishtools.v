@@ -55,6 +55,15 @@ fn main() {
 		flag: cli.FlagType.bool
 	}
 
+	production_flag := cli.Flag{
+		name: 'production'
+		abbrev: 'd'
+		description: 'Run digitaltwin wit pm2 as a service'
+		flag: cli.FlagType.bool
+	}
+
+
+
 	install_exec := fn (cmd cli.Command) ? {
 		installers.main(cmd) ?
 	}
@@ -232,8 +241,16 @@ fn main() {
 
 	// DIGITAL TWIN
 	twin_exec := fn (cmd cli.Command) ? {
+		mut production := false
+		for flag in cmd.flags {
+			if flag.name == 'production' {
+				if flag.value.len > 0 {
+					production = true
+				}
+			}
+		}
 		mut cfg := installers.config_get(cmd) ?
-		installers.digitaltwin_start(&cfg) or {
+		installers.digitaltwin_start(&cfg, production) or {
 			return error(' ** ERROR: cannot start digital twin. Error was:\n$err')
 		}
 	}
@@ -241,6 +258,8 @@ fn main() {
 		name: 'digitaltwin'
 		execute: twin_exec
 	}
+
+	twin_cmd.add_flag(production_flag)
 
 	// UPDATE
 	update_exec := fn (cmd cli.Command) ? {
