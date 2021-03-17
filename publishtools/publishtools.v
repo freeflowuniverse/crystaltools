@@ -2,6 +2,7 @@ module main
 
 import despiegk.crystallib.installers
 import os
+import despiegk.crystallib.process
 import cli
 import despiegk.crystallib.publishermod
 import despiegk.crystallib.myconfig
@@ -62,6 +63,19 @@ fn main() {
 		flag: cli.FlagType.bool
 	}
 
+	ip_flag := cli.Flag{
+		name: 'ip'
+		abbrev: 'i'
+		description: 'Ip for the remote production machine'
+		flag: cli.FlagType.string
+	}
+
+	dirs_flag := cli.Flag{
+		name: 'dirs'
+		abbrev: 'f'
+		description: 'directories to upload'
+		flag: cli.FlagType.string
+	}
 
 
 	install_exec := fn (cmd cli.Command) ? {
@@ -308,12 +322,77 @@ fn main() {
 		execute: dns_execute
 	}
 
+	// publish
+	publish_exec := fn (cmd cli.Command) ? {
+		mut usage := '\nusage:\n
+publishtools publish --ip IP_ADDR wikis  \t\t  		 publish wikis only
+publishtools publish --ip IP_ADDR sites  \t\t  		 publish sites only
+publishtools publish --ip IP_ADDR wiki_threefold www_threefold_farming   publish certain dirs only
+publishtools publish --ip IP_ADDR  www_threefold_*  \t     \t\t publish all sites starting with certain prefix
+'
+		mut args := os.args.clone()
+		mut cfg := myconfig.get(false) ?
+
+		// check ip is provided
+		
+		mut ip := ""
+		for flag in cmd.flags {
+			if flag.name == 'ip' {
+				if flag.value.len > 0 {
+					ip = flag.value[0]
+				}
+			}
+		}
+
+		if ip == ""{
+			println(usage)
+			return
+		}
+
+		mut sync := ""
+		mut prefix := cfg.paths.publish + "/"
+
+		if args.len == 4{
+			sync = cfg.paths.publish + "/" + "*"
+		}else if args.len == 5{
+			if args[4] == "wikis"{
+				sync = prefix + "wiki_*"
+			}else if args[4] == "sites"{
+				sync = prefix + "www_*"
+			}else{
+				sync = prefix + args[4]
+			}
+		}else{
+			for i in 4..args.len{
+				sync = sync + prefix + args[i]
+				sync = sync + " "
+			}
+		}
+		println("Syncing ")
+		
+		for line in sync.split(" "){
+			println("\t$line")
+		}
+
+		process.execute_stdout('rsync -ra --delete $sync root@$ip:/root/.publisher/containerhost/publisher/')?
+		println("restarting server\n")
+		process.execute_stdout('ssh root@$ip "docker exec -i web \'restart\'"')?
+	}
+
+	mut publis_cmd := cli.Command{
+		name: 'publish'
+		execute: publish_exec
+	}
+
+	publis_cmd.add_flag(ip_flag)
+	publis_cmd.add_flag(dirs_flag)
+
 	// MAIN
 	mut main_cmd := cli.Command{
 		name: 'installer'
 		commands: [install_cmd, run_cmd, build_cmd, list_cmd, develop_cmd, twin_cmd, pull_cmd,
 			commit_cmd, push_cmd, pushcommit_cmd, edit_cmd, update_cmd, version_cmd, removechangese_cmd,
-			dns_cmd, flatten_cmd]
+			dns_cmd, flatten_cmd, publis_cmd]
 		description: '
 
         Publishing Tool Installer
