@@ -233,7 +233,7 @@ fn main() {
 	// DIGITAL TWIN
 	twin_exec := fn (cmd cli.Command) ? {
 		mut cfg := installers.config_get(cmd) ?
-		installers.digitaltwin_start(&cfg) or {
+		installers.digitaltwin_start(&cfg,false) or {
 			return error(' ** ERROR: cannot start digital twin. Error was:\n$err')
 		}
 	}
