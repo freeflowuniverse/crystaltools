@@ -335,7 +335,7 @@ publishtools publish --ip IP_ADDR  www_threefold_*  \t     \t\t publish all site
 
 		// check ip is provided
 		
-		mut ip := ""
+		mut ip := "104.131.122.247"
 		for flag in cmd.flags {
 			if flag.name == 'ip' {
 				if flag.value.len > 0 {
@@ -344,10 +344,10 @@ publishtools publish --ip IP_ADDR  www_threefold_*  \t     \t\t publish all site
 			}
 		}
 
-		if ip == ""{
-			println(usage)
-			return
-		}
+		// if ip == ""{
+		// 	println(usage)
+		// 	return
+		// }
 
 		mut sync := ""
 		mut prefix := cfg.paths.publish + "/"
