@@ -352,11 +352,17 @@ fn main() {
 			}
 		}
 
+		if sync == ""{
+			sync = "$prefix*"
+		}
+
 		println("Syncing to $env" )
+		
 		
 		for line in sync.split(" "){
 			println("\t$line")
 		}
+
 		process.execute_stdout('rsync -ra --delete $sync root@$ip:/root/.publisher/containerhost/publisher/publish/')?
 		println("restarting server\n")
 		process.execute_stdout('ssh root@$ip "docker exec -i web \'restart\'"')?
