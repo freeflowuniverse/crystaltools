@@ -92,21 +92,12 @@ fn main() {
 
 	// DEVELOP
 	develop_exec := fn (cmd cli.Command) ? {
-		mut arg := false
-		for flag in cmd.flags {
-			if flag.name == 'repo' {
-				if flag.value.len > 0 {
-					arg = true
-				}
-			}
-		}
-
-		// if arg is true means is for websites, need to get them all, we dont make distinction
-		mut cfg := myconfig.get(arg) ?
-
+		webrepo := cmd.flags.get_string("repo") or {""}		
+		
 		installers.sites_download(cmd, false) ?
 
-		if !arg {
+		if webrepo != "" {
+			mut cfg := myconfig.get(true) ?
 			mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 			publ.check()
 			publ.develop = true
@@ -255,14 +246,7 @@ fn main() {
 
 	// DIGITAL TWIN
 	twin_exec := fn (cmd cli.Command) ? {
-		mut production := false
-		for flag in cmd.flags {
-			if flag.name == 'production' {
-				if flag.value.len > 0 {
-					production = true
-				}
-			}
-		}
+		production := cmd.flags.get_bool("production") or {false}		
 		mut cfg := installers.config_get(cmd) ?
 		installers.digitaltwin_start(&cfg, production) or {
 			return error(' ** ERROR: cannot start digital twin. Error was:\n$err')
@@ -324,26 +308,18 @@ fn main() {
 
 	// publish
 	publish_exec := fn (cmd cli.Command) ? {
-		mut usage := '\nusage:\n
-publishtools publish --ip IP_ADDR wikis  \t\t  		 publish wikis only
-publishtools publish --ip IP_ADDR sites  \t\t  		 publish sites only
-publishtools publish --ip IP_ADDR wiki_threefold www_threefold_farming   publish certain dirs only
-publishtools publish --ip IP_ADDR  www_threefold_*  \t     \t\t publish all sites starting with certain prefix
-'
+// 		mut usage := '\nusage:\n
+// publishtools publish --ip IP_ADDR wikis  \t\t  		 publish wikis only
+// publishtools publish --ip IP_ADDR sites  \t\t  		 publish sites only
+// publishtools publish --ip IP_ADDR wiki_threefold www_threefold_farming   publish certain dirs only
+// publishtools publish --ip IP_ADDR  www_threefold_*  \t     \t\t publish all sites starting with certain prefix
+// '
 		mut args := os.args.clone()
 		mut cfg := myconfig.get(false) ?
 
 		// check ip is provided
 		
-		mut ip := "104.131.122.247"
-		for flag in cmd.flags {
-			if flag.name == 'ip' {
-				if flag.value.len > 0 {
-					ip = flag.value[0]
-				}
-			}
-		}
-
+		ip := cmd.flags.get_string("production") or {"104.131.122.247"}	
 		// if ip == ""{
 		// 	println(usage)
 		// 	return
