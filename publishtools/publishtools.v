@@ -94,9 +94,8 @@ fn main() {
 	develop_exec := fn (cmd cli.Command) ? {
 		webrepo := cmd.flags.get_string("repo") or {""}		
 		
-		installers.sites_download(cmd, false) ?
-
-		if webrepo != "" {
+		if webrepo == "" {
+			installers.sites_download(cmd, false) ?
 			mut cfg := myconfig.get(true) ?
 			mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 			publ.check()
