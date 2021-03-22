@@ -63,20 +63,12 @@ fn main() {
 		flag: cli.FlagType.bool
 	}
 
-	ip_flag := cli.Flag{
-		name: 'ip'
-		abbrev: 'i'
-		description: 'Ip for the remote production machine'
-		flag: cli.FlagType.string
+	staging_flag := cli.Flag{
+		name: 'staging'
+		abbrev: 's'
+		description: 'publish staging'
+		flag: cli.FlagType.bool
 	}
-
-	dirs_flag := cli.Flag{
-		name: 'dirs'
-		abbrev: 'f'
-		description: 'directories to upload'
-		flag: cli.FlagType.string
-	}
-
 
 	install_exec := fn (cmd cli.Command) ? {
 		installers.main(cmd) ?
@@ -307,60 +299,80 @@ fn main() {
 
 	// publish
 	publish_exec := fn (cmd cli.Command) ? {
-// 		mut usage := '\nusage:\n
-// publishtools publish --ip IP_ADDR wikis  \t\t  		 publish wikis only
-// publishtools publish --ip IP_ADDR sites  \t\t  		 publish sites only
-// publishtools publish --ip IP_ADDR wiki_threefold www_threefold_farming   publish certain dirs only
-// publishtools publish --ip IP_ADDR  www_threefold_*  \t     \t\t publish all sites starting with certain prefix
-// '
 		mut args := os.args.clone()
 		mut cfg := myconfig.get(false) ?
 
-		// check ip is provided
-		
-		ip := cmd.flags.get_string("production") or {"104.131.122.247"}	
-		// if ip == ""{
-		// 	println(usage)
-		// 	return
-		// }
+		mut env := "Production"
+		mut staging := cmd.flags.get_bool("staging") or {false}
+
+		if staging {
+			env = "Staging"
+		}
+
+		mut ip := ""
+
+		if !staging{
+			ip = "104.131.122.247"
+		}else{
+			ip = ""
+		}
+
+		args.delete(0)
+		args.delete(0)
+
+		idx := args.index("--staging")
+		if idx != -1{
+			args.delete(idx)
+		}
 
 		mut sync := ""
 		mut prefix := cfg.paths.publish + "/"
+		mut skip_sites := false
+		mut skip_wikis := false
 
-		if args.len == 4{
-			sync = cfg.paths.publish + "/" + "*"
-		}else if args.len == 5{
-			if args[4] == "wikis"{
-				sync = prefix + "wiki_*"
-			}else if args[4] == "sites"{
-				sync = prefix + "www_*"
+		if "wikis" in args{
+			sync += prefix + "wiki_* "
+			args.delete(args.index("wikis"))
+			skip_wikis = true
+		}
+
+		if "sites" in args{
+			sync += prefix + "www_* "
+			args.delete(args.index("sites"))
+			skip_sites = true
+		}
+
+		for arg in args{
+			if arg.starts_with("www") && skip_sites{
+				continue
+			}else if arg.starts_with("wiki") && skip_wikis{
+				continue
 			}else{
-				sync = prefix + args[4]
-			}
-		}else{
-			for i in 4..args.len{
-				sync = sync + prefix + args[i]
-				sync = sync + " "
+				sync += prefix + arg + ""
 			}
 		}
-		println("Syncing ")
+
+		println("Syncing to $env" )
 		
 		for line in sync.split(" "){
 			println("\t$line")
 		}
-
-		process.execute_stdout('rsync -ra --delete $sync root@$ip:/root/.publisher/containerhost/publisher/')?
+		process.execute_stdout('rsync -ra --delete $sync root@$ip:/root/.publisher/containerhost/publisher/publish/')?
 		println("restarting server\n")
 		process.execute_stdout('ssh root@$ip "docker exec -i web \'restart\'"')?
 	}
 
 	mut publis_cmd := cli.Command{
-		name: 'publish'
+		name: 'publish',
+		description: 'Publish websites/wikis to production/staging',
+		usage: '\n\nExamples\npublishtools publish wikis  \t\t  		 publish wikis only
+publishtools publish sites  \t\t  		 publish sites only
+publishtools publish wikis  www_threefold_farming\t publish wikis and certain website
+publishtools publish --staging wikis  \t  		 publish wikis only but for stagin',
 		execute: publish_exec
 	}
 
-	publis_cmd.add_flag(ip_flag)
-	publis_cmd.add_flag(dirs_flag)
+	publis_cmd.add_flag(staging_flag)
 
 	// MAIN
 	mut main_cmd := cli.Command{
