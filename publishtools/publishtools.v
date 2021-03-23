@@ -142,11 +142,7 @@ fn main() {
 		cfg := myconfig.get(true) ?
 		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
-		res := flatten(mut &publ)
-		if !res {
-			flatten(mut &publ)
-		}
-
+		
 		installers.website_build(&cmd) ?
 	}
 	mut build_cmd := cli.Command{
