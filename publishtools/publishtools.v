@@ -92,7 +92,7 @@ fn main() {
 			mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 			publ.check()
 			publ.develop = true
-			cfg.update_javascript_files(false)?
+			cfg.update_staticfiles(false)?
 			publishermod.webserver_run(publ, cfg) // would be better to have the develop
 		} else {
 			installers.website_develop(&cmd) ?
@@ -365,23 +365,23 @@ fn main() {
 		process.execute_stdout('ssh root@$ip "docker exec -i web \'restart\'"')?
 	}
 
-	cache_execute := fn (cmd cli.Command) ? {
+	staticfilesupdate_exrcute := fn (cmd cli.Command) ? {
 		mut args := os.args.clone()
 		if args.len == 3 {
 			if args[2] == 'update' {
 				mut cfg := myconfig.get(true) ?
-				cfg.update_javascript_files(true)?
+				cfg.update_staticfiles(true)?
 				return
 			} 
 		}
 		println('usage: publishtools cache update')
 	}
 
-	mut cache_cmd := cli.Command{
+	mut staticfilesupdate_cmd := cli.Command{
 		usage: '<name>'
-		description: 'Update javascript cache'
+		description: 'Update staticfiles'
 		name: 'staticfiles'
-		execute: cache_execute
+		execute: staticfilesupdate_exrcute
 	}
 
 	mut publis_cmd := cli.Command{
@@ -401,7 +401,7 @@ publishtools publish --staging wikis  \t  		 publish wikis only but for stagin',
 		name: 'installer'
 		commands: [install_cmd, run_cmd, build_cmd, list_cmd, develop_cmd, twin_cmd, pull_cmd,
 			commit_cmd, push_cmd, pushcommit_cmd, edit_cmd, update_cmd, version_cmd, removechangese_cmd,
-			dns_cmd, flatten_cmd, publis_cmd, cache_cmd]
+			dns_cmd, flatten_cmd, publis_cmd, staticfilesupdate_cmd]
 		description: '
 
         Publishing Tool Installer
