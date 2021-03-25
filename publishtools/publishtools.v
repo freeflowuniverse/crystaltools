@@ -380,7 +380,7 @@ fn main() {
 	mut cache_cmd := cli.Command{
 		usage: '<name>'
 		description: 'Update javascript cache'
-		name: 'cache'
+		name: 'staticfiles'
 		execute: cache_execute
 	}
 
