@@ -322,6 +322,11 @@ fn main() {
 			args.delete(idx)
 		}
 
+		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
+		publ.check()
+		publ.flatten() ?
+
+
 		mut sync := ""
 		mut prefix := cfg.paths.publish + "/"
 		mut skip_sites := false
