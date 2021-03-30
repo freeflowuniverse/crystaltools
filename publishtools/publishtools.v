@@ -311,7 +311,7 @@ fn main() {
 		if !staging{
 			ip = "104.131.122.247"
 		}else{
-			ip = ""
+			ip = "161.35.109.242"
 		}
 
 		args.delete(0)
