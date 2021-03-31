@@ -326,7 +326,6 @@ fn main() {
 		publ.check()
 		publ.flatten() ?
 
-
 		mut sync := ""
 		mut prefix := cfg.paths.publish + "/"
 		mut skip_sites := false
@@ -364,8 +363,9 @@ fn main() {
 		for line in sync.split(" "){
 			println("\t$line")
 		}
-
-		process.execute_stdout('rsync -ra --delete $sync root@$ip:/root/.publisher/containerhost/publisher/publish/')?
+		cmd2 := 'rsync -rav --delete $sync root@$ip:/root/.publisher/containerhost/publisher/publish/'
+		println( cmd2)	
+		process.execute_stdout(cmd2)?
 		println("restarting server\n")
 		process.execute_stdout('ssh root@$ip "docker exec -i web \'restart\'"')?
 	}
