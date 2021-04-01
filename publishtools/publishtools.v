@@ -63,10 +63,10 @@ fn main() {
 		flag: cli.FlagType.bool
 	}
 
-	staging_flag := cli.Flag{
-		name: 'staging'
-		abbrev: 's'
-		description: 'publish staging'
+	publish_prod_flag := cli.Flag{
+		name: 'production'
+		abbrev: 'p'
+		description: 'publish production'
 		flag: cli.FlagType.bool
 	}
 
@@ -299,16 +299,16 @@ fn main() {
 		mut args := os.args.clone()
 		mut cfg := myconfig.get(false) ?
 
-		mut env := "Production"
-		mut staging := cmd.flags.get_bool("staging") or {false}
+		mut env := "staging"
+		mut production := cmd.flags.get_bool("production") or {false}
 
-		if staging {
-			env = "Staging"
+		if production {
+			env = "production"
 		}
 
 		mut ip := ""
 
-		if !staging{
+		if production{
 			ip = "104.131.122.247"
 		}else{
 			ip = "161.35.109.242"
@@ -317,7 +317,7 @@ fn main() {
 		args.delete(0)
 		args.delete(0)
 
-		idx := args.index("--staging")
+		idx := args.index("--production")
 		if idx != -1{
 			args.delete(idx)
 		}
@@ -358,14 +358,13 @@ fn main() {
 			sync = "$prefix*"
 		}
 
-		println("Syncing to $env" )
+		println("Syncing to $env ($ip)" )
 		
 		
 		for line in sync.split(" "){
 			println("\t$line")
 		}
-
-		process.execute_stdout('rsync -ra --delete $sync root@$ip:/root/.publisher/containerhost/publisher/publish/')?
+		process.execute_stdout('rsync -v --stats --progress -ra --delete $sync root@$ip:/root/.publisher/containerhost/publisher/publish/')?
 		println("restarting server\n")
 		process.execute_stdout('ssh root@$ip "docker exec -i web \'restart\'"')?
 	}
@@ -395,11 +394,11 @@ fn main() {
 		usage: '\n\nExamples\npublishtools publish wikis  \t\t  		 publish wikis only
 publishtools publish sites  \t\t  		 publish sites only
 publishtools publish wikis  www_threefold_farming\t publish wikis and certain website
-publishtools publish --staging wikis  \t  		 publish wikis only but for stagin',
+publishtools publish --production wikis  \t  		 publish wikis only but on production',
 		execute: publish_exec
 	}
 
-	publis_cmd.add_flag(staging_flag)
+	publis_cmd.add_flag(publish_prod_flag)
 
 	// MAIN
 	mut main_cmd := cli.Command{
