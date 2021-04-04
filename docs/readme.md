@@ -11,6 +11,7 @@
 - [images](images)
 - [markdown](markdown)
 - [tabs](tabs)
+- [charts](charts)
 
 ## graphs
 
