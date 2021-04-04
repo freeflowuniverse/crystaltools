@@ -12,6 +12,7 @@
 - [markdown](./markdown.md)
 - [tabs](./tabs.md)
 - [charts](./charts.md)
+- [mindmaps](./mindmaps.md)
 
 ## graphs
 
