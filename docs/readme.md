@@ -2,16 +2,16 @@
 
 ## macro's
 
-- [iframe](iframe)
-- [vimeo](vimeo)
-- [youtube](youtube)
-- [include](include)
-- [defs](defs)
-- [links](links)
-- [images](images)
-- [markdown](markdown)
-- [tabs](tabs)
-- [charts](charts)
+- [iframe](./iframe.md)
+- [vimeo](./vimeo.md)
+- [youtube](./youtube.md)
+- [include](./include.md)
+- [defs](./defs.md)
+- [links](./links.md)
+- [images](./images.md)
+- [markdown](./markdown.md)
+- [tabs](./tabs.md)
+- [charts](./charts.md)
 
 ## graphs
 
