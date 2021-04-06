@@ -274,49 +274,36 @@ fn main() {
 			installers.digitaltwin_install(mut &cfg, false) or {
 				return error(' ** ERROR: cannot install digital twin. Error was:\n$err')
 			}
-		}
-
-		if update{
+		}else if update{
 			installers.digitaltwin_install(mut &cfg, true) or {
 				return error(' ** ERROR: cannot update digital twin. Error was:\n$err')
 			}
-		}
-
-		if start{
+		}else if start{
 			installers.digitaltwin_start(mut &cfg, production, false) or {
 				return error(' ** ERROR: cannot start digital twin. Error was:\n$err')
 			}
-		}
-
-		if restart{
+		}else if restart{
 			installers.digitaltwin_restart(mut &cfg, production) or {
 				return error(' ** ERROR: cannot restart digital twin. Error was:\n$err')
 			}
-		}
-
-		if reload{
+		}else if reload{
 			installers.digitaltwin_reload(mut &cfg, production) or {
 				return error(' ** ERROR: cannot reload digital twin. Error was:\n$err')
 			}
-		}
-
-		if stop{
+		}else if stop{
 			installers.digitaltwin_stop(mut &cfg, production) or {
 				return error(' ** ERROR: cannot stop digital twin. Error was:\n$err')
 			}
-		}
-
-
-		if status{
+		}else if status{
 			installers.digitaltwin_status(mut &cfg, production) or {
 				return error(' ** ERROR: cannot get status for digital twin. Error was:\n$err')
 			}
-		}
-
-		if logs{
+		}else if logs{
 			installers.digitaltwin_logs(mut &cfg, production) or {
 				return error(' ** ERROR: cannot get logs for digital twin. Error was:\n$err')
 			}
+		}else{
+			println('usage: publishtools digitaltwin --help')
 		}
 	}
 	mut twin_cmd := cli.Command{
