@@ -56,10 +56,10 @@ fn main() {
 		flag: cli.FlagType.bool
 	}
 
-	production_flag := cli.Flag{
-		name: 'production'
+	development_flag := cli.Flag{
+		name: 'development'
 		abbrev: 'd'
-		description: 'Run digitaltwin wit pm2 as a service'
+		description: 'Run digitaltwin in dev mode locally (no pm2)'
 		flag: cli.FlagType.bool
 	}
 
@@ -234,18 +234,98 @@ fn main() {
 
 	// DIGITAL TWIN
 	twin_exec := fn (cmd cli.Command) ? {
-		production := cmd.flags.get_bool("production") or {false}		
+		mut args := os.args.clone()
+		mut install := false
+		mut update := false
+		mut start := false
+		mut restart := false
+		mut reload := false
+		mut stop := false
+		mut status := false
+		mut logs := false
+
+		for arg in args{
+			
+			if arg == "install"{
+				install = true
+			}else if arg == "update"{
+				update = true
+			}else if arg == "reload"{
+				reload = true
+			}else if arg == "restart"{
+				restart = true
+			}else if arg == "start"{
+				start = true
+			}else if arg ==  "stop"{
+				stop = true
+			}else if arg == "status"{
+				status = true
+			}else if arg == "logs"{
+				logs = true
+			}
+		}
+
+		mut development := cmd.flags.get_bool("development") or {false}
+		mut production := !development
+
 		mut cfg := installers.config_get(cmd) ?
-		installers.digitaltwin_start(&cfg, production) or {
-			return error(' ** ERROR: cannot start digital twin. Error was:\n$err')
+
+		if install{
+			installers.digitaltwin_install(mut &cfg, false) or {
+				return error(' ** ERROR: cannot install digital twin. Error was:\n$err')
+			}
+		}
+
+		if update{
+			installers.digitaltwin_install(mut &cfg, true) or {
+				return error(' ** ERROR: cannot update digital twin. Error was:\n$err')
+			}
+		}
+
+		if start{
+			installers.digitaltwin_start(mut &cfg, production, false) or {
+				return error(' ** ERROR: cannot start digital twin. Error was:\n$err')
+			}
+		}
+
+		if restart{
+			installers.digitaltwin_restart(mut &cfg, production) or {
+				return error(' ** ERROR: cannot restart digital twin. Error was:\n$err')
+			}
+		}
+
+		if reload{
+			installers.digitaltwin_reload(mut &cfg, production) or {
+				return error(' ** ERROR: cannot reload digital twin. Error was:\n$err')
+			}
+		}
+
+		if stop{
+			installers.digitaltwin_stop(mut &cfg, production) or {
+				return error(' ** ERROR: cannot stop digital twin. Error was:\n$err')
+			}
+		}
+
+
+		if status{
+			installers.digitaltwin_status(mut &cfg, production) or {
+				return error(' ** ERROR: cannot get status for digital twin. Error was:\n$err')
+			}
+		}
+
+		if logs{
+			installers.digitaltwin_logs(mut &cfg, production) or {
+				return error(' ** ERROR: cannot get logs for digital twin. Error was:\n$err')
+			}
 		}
 	}
 	mut twin_cmd := cli.Command{
 		name: 'digitaltwin'
+		usage: '<start|restart|stop|reload|update|status|logs|install>'
 		execute: twin_exec
 	}
 
-	twin_cmd.add_flag(production_flag)
+	twin_cmd.add_flag(development_flag)
 
 	// UPDATE
 	update_exec := fn (cmd cli.Command) ? {
