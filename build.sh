@@ -5,6 +5,7 @@ cd publishtools
 #cp publishermod/errors.html .
 
 v -gc boehm -prod publishtools.v
+# v -d static_boehm  -gc boehm -prod publishtools.v
 
 #v  publishtools.v
 

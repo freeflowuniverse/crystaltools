@@ -2,7 +2,8 @@
 
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    brew install libgc
+    # brew install libgc
+    brew install bdw-gc
 fi
 
 v install patrickpissurno.redis

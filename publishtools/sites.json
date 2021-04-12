@@ -1,0 +1,12 @@
+[{
+		"name":	"info_uhuru",
+		"url":	"https://github.com/uhuru-me/info_uhuru",
+		"branch":	"s",
+		"pull":	false,
+		"reset":	false,
+		"cat":	0,
+		"shortname":	"uhuru",
+		"path_code":	"/Users/despiegk/codewww/github/uhuru-me/info_uhuru",
+		"domains":	["info.uhuru.me"],
+		"descr":	"wiki for uhuru Peer2Peer Cloud."
+	}]
