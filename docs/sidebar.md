@@ -17,3 +17,5 @@
   - [markdown](markdown.md)
 - [howto](howto)
   - [how to work with sshkeys](sshkey)
+  - [work with custom site configuration](sites_json)
+  - [work with security](sites_security)
