@@ -5,7 +5,3 @@
   - [TFGrid Capacity Explorer](https://explorer.threefold.io/)
   - [TF Token Stats](https://tokenstats.threefoldtoken.com/)
   - [TFGrid Manual](https://threefold.io/info/sdk)
-- Related Websites
-  - [FreeFlow Nation](http://www.freeflownation.org/)
-  - [Alliance for a Conscious Internet](https://threefold.io/aci)
-  - [Planetary Matchmakers](https://www.freeflowmatchmakers.com/)

@@ -115,7 +115,7 @@
     "reset": false,
     "cat": 0,
     "shortname": "pubtools",
-    "domains": [],
+    "domains": ["publtools.threefold.io"],
     "descr": "documentation for publishting tools",
     "circles": [],
     "acl": []

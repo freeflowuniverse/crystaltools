@@ -8,7 +8,7 @@
 - [include](./include.md)
 - [defs](./defs.md)
 - [links](./links.md)
-- [images](./images.md)
+- [images](./image.md)
 - [markdown](./markdown.md)
 - [tabs](./tabs.md)
 - [charts](./charts.md)
