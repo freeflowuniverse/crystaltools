@@ -198,7 +198,7 @@ fn main() {
 
 	// VERSION
 	version_exec := fn (cmd cli.Command) ? {
-		println('1.0.12')
+		println('1.0.14')
 	}
 	mut version_cmd := cli.Command{
 		name: 'version'
