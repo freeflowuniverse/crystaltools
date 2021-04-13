@@ -12,7 +12,7 @@
 
 		"domains":	["www.threefold.io", "www.threefold.me", "threefold.me", "new.threefold.io", "staging.threefold.io", "threefold.io"],
 		"descr":	"is our entry point for everyone, redirect to the detailed websites underneith.",
-		"circles":	[{
+		"groups":	[{
 				"name":	"tf1",
 				"members_users":	["kristof", "adnan", "rob"],
 				"members_groups":	[]
@@ -33,7 +33,7 @@
 
 		"domains":	["cloud.threefold.io", "cloud.threefold.me"],
 		"descr":	"for people looking to deploy solutions on top of a cloud, alternative to e.g. digital ocean",
-		"circles":	[],
+		"groups":	[],
 		"acl":	[{
 				"groups":	["tf2"],
 				"users":	["polleke2"],
