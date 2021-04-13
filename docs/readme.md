@@ -1,25 +1,25 @@
+![](img/pubish.png)
+
 # Quick Docs For Publishing Tools:
 
-## macro's
-
-- [iframe](./iframe.md)
-- [vimeo](./vimeo.md)
-- [youtube](./youtube.md)
-- [include](./include.md)
-- [defs](./defs.md)
-- [links](./links.md)
-- [images](./image.md)
-- [markdown](./markdown.md)
-- [tabs](./tabs.md)
-- [charts](./charts.md)
-- [mindmaps](./mindmaps.md)
-
-## graphs
-
-Mermaid support:
-
-- [mermaid](mermaid)
-
-## howto
-
-- [how to work with sshkeys](sshkey)
+- [macros](macros)
+  - [iframe](iframe)
+  - [vimeo](vimeo)
+  - [youtube](youtube)
+  - [include](include)
+  - [links](links)
+  - [images](image)
+  - [markdown](markdown)
+  - [tabs](tabs)
+  - [charts](charts)
+  - [mindmaps](mindmaps)
+  - [mermaid](mermaid)
+- [markdown](markdown)
+  - [links](links)
+  - [images](image)
+  - [defs](defs)
+  - [markdown](markdown)
+- [howto](howto)
+  - [how to work with sshkeys](sshkey)
+  - [work with custom site configuration](sites_json)
+  - [work with security](sites_security)

@@ -28,7 +28,7 @@ a
     c2
     c3
 ```
-![](./img/mindmap.png)
+![](img/mindmap.png)
 ## mindmap-txt
 
 ```mindmap-txt
@@ -39,7 +39,7 @@ a
     c2
     c3
 ```
-![](./img/mindmap-txt.png)
+![](img/mindmap_txt.png)
 
 ## mindmap-txtmap
 
@@ -58,7 +58,7 @@ some
       structure
 ```
 
-![](./img/mindmap-txtmap.png)
+![](img/mindmap_txtmap.png)
 
 ## mindmap-json
 
@@ -71,7 +71,7 @@ some
   ]
 }
 ```
-![](./img/mindmap-json.png)
+![](img/mindmap_json.png)
 
 ## mindmap-flare
 
@@ -458,7 +458,7 @@ some
 }
 ```
 
-![](./img/mindmap-flare.png)
+![](img/mindmap_flare.png)
 
 ## mindmap-json-flare
 
@@ -844,7 +844,7 @@ some
  ]
 }
 ```
-![](./img/mindmap-json-flare.png)
+![](img/mindmap_json_flare.png)
 
 ## mindmap-tree
 
@@ -1054,7 +1054,7 @@ some
   ]
 }
 ```
-![](./img/mindmap-tree.png)
+![](img/mindmap_tree.png)
 
 ## mindmap-json-tree
 
@@ -1265,7 +1265,7 @@ some
 }
 ```
 
-![](./img/mindmap-json-tree.png)
+![](img/mindmap_json_tree.png)
 
 ## mindmap-mup
 
@@ -1371,7 +1371,7 @@ https://github.com/dundalek/markmap/blob/master/examples/data/MindMapping.mup
   }
 }
 ```
-![](./img/mindmap-mup.png)
+![](img/mindmap_mup.png)
 
 ## mindmap-json-mup
 
@@ -1478,4 +1478,4 @@ https://github.com/dundalek/markmap/blob/master/examples/data/MindMapping.mup
 }
 ```
 
-![](./img/mindmap-json-mup.png)
+![](img/mindmap_json_mup.png)
