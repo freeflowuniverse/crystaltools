@@ -437,9 +437,9 @@ fn main() {
 		for line in sync.split(' ') {
 			println('\t$line')
 		}
-		process.execute_stdout('rsync --exclude ".acls.json" --exclude ".roles.json" -v --stats --progress -ra --delete $sync root@$ip:/root/.publisher/containerhost/publisher/publish/') ?
+		process.execute_stdout('rsync -v --stats --progress -ra --delete $sync root@$ip:/root/.publisher/containerhost/publisher/publish/') ?
 		println('restarting server\n')
-		process.execute_stdout('ssh root@$ip "docker exec -i web \'restart\'"') ?
+		process.execute_stdout('ssh root@$ip "docker exec -i web \'publishtools digitaltwin reload\'"') ?
 	}
 
 	staticfilesupdate_exrcute := fn (cmd cli.Command) ? {
