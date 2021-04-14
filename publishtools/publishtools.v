@@ -85,6 +85,21 @@ fn main() {
 		name: 'install'
 		execute: install_exec
 	}
+
+	configfile_flag := cli.Flag{
+		name: 'config'
+		abbrev: 'c'
+		description: 'provide sites.json file path'
+		flag: cli.FlagType.string
+	}
+
+	update_publishtools := cli.Flag{
+		name: 'update_pubtools'
+		abbrev: 'u'
+		description: 'update publishtools'
+		flag: cli.FlagType.bool
+	}
+
 	install_cmd.add_flag(pullflag)
 	install_cmd.add_flag(resetflag)
 	install_cmd.add_flag(cleanflag)
@@ -375,12 +390,16 @@ fn main() {
 		mut cfg := myconfig.get(false) ?
 
 		mut env := 'staging'
+
 		mut production := cmd.flags.get_bool('production') or { false }
+		mut configpath := cmd.flags.get_string('config') or { "" }
+		mut updatepubtools := cmd.flags.get_bool('update_pubtools') or { false }
 
 		if production {
 			env = 'production'
 		}
 
+	
 		mut ip := ''
 
 		if production {
@@ -392,7 +411,17 @@ fn main() {
 		args.delete(0)
 		args.delete(0)
 
-		idx := args.index('--production')
+		mut idx := args.index('--production')
+		if idx != -1 {
+			args.delete(idx)
+		}
+
+		idx =args.index('--config')
+		if idx != -1 {
+			args.delete(idx)
+		}
+
+		idx =args.index('--update_pubtools')
 		if idx != -1 {
 			args.delete(idx)
 		}
@@ -437,9 +466,24 @@ fn main() {
 		for line in sync.split(' ') {
 			println('\t$line')
 		}
+		
+		if updatepubtools{
+			println('updating publishtools')
+			println('ssh root@$ip "docker exec -i web publishtools update"')
+			process.execute_stdout('ssh root@$ip "docker exec -i web publishtools update"') ?
+		}
+
+		if configpath != ""{
+			configpath = configpath.replace("~", os.home_dir())
+			println('updating configuration file')
+			process.execute_stdout('rsync -v --progress -ra $configpath root@$ip:/root/.publisher/containerhost/publisher/') ?
+		}
+
 		process.execute_stdout('rsync -v --stats --progress -ra --delete $sync root@$ip:/root/.publisher/containerhost/publisher/publish/') ?
-		println('restarting server\n')
-		process.execute_stdout('ssh root@$ip "docker exec -i web \'publishtools digitaltwin reload\'"') ?
+		println('updating static files')
+		process.execute_stdout('ssh root@$ip "docker exec -i web publishtools staticfiles update"') ?
+		println('reloading server\n')
+		process.execute_stdout('ssh root@$ip "docker exec -i web publishtools digitaltwin reload"') ?
 	}
 
 	staticfilesupdate_exrcute := fn (cmd cli.Command) ? {
@@ -472,6 +516,8 @@ publishtools publish --production wikis  \t  		 publish wikis only but on produc
 	}
 
 	publis_cmd.add_flag(publish_prod_flag)
+	publis_cmd.add_flag(configfile_flag)
+	publis_cmd.add_flag(update_publishtools)
 
 	// CONFIG
 	config_exec := fn (cmd cli.Command) ? {
