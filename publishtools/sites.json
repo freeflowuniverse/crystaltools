@@ -108,16 +108,18 @@
     "acl": []
   },
   {
-    "name": "info_publishtools",
-    "url": "https://github.com/crystaluniverse/publishtools",
-    "branch": "",
-    "pull": false,
-    "reset": false,
-    "cat": 0,
-    "shortname": "pubtools",
-    "domains": ["publtools.threefold.io"],
-    "descr": "documentation for publishting tools",
-    "circles": [],
-    "acl": []
-  }
+		"name":	"info_publishtools",
+		"url":	"https://github.com/crystaluniverse/info_publishtools",
+		"branch":	"",
+		"pull":	false,
+		"reset":	false,
+		"cat":	0,
+		"shortname":	"publishtools",
+		"path_code":	"",
+		"domains":	["publishtools-info.threefold.io"],
+		"descr":	"Publishtools Info",
+		"groups":	[],
+		"acl":	[],
+		"trackingid":	""
+	}
 ]
