@@ -56,10 +56,10 @@ fn main() {
 		flag: cli.FlagType.bool
 	}
 
-	production_flag := cli.Flag{
-		name: 'production'
+	development_flag := cli.Flag{
+		name: 'development'
 		abbrev: 'd'
-		description: 'Run digitaltwin wit pm2 as a service'
+		description: 'Run digitaltwin in dev mode locally (no pm2)'
 		flag: cli.FlagType.bool
 	}
 
@@ -74,27 +74,58 @@ fn main() {
 		installers.main(cmd) ?
 	}
 
+	path_flag := cli.Flag{
+		name: 'path'
+		abbrev: 'p'
+		description: 'path to config file.'
+		flag: cli.FlagType.string
+	}
+
 	mut install_cmd := cli.Command{
 		name: 'install'
 		execute: install_exec
 	}
+
+	configfile_flag := cli.Flag{
+		name: 'config'
+		abbrev: 'c'
+		description: 'provide sites.json file path'
+		flag: cli.FlagType.string
+	}
+
+	update_publishtools := cli.Flag{
+		name: 'update_pubtools'
+		abbrev: 'u'
+		description: 'update publishtools'
+		flag: cli.FlagType.bool
+	}
+
+	update_digitaltwin := cli.Flag{
+		name: 'update_digitaltwin'
+		abbrev: 't'
+		description: 'update digitaltwin'
+		flag: cli.FlagType.bool
+	}
+
 	install_cmd.add_flag(pullflag)
 	install_cmd.add_flag(resetflag)
 	install_cmd.add_flag(cleanflag)
 
 	// DEVELOP
 	develop_exec := fn (cmd cli.Command) ? {
-		webrepo := cmd.flags.get_string("repo") or {""}		
-		
-		if webrepo == "" {
+		webrepo := cmd.flags.get_string('repo') or { '' }
+
+		if webrepo == '' {
+			println(' - develop for wikis')
 			installers.sites_download(cmd, false) ?
 			mut cfg := myconfig.get(true) ?
 			mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 			publ.check()
 			publ.develop = true
-			cfg.update_staticfiles(false)?
+			cfg.update_staticfiles(false) ?
 			publishermod.webserver_run(publ, cfg) // would be better to have the develop
 		} else {
+			println(' - develop website: $webrepo')
 			installers.website_develop(&cmd) ?
 		}
 	}
@@ -143,7 +174,7 @@ fn main() {
 		cfg := myconfig.get(true) ?
 		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
-		
+
 		installers.website_build(&cmd) ?
 	}
 	mut build_cmd := cli.Command{
@@ -189,7 +220,7 @@ fn main() {
 
 	// VERSION
 	version_exec := fn (cmd cli.Command) ? {
-		println('1.0.11')
+		println('1.0.12')
 	}
 	mut version_cmd := cli.Command{
 		name: 'version'
@@ -234,18 +265,84 @@ fn main() {
 
 	// DIGITAL TWIN
 	twin_exec := fn (cmd cli.Command) ? {
-		production := cmd.flags.get_bool("production") or {false}		
+		mut args := os.args.clone()
+		mut install := false
+		mut update := false
+		mut start := false
+		mut restart := false
+		mut reload := false
+		mut stop := false
+		mut status := false
+		mut logs := false
+
+		for arg in args {
+			if arg == 'install' {
+				install = true
+			} else if arg == 'update' {
+				update = true
+			} else if arg == 'reload' {
+				reload = true
+			} else if arg == 'restart' {
+				restart = true
+			} else if arg == 'start' {
+				start = true
+			} else if arg == 'stop' {
+				stop = true
+			} else if arg == 'status' {
+				status = true
+			} else if arg == 'logs' {
+				logs = true
+			}
+		}
+
+		mut development := cmd.flags.get_bool('development') or { false }
+		mut production := !development
+
 		mut cfg := installers.config_get(cmd) ?
-		installers.digitaltwin_start(&cfg, production) or {
-			return error(' ** ERROR: cannot start digital twin. Error was:\n$err')
+
+		if install {
+			installers.digitaltwin_install(mut &cfg, false) or {
+				panic(' ** ERROR: cannot install digital twin. Error was:\n$err')
+			}
+		} else if update {
+			installers.digitaltwin_install(mut &cfg, true) or {
+				panic(' ** ERROR: cannot update digital twin. Error was:\n$err')
+			}
+		} else if start {
+			installers.digitaltwin_start(mut &cfg, production, false) or {
+				panic(' ** ERROR: cannot start digital twin. Error was:\n$err')
+			}
+		} else if restart {
+			installers.digitaltwin_restart(mut &cfg, production) or {
+				panic(' ** ERROR: cannot restart digital twin. Error was:\n$err')
+			}
+		} else if reload {
+			installers.digitaltwin_reload(mut &cfg, production) or {
+				panic(' ** ERROR: cannot reload digital twin. Error was:\n$err')
+			}
+		} else if stop {
+			installers.digitaltwin_stop(mut &cfg, production) or {
+				panic(' ** ERROR: cannot stop digital twin. Error was:\n$err')
+			}
+		} else if status {
+			installers.digitaltwin_status(mut &cfg, production) or {
+				panic(' ** ERROR: cannot get status for digital twin. Error was:\n$err')
+			}
+		} else if logs {
+			installers.digitaltwin_logs(mut &cfg, production) or {
+				panic(' ** ERROR: cannot get logs for digital twin. Error was:\n$err')
+			}
+		} else {
+			println('usage: publishtools digitaltwin --help')
 		}
 	}
 	mut twin_cmd := cli.Command{
 		name: 'digitaltwin'
+		usage: '<start|restart|stop|reload|update|status|logs|install>'
 		execute: twin_exec
 	}
 
-	twin_cmd.add_flag(production_flag)
+	twin_cmd.add_flag(development_flag)
 
 	// UPDATE
 	update_exec := fn (cmd cli.Command) ? {
@@ -299,26 +396,46 @@ fn main() {
 		mut args := os.args.clone()
 		mut cfg := myconfig.get(false) ?
 
-		mut env := "staging"
-		mut production := cmd.flags.get_bool("production") or {false}
+		mut env := 'staging'
+
+		mut production := cmd.flags.get_bool('production') or { false }
+		mut configpath := cmd.flags.get_string('config') or { "" }
+		mut updatepubtools := cmd.flags.get_bool('update_pubtools') or { false }
+		mut update_digitaltwin := cmd.flags.get_bool('update_digitaltwin') or { false }
+		if production {
+			env = 'production'
+		}
+
+	
+		mut ip := ''
 
 		if production {
-			env = "production"
-		}
-
-		mut ip := ""
-
-		if production{
-			ip = "104.131.122.247"
-		}else{
-			ip = "161.35.109.242"
+			ip = '104.131.122.247'
+		} else {
+			ip = '161.35.109.242'
 		}
 
 		args.delete(0)
 		args.delete(0)
 
-		idx := args.index("--production")
-		if idx != -1{
+		mut idx := args.index('--production')
+		if idx != -1 {
+			args.delete(idx)
+		}
+
+		idx =args.index('--config')
+		if idx != -1 {
+			args.delete(idx)
+			args.delete(idx)
+		}
+
+		idx =args.index('--update_pubtools')
+		if idx != -1 {
+			args.delete(idx)
+		}
+
+		idx =args.index('--update_digitaltwin')
+		if idx != -1 {
 			args.delete(idx)
 		}
 
@@ -326,47 +443,68 @@ fn main() {
 		publ.check()
 		publ.flatten() ?
 
-
-		mut sync := ""
-		mut prefix := cfg.paths.publish + "/"
+		mut sync := ''
+		mut prefix := cfg.paths.publish + '/'
 		mut skip_sites := false
 		mut skip_wikis := false
 
-		if "wikis" in args{
-			sync += prefix + "wiki_* "
-			args.delete(args.index("wikis"))
+		if 'wikis' in args {
+			sync += prefix + 'wiki_* '
+			args.delete(args.index('wikis'))
 			skip_wikis = true
 		}
 
-		if "sites" in args{
-			sync += prefix + "www_* "
-			args.delete(args.index("sites"))
+		if 'sites' in args {
+			sync += prefix + 'www_* '
+			args.delete(args.index('sites'))
 			skip_sites = true
 		}
 
-		for arg in args{
-			if arg.starts_with("www") && skip_sites{
+		for arg in args {
+			if arg.starts_with('www') && skip_sites {
 				continue
-			}else if arg.starts_with("wiki") && skip_wikis{
+			} else if arg.starts_with('wiki') && skip_wikis {
 				continue
-			}else{
-				sync += prefix + arg + ""
+			} else {
+				sync += prefix + arg + ''
 			}
 		}
 
-		if sync == ""{
-			sync = "$prefix*"
+		if sync == '' {
+			sync = '$prefix*'
 		}
 
-		println("Syncing to $env ($ip)" )
-		
-		
-		for line in sync.split(" "){
-			println("\t$line")
+		println('Syncing to $env ($ip)')
+
+		for line in sync.split(' ') {
+			println('\t$line')
 		}
-		process.execute_stdout('rsync --exclude ".acls.json" --exclude ".roles.json" -v --stats --progress -ra --delete $sync root@$ip:/root/.publisher/containerhost/publisher/publish/')?
-		println("restarting server\n")
-		process.execute_stdout('ssh root@$ip "docker exec -i web \'restart\'"')?
+		
+		if updatepubtools{
+			println('updating publishtools')
+			process.execute_stdout('ssh root@$ip "docker exec -i web publishtools update"') ?
+		}
+
+		if configpath != ""{
+			configpath = configpath.replace("~", os.home_dir())
+			println('uploading  configuration file $configpath')
+			process.execute_stdout('rsync --progress -ra $configpath root@$ip:/root/.publisher/containerhost/publisher/') ?
+		}
+		
+
+		println('updating static files')
+		process.execute_stdout('ssh root@$ip "docker exec -i web publishtools staticfiles update"') ?
+
+		process.execute_stdout('rsync -v --stats --progress -ra --delete $sync root@$ip:/root/.publisher/containerhost/publisher/publish/') ?
+	
+		if update_digitaltwin{
+			println('updating digitaltwin server\n')
+			process.execute_stdout('ssh root@$ip "docker exec -i web publishtools digitaltwin update"') ?
+			process.execute_stdout('ssh root@$ip "docker exec -i web publishtools digitaltwin restart"') ?
+		}else{
+			println('reloading server\n')
+			process.execute_stdout('ssh root@$ip "docker exec -i web publishtools digitaltwin reload"') ?
+		}
 	}
 
 	staticfilesupdate_exrcute := fn (cmd cli.Command) ? {
@@ -374,9 +512,9 @@ fn main() {
 		if args.len == 3 {
 			if args[2] == 'update' {
 				mut cfg := myconfig.get(true) ?
-				cfg.update_staticfiles(true)?
+				cfg.update_staticfiles(true) ?
 				return
-			} 
+			}
 		}
 		println('usage: publishtools cache update')
 	}
@@ -389,23 +527,40 @@ fn main() {
 	}
 
 	mut publis_cmd := cli.Command{
-		name: 'publish',
-		description: 'Publish websites/wikis to production/staging',
+		name: 'publish'
+		description: 'Publish websites/wikis to production/staging'
 		usage: '\n\nExamples\npublishtools publish wikis  \t\t  		 publish wikis only
 publishtools publish sites  \t\t  		 publish sites only
 publishtools publish wikis  www_threefold_farming\t publish wikis and certain website
-publishtools publish --production wikis  \t  		 publish wikis only but on production',
+publishtools publish --production wikis  \t  		 publish wikis only but on production'
 		execute: publish_exec
 	}
 
 	publis_cmd.add_flag(publish_prod_flag)
+	publis_cmd.add_flag(configfile_flag)
+	publis_cmd.add_flag(update_publishtools)
+	publis_cmd.add_flag(update_digitaltwin)
+
+	// CONFIG
+	config_exec := fn (cmd cli.Command) ? {
+		path := cmd.flags.get_string('path') or { '' }
+		myconfig.save(path) ?
+	}
+	mut config_cmd := cli.Command{
+		description: 'safe default config'
+		name: 'publish_config_save'
+		execute: config_exec
+		required_args: 0
+	}
+
+	config_cmd.add_flag(path_flag)
 
 	// MAIN
 	mut main_cmd := cli.Command{
 		name: 'installer'
 		commands: [install_cmd, run_cmd, build_cmd, list_cmd, develop_cmd, twin_cmd, pull_cmd,
 			commit_cmd, push_cmd, pushcommit_cmd, edit_cmd, update_cmd, version_cmd, removechangese_cmd,
-			dns_cmd, flatten_cmd, publis_cmd, staticfilesupdate_cmd]
+			dns_cmd, flatten_cmd, publis_cmd, staticfilesupdate_cmd, config_cmd]
 		description: '
 
         Publishing Tool Installer

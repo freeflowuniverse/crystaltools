@@ -7,11 +7,9 @@ set +x
 rm -f /usr/local/bin/publishtools
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then 
-    # sudo /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/crystaluniverse/crystaltools/master/tools/install.sh)"
-    echo "no release for linux yet"
-    exit 1
+    curl -L https://github.com/crystaluniverse/publishtools/releases/download/first/publishtools_linux > /usr/local/bin/publishtools
+    chmod +x /usr/local/bin/publishtools
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-    # /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/crystaluniverse/crystaltools/master/tools/install.sh)"
     curl -L https://github.com/crystaluniverse/publishtools/releases/download/first/publishtools_osx > /usr/local/bin/publishtools
 fi
 

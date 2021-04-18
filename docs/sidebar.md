@@ -1,7 +1,3 @@
-![](img/pubish.png)
-
-# Quick Docs For Publishing Tools:
-
 - [macros](macros)
   - [iframe](iframe.md)
   - [vimeo](vimeo.md)
