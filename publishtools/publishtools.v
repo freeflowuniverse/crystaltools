@@ -114,11 +114,11 @@ fn main() {
 	// DEVELOP
 	develop_exec := fn (cmd cli.Command) ? {
 		webrepo := cmd.flags.get_string('repo') or { '' }
+		mut cfg := myconfig.get(true) ?
 
 		if webrepo == '' {
 			println(' - develop for wikis')
 			installers.sites_download(cmd, false) ?
-			mut cfg := myconfig.get(true) ?
 			mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 			publ.check()
 			publ.develop = true
@@ -126,14 +126,16 @@ fn main() {
 			publishermod.webserver_run(publ, cfg) // would be better to have the develop
 		} else {
 			println(' - develop website: $webrepo')
-			installers.website_develop(&cmd) ?
+			installers.website_develop(&cmd, mut &cfg) ?
 		}
 	}
+	
 	mut develop_cmd := cli.Command{
 		name: 'develop'
 		usage: 'specify name of website to develop on, if not specified will show the wiki'
 		execute: develop_exec
 	}
+	
 	develop_cmd.add_flag(repoflag)
 
 	// RUN
