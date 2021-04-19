@@ -12,6 +12,62 @@ fn flatten(mut publ publishermod.Publisher) bool {
 	return true
 }
 
+fn resolvepublisheditems(items string) ?string{
+	mut splitted := items.trim(' ').split(" ")
+	mut tosync := []string{}
+	for item in splitted{
+		mut s := item.split("/")
+		tosync << s[s.len-1]
+	}
+
+	mut cfg := myconfig.get(false) ?
+
+	mut allsites := []string{}
+	mut allwikis := []string{}
+	
+	mut res := []string{}
+
+	for site in cfg.sites{
+		if site.cat == myconfig.SiteCat.web{
+			allsites << site.name
+		}else{
+			allwikis << 'wiki_$site.shortname'
+		}
+	}
+
+	if tosync.contains('*'){
+		res << allsites[0..allsites.len]
+		res << allwikis[0..allwikis.len]
+	}else {
+		if tosync.contains('wiki_*'){
+			tosync.delete(tosync.index('wiki_*'))
+			res << allwikis[0..allwikis.len]
+		}
+		
+		if tosync.contains('www_*'){
+			tosync.delete(tosync.index('www_*'))
+			res << allsites[0..allsites.len]
+		}
+
+		for item in tosync{
+			if !allsites.contains(item) && !allwikis.contains(item){
+				panic('$item is not found in config file')
+			}
+			if !res.contains(item){
+				res << item
+			}
+		}
+	}
+
+	mut result := ''
+	for item in res{
+		result += item
+		result += ' '
+	}
+	println('Syncing : $result')
+	return result.trim(' ')
+}
+
 fn main() {
 	// INSTALL
 	pullflag := cli.Flag{
@@ -477,10 +533,10 @@ fn main() {
 		}
 
 		println('Syncing to $env ($ip)')
+		
+		sync = resolvepublisheditems(sync)?
 
-		for line in sync.split(' ') {
-			println('\t$line')
-		}
+		
 		
 		if updatepubtools{
 			println('updating publishtools')
