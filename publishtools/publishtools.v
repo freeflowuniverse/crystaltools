@@ -1,5 +1,7 @@
 module main
 
+import io.util
+import json
 import despiegk.crystallib.installers
 import os
 import despiegk.crystallib.process
@@ -12,58 +14,143 @@ fn flatten(mut publ publishermod.Publisher) bool {
 	return true
 }
 
-fn resolvepublisheditems(items string) ?string{
-	mut splitted := items.trim(' ').split(" ")
-	mut tosync := []string{}
-	for item in splitted{
-		mut s := item.split("/")
-		tosync << s[s.len-1]
-	}
+fn resolvepublisheditems(items string, prefix string, path string) ?string{
+	txt := os.read_file(path) ?
+	mut remotconig := json.decode([]myconfig.SiteConfig, txt) ?
+	mut remotesites := map[string]myconfig.SiteConfig{}
+	mut remotewikis := map[string]myconfig.SiteConfig{}
 
-	mut cfg := myconfig.get(false) ?
-
-	mut allsites := []string{}
-	mut allwikis := []string{}
-	
-	mut res := []string{}
-
-	for site in cfg.sites{
-		if site.cat == myconfig.SiteCat.web{
-			allsites << site.name
+	for item in remotconig{
+		if item.cat == myconfig.SiteCat.wiki{
+			remotewikis['wiki_$item.shortname'] = item
 		}else{
-			allwikis << 'wiki_$site.shortname'
+			remotesites[item.name] = item
 		}
 	}
 
+
+	mut splitted := items.trim(' ').split(" ")
+	mut tosync := []string{}
+	for item in splitted{
+		tosync << item
+	}
+	
+	mut cfg := myconfig.get(false) ?
+
+	mut allsites :=  map[string]myconfig.SiteConfig{}
+	mut allwikis :=  map[string]myconfig.SiteConfig{}
+	
+	mut res :=  map[string]myconfig.SiteConfig{}
+
+	for site in cfg.sites{
+		if site.cat == myconfig.SiteCat.wiki{
+			allwikis['wiki_$site.shortname'] = site
+			
+		}else{
+			allsites[site.name] = site
+		}
+	}
+
+	mut configsitesall := false
+	mut configwikisall := false
+
 	if tosync.contains('*'){
-		res << allsites[0..allsites.len]
-		res << allwikis[0..allwikis.len]
+		for k, v in allsites{
+			res[k] = v
+		}
+
+		for k, v in allwikis{
+			res[k] = v
+		}
+		configsitesall = true
+		configwikisall = true
+
 	}else {
 		if tosync.contains('wiki_*'){
 			tosync.delete(tosync.index('wiki_*'))
-			res << allwikis[0..allwikis.len]
+			for k, v in allwikis{
+				res[k] = v
+			}
+			configwikisall = true
 		}
 		
 		if tosync.contains('www_*'){
 			tosync.delete(tosync.index('www_*'))
-			res << allsites[0..allsites.len]
+			for k, v in allsites{
+				res[k] = v
+			}
+			configsitesall = true
 		}
 
 		for item in tosync{
-			if !allsites.contains(item) && !allwikis.contains(item){
+			if ! (item in allsites) && ! (item in allwikis){
 				panic('$item is not found in config file')
 			}
-			if !res.contains(item){
-				res << item
+			if !(item in res){
+
+				if item in allsites{
+					res[item] = allsites[item]
+				}else{
+					res[item] = allwikis[item]
+				}
 			}
 		}
 	}
 
 	mut result := ''
-	for item in res{
-		result += item
+	for item, _ in res{
+		result += prefix + item
 		result += ' '
 	}
+
+	mut newconfig := map[string]myconfig.SiteConfig{}
+	// we publish all wikis
+	if configwikisall{
+		for k, item in remotewikis{
+			if k.starts_with('wiki_'){
+				remotewikis.delete(k)
+			}
+		}
+
+		for k, v in res{
+			if k.starts_with('wiki_'){
+				remotewikis[k] = v
+			}
+		}
+	}
+
+	// we publish all sites
+	if configsitesall{
+		for k, item in remotewikis{
+			if !(k.starts_with('wiki_')){
+				remotesites.delete(k)
+			}
+		}
+
+		for k, v in res{
+			if !(k.starts_with('wiki_')){
+				remotesites[k] = v
+			}
+		}
+	}
+
+	for k, v in res{
+		if k.starts_with('wiki_'){
+			remotewikis[k] = v
+		}else{
+			remotesites[k] = v
+		}
+	}
+
+	mut out := []myconfig.SiteConfig{}
+	
+	for _, v in remotesites{
+		out << v
+	}
+	for _, v in remotewikis{
+		out << v
+	}
+
 	println('Syncing : $result')
 	return result.trim(' ')
 }
@@ -457,7 +544,7 @@ fn main() {
 		mut env := 'staging'
 
 		mut production := cmd.flags.get_bool('production') or { false }
-		mut configpath := cmd.flags.get_string('config') or { "" }
+		
 		mut updatepubtools := cmd.flags.get_bool('update_pubtools') or { false }
 		mut update_digitaltwin := cmd.flags.get_bool('update_digitaltwin') or { false }
 		if production {
@@ -481,12 +568,6 @@ fn main() {
 			args.delete(idx)
 		}
 
-		idx =args.index('--config')
-		if idx != -1 {
-			args.delete(idx)
-			args.delete(idx)
-		}
-
 		idx =args.index('--update_pubtools')
 		if idx != -1 {
 			args.delete(idx)
@@ -498,8 +579,8 @@ fn main() {
 		}
 
 		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
-		publ.check()
-		publ.flatten() ?
+		// publ.check()
+		// publ.flatten() ?
 
 		mut sync := ''
 		mut prefix := cfg.paths.publish + '/'
@@ -507,13 +588,13 @@ fn main() {
 		mut skip_wikis := false
 
 		if 'wikis' in args {
-			sync += prefix + 'wiki_* '
+			sync += 'wiki_* '
 			args.delete(args.index('wikis'))
 			skip_wikis = true
 		}
 
 		if 'sites' in args {
-			sync += prefix + 'www_* '
+			sync += 'www_* '
 			args.delete(args.index('sites'))
 			skip_sites = true
 		}
@@ -524,31 +605,29 @@ fn main() {
 			} else if arg.starts_with('wiki') && skip_wikis {
 				continue
 			} else {
-				sync += prefix + arg + ''
+				sync += arg + ''
 			}
 		}
 
 		if sync == '' {
-			sync = '$prefix*'
+			sync = '*'
 		}
 
+		// download remote config
+		mut _, mut configpath := util.temp_file({})?
+		println('Downloading remote config to $configpath')
+		process.execute_stdout('rsync --progress root@$ip:/root/.publisher/containerhost/publisher/sites.json $configpath') ?
 		println('Syncing to $env ($ip)')
 		
-		sync = resolvepublisheditems(sync)?
-
-		
+		sync = resolvepublisheditems(sync, prefix, configpath)?
 		
 		if updatepubtools{
 			println('updating publishtools')
 			process.execute_stdout('ssh root@$ip "docker exec -i web publishtools update"') ?
 		}
 
-		if configpath != ""{
-			configpath = configpath.replace("~", os.home_dir())
-			println('uploading  configuration file $configpath')
-			process.execute_stdout('rsync --progress -ra $configpath root@$ip:/root/.publisher/containerhost/publisher/') ?
-		}
-		
+		println('uploading  configuration file $configpath')
+		process.execute_stdout('rsync --progress -ra $configpath root@$ip:/root/.publisher/containerhost/publisher/sites.json') ?
 
 		println('updating static files')
 		process.execute_stdout('ssh root@$ip "docker exec -i web publishtools staticfiles update"') ?
@@ -595,7 +674,6 @@ publishtools publish --production wikis  \t  		 publish wikis only but on produc
 	}
 
 	publis_cmd.add_flag(publish_prod_flag)
-	publis_cmd.add_flag(configfile_flag)
 	publis_cmd.add_flag(update_publishtools)
 	publis_cmd.add_flag(update_digitaltwin)
 
