@@ -98,15 +98,16 @@ fn resolvepublisheditems(items string, prefix string, path string) ?string{
 	}
 
 	mut result := ''
+	println('Syncing')
 	for item, _ in res{
 		result += prefix + item
+		println('\t' +  prefix + item)
 		result += ' '
 	}
 
-	mut newconfig := map[string]myconfig.SiteConfig{}
 	// we publish all wikis
 	if configwikisall{
-		for k, item in remotewikis{
+		for k, _ in remotewikis{
 			if k.starts_with('wiki_'){
 				remotewikis.delete(k)
 			}
@@ -121,7 +122,7 @@ fn resolvepublisheditems(items string, prefix string, path string) ?string{
 
 	// we publish all sites
 	if configsitesall{
-		for k, item in remotewikis{
+		for k, _ in remotewikis{
 			if !(k.starts_with('wiki_')){
 				remotesites.delete(k)
 			}
@@ -151,7 +152,9 @@ fn resolvepublisheditems(items string, prefix string, path string) ?string{
 		out << v
 	}
 
-	println('Syncing : $result')
+	println("rewriting config file @$path")
+	os.write_file(path, json.encode_pretty(out))?
+	
 	return result.trim(' ')
 }
 
@@ -227,13 +230,6 @@ fn main() {
 	mut install_cmd := cli.Command{
 		name: 'install'
 		execute: install_exec
-	}
-
-	configfile_flag := cli.Flag{
-		name: 'config'
-		abbrev: 'c'
-		description: 'provide sites.json file path'
-		flag: cli.FlagType.string
 	}
 
 	update_publishtools := cli.Flag{
@@ -579,8 +575,8 @@ fn main() {
 		}
 
 		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
-		// publ.check()
-		// publ.flatten() ?
+		publ.check()
+		publ.flatten() ?
 
 		mut sync := ''
 		mut prefix := cfg.paths.publish + '/'
@@ -615,8 +611,8 @@ fn main() {
 
 		// download remote config
 		mut _, mut configpath := util.temp_file({})?
-		println('Downloading remote config to $configpath')
-		process.execute_stdout('rsync --progress root@$ip:/root/.publisher/containerhost/publisher/sites.json $configpath') ?
+		println('Downloading remote config root@$ip:/root/.publisher/containerhost/publisher/sites.json to $configpath')
+		process.execute_stdout('rsync --progress --human-readable root@$ip:/root/.publisher/containerhost/publisher/sites.json $configpath') ?
 		println('Syncing to $env ($ip)')
 		
 		sync = resolvepublisheditems(sync, prefix, configpath)?
@@ -626,13 +622,13 @@ fn main() {
 			process.execute_stdout('ssh root@$ip "docker exec -i web publishtools update"') ?
 		}
 
-		println('uploading  configuration file $configpath')
-		process.execute_stdout('rsync --progress -ra $configpath root@$ip:/root/.publisher/containerhost/publisher/sites.json') ?
+		println('uploading  new configuration file $configpath to root@$ip:/root/.publisher/containerhost/publisher/sites.json')
+		process.execute_stdout('rsync --progress -ra --human-readable $configpath root@$ip:/root/.publisher/containerhost/publisher/sites.json') ?
 
 		println('updating static files')
 		process.execute_stdout('ssh root@$ip "docker exec -i web publishtools staticfiles update"') ?
 
-		process.execute_stdout('rsync -v --stats --progress -ra --delete $sync root@$ip:/root/.publisher/containerhost/publisher/publish/') ?
+		process.execute_stdout('rsync -v --stats --progress -ra --delete --human-readable $sync root@$ip:/root/.publisher/containerhost/publisher/publish/') ?
 	
 		if update_digitaltwin{
 			println('updating digitaltwin server\n')

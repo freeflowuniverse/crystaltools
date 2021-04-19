@@ -236,20 +236,6 @@
 		"acl":	[],
 		"trackingid":	"13"
 	}, {
-		"name":	"info_bettertoken",
-		"url":	"https://github.com/BetterToken/info_bettertoken.git",
-		"branch":	"",
-		"pull":	false,
-		"reset":	false,
-		"cat":	0,
-		"shortname":	"bt",
-		"path_code":	"",
-		"domains":	["bt-info.threefold.io"],
-		"descr":	"",
-		"groups":	[],
-		"acl":	[],
-		"trackingid":	""
-	}, {
 		"name":	"info_publishtools",
 		"url":	"https://github.com/crystaluniverse/info_publishtools",
 		"branch":	"",
