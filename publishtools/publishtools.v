@@ -47,7 +47,7 @@ fn resolvepublisheditems(items string, prefix string, path string) ?string{
 		if site.cat == myconfig.SiteCat.wiki{
 			allwikis['wiki_$site.shortname'] = site
 			
-		}else{
+		}else if site.cat == myconfig.SiteCat.web{
 			allsites[site.name] = site
 		}
 	}
