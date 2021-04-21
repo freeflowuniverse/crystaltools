@@ -47,7 +47,7 @@ fn resolvepublisheditems(items string, prefix string, path string) ?string{
 		if site.cat == myconfig.SiteCat.wiki{
 			allwikis['wiki_$site.shortname'] = site
 			
-		}else{
+		}else if site.cat == myconfig.SiteCat.web{
 			allsites[site.name] = site
 		}
 	}
@@ -375,7 +375,7 @@ fn main() {
 
 	// VERSION
 	version_exec := fn (cmd cli.Command) ? {
-		println('1.0.14')
+		println('1.0.15')
 	}
 	mut version_cmd := cli.Command{
 		name: 'version'
