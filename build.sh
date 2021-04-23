@@ -14,7 +14,7 @@ rm -f /usr/local/bin/publishtools
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # brew install libgc
     # v -d static_boehm  -gc boehm -prod publishtools.v
-    v -d static_boehm  -gc boehm publishtools.v
+    v -d net_blocking_sockets -d static_boehm  -gc boehm publishtools.v
     
 else
     v -d static_boehm  -gc boehm -cflags -static -prod publishtools.v
