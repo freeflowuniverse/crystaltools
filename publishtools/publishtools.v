@@ -255,19 +255,19 @@ fn main() {
 	develop_exec := fn (cmd cli.Command) ? {
 		webrepo := cmd.flags.get_string('repo') or { '' }
 		mut cfg := myconfig.get(true) ?
-		mut gt := gittools.new(cfg.paths.code)?
-		process.execute_stdout('rm -rf $cfg.paths.codewiki/*') ?
+		// mut gt := gittools.new(cfg.paths.code)?
+		// process.execute_stdout('rm -rf $cfg.paths.codewiki/*') ?
 		
-		wikis := cfg.sites.filter(it.cat == myconfig.SiteCat.wiki)
-		mut symlinks := ''
+		// wikis := cfg.sites.filter(it.cat == myconfig.SiteCat.wiki)
+		// mut symlinks := ''
 
-		for wiki in wikis{
-			mut repo :=  gt.repo_get(name : wiki.name)?
-			symlinks += repo.path 
-			symlinks += ' '
-		}
+		// for wiki in wikis{
+		// 	mut repo :=  gt.repo_get(name : wiki.name)?
+		// 	symlinks += repo.path 
+		// 	symlinks += ' '
+		// }
 
-		process.execute_stdout('ln -s $symlinks $cfg.paths.codewiki/') ?
+		// process.execute_stdout('ln -s $symlinks $cfg.paths.codewiki/') ?
 
 		if webrepo == '' {
 			println(' - develop for wikis')
