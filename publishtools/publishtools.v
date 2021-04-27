@@ -8,7 +8,7 @@ import despiegk.crystallib.process
 import cli
 import despiegk.crystallib.publishermod
 import despiegk.crystallib.myconfig
-import despiegk.crystallib.gittools
+// import despiegk.crystallib.gittools
 
 fn flatten(mut publ publishermod.Publisher) bool {
 	publ.flatten() or { return false }
