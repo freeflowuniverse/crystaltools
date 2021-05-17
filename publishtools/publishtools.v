@@ -36,7 +36,7 @@ fn resolvepublisheditems(items string, prefix string, path string) ?string{
 		tosync << item
 	}
 	
-	mut cfg := myconfig.get(false) ?
+	mut cfg := myconfig.get() ?
 
 	mut allsites :=  map[string]myconfig.SiteConfig{}
 	mut allwikis :=  map[string]myconfig.SiteConfig{}
@@ -254,7 +254,7 @@ fn main() {
 	// DEVELOP
 	develop_exec := fn (cmd cli.Command) ? {
 		webrepo := cmd.flags.get_string('repo') or { '' }
-		mut cfg := myconfig.get(true) ?
+		mut cfg := myconfig.get() ?
 		// mut gt := gittools.new(cfg.paths.code)?
 		// process.execute_stdout('rm -rf $cfg.paths.codewiki/*') ?
 		
@@ -294,7 +294,7 @@ fn main() {
 	// RUN
 	run_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, false) ?
-		cfg := myconfig.get(false) ?
+		cfg := myconfig.get() ?
 		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
 		publ.flatten() ?
@@ -310,7 +310,7 @@ fn main() {
 	// FLATTEN
 	flatten_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, false) ?
-		cfg := myconfig.get(false) ?
+		cfg := myconfig.get() ?
 		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
 		publ.flatten() ?
@@ -326,7 +326,7 @@ fn main() {
 	// BUILD
 	build_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, true) ?
-		cfg := myconfig.get(true) ?
+		cfg := myconfig.get() ?
 		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
 
@@ -549,7 +549,7 @@ fn main() {
 	// publish
 	publish_exec := fn (cmd cli.Command) ? {
 		mut args := os.args.clone()
-		mut cfg := myconfig.get(false) ?
+		mut cfg := myconfig.get() ?
 
 		mut env := 'staging'
 
@@ -658,7 +658,7 @@ fn main() {
 		mut args := os.args.clone()
 		if args.len == 3 {
 			if args[2] == 'update' {
-				mut cfg := myconfig.get(true) ?
+				mut cfg := myconfig.get() ?
 				cfg.update_staticfiles(true) ?
 				return
 			}
