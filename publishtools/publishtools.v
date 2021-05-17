@@ -160,7 +160,6 @@ fn resolvepublisheditems(items string, prefix string, path string) ?string{
 }
 
 fn main() {
-	// INSTALL
 	pullflag := cli.Flag{
 		name: 'pull'
 		abbrev: 'p'
@@ -623,10 +622,13 @@ fn main() {
 			sync = '*'
 		}
 
+		//TODO: THIS IS NOT WELL DONE, THIS SHOULD NOT BE HERE BUT IN THE MODULES SOMEWHERE
+
 		// download remote config
 		mut _, mut configpath := util.temp_file({})?
 		println('Downloading remote config root@$ip:/root/.publisher/containerhost/publisher/sites.json to $configpath')
-		process.execute_stdout('rsync --progress --human-readable root@$ip:/root/.publisher/containerhost/publisher/sites.json $configpath') ?
+		cmd2 := 'rsync --progress --human-readable root@$ip:/root/.publisher/containerhost/publisher/sites.json $configpath'
+		process.execute_stdout(cmd2)?
 		println('Syncing to $env ($ip)')
 		
 		sync = resolvepublisheditems(sync, prefix, configpath)?
@@ -642,8 +644,13 @@ fn main() {
 		println('updating static files')
 		process.execute_stdout('ssh root@$ip "docker exec -i web publishtools staticfiles update"') ?
 
-		process.execute_stdout('rsync -v --stats --progress -ra --delete --human-readable $sync root@$ip:/root/.publisher/containerhost/publisher/publish/') ?
-	
+		cmd3 := 'rsync -v --stats --progress -ra --delete --human-readable $sync root@$ip:/root/.publisher/containerhost/publisher/publish/'
+		process.execute_stdout(cmd3) or {
+			println("************** WARNING ****************")
+			println("Could not rsync:")
+			println(cmd3)
+		}	
+
 		if update_digitaltwin{
 			println('updating digitaltwin server\n')
 			process.execute_stdout('ssh root@$ip "docker exec -i web publishtools digitaltwin update"') ?
