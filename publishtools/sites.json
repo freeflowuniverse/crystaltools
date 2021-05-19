@@ -19,7 +19,16 @@
 				"members_groups":	["tf1"]
 			}],
 		"acl":	[],
-		"trackingid":	""
+		"trackingid":	"",
+		"opengraph":	{
+			"title":	"",
+			"description":	"",
+			"url":	"",
+			"type_":	"article",
+			"image":	"",
+			"image_width":	"1200",
+			"image_height":	"630"
+		}
 	}, {
 		"name":	"www_threefold_cloud",
 		"url":	"https://github.com/threefoldfoundation/www_threefold_cloud",
@@ -32,8 +41,22 @@
 		"domains":	["cloud.threefold.io", "cloud.threefold.me"],
 		"descr":	"for people looking to deploy solutions on top of a cloud, alternative to e.g. digital ocean",
 		"groups":	[],
-		"acl":	[],
-		"trackingid":	""
+		"acl":	[{
+				"groups":	["tf2"],
+				"users":	["polleke2"],
+				"rights":	"R",
+				"secrets":	["1234", "5678"]
+			}],
+		"trackingid":	"",
+		"opengraph":	{
+			"title":	"",
+			"description":	"",
+			"url":	"",
+			"type_":	"article",
+			"image":	"",
+			"image_width":	"1200",
+			"image_height":	"630"
+		}
 	}, {
 		"name":	"www_threefold_farming",
 		"url":	"https://github.com/threefoldfoundation/www_threefold_farming",
@@ -47,7 +70,16 @@
 		"descr":	"crypto & minining enthusiasts, be the internet, know about farming & tokens.",
 		"groups":	[],
 		"acl":	[],
-		"trackingid":	""
+		"trackingid":	"",
+		"opengraph":	{
+			"title":	"",
+			"description":	"",
+			"url":	"",
+			"type_":	"article",
+			"image":	"",
+			"image_width":	"1200",
+			"image_height":	"630"
+		}
 	}, {
 		"name":	"www_threefold_twin",
 		"url":	"https://github.com/threefoldfoundation/www_threefold_twin",
@@ -61,7 +93,16 @@
 		"descr":	"you digital life",
 		"groups":	[],
 		"acl":	[],
-		"trackingid":	""
+		"trackingid":	"",
+		"opengraph":	{
+			"title":	"",
+			"description":	"",
+			"url":	"",
+			"type_":	"article",
+			"image":	"",
+			"image_width":	"1200",
+			"image_height":	"630"
+		}
 	}, {
 		"name":	"www_threefold_marketplace",
 		"url":	"https://github.com/threefoldfoundation/www_threefold_marketplace",
@@ -75,7 +116,16 @@
 		"descr":	"apps for community builders, runs on top of evdc",
 		"groups":	[],
 		"acl":	[],
-		"trackingid":	""
+		"trackingid":	"",
+		"opengraph":	{
+			"title":	"",
+			"description":	"",
+			"url":	"",
+			"type_":	"article",
+			"image":	"",
+			"image_width":	"1200",
+			"image_height":	"630"
+		}
 	}, {
 		"name":	"www_conscious_internet",
 		"url":	"https://github.com/threefoldfoundation/www_conscious_internet",
@@ -89,21 +139,16 @@
 		"descr":	"community around threefold, partners, friends, ...",
 		"groups":	[],
 		"acl":	[],
-		"trackingid":	""
-	}, {
-		"name":	"www_threefold_tech",
-		"url":	"https://github.com/threefoldtech/www_threefold_tech",
-		"branch":	"",
-		"pull":	false,
-		"reset":	false,
-		"cat":	2,
-		"shortname":	"tftech",
-		"path_code":	"",
-		"domains":	["www.threefold.tech", "threefold.tech"],
-		"descr":	"cyberpandemic, use the tech to build your own solutions with, certification for TFGrid",
-		"groups":	[],
-		"acl":	[],
-		"trackingid":	""
+		"trackingid":	"",
+		"opengraph":	{
+			"title":	"",
+			"description":	"",
+			"url":	"",
+			"type_":	"article",
+			"image":	"",
+			"image_width":	"1200",
+			"image_height":	"630"
+		}
 	}, {
 		"name":	"www_examplesite",
 		"url":	"https://github.com/threefoldfoundation/www_examplesite",
@@ -117,7 +162,16 @@
 		"descr":	"",
 		"groups":	[],
 		"acl":	[],
-		"trackingid":	""
+		"trackingid":	"",
+		"opengraph":	{
+			"title":	"",
+			"description":	"",
+			"url":	"",
+			"type_":	"article",
+			"image":	"",
+			"image_width":	"1200",
+			"image_height":	"630"
+		}
 	}, {
 		"name":	"www_uhuru",
 		"url":	"https://github.com/uhuru-me/www_uhuru",
@@ -131,7 +185,16 @@
 		"descr":	"uhuru (freedom) peer2peer cloud.",
 		"groups":	[],
 		"acl":	[],
-		"trackingid":	""
+		"trackingid":	"",
+		"opengraph":	{
+			"title":	"",
+			"description":	"",
+			"url":	"",
+			"type_":	"article",
+			"image":	"",
+			"image_width":	"1200",
+			"image_height":	"630"
+		}
 	}, {
 		"name":	"info_threefold",
 		"url":	"https://github.com/threefoldfoundation/info_threefold",
@@ -145,7 +208,16 @@
 		"descr":	"wiki for foundation, collaborate, what if farmings, tokens",
 		"groups":	[],
 		"acl":	[],
-		"trackingid":	"11"
+		"trackingid":	"11",
+		"opengraph":	{
+			"title":	"ThreeFold | Knowledge",
+			"description":	"All you need to know about ThreeFold.",
+			"url":	"https://info.threefold.io",
+			"type_":	"article",
+			"image":	"https://wiki.threefold.io/threefold__welcomepage.png",
+			"image_width":	"1200",
+			"image_height":	"630"
+		}
 	}, {
 		"name":	"info_tag",
 		"url":	"https://github.com/takeactionglobal/info_tag",
@@ -159,7 +231,16 @@
 		"descr":	"wiki for TAG.",
 		"groups":	[],
 		"acl":	[],
-		"trackingid":	""
+		"trackingid":	"",
+		"opengraph":	{
+			"title":	"",
+			"description":	"",
+			"url":	"",
+			"type_":	"article",
+			"image":	"",
+			"image_width":	"1200",
+			"image_height":	"630"
+		}
 	}, {
 		"name":	"info_sdk",
 		"url":	"https://github.com/threefoldfoundation/info_sdk",
@@ -173,7 +254,16 @@
 		"descr":	"for IAC, devops, how to do Infrastruture As Code, 3bot, Ansible, tfgrid-sdk, ...",
 		"groups":	[],
 		"acl":	[],
-		"trackingid":	"14"
+		"trackingid":	"14",
+		"opengraph":	{
+			"title":	"ThreeFold | Grid Manual (SDK)",
+			"description":	"All you need to know about how to create and deploy IT Solutions on top of the ThreeFold P2P Cloud.",
+			"url":	"",
+			"type_":	"article",
+			"image":	"https://sdk.threefold.io/sdk__storage_compute.png",
+			"image_width":	"1200",
+			"image_height":	"630"
+		}
 	}, {
 		"name":	"info_legal",
 		"url":	"https://github.com/threefoldfoundation/info_legal",
@@ -187,7 +277,16 @@
 		"descr":	"",
 		"groups":	[],
 		"acl":	[],
-		"trackingid":	"17"
+		"trackingid":	"17",
+		"opengraph":	{
+			"title":	"",
+			"description":	"",
+			"url":	"",
+			"type_":	"article",
+			"image":	"",
+			"image_width":	"1200",
+			"image_height":	"630"
+		}
 	}, {
 		"name":	"info_cloud",
 		"url":	"https://github.com/threefoldfoundation/info_cloud",
@@ -201,26 +300,16 @@
 		"descr":	"how to use the cloud for deploying apps: evdc, kubernetes, planetary fs, ... + marketplace solutions ",
 		"groups":	[],
 		"acl":	[],
-		"trackingid":	"16"
-	}, {
-		"name":	"info_tftech",
-		"url":	"https://github.com/threefoldtech/info_tftech",
-		"branch":	"",
-		"pull":	false,
-		"reset":	false,
-		"cat":	0,
-		"shortname":	"tftech",
-		"path_code":	"",
-		"domains":	["info.threefold.tech"],
-		"descr":	"",
-		"groups":	[],
-		"acl":	[{
-				"groups":	[],
-				"users":	[],
-				"rights":	"R",
-				"secrets":	["tft007tft"]
-			}],
-		"trackingid":	"15"
+		"trackingid":	"16",
+		"opengraph":	{
+			"title":	"ThreeFold P2P Cloud | Knowledge",
+			"description":	"All you need to know about the ThreeFold P2P Cloud and its offerings.",
+			"url":	"",
+			"type_":	"article",
+			"image":	"https://cloud-info.threefold.io/cloud__cloud_node.png",
+			"image_width":	"1200",
+			"image_height":	"630"
+		}
 	}, {
 		"name":	"info_digitaltwin",
 		"url":	"https://github.com/threefoldfoundation/info_digitaltwin.git",
@@ -234,7 +323,16 @@
 		"descr":	"",
 		"groups":	[],
 		"acl":	[],
-		"trackingid":	"13"
+		"trackingid":	"13",
+		"opengraph":	{
+			"title":	"",
+			"description":	"",
+			"url":	"",
+			"type_":	"article",
+			"image":	"",
+			"image_width":	"1200",
+			"image_height":	"630"
+		}
 	}, {
 		"name":	"info_publishtools",
 		"url":	"https://github.com/crystaluniverse/info_publishtools",
@@ -248,7 +346,16 @@
 		"descr":	"Publishtools Info",
 		"groups":	[],
 		"acl":	[],
-		"trackingid":	""
+		"trackingid":	"",
+		"opengraph":	{
+			"title":	"",
+			"description":	"",
+			"url":	"",
+			"type_":	"article",
+			"image":	"",
+			"image_width":	"1200",
+			"image_height":	"630"
+		}
 	}, {
 		"name":	"data_threefold",
 		"url":	"https://github.com/threefoldfoundation/data_threefold",
@@ -262,5 +369,14 @@
 		"descr":	"",
 		"groups":	[],
 		"acl":	[],
-		"trackingid":	""
+		"trackingid":	"",
+		"opengraph":	{
+			"title":	"",
+			"description":	"",
+			"url":	"",
+			"type_":	"article",
+			"image":	"",
+			"image_width":	"1200",
+			"image_height":	"630"
+		}
 	}]
