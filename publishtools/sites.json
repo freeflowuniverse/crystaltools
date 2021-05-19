@@ -214,7 +214,7 @@
 			"description":	"All you need to know about ThreeFold.",
 			"url":	"https://info.threefold.io",
 			"type_":	"article",
-			"image":	"https://wiki.threefold.io/threefold__welcomepage.png",
+			"image":	"https://info.threefold.io/threefold__welcomepage.png",
 			"image_width":	"1200",
 			"image_height":	"630"
 		}
@@ -258,7 +258,7 @@
 		"opengraph":	{
 			"title":	"ThreeFold | Grid Manual (SDK)",
 			"description":	"All you need to know about how to create and deploy IT Solutions on top of the ThreeFold P2P Cloud.",
-			"url":	"",
+			"url":	"https://sdk.threefold.io",
 			"type_":	"article",
 			"image":	"https://sdk.threefold.io/sdk__storage_compute.png",
 			"image_width":	"1200",
@@ -304,7 +304,7 @@
 		"opengraph":	{
 			"title":	"ThreeFold P2P Cloud | Knowledge",
 			"description":	"All you need to know about the ThreeFold P2P Cloud and its offerings.",
-			"url":	"",
+			"url":	"https://cloud-info.threefold.io",
 			"type_":	"article",
 			"image":	"https://cloud-info.threefold.io/cloud__cloud_node.png",
 			"image_width":	"1200",
