@@ -1,1 +1,0 @@
-!!!include:wiki:teal_differences_with_companies

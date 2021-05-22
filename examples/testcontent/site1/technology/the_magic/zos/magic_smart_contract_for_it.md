@@ -1,1 +1,0 @@
-!!!include:wiki:smart_contract_for_it

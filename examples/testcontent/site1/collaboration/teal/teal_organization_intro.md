@@ -1,1 +1,0 @@
-!!!include:wiki:teal_organization_intro

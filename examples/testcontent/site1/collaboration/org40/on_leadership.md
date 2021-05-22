@@ -1,1 +1,0 @@
-!!!include:wiki:on_leadership.md

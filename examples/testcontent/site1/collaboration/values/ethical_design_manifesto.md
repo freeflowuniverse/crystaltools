@@ -1,1 +1,0 @@
-!!!include:wiki:ethical_design_manifesto

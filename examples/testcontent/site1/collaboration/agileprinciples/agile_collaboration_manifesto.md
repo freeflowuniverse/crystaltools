@@ -1,1 +1,0 @@
-!!!include:wiki:agile_collaboration_manifesto

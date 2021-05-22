@@ -1,10 +1,5 @@
 # main methods
 
-## to get started
-
-- execute install.sh
-- uses library crystaluniverse/crystallib
-
 ## publisher
 
 ### load process
