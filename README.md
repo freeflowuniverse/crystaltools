@@ -10,7 +10,7 @@ starting point to run all wiki's and websites on your local machine
 copy the following in your terminal, will install the tools (OSX only for now).
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/crystaluniverse/publishtools/master/scripts/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/crystaluniverse/publishtools/development/scripts/install.sh)"
 ```
 
 ## Requirements
