@@ -31,7 +31,11 @@ rm -f errors.html
 cp publishtools /usr/local/bin/publishtools 
    
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    cp publishtools ~/Downloads/publishtools_osx
+    if [[ `uname -m` == 'arm64' ]]; then
+        cp publishtools ~/Downloads/publishtools_osx_arm
+    else
+        cp publishtools ~/Downloads/publishtools_osx
+    fi
 fi
 
 
