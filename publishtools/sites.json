@@ -195,7 +195,32 @@
 			"image_width":	"1200",
 			"image_height":	"630"
 		}
-	}, {
+	},
+	{
+		"name":	"www_digitaltwin",
+		"url":	"https://github.com/threefoldtech/www_digitaltwin",
+		"branch":	"",
+		"pull":	false,
+		"reset":	false,
+		"cat":	2,
+		"shortname":	"digitaltwin",
+		"path_code":	"",
+		"domains":	["digitaltwin.threefold.io"],
+		"descr":	"Digital twin frontend",
+		"groups":	[],
+		"acl":	[],
+		"trackingid":	"",
+		"opengraph":	{
+			"title":	"",
+			"description":	"",
+			"url":	"",
+			"type_":	"article",
+			"image":	"",
+			"image_width":	"1200",
+			"image_height":	"630"
+		}
+	},
+	{
 		"name":	"info_threefold",
 		"url":	"https://github.com/threefoldfoundation/info_threefold",
 		"branch":	"",
