@@ -9,7 +9,7 @@ starting point to run all wiki's and websites on your local machine
 
 https://info.threefold.io/info/publishtools#/publishtools__install
 
-## more info see publishtools docu
+### for more info, see publishtools documentation
 
 https://info.threefold.io/info/publishtools
 
