@@ -27,4 +27,6 @@ jobs:
       - name: Run publishtools
         run: publishtools
       - name: Print Status
-        run: echo "🍏 This job's status is ${{ job.status }}."
+        run: echo "🍏 This job's status is :: ${{ job.status }}."
+
+
