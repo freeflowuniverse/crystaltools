@@ -26,5 +26,13 @@ jobs:
         run: cd
       - name: Run publishtools
         run: publishtools
+      - name: Build pubtools with sanitizers
+        run: |
+          rm -rf publishtools 2>&1
+          git clone https://github.com/crystaluniverse/publishtools
+          cd publishtools/publishtools
+          v -cc gcc -gc boehm -cflags "-fsanitize=undefined" -d net_blocking_sockets -d static_boehm publishtools.v
+          sudo mv publishtools /usr/local/bin
+          sudo chmod u+x /usr/local/bin/publishtools
       - name: Print Status
         run: echo "🍏 This job's status is ${{ job.status }}."
