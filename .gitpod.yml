@@ -6,8 +6,11 @@ tasks:
       bash install.sh &&
       bash build.sh &&
       gp sync-done install  
-  - name: Start
-    init: gp sync-await install
+  - name: Publishtools
+    init: >
+      gp sync-await install &&
+      sudo /etc/init.d/redis-server start &&
+      publishtools flatten
     command: >
       sudo /etc/init.d/redis-server start &&
       publishtools develop
