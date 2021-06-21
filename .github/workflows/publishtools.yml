@@ -34,5 +34,9 @@ jobs:
           v -cc gcc -gc boehm -cflags "-fsanitize=undefined" -d net_blocking_sockets -d static_boehm publishtools.v
           sudo mv publishtools /usr/local/bin
           sudo chmod u+x /usr/local/bin/publishtools
+      - name: copy sites.json to home
+        run: cp  ~/.publishtools/.github/workflow/sites.json ~/sites.json
+      - name: Run publishtools flatten
+        run: publishtools flatten
       - name: Print Status
         run: echo "🍏 This job's status is ${{ job.status }}."
