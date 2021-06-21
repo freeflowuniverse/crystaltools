@@ -35,7 +35,7 @@ jobs:
           sudo mv publishtools /usr/local/bin
           sudo chmod u+x /usr/local/bin/publishtools
       - name: copy sites.json to home
-        run: cp  ~/.publishtools/.github/workflow/sites.json ~/sites.json
+        run: cp  ~/publishtools/.github/workflows/sites.json ~/sites.json
       - name: Run publishtools flatten
         run: publishtools flatten
       - name: Print Status
