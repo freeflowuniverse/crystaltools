@@ -1,13 +1,7 @@
 # # Commands to start on workspace startup
 tasks:
   - name: Pre
-    init: >
-      sudo apt install redis-server -y &&
-      bash install.sh &&
-      bash build.sh &&
-      sudo /etc/init.d/redis-server start &&
-      publishtools flatten || true &&
-      publishtools flatten
+    init: bash prepare.sh
     command: >
       sudo /etc/init.d/redis-server start &&
       publishtools develop
