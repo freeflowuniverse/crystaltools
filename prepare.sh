@@ -6,7 +6,7 @@ bash build.sh
 echo 2 >> log.txt
 sudo /etc/init.d/redis-server start
 echo 3 >> log.txt
-# set +ex
+set +ex
 # publishtools flatten
 # echo 4 >> /tmp/log.txt
 # publishtools flatten
