@@ -20,6 +20,8 @@ tasks:
 ports:
   - port: 9998
     onOpen: open-browser
+  - port: 6379
+    onOpen: ignore
 vscode:
   extensions:
     - vlanguage.vscode-vlang
