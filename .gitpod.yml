@@ -1,0 +1,7 @@
+# Commands to start on workspace startup
+tasks:
+  - init: bash install.sh
+# Ports to expose on workspace startup
+ports:
+  - port: 9998
+    onOpen: open-preview
