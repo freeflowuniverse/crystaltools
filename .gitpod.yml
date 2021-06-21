@@ -5,3 +5,6 @@ tasks:
 ports:
   - port: 9998
     onOpen: open-preview
+vscode:
+  extensions:
+    - vlanguage.vscode-vlang
