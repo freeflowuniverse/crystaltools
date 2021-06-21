@@ -1,7 +1,7 @@
 # # Commands to start on workspace startup
 tasks:
   - name: Pre
-    before: >
+    init: >
       sudo apt install redis-server -y &&
       bash install.sh &&
       bash build.sh &&
@@ -33,6 +33,6 @@ github:
     # add a "Review in Gitpod" button as a comment to pull requests (defaults to true)
     addComment: true
     # add a "Review in Gitpod" button to pull requests (defaults to false)
-    addBadge: true
+    addBadge: false
     # add a label once the prebuild is ready to pull requests (defaults to false)
     addLabel: prebuilt-in-gitpod
