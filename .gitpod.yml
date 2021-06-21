@@ -1,10 +1,21 @@
 # # Commands to start on workspace startup
 tasks:
-  - init: bash install.sh
+  - name: Publishtools
+    init: >
+      sudo apt install redis-server -y &&
+      bash install.sh &&
+      bash build.sh &&
+      gp sync-done install  
+  - name: Start
+    init: gp sync-await install
+    command: >
+      sudo /etc/init.d/redis-server start &&
+      publishtools develop
+      
 # Ports to expose on workspace startup
-# ports:
-#   - port: 9998
-#     onOpen: open-preview
+ports:
+  - port: 9998
+    onOpen: open-browser
 vscode:
   extensions:
     - vlanguage.vscode-vlang
