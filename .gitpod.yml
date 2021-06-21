@@ -1,7 +1,7 @@
 # # Commands to start on workspace startup
 tasks:
   - name: Pre
-    init: >
+    before: >
       sudo apt install redis-server -y &&
       bash install.sh &&
       bash build.sh &&
