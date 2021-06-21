@@ -2,7 +2,6 @@
 tasks:
   - init: bash prepare.sh
     command: sudo /etc/init.d/redis-server start && publishtools develop
-# Ports to expose on workspace startup
 ports:
   - port: 9998
     onOpen: open-browser
