@@ -1,14 +1,10 @@
 # # Commands to start on workspace startup
 tasks:
-  - name: Publishtools
+  - name: Pre
     init: >
       sudo apt install redis-server -y &&
       bash install.sh &&
       bash build.sh &&
-      gp sync-done install  
-  - name: Publishtools
-    init: >
-      gp sync-await install &&
       sudo /etc/init.d/redis-server start &&
       publishtools flatten || true &&
       publishtools flatten
