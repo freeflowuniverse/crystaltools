@@ -28,7 +28,7 @@ fi
 rm -f index_root.html
 rm -f errors.html
 
-cp publishtools /usr/local/bin/publishtools 
+sudo cp publishtools /usr/local/bin/publishtools 
    
 if [[ "$OSTYPE" == "darwin"* ]]; then
     if [[ `uname -m` == 'arm64' ]]; then
