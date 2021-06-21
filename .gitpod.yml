@@ -15,7 +15,6 @@ tasks:
     command: >
       sudo /etc/init.d/redis-server start &&
       publishtools develop
-      
 # Ports to expose on workspace startup
 ports:
   - port: 9998
@@ -30,14 +29,14 @@ github:
     # enable for the master/default branch (defaults to true)
     master: true
     # enable for all branches in this repo (defaults to false)
-    branches: false
+    branches: true
     # enable for pull requests coming from this repo (defaults to true)
-    pullRequests: false
+    pullRequests: true
     # enable for pull requests coming from forks (defaults to false)
     pullRequestsFromForks: false
     # add a "Review in Gitpod" button as a comment to pull requests (defaults to true)
     addComment: true
     # add a "Review in Gitpod" button to pull requests (defaults to false)
-    addBadge: false
+    addBadge: true
     # add a label once the prebuild is ready to pull requests (defaults to false)
     addLabel: prebuilt-in-gitpod
