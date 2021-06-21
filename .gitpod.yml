@@ -1,6 +1,9 @@
-# # Commands to start on workspace startup
+# Base image 
+image:
+  file: .gitpod.Dockerfile
+# Commands to start on workspace startup
 tasks:
-  - init: bash prepare.sh
+  - init: bash build.sh
     command: sudo /etc/init.d/redis-server start && publishtools develop
 ports:
   - port: 9998
