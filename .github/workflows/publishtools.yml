@@ -34,9 +34,17 @@ jobs:
           v -cc gcc -gc boehm -cflags "-fsanitize=undefined" -d net_blocking_sockets -d static_boehm publishtools.v
           sudo mv publishtools /usr/local/bin
           sudo chmod u+x /usr/local/bin/publishtools
-      - name: copy sites.json to home
-        run: cp  ~/publishtools/.github/workflows/sites.json ~/sites.json
+      - name: create sites.json at home
+        uses: finnp/create-file-action@1.0.0
+        env:
+            FILE_NAME: sites.json
+            FILE_DATA: '[{\n                "name": "info_publishtools",\n                "url":  "https://github.com/crystaluniverse/info_publishtools",\n                "branch":       "",\n                "pull": false,\n                "reset":        false,\n                "cat":  0,\n                "shortname":    "publishtools",\n                "path_code":    "",\n                "domains":      ["publishtools-info.threefold.io"],\n                "descr":        "Publishtools Info",\n                "groups":       [],\n                "acl":  [],\n                "trackingid":   "",\n                "opengraph":    {\n                        "title":        "",\n                        "description":  "",\n                        "url":  "",\n                        "type_":        "article",\n                        "image":        "",\n                        "image_width":  "1200",\n                        "image_height": "630"\n                }\n        }]'
+
       - name: Run publishtools flatten
         run: publishtools flatten
+      - name: cleaning
+        run: |
+          rm -rf ~/codewww
+          rm -rf ~/.publisher
       - name: Print Status
         run: echo "🍏 This job's status is ${{ job.status }}."
