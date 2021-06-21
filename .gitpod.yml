@@ -10,7 +10,7 @@ tasks:
     init: >
       gp sync-await install &&
       sudo /etc/init.d/redis-server start &&
-      publishtools flatten &&
+      publishtools flatten || true &&
       publishtools flatten
     command: >
       sudo /etc/init.d/redis-server start &&
