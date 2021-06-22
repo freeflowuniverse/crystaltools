@@ -4,7 +4,7 @@ image:
 tasks:
 #   - init: bash prepare.sh
 #     - command: sudo /etc/init.d/redis-server start && publishtools develop
-    - command: publishtools develop    
+    - command: sudo /etc/init.d/redis-server start && publishtools develop    
 ports:
   - port: 9998
     onOpen: open-browser
