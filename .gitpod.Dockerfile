@@ -32,4 +32,8 @@ RUN apt-get clean && rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/* && r
 
 USER gitpod
 
+RUN publishtools flatten || echo "flatten 1"
+#need to do 2 times, leave as this
+RUN publishtools flatten
+
 ENTRYPOINT [ "entrypoint.sh" ]
