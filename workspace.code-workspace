@@ -2,6 +2,9 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "../../home/gitpod/codewiki"
 		}
 	],
 	"settings": {
@@ -31,5 +34,5 @@
 				"command": "v fmt -w ${file}",
 			}
 		]
-	}
+	}	
 }
