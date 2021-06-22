@@ -21,7 +21,9 @@ RUN apt-get update && apt-get install -y redis-server mc && apt-get clean && rm 
 
 # USER gitpod
 
-RUN bash install.sh
+ADD install.sh /tmp/install.sh
+
+RUN bash /tmp/install.sh
 
 USER root
 
