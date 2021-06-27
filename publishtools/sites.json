@@ -221,6 +221,23 @@
 		}
 	},
 	{
+		"name": "www_freeflow",
+		"url": "https://github.com/threefoldfoundation/www_freeflow",
+		"branch": "",
+		"pull": false,
+		"reset": false,
+		"cat": 2,
+		"shortname": "freeflow",
+		"path_code": "",
+		"domains": [
+				"www.myfreeflow.org"
+		],
+		"descr": "My freeflow website",
+		"groups": [],
+		"acl": [],
+		"trackingid": ""
+	},
+	{
 		"name":	"info_threefold",
 		"url":	"https://github.com/threefoldfoundation/info_threefold",
 		"branch":	"",
