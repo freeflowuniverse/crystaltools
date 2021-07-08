@@ -271,11 +271,11 @@ fn main() {
 		if webrepo == '' {
 			println(' - develop for wikis')
 			installers.sites_download(cmd, false) ?
-			mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
-			publ.check()
+			mut publ := publishermod.new(cfg.paths.code)?
+			publ.check() ?
 			publ.develop = true
 			cfg.update_staticfiles(false) ?
-			publishermod.webserver_run(publ, cfg) // would be better to have the develop
+			publishermod.webserver_run(publ, cfg) 
 		} else {
 			println(' - develop website: $webrepo')
 			installers.website_develop(&cmd, mut &cfg) ?
@@ -294,8 +294,8 @@ fn main() {
 	run_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, false) ?
 		cfg := myconfig.get() ?
-		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
-		publ.check()
+		mut publ := publishermod.new(cfg.paths.code)?
+		publ.check()?
 		publ.flatten() ?
 		publishermod.webserver_run(publ, cfg)
 	}
@@ -310,8 +310,8 @@ fn main() {
 	flatten_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, false) ?
 		cfg := myconfig.get() ?
-		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
-		publ.check()
+		mut publ := publishermod.new(cfg.paths.code) ?
+		publ.check() ?
 		publ.flatten() ?
 	}
 	mut flatten_cmd := cli.Command{
@@ -326,8 +326,8 @@ fn main() {
 	build_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, true) ?
 		cfg := myconfig.get() ?
-		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
-		publ.check()
+		mut publ := publishermod.new(cfg.paths.code) ?
+		publ.check()?
 
 		installers.website_build(&cmd) ?
 	}
@@ -587,8 +587,8 @@ fn main() {
 			args.delete(idx)
 		}
 
-		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
-		publ.check()
+		mut publ := publishermod.new(cfg.paths.code) ?
+		publ.check()?
 		publ.flatten() ?
 
 		mut sync := ''
