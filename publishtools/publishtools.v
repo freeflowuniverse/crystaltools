@@ -271,7 +271,7 @@ fn main() {
 		if webrepo == '' {
 			println(' - develop for wikis')
 			installers.sites_download(cmd, false) ?
-			mut publ := publisher_core.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
+			mut publ := publisher_core.new(cfg.publish.paths.code) or { panic('cannot init publisher. $err') }
 			publ.check()
 			publ.develop = true
 			cfg.update_staticfiles(false) ?
@@ -294,7 +294,7 @@ fn main() {
 	run_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, false) ?
 		cfg := publisher_config.get() ?
-		mut publ := publisher_core.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
+		mut publ := publisher_core.new(cfg.publish.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
 		publ.flatten() ?
 		publisher_core.webserver_run(publ, cfg)
@@ -310,7 +310,7 @@ fn main() {
 	flatten_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, false) ?
 		cfg := publisher_config.get() ?
-		mut publ := publisher_core.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
+		mut publ := publisher_core.new(cfg.publish.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
 		publ.flatten() ?
 	}
@@ -326,7 +326,7 @@ fn main() {
 	build_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, true) ?
 		cfg := publisher_config.get() ?
-		mut publ := publisher_core.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
+		mut publ := publisher_core.new(cfg.publish.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
 
 		installers.website_build(&cmd) ?
@@ -588,12 +588,12 @@ fn main() {
 		// 	args.delete(idx)
 		// }
 
-		mut publ := publisher_core.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
+		mut publ := publisher_core.new(cfg.publish.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
 		publ.flatten() ?
 
 		mut sync := ''
-		mut prefix := cfg.paths.publish + '/'
+		mut prefix := cfg.publish.paths.publish + '/'
 		mut skip_sites := false
 		mut skip_wikis := false
 
@@ -697,8 +697,8 @@ publishtools publish --production wikis  \t  		 publish wikis only but on produc
 
 	// CONFIG
 	config_exec := fn (cmd cli.Command) ? {
-		path := cmd.flags.get_string('path') or { '' }
-		publisher_config.save(path) ?
+		// path := cmd.flags.get_string('path') or { '' }
+		// publisher_config.save(path) ?
 	}
 	mut config_cmd := cli.Command{
 		description: 'safe default config'
