@@ -3,7 +3,7 @@ module main
 import installers
 import os
 import cli
-import publishermod
+import publisher_core
 import myconfig
 
 fn main() {
@@ -59,7 +59,7 @@ fn main() {
 	develop_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd) ?
 		mut arg := false
-		mut cfg := myconfig.get() ?
+		mut cfg := publisher_config.get() ?
 		for flag in cmd.flags {
 			if flag.name == 'repo' {
 				if flag.value.len > 0 {
@@ -70,14 +70,14 @@ fn main() {
 
 		if !arg {
 			// publisher.webserver_start_develop()
-			mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
+			mut publ := publisher_core.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 			publ.check()
 			publ.develop = true
 			// publ.flatten() or {
 			// 	println('ERROR: cannot flatten wiki\n$err')
 			// 	exit(1)
 			// }
-			publishermod.webserver_run(publ) // would be better to have the develop
+			publisher_core.webserver_run(publ) // would be better to have the develop
 		} else {
 			installers.website_develop(&cmd) ?
 		}
@@ -92,11 +92,11 @@ fn main() {
 	// RUN
 	run_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd) ?
-		cfg := myconfig.get() ?
-		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
+		cfg := publisher_config.get() ?
+		mut publ := publisher_core.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
 		publ.flatten() ?
-		publishermod.webserver_run(publ)
+		publisher_core.webserver_run(publ)
 	}
 	mut run_cmd := cli.Command{
 		description: 'run all websites & wikis, they need to be build first'
@@ -108,8 +108,8 @@ fn main() {
 	// BUILD
 	build_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd) ?
-		cfg := myconfig.get() ?
-		mut publ := publishermod.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
+		cfg := publisher_config.get() ?
+		mut publ := publisher_core.new(cfg.paths.code) or { panic('cannot init publisher. $err') }
 		publ.check()
 		publ.flatten() ?
 
@@ -238,10 +238,10 @@ fn main() {
 		mut args := os.args.clone()
 		if args.len == 3 {
 			if args[2] == 'off' {
-				publishermod.dns_off(true)
+				publisher_core.dns_off(true)
 				return
 			} else if args[2] == 'on' {
-				publishermod.dns_on(true)
+				publisher_core.dns_on(true)
 				return
 			}
 		}
