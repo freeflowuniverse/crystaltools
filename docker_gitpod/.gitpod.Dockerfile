@@ -1,7 +1,7 @@
 
-
 FROM gitpod/workspace-full:latest
 
+# Install postgres
 USER root
 RUN apt-get update && apt-get install -y redis-server mc
 
@@ -21,19 +21,19 @@ RUN apt-get update && apt-get install -y redis-server mc
 
 # USER gitpod
 
-# ADD install.sh /tmp/install.sh
-# ADD build.sh /tmp/build.sh
-# ADD publishtools/ /tmp/publishtools/
+ADD install.sh /tmp/install.sh
+ADD build.sh /tmp/build.sh
+ADD publishtools/ /tmp/publishtools/
 
-# RUN bash /tmp/install.sh
-# RUN cd /tmp && bash /tmp/build.sh
+RUN bash /tmp/install.sh
+RUN cd /tmp && bash /tmp/build.sh
 
-# RUN apt-get clean && rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
+RUN apt-get clean && rm -rf /var/cache/apt/* && rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
 
 USER gitpod
 
-# RUN publishtools flatten || echo "flatten 1"
-# #need to do 2 times, leave as this
-# RUN publishtools flatten
+RUN publishtools flatten || echo "flatten 1"
+#need to do 2 times, leave as this
+RUN publishtools flatten
 
 ENTRYPOINT [ "entrypoint.sh" ]

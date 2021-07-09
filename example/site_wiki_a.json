@@ -1,0 +1,14 @@
+[
+	{
+		"url": "",
+		"path": "wiki_site_a",
+		"branch": "",
+		"pull": true,
+		"reset": true,
+		"shortname": "cloud",
+		"domains": [
+			"test.threefold.org"
+		],
+		"descr": ""
+	}
+]

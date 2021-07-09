@@ -8,7 +8,7 @@ cd publishtools
 #cp publisher_core/index_root.html .
 #cp publisher_core/errors.html .
 
-rm -f /usr/local/bin/publishtools
+sudo rm -f /usr/local/bin/publishtools
 
 # v -gc boehm -prod publishtools.v
 if [[ "$OSTYPE" == "darwin"* ]]; then
