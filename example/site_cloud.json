@@ -1,0 +1,24 @@
+[
+	{
+		"url": "https://github.com/threefoldfoundation/info_cloud",
+		"path": "",
+		"branch": "",
+		"pull": false,
+		"reset": false,
+		"shortname": "cloud",
+		"domains": [
+			"cloud.threefold.org"
+		],
+		"descr": "",
+		"trackingid": "",
+		"opengraph": {
+			"title": "Cloud",
+			"description": "All you need to know about TF Cloud.",
+			"url": "https://cloud.threefold.org",
+			"type_": "article",
+			"image": "https://cloud.threefold.org/splash.png",
+			"image_width": "1200",
+			"image_height": "630"
+		}
+	}
+]

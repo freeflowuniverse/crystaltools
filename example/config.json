@@ -1,0 +1,13 @@
+{
+    "reset": false,
+    "pull": false,
+    "debug": false,
+    "redis": false,
+    "port": 9998,
+    "paths": {
+        "base": "",
+        "code": "",
+        "codewiki": "",
+        "publish": ""
+    }
+}
