@@ -1,7 +1,13 @@
 {
-  "name": "incachain",
+  "name": "awiki",
   "cat": 0,
   "descr": "",
-  "depends": []
+  "depends": [
+    {
+      "url" : "https://github.com/threefoldfoundation/info_legal",
+      "path" : "src",
+      "branch" : ""
+    }
+  ]
 }
 

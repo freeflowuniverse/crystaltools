@@ -1,8 +1,10 @@
 #!/bin/bash
 
 set -ex
-pushd  ~/code/publishtools
-sh build.sh
+
+pushd ../scripts_workspace
+bash build_fast.sh
 popd
+
 publishtools develop
 

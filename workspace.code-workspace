@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "../../home/gitpod/codewiki"
+		},
+		{
+			"path": "../crystallib"
 		}
 	],
 	"settings": {
