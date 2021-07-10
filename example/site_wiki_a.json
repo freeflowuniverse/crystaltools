@@ -1,7 +1,7 @@
 [
 	{
 		"url": "",
-		"path": "wiki_site_a",
+		"path_fs": "wiki_site_a",
 		"branch": "",
 		"pull": true,
 		"reset": true,

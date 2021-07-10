@@ -1,6 +1,11 @@
 
 set -ex
 
+if ! [ -x "$(command -v v)" ]; then
+  echo 'Error: vlang is not installed.' >&2
+  sudo rm -rf /workspace/v
+fi
+
 #Check v already exists, if not then compile
 if [ -d "/workspace/v" ]
 then
@@ -8,6 +13,7 @@ then
 else
     pushd /workspace
     sudo rm -rf /workspace/v
+    sudo apt update
     sudo apt install libgc-dev -y
     git clone https://github.com/vlang/v
     cd v
@@ -31,6 +37,7 @@ else
 fi
 
 rm -rf ~/.vmodules/despiegk/crystallib
+mkdir -p ~/.vmodules/despiegk
 ln -s /workspace/crystallib ~/.vmodules/despiegk/crystallib
 
 v install patrickpissurno.redis
