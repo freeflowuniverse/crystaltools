@@ -5,7 +5,6 @@
 		"branch": "",
 		"pull": true,
 		"reset": true,
-		"shortname": "cloud",
 		"domains": [
 			"test.threefold.org"
 		],
