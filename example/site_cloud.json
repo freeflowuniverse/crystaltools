@@ -1,5 +1,6 @@
 [
 	{
+		"name": "cloud",
 		"url": "https://github.com/threefoldfoundation/info_cloud",
 		"path": "src",
 		"path_fs":"",

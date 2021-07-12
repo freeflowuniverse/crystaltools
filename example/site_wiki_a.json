@@ -1,5 +1,6 @@
 [
 	{
+		"name": "awiki",
 		"url": "",
 		"path_fs": "wiki_site_a",
 		"branch": "",
