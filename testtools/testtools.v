@@ -59,7 +59,7 @@ fn main() {
 	develop_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd) ?
 		mut arg := false
-		mut cfg := myconfig.get() ?
+		mut cfg := publisher_config.get() ?
 		for flag in cmd.flags {
 			if flag.name == 'repo' {
 				if flag.value.len > 0 {
@@ -70,7 +70,7 @@ fn main() {
 
 		if !arg {
 			// publisher.webserver_start_develop()
-			mut publ := publisher_core.new(cfg.paths.code)?
+			mut publ := publisher_core.new(cfg.publish.paths.code)?
 			publ.check()?
 			publ.develop = true
 			// publ.flatten() or {
@@ -92,8 +92,8 @@ fn main() {
 	// RUN
 	run_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd) ?
-		cfg := myconfig.get() ?
-		mut publ := publisher_core.new(cfg.paths.code)?
+		cfg := publisher_config.get() ?
+		mut publ := publisher_core.new(cfg.publish.paths.code)?
 		publ.check()?
 		publ.flatten() ?
 		publisher_core.webserver_run(publ)
@@ -108,8 +108,8 @@ fn main() {
 	// BUILD
 	build_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd) ?
-		cfg := myconfig.get() ?
-		mut publ := publisher_core.new(cfg.paths.code)?
+		cfg := publisher_config.get() ?
+		mut publ := publisher_core.new(cfg.publish.paths.code)?
 		publ.check()?
 		publ.flatten() ?
 

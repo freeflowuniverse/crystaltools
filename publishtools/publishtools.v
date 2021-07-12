@@ -22,8 +22,8 @@ fn resolvepublisheditems(items string, prefix string, path string) ?string{
 	mut remotewikis := map[string]publisher_config.SiteConfig{}
 
 	for item in remotconig{
-		if item.cat == myconfig.SiteCat.wiki{
-			remotewikis['wiki_$item.shortname'] = item
+		if item.cat == publisher_config.SiteCat.wiki{
+			remotewikis['wiki_$item.name'] = item
 		}else{
 			remotesites[item.name] = item
 		}
@@ -36,7 +36,7 @@ fn resolvepublisheditems(items string, prefix string, path string) ?string{
 		tosync << item
 	}
 	
-	mut cfg := myconfig.get() ?
+	mut cfg := publisher_config.get() ?
 
 	mut allsites :=  map[string]publisher_config.SiteConfig{}
 	mut allwikis :=  map[string]publisher_config.SiteConfig{}
@@ -44,10 +44,10 @@ fn resolvepublisheditems(items string, prefix string, path string) ?string{
 	mut res :=  map[string]publisher_config.SiteConfig{}
 
 	for site in cfg.sites{
-		if site.cat == myconfig.SiteCat.wiki{
-			allwikis['wiki_$site.shortname'] = site
+		if site.cat == publisher_config.SiteCat.wiki{
+			allwikis['wiki_$site.name'] = site
 			
-		}else if site.cat == myconfig.SiteCat.web{
+		}else if site.cat == publisher_config.SiteCat.web{
 			allsites[site.name] = site
 		}
 	}
@@ -253,11 +253,11 @@ fn main() {
 	// DEVELOP
 	develop_exec := fn (cmd cli.Command) ? {
 		webrepo := cmd.flags.get_string('repo') or { '' }
-		mut cfg := myconfig.get() ?
-		// mut gt := gittools.new(cfg.paths.code)?
-		// process.execute_stdout('rm -rf $cfg.paths.codewiki/*') ?
+		mut cfg := publisher_config.get() ?
+		// mut gt := gittools.new(cfg.publish.paths.code)?
+		// process.execute_stdout('rm -rf $cfg.publish.paths.codewiki/*') ?
 		
-		// wikis := cfg.sites.filter(it.cat == myconfig.SiteCat.wiki)
+		// wikis := cfg.sites.filter(it.cat == publisher_config.SiteCat.wiki)
 		// mut symlinks := ''
 
 		// for wiki in wikis{
@@ -266,12 +266,12 @@ fn main() {
 		// 	symlinks += ' '
 		// }
 
-		// process.execute_stdout('ln -s $symlinks $cfg.paths.codewiki/') ?
+		// process.execute_stdout('ln -s $symlinks $cfg.publish.paths.codewiki/') ?
 
 		if webrepo == '' {
 			println(' - develop for wikis')
 			installers.sites_download(cmd, false) ?
-			mut publ := publisher_core.new(cfg.paths.code)?
+			mut publ := publisher_core.new(cfg.publish.paths.code)?
 			publ.check() ?
 			publ.develop = true
 			cfg.update_staticfiles(false) ?
@@ -293,8 +293,10 @@ fn main() {
 	// RUN
 	run_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, false) ?
-		cfg := myconfig.get() ?
-		mut publ := publisher_core.new(cfg.paths.code)?
+		cfg := publisher_config.get() ?
+		println(cfg)
+		panic("s")
+		mut publ := publisher_core.new(cfg.publish.paths.code)?
 		publ.check()?
 		publ.flatten() ?
 		publisher_core.webserver_run(publ, cfg)
@@ -309,8 +311,8 @@ fn main() {
 	// FLATTEN
 	flatten_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, false) ?
-		cfg := myconfig.get() ?
-		mut publ := publisher_core.new(cfg.paths.code) ?
+		cfg := publisher_config.get() ?
+		mut publ := publisher_core.new(cfg.publish.paths.code) ?
 		publ.check() ?
 		publ.flatten() ?
 	}
@@ -325,8 +327,8 @@ fn main() {
 	// BUILD
 	build_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, true) ?
-		cfg := myconfig.get() ?
-		mut publ := publisher_core.new(cfg.paths.code) ?
+		cfg := publisher_config.get() ?
+		mut publ := publisher_core.new(cfg.publish.paths.code) ?
 		publ.check()?
 
 		installers.website_build(&cmd) ?
@@ -548,7 +550,7 @@ fn main() {
 	// publish
 	publish_exec := fn (cmd cli.Command) ? {
 		mut args := os.args.clone()
-		mut cfg := myconfig.get() ?
+		mut cfg := publisher_config.get() ?
 
 		mut env := 'staging'
 
@@ -587,12 +589,12 @@ fn main() {
 			args.delete(idx)
 		}
 
-		mut publ := publisher_core.new(cfg.paths.code) ?
+		mut publ := publisher_core.new(cfg.publish.paths.code) ?
 		publ.check()?
 		publ.flatten() ?
 
 		mut sync := ''
-		mut prefix := cfg.paths.publish + '/'
+		mut prefix := cfg.publish.paths.publish + '/'
 		mut skip_sites := false
 		mut skip_wikis := false
 
@@ -665,7 +667,7 @@ fn main() {
 		mut args := os.args.clone()
 		if args.len == 3 {
 			if args[2] == 'update' {
-				mut cfg := myconfig.get() ?
+				mut cfg := publisher_config.get() ?
 				cfg.update_staticfiles(true) ?
 				return
 			}
@@ -697,7 +699,7 @@ publishtools publish --production wikis  \t  		 publish wikis only but on produc
 	// CONFIG
 	config_exec := fn (cmd cli.Command) ? {
 		path := cmd.flags.get_string('path') or { '' }
-		myconfig.save(path) ?
+		// publisher_config.save(path) ?
 	}
 	mut config_cmd := cli.Command{
 		description: 'safe default config'
