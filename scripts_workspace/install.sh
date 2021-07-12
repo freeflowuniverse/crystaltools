@@ -30,7 +30,8 @@ then
 else
     pushd /workspace
     git clone https://github.com/crystaluniverse/crystallib
-    git checkout refactor_publish_config
+    # git checkout refactor_publish_config
+    git switch -c origin/refactor_publish_config
     rm -rf ~/.vmodules
     mkdir -p ~/.vmodules/despiegk/
     popd
