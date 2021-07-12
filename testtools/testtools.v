@@ -70,14 +70,14 @@ fn main() {
 
 		if !arg {
 			// publisher.webserver_start_develop()
-			mut publ := publishermod.new(cfg.paths.code)?
+			mut publ := publisher_core.new(cfg.paths.code)?
 			publ.check()?
 			publ.develop = true
 			// publ.flatten() or {
 			// 	println('ERROR: cannot flatten wiki\n$err')
 			// 	exit(1)
 			// }
-			publishermod.webserver_run(publ) // would be better to have the develop
+			publisher_core.webserver_run(publ) // would be better to have the develop
 		} else {
 			installers.website_develop(&cmd) ?
 		}
@@ -93,10 +93,10 @@ fn main() {
 	run_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd) ?
 		cfg := myconfig.get() ?
-		mut publ := publishermod.new(cfg.paths.code)?
+		mut publ := publisher_core.new(cfg.paths.code)?
 		publ.check()?
 		publ.flatten() ?
-		publishermod.webserver_run(publ)
+		publisher_core.webserver_run(publ)
 	}
 	mut run_cmd := cli.Command{
 		description: 'run all websites & wikis, they need to be build first'
@@ -109,7 +109,7 @@ fn main() {
 	build_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd) ?
 		cfg := myconfig.get() ?
-		mut publ := publishermod.new(cfg.paths.code)?
+		mut publ := publisher_core.new(cfg.paths.code)?
 		publ.check()?
 		publ.flatten() ?
 
@@ -238,10 +238,10 @@ fn main() {
 		mut args := os.args.clone()
 		if args.len == 3 {
 			if args[2] == 'off' {
-				publishermod.dns_off(true)
+				publisher_core.dns_off(true)
 				return
 			} else if args[2] == 'on' {
-				publishermod.dns_on(true)
+				publisher_core.dns_on(true)
 				return
 			}
 		}

@@ -6,20 +6,20 @@ import despiegk.crystallib.installers
 import os
 import despiegk.crystallib.process
 import cli
-import despiegk.crystallib.publishermod
-import despiegk.crystallib.myconfig
+import despiegk.crystallib.publisher_core
+import despiegk.crystallib.publisher_config
 // import despiegk.crystallib.gittools
 
-fn flatten(mut publ publishermod.Publisher) bool {
+fn flatten(mut publ publisher_core.Publisher) bool {
 	publ.flatten() or { return false }
 	return true
 }
 
 fn resolvepublisheditems(items string, prefix string, path string) ?string{
 	txt := os.read_file(path) ?
-	mut remotconig := json.decode([]myconfig.SiteConfig, txt) ?
-	mut remotesites := map[string]myconfig.SiteConfig{}
-	mut remotewikis := map[string]myconfig.SiteConfig{}
+	mut remotconig := json.decode([]publisher_config.SiteConfig, txt) ?
+	mut remotesites := map[string]publisher_config.SiteConfig{}
+	mut remotewikis := map[string]publisher_config.SiteConfig{}
 
 	for item in remotconig{
 		if item.cat == myconfig.SiteCat.wiki{
@@ -38,10 +38,10 @@ fn resolvepublisheditems(items string, prefix string, path string) ?string{
 	
 	mut cfg := myconfig.get() ?
 
-	mut allsites :=  map[string]myconfig.SiteConfig{}
-	mut allwikis :=  map[string]myconfig.SiteConfig{}
+	mut allsites :=  map[string]publisher_config.SiteConfig{}
+	mut allwikis :=  map[string]publisher_config.SiteConfig{}
 	
-	mut res :=  map[string]myconfig.SiteConfig{}
+	mut res :=  map[string]publisher_config.SiteConfig{}
 
 	for site in cfg.sites{
 		if site.cat == myconfig.SiteCat.wiki{
@@ -144,7 +144,7 @@ fn resolvepublisheditems(items string, prefix string, path string) ?string{
 		}
 	}
 
-	mut out := []myconfig.SiteConfig{}
+	mut out := []publisher_config.SiteConfig{}
 	
 	for _, v in remotesites{
 		out << v
@@ -271,11 +271,11 @@ fn main() {
 		if webrepo == '' {
 			println(' - develop for wikis')
 			installers.sites_download(cmd, false) ?
-			mut publ := publishermod.new(cfg.paths.code)?
+			mut publ := publisher_core.new(cfg.paths.code)?
 			publ.check() ?
 			publ.develop = true
 			cfg.update_staticfiles(false) ?
-			publishermod.webserver_run(publ, cfg) 
+			publisher_core.webserver_run(publ, cfg) 
 		} else {
 			println(' - develop website: $webrepo')
 			installers.website_develop(&cmd, mut &cfg) ?
@@ -294,10 +294,10 @@ fn main() {
 	run_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, false) ?
 		cfg := myconfig.get() ?
-		mut publ := publishermod.new(cfg.paths.code)?
+		mut publ := publisher_core.new(cfg.paths.code)?
 		publ.check()?
 		publ.flatten() ?
-		publishermod.webserver_run(publ, cfg)
+		publisher_core.webserver_run(publ, cfg)
 	}
 	mut run_cmd := cli.Command{
 		description: 'run all websites & wikis, they need to be build first'
@@ -310,7 +310,7 @@ fn main() {
 	flatten_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, false) ?
 		cfg := myconfig.get() ?
-		mut publ := publishermod.new(cfg.paths.code) ?
+		mut publ := publisher_core.new(cfg.paths.code) ?
 		publ.check() ?
 		publ.flatten() ?
 	}
@@ -326,7 +326,7 @@ fn main() {
 	build_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, true) ?
 		cfg := myconfig.get() ?
-		mut publ := publishermod.new(cfg.paths.code) ?
+		mut publ := publisher_core.new(cfg.paths.code) ?
 		publ.check()?
 
 		installers.website_build(&cmd) ?
@@ -528,10 +528,10 @@ fn main() {
 		mut args := os.args.clone()
 		if args.len == 3 {
 			if args[2] == 'off' {
-				publishermod.dns_off(true)
+				publisher_core.dns_off(true)
 				return
 			} else if args[2] == 'on' {
-				publishermod.dns_on(true)
+				publisher_core.dns_on(true)
 				return
 			}
 		}
@@ -587,7 +587,7 @@ fn main() {
 			args.delete(idx)
 		}
 
-		mut publ := publishermod.new(cfg.paths.code) ?
+		mut publ := publisher_core.new(cfg.paths.code) ?
 		publ.check()?
 		publ.flatten() ?
 
