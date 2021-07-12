@@ -1,5 +1,5 @@
 
-set -ex
+set -e
 
 #Check v already exists, if not then compile
 if [ -d "~/.vmodules" ]
@@ -57,7 +57,7 @@ v install nedpals.vex
 
 if [ -d "/workspace/publishtools" ] 
 then
-    echo "Directory /workspace/publishtools exists." 
+    echo "Directory /workspace/publishtools exists, no reason to clone." 
 else
     pushd /workspace
     git clone https://github.com/crystaluniverse/publishtools
