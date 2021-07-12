@@ -2,7 +2,7 @@ image:
   file: .gitpod.Dockerfile
 # # Commands to start on workspace startup
 tasks:
-  - init: scripts_workspace/install.sh
+  - command: sudo /etc/init.d/redis-server start && scripts_workspace/install.sh
   # - command: sudo /etc/init.d/redis-server start && publishtools develop    
 ports:
   - port: 9998
