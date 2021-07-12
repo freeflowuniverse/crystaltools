@@ -1,6 +1,9 @@
 
 set -ex
 
+
+sudo chown -R gitpod:gitpod ~/.vmodules
+
 if ! [ -x "$(command -v v)" ]; then
   echo 'Error: vlang is not installed.' >&2
   sudo rm -rf /workspace/v
@@ -30,14 +33,16 @@ then
 else
     pushd /workspace
     git clone https://github.com/crystaluniverse/crystallib
-    # git checkout refactor_publish_config
-    git switch -c origin/refactor_publish_config
-    rm -rf ~/.vmodules
+    cd crystallib
+    git checkout refactor_publish_config
+    # git switch -c origin/refactor_publish_config
+    cd ..
+    sudo rm -rf ~/.vmodules
     mkdir -p ~/.vmodules/despiegk/
     popd
 fi
 
-rm -rf ~/.vmodules/despiegk/crystallib
+rm -rf ~/.vmodules
 mkdir -p ~/.vmodules/despiegk
 ln -s /workspace/crystallib ~/.vmodules/despiegk/crystallib
 
