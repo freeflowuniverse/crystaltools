@@ -1,8 +1,11 @@
 
 set -ex
 
-
-sudo chown -R gitpod:gitpod ~/.vmodules
+#Check v already exists, if not then compile
+if [ -d "~/.vmodules" ]
+then
+    sudo chown -R gitpod:gitpod ~/.vmodules
+fi
 
 if ! [ -x "$(command -v v)" ]; then
   echo 'Error: vlang is not installed.' >&2
