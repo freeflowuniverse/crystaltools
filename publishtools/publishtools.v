@@ -220,13 +220,6 @@ fn main() {
 		installers.main(cmd) ?
 	}
 
-	path_flag := cli.Flag{
-		name: 'path'
-		abbrev: 'p'
-		description: 'path to config file.'
-		flag: cli.FlagType.string
-	}
-
 	mut install_cmd := cli.Command{
 		name: 'install'
 		execute: install_exec
@@ -696,26 +689,13 @@ publishtools publish --production wikis  \t  		 publish wikis only but on produc
 	publis_cmd.add_flag(update_publishtools)
 	publis_cmd.add_flag(update_digitaltwin)
 
-	// CONFIG
-	config_exec := fn (cmd cli.Command) ? {
-		path := cmd.flags.get_string('path') or { '' }
-		// publisher_config.save(path) ?
-	}
-	mut config_cmd := cli.Command{
-		description: 'safe default config'
-		name: 'publish_config_save'
-		execute: config_exec
-		required_args: 0
-	}
-
-	config_cmd.add_flag(path_flag)
 
 	// MAIN
 	mut main_cmd := cli.Command{
 		name: 'installer'
 		commands: [install_cmd, run_cmd, build_cmd, list_cmd, develop_cmd, twin_cmd, pull_cmd,
 			commit_cmd, push_cmd, pushcommit_cmd, edit_cmd, update_cmd, version_cmd, removechangese_cmd,
-			dns_cmd, flatten_cmd, publis_cmd, staticfilesupdate_cmd, config_cmd]
+			dns_cmd, flatten_cmd, publis_cmd, staticfilesupdate_cmd]
 		description: '
 
         Publishing Tool Installer

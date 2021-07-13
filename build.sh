@@ -1,6 +1,6 @@
 rm -f /usr/local/bin/publishtools
 
-set -ex
+set -e
 cd publishtools
 
 

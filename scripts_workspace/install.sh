@@ -25,7 +25,7 @@ else
     cd v
     sudo make
     sudo ./v symlink
-    popd
+    popd "$@" > /dev/null
 fi
 
 
@@ -42,7 +42,7 @@ else
     cd ..
     sudo rm -rf ~/.vmodules
     mkdir -p ~/.vmodules/despiegk/
-    popd
+    popd "$@" > /dev/null
 fi
 
 rm -rf ~/.vmodules
@@ -61,7 +61,7 @@ then
 else
     pushd /workspace
     git clone https://github.com/crystaluniverse/publishtools
-    popd
+    popd "$@" > /dev/null
 fi
 
 

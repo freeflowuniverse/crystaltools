@@ -1,10 +1,10 @@
 #!/bin/bash
 
-set -ex
+set -e
 
 pushd ../scripts_workspace
 bash build_fast.sh
-popd
+popd "$@" > /dev/null
 
 publishtools develop
 
