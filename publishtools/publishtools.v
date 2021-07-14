@@ -247,6 +247,8 @@ fn main() {
 	develop_exec := fn (cmd cli.Command) ? {
 		webrepo := cmd.flags.get_string('repo') or { '' }
 		mut cfg := publisher_config.get() ?
+		println(cfg)
+		panic("ssss")
 		// mut gt := gittools.new(cfg.publish.paths.code)?
 		// process.execute_stdout('rm -rf $cfg.publish.paths.codewiki/*') ?
 		
@@ -263,12 +265,9 @@ fn main() {
 
 		if webrepo == '' {
 			println(' - develop for wikis')
-			installers.sites_download(cmd, false) ?
-			mut publ := publisher_core.new(cfg.publish.paths.code)?
-			publ.check() ?
-			publ.develop = true
-			cfg.update_staticfiles(false) ?
-			publisher_core.webserver_run(publ, cfg) 
+			// installers.sites_download(cmd, false) ?
+			mut publ := publisher_core.new(&cfg)?
+			publisher_core.webserver_run(mut &publ) ?
 		} else {
 			println(' - develop website: $webrepo')
 			installers.website_develop(&cmd, mut &cfg) ?
