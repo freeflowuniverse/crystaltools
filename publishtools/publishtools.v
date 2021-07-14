@@ -36,7 +36,7 @@ fn resolvepublisheditems(items string, prefix string, path string) ?string{
 		tosync << item
 	}
 	
-	mut cfg := publisher_config.get() ?
+	mut cfg := publisher_config.get()
 
 	mut allsites :=  map[string]publisher_config.SiteConfig{}
 	mut allwikis :=  map[string]publisher_config.SiteConfig{}
@@ -246,9 +246,9 @@ fn main() {
 	// DEVELOP
 	develop_exec := fn (cmd cli.Command) ? {
 		webrepo := cmd.flags.get_string('repo') or { '' }
-		mut cfg := publisher_config.get() ?
+		mut cfg := publisher_config.get()
 		println(cfg)
-		panic("ssss")
+		// panic("ssss")
 		// mut gt := gittools.new(cfg.publish.paths.code)?
 		// process.execute_stdout('rm -rf $cfg.publish.paths.codewiki/*') ?
 		
@@ -285,13 +285,12 @@ fn main() {
 	// RUN
 	run_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, false) ?
-		cfg := publisher_config.get() ?
+		cfg := publisher_config.get()
 		println(cfg)
 		panic("s")
-		mut publ := publisher_core.new(cfg.publish.paths.code)?
-		publ.check()?
+		mut publ := publisher_core.new(&cfg)?
 		publ.flatten() ?
-		publisher_core.webserver_run(publ, cfg)
+		publisher_core.webserver_run(mut &publ)?
 	}
 	mut run_cmd := cli.Command{
 		description: 'run all websites & wikis, they need to be build first'
@@ -303,9 +302,8 @@ fn main() {
 	// FLATTEN
 	flatten_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, false) ?
-		cfg := publisher_config.get() ?
-		mut publ := publisher_core.new(cfg.publish.paths.code) ?
-		publ.check() ?
+		cfg := publisher_config.get()
+		mut publ := publisher_core.new(&cfg) ?
 		publ.flatten() ?
 	}
 	mut flatten_cmd := cli.Command{
@@ -319,9 +317,8 @@ fn main() {
 	// BUILD
 	build_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, true) ?
-		cfg := publisher_config.get() ?
-		mut publ := publisher_core.new(cfg.publish.paths.code) ?
-		publ.check()?
+		cfg := publisher_config.get()
+		mut publ := publisher_core.new(&cfg) ?
 
 		installers.website_build(&cmd) ?
 	}
@@ -542,7 +539,7 @@ fn main() {
 	// publish
 	publish_exec := fn (cmd cli.Command) ? {
 		mut args := os.args.clone()
-		mut cfg := publisher_config.get() ?
+		mut cfg := publisher_config.get()
 
 		mut env := 'staging'
 
@@ -581,8 +578,7 @@ fn main() {
 			args.delete(idx)
 		}
 
-		mut publ := publisher_core.new(cfg.publish.paths.code) ?
-		publ.check()?
+		mut publ := publisher_core.new(&cfg) ?
 		publ.flatten() ?
 
 		mut sync := ''
@@ -659,7 +655,7 @@ fn main() {
 		mut args := os.args.clone()
 		if args.len == 3 {
 			if args[2] == 'update' {
-				mut cfg := publisher_config.get() ?
+				mut cfg := publisher_config.get()
 				cfg.update_staticfiles(true) ?
 				return
 			}
