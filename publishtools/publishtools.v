@@ -267,6 +267,7 @@ fn main() {
 			println(' - develop for wikis')
 			// installers.sites_download(cmd, false) ?
 			mut publ := publisher_core.new(&cfg)?
+			publ.develop = true
 			publisher_core.webserver_run(mut &publ) ?
 		} else {
 			println(' - develop website: $webrepo')
