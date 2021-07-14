@@ -1,8 +1,8 @@
 [
 	{
 		"name": "awiki",
-		"url": "",
-		"path_fs": "wiki_site_a",
+		"git_url": "",
+		"fs_path": "wiki_site_a",
 		"branch": "",
 		"pull": true,
 		"reset": true,

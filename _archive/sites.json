@@ -1,6 +1,6 @@
 [{
 		"name":	"www_threefold_io",
-		"url":	"https://github.com/threefoldfoundation/www_threefold_io",
+		"git_url":	"https://github.com/threefoldfoundation/www_threefold_io",
 		"branch":	"",
 		"pull":	false,
 		"reset":	false,
@@ -31,7 +31,7 @@
 		}
 	}, {
 		"name":	"www_threefold_cloud",
-		"url":	"https://github.com/threefoldfoundation/www_threefold_cloud",
+		"git_url":	"https://github.com/threefoldfoundation/www_threefold_cloud",
 		"branch":	"",
 		"pull":	false,
 		"reset":	false,
@@ -59,7 +59,7 @@
 		}
 	}, {
 		"name":	"www_threefold_farming",
-		"url":	"https://github.com/threefoldfoundation/www_threefold_farming",
+		"git_url":	"https://github.com/threefoldfoundation/www_threefold_farming",
 		"branch":	"",
 		"pull":	false,
 		"reset":	false,
@@ -82,7 +82,7 @@
 		}
 	}, {
 		"name":	"www_threefold_twin",
-		"url":	"https://github.com/threefoldfoundation/www_threefold_twin",
+		"git_url":	"https://github.com/threefoldfoundation/www_threefold_twin",
 		"branch":	"",
 		"pull":	false,
 		"reset":	false,
@@ -105,7 +105,7 @@
 		}
 	}, {
 		"name":	"www_threefold_marketplace",
-		"url":	"https://github.com/threefoldfoundation/www_threefold_marketplace",
+		"git_url":	"https://github.com/threefoldfoundation/www_threefold_marketplace",
 		"branch":	"",
 		"pull":	false,
 		"reset":	false,
@@ -128,7 +128,7 @@
 		}
 	}, {
 		"name":	"www_conscious_internet",
-		"url":	"https://github.com/threefoldfoundation/www_conscious_internet",
+		"git_url":	"https://github.com/threefoldfoundation/www_conscious_internet",
 		"branch":	"",
 		"pull":	false,
 		"reset":	false,
@@ -151,7 +151,7 @@
 		}
 	}, {
 		"name":	"www_examplesite",
-		"url":	"https://github.com/threefoldfoundation/www_examplesite",
+		"git_url":	"https://github.com/threefoldfoundation/www_examplesite",
 		"branch":	"",
 		"pull":	false,
 		"reset":	false,
@@ -174,7 +174,7 @@
 		}
 	}, {
 		"name":	"www_uhuru",
-		"url":	"https://github.com/uhuru-me/www_uhuru",
+		"git_url":	"https://github.com/uhuru-me/www_uhuru",
 		"branch":	"",
 		"pull":	false,
 		"reset":	false,
@@ -198,7 +198,7 @@
 	},
 	{
 		"name":	"www_digitaltwin",
-		"url":	"https://github.com/threefoldtech/www_digitaltwin",
+		"git_url":	"https://github.com/threefoldtech/www_digitaltwin",
 		"branch":	"",
 		"pull":	false,
 		"reset":	false,
@@ -222,7 +222,7 @@
 	},
 	{
 		"name": "www_freeflow",
-		"url": "https://github.com/threefoldfoundation/www_freeflow",
+		"git_url": "https://github.com/threefoldfoundation/www_freeflow",
 		"branch": "",
 		"pull": false,
 		"reset": false,
@@ -239,7 +239,7 @@
 	},
 	{
 		"name":	"info_threefold",
-		"url":	"https://github.com/threefoldfoundation/info_threefold",
+		"git_url":	"https://github.com/threefoldfoundation/info_threefold",
 		"branch":	"",
 		"pull":	false,
 		"reset":	false,
@@ -262,7 +262,7 @@
 		}
 	}, {
 		"name":	"info_tag",
-		"url":	"https://github.com/takeactionglobal/info_tag",
+		"git_url":	"https://github.com/takeactionglobal/info_tag",
 		"branch":	"",
 		"pull":	false,
 		"reset":	false,
@@ -285,7 +285,7 @@
 		}
 	}, {
 		"name":	"info_sdk",
-		"url":	"https://github.com/threefoldfoundation/info_sdk",
+		"git_url":	"https://github.com/threefoldfoundation/info_sdk",
 		"branch":	"",
 		"pull":	false,
 		"reset":	false,
@@ -308,7 +308,7 @@
 		}
 	}, {
 		"name":	"info_legal",
-		"url":	"https://github.com/threefoldfoundation/info_legal",
+		"git_url":	"https://github.com/threefoldfoundation/info_legal",
 		"branch":	"",
 		"pull":	false,
 		"reset":	false,
@@ -331,7 +331,7 @@
 		}
 	}, {
 		"name":	"info_cloud",
-		"url":	"https://github.com/threefoldfoundation/info_cloud",
+		"git_url":	"https://github.com/threefoldfoundation/info_cloud",
 		"branch":	"",
 		"pull":	false,
 		"reset":	false,
@@ -354,7 +354,7 @@
 		}
 	}, {
 		"name":	"info_digitaltwin",
-		"url":	"https://github.com/threefoldfoundation/info_digitaltwin.git",
+		"git_url":	"https://github.com/threefoldfoundation/info_digitaltwin.git",
 		"branch":	"",
 		"pull":	false,
 		"reset":	false,
@@ -377,7 +377,7 @@
 		}
 	}, {
 		"name":	"info_publishtools",
-		"url":	"https://github.com/crystaluniverse/info_publishtools",
+		"git_url":	"https://github.com/crystaluniverse/info_publishtools",
 		"branch":	"",
 		"pull":	false,
 		"reset":	false,
@@ -400,7 +400,7 @@
 		}
 	}, {
 		"name":	"data_threefold",
-		"url":	"https://github.com/threefoldfoundation/data_threefold",
+		"git_url":	"https://github.com/threefoldfoundation/data_threefold",
 		"branch":	"",
 		"pull":	false,
 		"reset":	false,

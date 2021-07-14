@@ -1,10 +1,8 @@
 [
 	{
 		"name": "cloud",
-		"url": "https://github.com/threefoldfoundation/info_cloud",
-		"path": "src",
-		"path_fs":"",
-		"branch": "",
+		"git_url": "https://github.com/threefoldfoundation/info_cloud/tree/development_review/src",
+		"fs_path": "",
 		"pull": true,
 		"reset": false,
 		"domains": [
