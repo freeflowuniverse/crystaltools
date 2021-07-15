@@ -247,31 +247,24 @@ fn main() {
 	develop_exec := fn (cmd cli.Command) ? {
 		webrepo := cmd.flags.get_string('repo') or { '' }
 		mut cfg := publisher_config.get()
-		println(cfg)
-		// panic("ssss")
-		// mut gt := gittools.new(cfg.publish.paths.code)?
-		// process.execute_stdout('rm -rf $cfg.publish.paths.codewiki/*') ?
-		
-		// wikis := cfg.sites.filter(it.cat == publisher_config.SiteCat.wiki)
-		// mut symlinks := ''
-
-		// for wiki in wikis{
-		// 	mut repo :=  gt.repo_get(name : wiki.name)?
-		// 	symlinks += repo.path 
-		// 	symlinks += ' '
-		// }
-
-		// process.execute_stdout('ln -s $symlinks $cfg.publish.paths.codewiki/') ?
-
 		if webrepo == '' {
 			println(' - develop for wikis')
 			// installers.sites_download(cmd, false) ?
-			mut publ := publisher_core.new(&cfg)?
+			mut publ := publisher_core.new(&cfg)or {
+				println("Could not load publisher for wiki.\nError:\n$err")
+				exit(1)
+			}
 			publ.develop = true
-			publisher_core.webserver_run(mut &publ) ?
+			publisher_core.webserver_run(mut &publ) or {
+				println("Could not run webserver for wiki.\nError:\n$err")
+				exit(1)
+			}
 		} else {
 			println(' - develop website: $webrepo')
-			installers.website_develop(&cmd, mut &cfg) ?
+			installers.website_develop(&cmd, mut &cfg) or {
+				println("Could not develop wiki.Error:\n$err")
+				exit(1)
+			}
 		}
 	}
 	
@@ -287,8 +280,6 @@ fn main() {
 	run_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, false) ?
 		cfg := publisher_config.get()
-		println(cfg)
-		panic("s")
 		mut publ := publisher_core.new(&cfg)?
 		publ.flatten() ?
 		publisher_core.webserver_run(mut &publ)?
@@ -318,9 +309,8 @@ fn main() {
 	// BUILD
 	build_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, true) ?
-		cfg := publisher_config.get()
-		mut publ := publisher_core.new(&cfg) ?
-
+		// cfg := publisher_config.get()
+		// mut publ := publisher_core.new(&cfg) ?
 		installers.website_build(&cmd) ?
 	}
 	mut build_cmd := cli.Command{

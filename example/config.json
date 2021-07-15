@@ -6,7 +6,7 @@
     "port": 9998,
     "paths": {
         "base": "",
-        "code": "/workspace/publishtools/example",
+        "code": "/workspace/code",
         "codewiki": "",
         "publish": ""
     }
