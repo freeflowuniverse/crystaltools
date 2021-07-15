@@ -1,0 +1,8 @@
+[
+	{
+		"name": "cloud2",
+		"git_url": "https://github.com/threefoldfoundation/info_cloud/tree/main/src",
+		"domains": ["test2.threefold.org"],
+		"pull": true
+	}
+]
