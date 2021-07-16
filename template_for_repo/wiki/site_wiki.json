@@ -1,6 +1,6 @@
 [
 	{
-		"fs_path": "mydocu_wiki",
+		"fs_path": "mywiki_source",
 		"name": "wiki",
 		"domains": [
 			"wiki.threefold.org"

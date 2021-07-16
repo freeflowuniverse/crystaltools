@@ -1,2 +1,6 @@
+set -e
+
 
 publishtools develop
+
+

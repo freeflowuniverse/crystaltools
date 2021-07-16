@@ -1,6 +1,6 @@
 rm -f /usr/local/bin/publishtools
 
-set -e
+set -ex
 pushd ../publishtools "$@" > /dev/null
 sudo rm -f /usr/local/bin/publishtools
 
