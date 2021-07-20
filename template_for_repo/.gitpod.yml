@@ -2,7 +2,7 @@ image:
   file: .gitpod.Dockerfile
 tasks:
 #   - init: bash prepare.sh
-    - command: bash wiki/install.sh && sudo /etc/init.d/redis-server start && cat gitpod_readme.md && sh
+    - command: bash ct_scripts/install.sh && sudo /etc/init.d/redis-server start && cat gitpod_readme.md
 ports:
   - port: 9998
     onOpen: open-browser
