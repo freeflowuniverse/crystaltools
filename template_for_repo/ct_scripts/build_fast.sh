@@ -1,4 +1,4 @@
-set -ex
+set -e
 
 if [ -d "/workspace" ] 
 then
