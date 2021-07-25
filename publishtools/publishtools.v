@@ -49,10 +49,10 @@ fn main() {
 		flag: cli.FlagType.string
 	}
 
-	path_prefix_flag := cli.Flag{
-		name: 'pathprefix'
+	no_path_prefix_flag := cli.Flag{
+		name: 'nopathprefix'
 		abbrev: 'p'
-		description: 'Build website(s) with alias prefix'
+		description: 'Build website(s) without alias/path prefix'
 		flag: cli.FlagType.bool
 	}
 
@@ -173,7 +173,7 @@ fn main() {
 		required_args: 0
 	}
 	build_cmd.add_flag(repoflag)
-	build_cmd.add_flag(path_prefix_flag)
+	build_cmd.add_flag(no_path_prefix_flag)
 
 	// LIST
 	list_exec := fn (cmd cli.Command) ? {
