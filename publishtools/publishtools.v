@@ -1,7 +1,5 @@
 module main
 
-import io.util
-import json
 import despiegk.crystallib.installers
 import os
 import despiegk.crystallib.process
@@ -13,150 +11,6 @@ import despiegk.crystallib.publisher_config
 fn flatten(mut publ publisher_core.Publisher) bool {
 	publ.flatten() or { return false }
 	return true
-}
-
-fn resolvepublisheditems(items string, prefix string, path string) ?string{
-	txt := os.read_file(path) ?
-	mut remotconig := json.decode([]publisher_config.SiteConfig, txt) ?
-	mut remotesites := map[string]publisher_config.SiteConfig{}
-	mut remotewikis := map[string]publisher_config.SiteConfig{}
-
-	for item in remotconig{
-		if item.cat == publisher_config.SiteCat.wiki{
-			remotewikis['wiki_$item.name'] = item
-		}else{
-			remotesites[item.name] = item
-		}
-	}
-
-
-	mut splitted := items.trim(' ').split(" ")
-	mut tosync := []string{}
-	for item in splitted{
-		tosync << item
-	}
-	
-	mut cfg := publisher_config.get()
-
-	mut allsites :=  map[string]publisher_config.SiteConfig{}
-	mut allwikis :=  map[string]publisher_config.SiteConfig{}
-	
-	mut res :=  map[string]publisher_config.SiteConfig{}
-
-	for site in cfg.sites{
-		if site.cat == publisher_config.SiteCat.wiki{
-			allwikis['wiki_$site.name'] = site
-			
-		}else if site.cat == publisher_config.SiteCat.web{
-			allsites[site.name] = site
-		}
-	}
-
-	mut configsitesall := false
-	mut configwikisall := false
-
-	if tosync.contains('*'){
-		for k, v in allsites{
-			res[k] = v
-		}
-
-		for k, v in allwikis{
-			res[k] = v
-		}
-		configsitesall = true
-		configwikisall = true
-
-	}else {
-		if tosync.contains('wiki_*'){
-			tosync.delete(tosync.index('wiki_*'))
-			for k, v in allwikis{
-				res[k] = v
-			}
-			configwikisall = true
-		}
-		
-		if tosync.contains('www_*'){
-			tosync.delete(tosync.index('www_*'))
-			for k, v in allsites{
-				res[k] = v
-			}
-			configsitesall = true
-		}
-
-		for item in tosync{
-			if ! (item in allsites) && ! (item in allwikis){
-				panic('$item is not found in config file')
-			}
-			if !(item in res){
-
-				if item in allsites{
-					res[item] = allsites[item]
-				}else{
-					res[item] = allwikis[item]
-				}
-			}
-		}
-	}
-
-	mut result := ''
-	println('Syncing')
-	for item, _ in res{
-		result += prefix + item
-		println('\t' +  prefix + item)
-		result += ' '
-	}
-
-	// we publish all wikis
-	if configwikisall{
-		for k, _ in remotewikis{
-			if k.starts_with('wiki_'){
-				remotewikis.delete(k)
-			}
-		}
-
-		for k, v in res{
-			if k.starts_with('wiki_'){
-				remotewikis[k] = v
-			}
-		}
-	}
-
-	// we publish all sites
-	if configsitesall{
-		for k, _ in remotewikis{
-			if !(k.starts_with('wiki_')){
-				remotesites.delete(k)
-			}
-		}
-
-		for k, v in res{
-			if !(k.starts_with('wiki_')){
-				remotesites[k] = v
-			}
-		}
-	}
-
-	for k, v in res{
-		if k.starts_with('wiki_'){
-			remotewikis[k] = v
-		}else{
-			remotesites[k] = v
-		}
-	}
-
-	mut out := []publisher_config.SiteConfig{}
-	
-	for _, v in remotesites{
-		out << v
-	}
-	for _, v in remotewikis{
-		out << v
-	}
-
-	println("rewriting config file @$path")
-	os.write_file(path, json.encode_pretty(out))?
-	
-	return result.trim(' ')
 }
 
 fn main() {
@@ -281,7 +135,6 @@ fn main() {
 		installers.sites_download(cmd, false) ?
 		cfg := publisher_config.get()
 		mut publ := publisher_core.new(&cfg)?
-		publ.flatten() ?
 		publisher_core.webserver_run(mut &publ)?
 	}
 	mut run_cmd := cli.Command{
@@ -529,9 +382,9 @@ fn main() {
 
 	// publish
 	publish_exec := fn (cmd cli.Command) ? {
+		
 		mut args := os.args.clone()
 		mut cfg := publisher_config.get()
-
 		mut env := 'staging'
 
 		mut production := cmd.flags.get_bool('production') or { false }
@@ -542,7 +395,12 @@ fn main() {
 			env = 'production'
 		}
 
-	
+		mut prefix := cfg.publish.paths.publish + '/'
+
+		println("\n**********************")
+		println("Publishing to $env")
+		println("**********************")
+
 		mut ip := ''
 
 		if production {
@@ -569,75 +427,57 @@ fn main() {
 			args.delete(idx)
 		}
 
-		mut publ := publisher_core.new(&cfg) ?
-		publ.flatten() ?
-
 		mut sync := ''
-		mut prefix := cfg.publish.paths.publish + '/'
-		mut skip_sites := false
-		mut skip_wikis := false
-
-		if 'wikis' in args {
-			sync += 'wiki_* '
-			args.delete(args.index('wikis'))
-			skip_wikis = true
-		}
-
-		if 'sites' in args {
-			sync += 'www_* '
-			args.delete(args.index('sites'))
-			skip_sites = true
-		}
-
-		for arg in args {
-			if arg.starts_with('www') && skip_sites {
-				continue
-			} else if arg.starts_with('wiki') && skip_wikis {
-				continue
-			} else {
-				sync += arg + ''
-			}
-		}
-
+		
 		if sync == '' {
 			sync = '*'
 		}
 
-		//TODO: THIS IS NOT WELL DONE, THIS SHOULD NOT BE HERE BUT IN THE MODULES SOMEWHERE
-
-		// download remote config
-		mut _, mut configpath := util.temp_file({})?
-		println('Downloading remote config root@$ip:/root/.publisher/containerhost/publisher/sites.json to $configpath')
-		cmd2 := 'rsync --progress --human-readable root@$ip:/root/.publisher/containerhost/publisher/sites.json $configpath'
-		process.execute_stdout(cmd2)?
-		println('Syncing to $env ($ip)')
-		
-		sync = resolvepublisheditems(sync, prefix, configpath)?
-		
 		if updatepubtools{
-			println('updating publishtools')
+			println(' (*) updating publishtools')
 			process.execute_stdout('ssh root@$ip "docker exec -i web publishtools update"') ?
 		}
 
-		println('uploading  new configuration file $configpath to root@$ip:/root/.publisher/containerhost/publisher/sites.json')
-		process.execute_stdout('rsync --progress -ra --human-readable $configpath root@$ip:/root/.publisher/containerhost/publisher/sites.json') ?
+		mut configs := os.ls('.') or { panic(err) }
+		mut configsstr := configs.join(' ')
+		
+		mut websites := []string{}
+		for item in configs{
+			if item.starts_with('www_'){
+				mut temp := item.replace('.json', '')
+				websites << '$prefix$temp'
+			}
+			
+		}
+		
+		mut websitesstr := websites.join(' ')
+		print(' (*) uploading configuration files  to root@$ip:/root/.publisher/containerhost/publisher/config\n\n')
+		
+		for c in configs{
+			println('     (**) $c')
+		}
 
-		println('updating static files')
+		process.execute_stdout('rsync --progress -ra --human-readable $configsstr root@$ip:/root/.publisher/containerhost/publisher/config') ?
+
+		println(' (*) updating static files')
 		process.execute_stdout('ssh root@$ip "docker exec -i web publishtools staticfiles update"') ?
 
-		cmd3 := 'rsync -v --stats --progress -ra --delete --human-readable $sync root@$ip:/root/.publisher/containerhost/publisher/publish/'
-		process.execute_stdout(cmd3) or {
-			println("************** WARNING ****************")
-			println("Could not rsync:")
-			println(cmd3)
-		}	
-
+		if websites.len > 0{
+			println('syncing websites $websitesstr')
+			cmd3 := 'rsync -v --stats --progress -ra --delete --human-readable $websitesstr root@$ip:/root/.publisher/containerhost/publisher/publish/'
+			process.execute_stdout(cmd3) or {
+				println("************** WARNING ****************")
+				println("Could not rsync:")
+				println(cmd3)
+			}	
+		}
+		
 		if update_digitaltwin{
-			println('updating digitaltwin server\n')
+			println(' (*) updating digitaltwin server\n')
 			process.execute_stdout('ssh root@$ip "docker exec -i web publishtools digitaltwin update"') ?
 			process.execute_stdout('ssh root@$ip "docker exec -i web publishtools digitaltwin restart"') ?
 		}else{
-			println('reloading server\n')
+			println(' (*) reloading server\n')
 			process.execute_stdout('ssh root@$ip "docker exec -i web publishtools digitaltwin reload"') ?
 		}
 	}
