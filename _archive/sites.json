@@ -353,8 +353,8 @@
 			"image_height":	"630"
 		}
 	}, {
-		"name":	"info_digitaltwin",
-		"git_url":	"https://github.com/threefoldfoundation/info_digitaltwin.git",
+		"name":	"info_digitalself",
+		"git_url":	"https://github.com/threefoldfoundation/info_digitalself.git",
 		"branch":	"",
 		"pull":	false,
 		"reset":	false,
