@@ -631,7 +631,7 @@ fn main() {
 			process.execute_stdout('ssh root@$ip "cd ~/.publisher/config && publishtools staticfiles update"') ?
 			
 			println(' (*) Restarting digitaltwin')
-			process.execute_stdout('ssh root@$ip "cd ~/.publisher/config && publishtools digitaltwin restart"') ?
+			process.execute_stdout('ssh root@$ip "cd ~/.publisher/config && source ~/.bashrc && publishtools digitaltwin restart"') ?
 		}
 	}
 
