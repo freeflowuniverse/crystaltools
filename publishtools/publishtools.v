@@ -6,7 +6,7 @@ import despiegk.crystallib.process
 import cli
 import despiegk.crystallib.publisher_core
 import despiegk.crystallib.publisher_config
-// import despiegk.crystallib.gittools
+import json
 
 fn flatten(mut publ publisher_core.Publisher) bool {
 	publ.flatten() or { return false }
@@ -390,7 +390,7 @@ fn main() {
 		mut production := cmd.flags.get_bool('production') or { false }
 		
 		mut updatepubtools := cmd.flags.get_bool('update_pubtools') or { false }
-		mut update_digitaltwin := cmd.flags.get_bool('update_digitaltwin') or { false }
+		// mut update_digitaltwin := cmd.flags.get_bool('update_digitaltwin') or { false }
 		if production {
 			env = 'production'
 		}
@@ -409,6 +409,7 @@ fn main() {
 			ip = '161.35.109.242'
 		}
 
+		
 		args.delete(0)
 		args.delete(0)
 
@@ -427,59 +428,213 @@ fn main() {
 			args.delete(idx)
 		}
 
-		mut sync := ''
-		
-		if sync == '' {
-			sync = '*'
-		}
+		mut sync := []string{}
 
 		if updatepubtools{
 			println(' (*) updating publishtools')
-			process.execute_stdout('ssh root@$ip "docker exec -i web publishtools update"') ?
+			process.execute_stdout('ssh root@$ip "publishtools update"') ?
 		}
 
 		mut configs := os.ls('.') or { panic(err) }
-		mut configsstr := configs.join(' ')
-		
+		mut configsstr := ''
+		// name: config file name so we can later decides which configs will be synced according to what dirs will be synced from fs
+		mut configdict := map[string]string
+
 		mut websites := []string{}
+		mut wikis := []string{}
+
 		for item in configs{
-			if item.starts_with('www_'){
-				mut temp := item.replace('.json', '')
-				websites << '$prefix$temp'
+			if !item.ends_with('.json') || item in  ['config.json', 'groups_a.json', 'nodejs.json']{
+				continue
+			}
+
+			content := os.read_file(item) or {
+				return error('Failed to load  config file $item')
+			}
+			siteconf := json.decode(publisher_config.SiteConfig, content) or {
+				println(err)
+				return error('Failed to decode json for  config file $item')
 			}
 			
+			configdict[siteconf.name] = item
+
+			// wikis
+			if siteconf.cat ==  publisher_config.SiteCat.wiki{
+				wikis << '$siteconf.name'
+			}else if siteconf.cat ==  publisher_config.SiteCat.web{
+				websites << '$siteconf.name'
+			}
+		}
+
+		mut skip_sites := false
+		mut skip_wikis := false
+
+		if 'wikis' in args {
+			for i in wikis{
+				sync << i
+			}
+			args.delete(args.index('wikis'))
+			skip_wikis = true
+		}
+
+		if 'sites' in args {
+			for i in websites{
+				sync << i
+			}
+
+			args.delete(args.index('sites'))
+			skip_sites = true
+		}
+
+		mut err := false
+		for arg in args {
+			if arg in websites && skip_sites {
+				continue
+			} else if arg in wikis && skip_wikis {
+				continue
+			} else {
+				if !(arg in websites) && !(arg in wikis){
+					err = true
+					println(' (*) Skipping ($arg) name not found in wikis or websites')
+					continue
+				}
+					sync << arg
+			}
+		}
+
+		
+		mut skipped := []string{}
+		
+		if sync.len == 0 && err == false{
+			for i in wikis{
+				sync << i
+			}
+			for i in websites{
+				sync << i
+			}
 		}
 		
-		mut websitesstr := websites.join(' ')
-		print(' (*) uploading configuration files  to root@$ip:/root/.publisher/containerhost/publisher/config\n\n')
+		mut syncstr := ''
+		mut publishedwikis := []string{}
 		
-		for c in configs{
-			println('     (**) $c')
+		mut tosync := []string{}
+
+		if sync.len > 0{
+			
+			for item in sync{
+				
+				if item in wikis{ // track published wikis regardless what
+					publishedwikis << item
+				}
+
+				if os.exists('$prefix$item') {
+					tosync << item
+					syncstr += '$prefix$item ' 
+					
+				}else if os.exists('$prefix' + 'wiki_' + '$item'){
+						tosync << item
+						syncstr += '$prefix' + 'wiki_' + '$item '
+				}else{
+					skipped << item
+				}
+			}
 		}
 
-		process.execute_stdout('rsync --progress -ra --human-readable $configsstr root@$ip:/root/.publisher/containerhost/publisher/config') ?
+		if tosync.len > 0{
+			println(' (*) syncing the following ....')
+			for item in tosync{
+				println('     (**) $item')
+			}
+		}
+		
+		if skipped.len > 0{
+				println(' (*) Skipping the  following [Not Found in filesystem] in $prefix')
+				for item in skipped {
+					println('     (**) $item')
+				}
 
-		println(' (*) updating static files')
-		process.execute_stdout('ssh root@$ip "docker exec -i web publishtools staticfiles update"') ?
+		}
 
-		if websites.len > 0{
-			println('syncing websites $websitesstr')
-			cmd3 := 'rsync -v --stats --progress -ra --delete --human-readable $websitesstr root@$ip:/root/.publisher/containerhost/publisher/publish/'
-			process.execute_stdout(cmd3) or {
+
+		if publishedwikis.len > 0{
+			println(' (*) Force pull these wikis on the remote machine')
+			for item in publishedwikis{
+				println('     (**) $item')
+			}
+		}
+
+		// force pull wikis (remote server may be running publishtools server)
+		mut command := ''
+		cmdprefix := 'publishtools pull --repo'
+		for wiki in publishedwikis{
+			command += ' $cmdprefix $wiki && '
+		}
+
+		command = command.trim_right(' &&')
+
+		if syncstr != '' || publishedwikis.len > 0{
+			
+			configs = []string{}
+
+			if syncstr != ''{
+				for item in syncstr.split(" "){
+					mut item2 := item.trim(" ")
+					if item2 != ""{
+						item2 = item2.replace(prefix, '').trim(" ")
+						configs << configdict[item2]
+					}
+				}
+			}
+
+			if publishedwikis.len > 0{
+				for item in publishedwikis{
+					item2 := item.trim(" ")
+
+					if item2 != ""{
+						if !(item2 in configs){
+							configs << configdict[item2]
+						}
+					}
+				}
+			}
+			
+			if configs.len > 0{
+				print(' (*) uploading configuration files  to root@$ip:/root/.publisher/config\n')
+				for c in configs {
+					if c.trim(" ") == "" {continue}
+					println('     (**) $c')
+				}
+				configsstr = configs.join(' ')
+				println(configsstr)
+				process.execute_stdout('rsync --progress -ra --human-readable $configsstr root@$ip:/root/.publisher/config') ?
+			}
+		}
+
+		if syncstr != '' {
+			println(' (*) Rsyncing')
+			println(syncstr)
+			process.execute_stdout('rsync -v --stats --progress -ra --delete --human-readable $syncstr root@$ip:/root/.publisher/publish/') or {
 				println("************** WARNING ****************")
 				println("Could not rsync:")
-				println(cmd3)
+				println(err)
 			}	
 		}
 		
-		if update_digitaltwin{
-			println(' (*) updating digitaltwin server\n')
-			process.execute_stdout('ssh root@$ip "docker exec -i web publishtools digitaltwin update"') ?
-			process.execute_stdout('ssh root@$ip "docker exec -i web publishtools digitaltwin restart"') ?
-		}else{
-			println(' (*) reloading server\n')
-			process.execute_stdout('ssh root@$ip "docker exec -i web publishtools digitaltwin reload"') ?
+		if publishedwikis.len > 0{
+			println(' (*) pull wikis on remote server')
+			process.execute_stdout(command)?
 		}
+
+		
+		if syncstr != '' || publishedwikis.len > 0 {
+		
+			println(' (*) updating static files')
+			process.execute_stdout('ssh root@$ip "publishtools staticfiles update"') ?
+			
+			println(' (*) Restarting digitaltwin')
+			process.execute_stdout('ssh root@$ip "publishtools digitaltwin restart"') ?
+		}
+
 	}
 
 	staticfilesupdate_exrcute := fn (cmd cli.Command) ? {
