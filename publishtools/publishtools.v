@@ -605,7 +605,6 @@ fn main() {
 					println('     (**) $c')
 				}
 				configsstr = configs.join(' ')
-				println(configsstr)
 				process.execute_stdout('rsync --progress -ra --human-readable $configsstr root@$ip:/root/.publisher/config') ?
 			}
 		}
@@ -629,12 +628,11 @@ fn main() {
 		if syncstr != '' || publishedwikis.len > 0 {
 		
 			println(' (*) updating static files')
-			process.execute_stdout('ssh root@$ip "publishtools staticfiles update"') ?
+			process.execute_stdout('ssh root@$ip "cd ~/.publisher/config && publishtools staticfiles update"') ?
 			
 			println(' (*) Restarting digitaltwin')
-			process.execute_stdout('ssh root@$ip "publishtools digitaltwin restart"') ?
+			process.execute_stdout('ssh root@$ip "cd ~/.publisher/config && publishtools digitaltwin restart"') ?
 		}
-
 	}
 
 	staticfilesupdate_exrcute := fn (cmd cli.Command) ? {
