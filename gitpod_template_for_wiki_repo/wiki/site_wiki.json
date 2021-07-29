@@ -1,0 +1,7 @@
+{
+	"fs_path": "mywiki_source",
+	"name": "wiki",
+	"domains": [
+		"wiki.threefold.org"
+	]
+}

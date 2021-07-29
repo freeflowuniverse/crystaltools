@@ -41,3 +41,4 @@ fi
 
 rm publishtools
 
+echo " - DONE"

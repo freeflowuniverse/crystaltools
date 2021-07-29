@@ -32,4 +32,8 @@ RUN apt-get update && apt-get install -y redis-server mc
 
 USER gitpod
 
-ENTRYPOINT [ "entrypoint.sh" ]
+# RUN publishtools flatten || echo "flatten 1"
+# #need to do 2 times, leave as this
+# RUN publishtools flatten
+
+# ENTRYPOINT [ "entrypoint.sh" ]
