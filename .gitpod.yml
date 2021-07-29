@@ -1,9 +1,12 @@
 image:
   file: .gitpod.Dockerfile
-# # Commands to start on workspace startup
 tasks:
-  - command: sudo /etc/init.d/redis-server start && scripts_workspace/install.sh
-  # - command: sudo /etc/init.d/redis-server start && publishtools develop    
+    - name: WIKI
+      command: sudo /etc/init.d/redis-server start && clear && cat gitpod_readme.md
+    - name: Build
+      openMode: split-right
+      command: bash ct_scripts/install.sh && bash wiki_develop.sh && cat gitpod_readme.md
+
 ports:
   - port: 9998
     onOpen: open-browser
