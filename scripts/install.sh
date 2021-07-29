@@ -1,6 +1,6 @@
 
 set -e
-set -x
+# set -x
 
 # INSTALL PUBLISH TOOLS
 
