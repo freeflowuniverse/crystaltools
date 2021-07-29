@@ -295,8 +295,8 @@
     "acl": []
   },
   {
-    "name": "info_digitaltwin",
-    "url": "https://github.com/threefoldfoundation/info_digitaltwin.git",
+    "name": "info_digitalself",
+    "url": "https://github.com/threefoldfoundation/info_digitalself.git",
     "branch": "",
     "pull": false,
     "reset": false,
