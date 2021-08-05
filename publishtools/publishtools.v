@@ -556,12 +556,13 @@ fn main() {
 		}
 
 
-		if publishedwikis.len > 0{
-			println(' (*) Force pull these wikis on the remote machine')
-			for item in publishedwikis{
-				println('     (**) $item')
-			}
-		}
+		// As we build all things on gitpod/DO machine we don't need to pull the repos on Staging/Production Servers
+		// if publishedwikis.len > 0{
+		// 	println(' (*) Force pull these wikis on the remote machine')
+		// 	for item in publishedwikis{
+		// 		println('     (**) $item')
+		// 	}
+		// }
 
 		// force pull wikis (remote server may be running publishtools server)
 		mut command := ''
@@ -619,10 +620,11 @@ fn main() {
 			}	
 		}
 		
-		if publishedwikis.len > 0{
-			println(' (*) pull wikis on remote server')
-			process.execute_stdout(command)?
-		}
+		// As we build all things on gitpod/DO machine we don't need to pull the repos on Staging/Production Servers
+		// if publishedwikis.len > 0{
+		// 	println(' (*) pull wikis on remote server')
+		// 	process.execute_stdout(command)?
+		// }
 
 		
 		if syncstr != '' || publishedwikis.len > 0 {
