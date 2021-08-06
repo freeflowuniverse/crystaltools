@@ -12,3 +12,13 @@ export DIR_BUILD=/workspace/build
 export USER=gitpod
 ```
 
+## TRICK
+
+to run the scripts directly its enough to set
+
+```
+export DIR_CT=/Users/despiegk/code/crystaltools
+```
+
+and then you can directly call the scripts above, they will source required info, ideal for debug
+

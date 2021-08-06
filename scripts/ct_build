@@ -47,6 +47,8 @@ else
     sudo chmod 777 /usr/local/bin/crystaltools    
 fi
 
+sudo cp crystaltools /usr/local/bin/ct
+
 popd "$@" > /dev/null
 
 echo " - crystaltools build ok"
