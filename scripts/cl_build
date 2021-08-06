@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#ALWAYS SAME INITIALIZATION 
 set -e
 
 v_check

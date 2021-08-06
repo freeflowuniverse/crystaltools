@@ -1,7 +1,7 @@
 
 # Set of scripts how to build V, VLS, CT = Crystal Tools
 
-when using following env arguments need to be set
+you can modify the env with:
 
 ```bash
 export DIR_CT=/workspace/crystaltools

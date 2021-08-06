@@ -19,7 +19,18 @@ https://info.threefold.io/info/crystaltools#/crystaltools__install
 short
 
 ```bash
+curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/development/scripts/ct_init > /tmp/ct_init
+source /tmp/ct_init
+ct_help
+```
 
+will print which commands are available.
+
+oneliner:
+
+```bash
+curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/development/scripts/ct_init > /tmp/ct_init && source /tmp/ct_init
+ct_help
 ```
 
 ### for more info, see crystaltools documentation
