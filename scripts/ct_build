@@ -24,7 +24,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     # v -d static_boehm  -gc boehm -prod crystaltools.v
     v -d net_blocking_sockets -d static_boehm  -gc boehm crystaltools.v
 else
-    v -d static_boehm  -gc boehm -cflags -static -prod crystaltools.v
+    # v -d static_boehm  -gc boehm -cflags -static -prod crystaltools.v
+    v -d static_boehm  -gc boehm -cflags -static crystaltools.v
 fi
 
 
@@ -46,8 +47,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     fi
 else
     #for linux
-    sudo crystaltools crystaltools /usr/local/bin/crystaltools
-    chmod 770 /usr/local/bin/crystaltools    
+    sudo cp crystaltools /usr/local/bin/crystaltools
+    sudo chmod 770 /usr/local/bin/crystaltools    
 fi
 
 popd "$@" > /dev/null

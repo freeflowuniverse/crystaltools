@@ -11,7 +11,7 @@ v_check
 rm -rf ~/.vmodules/despiegk/crystallib
 
 #CHECK IF DIR EXISTS, IF NOT CLONE
-if ! [[ -d "$HOME/.vmodules/despiegk/crystallib" ]]
+if ! [[ -d "$DIR_CODE/crystallib" ]]
 then
     pushd $DIR_CODE
     if [[ -d "$DIR_CODE/crystallib" ]]
