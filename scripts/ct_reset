@@ -14,3 +14,5 @@ sudo rm -rf /usr/local/bin/ct
 sudo rm -rf /usr/local/bin/crystaltools
 
 sudo rm -rf ~/.vmodules
+
+sudo rm -rf ~/_code
