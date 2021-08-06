@@ -34,5 +34,5 @@
 				"command": "v fmt -w ${file}",
 			}
 		]
-	}	
+	}
 }
