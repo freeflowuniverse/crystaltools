@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+#ALWAYS SAME INITIALIZATION 
+set -e
+if [[ -z "${DIR_CT}" ]]; then 
+    echo 'Make sure to source ct_init before calling this script.'
+    exit 1
+fi
+source $DIR_CT/scripts/ct_init
+
+if [ -d "~/.vmodules" ]
+then
+    if [[ -z "${USER}" ]]; then
+        sudo chown -R $USER:$USER ~/.vmodules
+    fi
+fi
+
+if [[ -d "$DIR_CODE_INT/v" ]]; then
+    pushd $DIR_CODE_INT/v
+    git pull
+    popd "$@" > /dev/null
+else
+    pushd $DIR_CODE_INT
+    sudo rm -rf $DIR_CODE_INT/v
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then 
+        sudo apt update
+        sudo apt install libgc-dev -y
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        brew install bdw-gc
+    else
+        echo "ONLY SUPPORT OSX AND LINUX FOR NOW"
+        exit 1
+    fi    
+    git clone https://github.com/vlang/v
+    popd "$@" > /dev/null
+fi
+
+pushd $DIR_CODE_INT/v
+sudo make
+sudo ./v symlink
+popd "$@" > /dev/null
+
+
+if ! [ -x "$(command -v v)" ]; then
+  echo 'vlang is not installed.' >&2
+  exit 1
+fi

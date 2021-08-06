@@ -12,6 +12,3 @@ else
     sudo ./v symlink
 fi
 
-v install patrickpissurno.redis
-v install despiegk.crystallib
-v install nedpals.vex

@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+#ALWAYS SAME INITIALIZATION 
+set -e
+if [[ -z "${DIR_CT}" ]]; then 
+    echo 'Make sure to source ct_init before calling this script.'
+    exit 1
+fi
+source $DIR_CT/scripts/ct_init
+
+v_check
+
+sudo rm -f /usr/local/bin/rmb
+sudo rm -f /opt/homebrew/bin/rmb
+
+mkdir -p "$HOME/.vmodules/threefoldtech"
+
+git_get github.com/threefoldtech rmb
+rm -f "$HOME/.vmodules/threefoldtech/rmb"
+ln -s $CDIR "$HOME/.vmodules/threefoldtech/rmb"
+export RMB_DIR="$HOME/.vmodules/threefoldtech/rmb"
+
+git_get github.com/threefoldtech vgrid
+rm -f "$HOME/.vmodules/threefoldtech/vgrid"
+ln -s $CDIR/vlang "$HOME/.vmodules/threefoldtech/vgrid"
+export VGRID_DIR="$HOME/.vmodules/threefoldtech/vgrid"
+
+#make sure we have crystal tools installed
+ct_check
+
+pushd $RMB_DIR/msgbusd
+
+# v -gc boehm -prod crystaltools.v
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # v -d static_boehm  -gc boehm -prod crystaltools.v
+    v -d net_blocking_sockets -d static_boehm  -gc boehm msgbusd.v
+    
+else
+    v -d static_boehm  -gc boehm -cflags -static -prod msgbusd.v
+fi
+
+sudo cp msgbusd /usr/local/bin 
+
+popd "$@" > /dev/null

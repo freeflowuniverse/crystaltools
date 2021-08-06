@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+#ALWAYS SAME INITIALIZATION 
+set -e
+if [[ -z "${DIR_CT}" ]]; then 
+    echo 'Make sure to source ct_init before calling this script.'
+    exit 1
+fi
+source $DIR_CT/scripts/ct_init
+
+
+rm -f /usr/local/bin/crystaltools
+
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then 
+    curl -L https://github.com/crystaluniverse/crystaltools/releases/download/first/crystaltools_linux > /usr/local/bin/crystaltools  
+    chmod +x /usr/local/bin/crystaltools
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+
+    if ! [ -x "$(command -v mc)" ]; then
+        brew install mc
+    fi
+
+    if ! [ -x "$(command -v redis-server)" ]; then
+        brew install redis
+    fi
+    
+    if [[ `uname -m` == 'arm64' ]]; then
+        rm -f /usr/local/bin/crystaltools
+        curl -L https://github.com/crystaluniverse/crystaltools/releases/download/first/crystaltools_osx_arm > /opt/homebrew/bin/crystaltools
+        chmod 770 /opt/homebrew/bin/crystaltools
+    else
+        rm -f /opt/homebrew/bin/crystaltools
+        curl -L https://github.com/crystaluniverse/crystaltools/releases/download/first/crystaltools_osx > /usr/local/bin/crystaltools
+        chmod 770 /usr/local/bin/crystaltools
+    fi
+fi
+
+
+
+echo " - INSTALL DONE"
+
+

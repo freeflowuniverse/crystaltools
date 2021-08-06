@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+clear
+cat $DIR_CT/scripts/ct_help.md
+echo
+
+

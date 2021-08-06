@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+#ALWAYS SAME INITIALIZATION 
+set -e
+if [[ -z "${DIR_CT}" ]]; then 
+    echo 'Make sure to source ct_init before calling this script.'
+    exit 1
+fi
+source $DIR_CT/scripts/ct_init
+
+#######CHOOSE YOUR BRANCH homebrew###########
+export BRANCH="reimplement-autocompletion-ts"
+# export BRANCH="use-tree-sitter"
+rm -f /usr/local/bin/vls
+
+v_check
+
+if [[ -d "$HOME/.vmodules/tree_sitter_v" ]]; then
+    pushd ~/.vmodules/tree_sitter_v
+    git pull
+    popd "$@" > /dev/null
+else
+    git clone https://github.com/nedpals/tree-sitter-v ~/.vmodules/tree_sitter_v
+fi
+
+
+
+if [[ -d "$DIR_CODE_INT/vls" ]]; then
+    pushd $DIR_CODE_INT/vls
+    git pull
+    popd "$@" > /dev/null
+else
+    pushd $DIR_CODE_INT
+    git clone https://github.com/vlang/vls.git --branch $BRANCH
+    popd "$@" > /dev/null
+fi
+
+pushd $DIR_CODE_INT/vls
+v -gc boehm cmd/vls
+sudo cp cmd/vls/vls /usr/local/bin/vls
+popd "$@" > /dev/null
+
+if ! [ -x "$(command -v vls)" ]; then
+  echo 'vls is not installed.' >&2
+  exit 1
+fi

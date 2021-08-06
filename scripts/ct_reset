@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+#ALWAYS SAME INITIALIZATION 
+set -e
+
+sudo rm -rf $DIR_CODE/v
+sudo rm -rf $DIR_CODE/vls
+sudo rm -rf $DIR_CODE_INT/v
+sudo rm -rf $DIR_CODE_INT/vls
+sudo rm -rf $HOME/.vmodules
+sudo rm -f "$HOME/.vmodules/done_crystallib"
+sudo rm -rf /usr/local/bin/vls
+sudo rm -rf /usr/local/bin/v
+sudo rm -rf /usr/local/bin/ct
+sudo rm -rf /usr/local/bin/crystaltools
+
+sudo rm -rf ~/.vmodules
