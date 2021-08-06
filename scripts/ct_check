@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-if ! [ -x "$(command -v ct)" ]; then
+if ! [ -x "$(command -v crystaltools)" ]; then
   ct_build
 fi

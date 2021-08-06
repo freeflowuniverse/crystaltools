@@ -7,7 +7,6 @@ if [[ -z "${DIR_CT}" ]]; then
 fi
 source $DIR_CT/scripts/ct_init
 
-#Check v already exists, if not then compile
 if [ -d "~/.vmodules" ]
 then
     if [[ -z "${USER}" ]]; then
@@ -15,7 +14,6 @@ then
     fi
 fi
 
-#Check v already exists, if not then compile
 if [[ -d "$DIR_CODE_INT/v" ]]; then
     pushd $DIR_CODE_INT/v
     git pull
@@ -33,12 +31,13 @@ else
         exit 1
     fi    
     git clone https://github.com/vlang/v
-    cd v
-    sudo make
-    sudo ./v symlink
     popd "$@" > /dev/null
 fi
 
+pushd $DIR_CODE_INT/v
+sudo make
+sudo ./v symlink
+popd "$@" > /dev/null
 
 
 if ! [ -x "$(command -v v)" ]; then

@@ -8,11 +8,10 @@ source $DIR_CT/scripts/ct_init
 
 v_check
 
-rm -rf ~/.vmodules/despiegk/crystallib
-
 #CHECK IF DIR EXISTS, IF NOT CLONE
-if ! [[ -d "$DIR_CODE/crystallib" ]]
+if ! [[ -f "$HOME/.vmodules/done_crystallib" ]]
 then
+    rm -rf ~/.vmodules/despiegk/crystallib
     pushd $DIR_CODE
     if [[ -d "$DIR_CODE/crystallib" ]]
     then        
@@ -29,12 +28,13 @@ then
     mkdir -p ~/.vmodules/despiegk/
     popd "$@" > /dev/null
 
-    ln -s $DIR_CODE/crystallib ~/.vmodules/despiegk/crystallib
+    ln -s "$DIR_CODE/crystallib" "$HOME/.vmodules/despiegk/crystallib"
 
     v install patrickpissurno.redis
     v install despiegk.crystallib
     v install nedpals.vex
 
+    touch "$HOME/.vmodules/done_crystallib"
 fi
 
 
