@@ -4,13 +4,14 @@ if [[ -z "${DIR_CT}" ]]; then
     echo 'Make sure to source ct_init before calling this script.'
     exit 1
 fi
+source $DIR_CT/scripts/ct_init
 
 v_check
 
 rm -rf ~/.vmodules/despiegk/crystallib
 
 #CHECK IF DIR EXISTS, IF NOT CLONE
-if ! [[-d "$HOME/.vmodules/despiegk/crystallib"]]
+if ! [[ -d "$HOME/.vmodules/despiegk/crystallib" ]]
 then
     pushd $DIR_CODE
     if [[ -d "$DIR_CODE/crystallib" ]]

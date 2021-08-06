@@ -3,11 +3,11 @@ image:
 tasks:
     - name: WIKI
       init: curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/development/scripts/ct_init > /workspace/ct_init
-      command: source /workspace/ct_init && sudo /etc/init.d/redis-server start && clear && cat gitpod_readme.md
+      command: source /workspace/ct_init && sudo /etc/init.d/redis-server start && clear && ct_help
     - name: Build
       openMode: split-right
       init: curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/development/scripts/ct_init > /workspace/ct_init
-      command: source /workspace/ct_init && ct_build && reset && cat gitpod_readme.md
+      command: source /workspace/ct_init && ct_build && reset && ct_help
 
 ports:
   - port: 9998
