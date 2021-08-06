@@ -10,6 +10,9 @@ else
     popd "$@" > /dev/null
 fi
 
+v_check
+
+rm -rf ~/.vmodules/despiegk/crystallib
 
 #CHECK IF DIR EXISTS, IF NOT CLONE
 if ! [ -d "$DIR_CODE/crystallib" ] 
@@ -22,26 +25,13 @@ then
     sudo rm -rf ~/.vmodules/despiegk/
     mkdir -p ~/.vmodules/despiegk/
     popd "$@" > /dev/null
-fi
 
-ln -s /workspace/crystallib ~/.vmodules/despiegk/crystallib
+    ln -s $DIR_CODE/crystallib ~/.vmodules/despiegk/crystallib
 
-v install patrickpissurno.redis
-v install despiegk.crystallib
-v install nedpals.vex
+    v install patrickpissurno.redis
+    v install despiegk.crystallib
+    v install nedpals.vex
 
-
-if [ -d "/workspace/publishtools" ] 
-then
-    echo "Directory /workspace/publishtools exists, no reason to clone." 
-else
-    pushd /workspace
-    git clone https://github.com/crystaluniverse/publishtools
-    popd "$@" > /dev/null
 fi
 
 
-if ! [ -x "$(command -v v)" ]; then
-  echo 'Vlang is not installed.' >&2
-  sudo rm -rf /workspace/v
-fi

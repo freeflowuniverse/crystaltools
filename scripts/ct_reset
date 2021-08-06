@@ -15,3 +15,5 @@ sudo rm -rf $DIR_CODE/vls
 sudo rm -rf $DIR_CODE/.vmodules
 sudo rm -rf /usr/local/bin/vls
 sudo rm -rf /usr/local/bin/v
+
+sudo rm -rf ~/.vmodules/despiegk/crystallib

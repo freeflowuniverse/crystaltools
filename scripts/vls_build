@@ -10,6 +10,10 @@ else
     popd "$@" > /dev/null
 fi
 
+
+#######CHOOSE YOUR BRANCH homebrew###########
+export BRANCH="reimplement-autocompletion-ts"
+# export BRANCH="use-tree-sitter"
 rm -f /usr/local/bin/vls
 
 v_check
@@ -30,7 +34,7 @@ if [[ -d "$DIR_CODE/vls" ]]; then
     popd "$@" > /dev/null
 else
     pushd $DIR_CODE
-    git clone https://github.com/vlang/vls.git --branch use-tree-sitter
+    git clone https://github.com/vlang/vls.git --branch $BRANCH
     popd "$@" > /dev/null
 fi
 
