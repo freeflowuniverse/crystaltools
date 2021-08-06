@@ -21,13 +21,14 @@ pushd $CDIR/crystaltools 2>&1 >> /dev/null
 
 # v -gc boehm -prod crystaltools.v
 echo " - COMPILE"
+#-cc clang
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # v -d static_boehm  -gc boehm -prod crystaltools.v
     v -d net_blocking_sockets -d static_boehm  -gc boehm crystaltools.v
 else
     # v -d static_boehm  -gc boehm -cflags -static -prod crystaltools.v
     # v -d static_boehm  -gc boehm -cflags -static crystaltools.v
-    v -d static_boehm  -gc boehm crystaltools.v
+    v -d static_boehm  -gc boehm  crystaltools.v
 fi
    
 if [[ "$OSTYPE" == "darwin"* ]]; then
