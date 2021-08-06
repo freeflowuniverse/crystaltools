@@ -6,7 +6,7 @@ tasks:
       command: source /workspace/ct_init && sudo /etc/init.d/redis-server start && clear && cat gitpod_readme.md
     - name: Build
       openMode: split-right
-      command: source /workspace/ct_init && ct_build && reset && cat gitpod_readme.md
+      command: sleep 10 && source /workspace/ct_init && ct_build && reset && cat gitpod_readme.md
 
 ports:
   - port: 9998
