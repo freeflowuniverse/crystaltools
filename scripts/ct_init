@@ -37,11 +37,11 @@ function git_get {
         then
             pushd $CDIR/$2
             git pull
-            popd
+            popd 2>&1 >> /dev/null
         else
             pushd $CDIR
             git clone https://$1/$2
-            popd 
+            popd 2>&1 >> /dev/null
         fi
         CDIR="$CDIR/$2"
     fi
