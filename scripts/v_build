@@ -1,0 +1,50 @@
+#ALWAYS SAME INITIALIZATION 
+set -e
+if [[ -z "${DIR_CT}" ]]; then 
+    echo 'DIR_CT needs to be set'
+    exit 1
+else
+    pushd $DIR_CT/scripts
+    source ct_init
+    popd "$@" > /dev/null
+fi
+
+#Check v already exists, if not then compile
+if [ -d "~/.vmodules" ]
+then
+    if [[ -z "${USER}" ]]; then
+        sudo chown -R $USER:$USER ~/.vmodules
+    fi
+fi
+
+#Check v already exists, if not then compile
+if [[ -d "$DIR_CODE/v" ]]; then
+    pushd $DIR_CODE/v
+    git pull
+    popd "$@" > /dev/null
+else
+    pushd $DIR_CODE
+    sudo rm -rf $DIR_CODE/v
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then 
+        sudo apt update
+        sudo apt install libgc-dev -y
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        echo "DARWIN IMPLEMENT"
+        exit 1
+    else
+        echo "ONLY SUPPORT OSX AND LINUX FOR NOW"
+        exit 1
+    fi    
+    git clone https://github.com/vlang/v
+    cd v
+    sudo make
+    sudo ./v symlink
+    popd "$@" > /dev/null
+fi
+
+
+
+if ! [ -x "$(command -v v)" ]; then
+  echo 'vlang is not installed.' >&2
+  exit 1
+fi

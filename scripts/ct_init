@@ -1,0 +1,17 @@
+set -ex
+
+if [[ -d "/workspace" ]]
+    if [[ -z "${DIR_CODE}" ]]; then DIR_CODE="/workspace/code"; fi
+    if [[ -z "${DIR_BIN}" ]]; then DIR_BIN="/usr/local/bin"; fi
+    if [[ -z "${DIR_BUILD}" ]]; then DIR_BUILD="/workspace/build"; fi
+then
+    if [[ -z "${DIR_CODE}" ]]; then DIR_CODE="~/code"; fi
+    if [[ -z "${DIR_BIN}" ]]; then DIR_BIN="/usr/local/bin"; fi
+    if [[ -z "${DIR_BUILD}" ]]; then DIR_BUILD="/tmp"; fi
+fi
+
+mkdir -p $DIR_CODE
+mkdir -p $DIR_BUILD
+
+git config --global pull.rebase false
+

@@ -1,0 +1,55 @@
+#ALWAYS SAME INITIALIZATION 
+set -e
+if [[ -z "${DIR_CT}" ]]; then 
+    echo 'DIR_CT needs to be set'
+    exit 1
+else
+    pushd $DIR_CT/scripts
+    source ct_init
+    popd "$@" > /dev/null
+fi
+
+sudo rm -f /usr/local/bin/publishtools
+sudo rm -f /opt/homebrew/bin/publishtools
+
+
+set -ex
+
+pushd ../publishtools "$@" > /dev/null
+
+# v -gc boehm -prod publishtools.v
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # brew install libgc
+    # v -d static_boehm  -gc boehm -prod publishtools.v
+    v -d net_blocking_sockets -d static_boehm  -gc boehm publishtools.v
+    
+else
+    v -d static_boehm  -gc boehm -cflags -static -prod publishtools.v
+fi
+
+
+# v -d static_boehm  -gc boehm publishtools.v
+
+#v  publishtools.v
+   
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    if [[ `uname -m` == 'arm64' ]]; then
+        sudo cp publishtools /opt/homebrew/bin/publishtools
+        chmod 770 /opt/homebrew/bin/publishtools
+        #to prepare for upload to our releases
+        cp publishtools ~/Downloads/publishtools_osx_arm
+    else        
+        sudo cp publishtools /usr/local/bin/publishtools
+        chmod 770 /usr/local/bin/publishtools    
+        #to prepare for upload to our releases
+        cp publishtools ~/Downloads/publishtools_osx
+    fi
+else
+    #for linux
+    sudo cp publishtools /usr/local/bin/publishtools
+    chmod 770 /usr/local/bin/publishtools    
+fi
+
+popd "$@" > /dev/null
+
+echo " - publishtools build ok"

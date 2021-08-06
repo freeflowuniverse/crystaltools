@@ -1,0 +1,14 @@
+#ALWAYS SAME INITIALIZATION 
+set -e
+if [[ -z "${DIR_CT}" ]]; then 
+    echo 'DIR_CT needs to be set'
+    exit 1
+else
+    pushd $DIR_CT/scripts
+    source ct_init
+    popd "$@" > /dev/null
+fi
+
+sudo rm -rf $DIR_CODE/v
+sudo rm -rf $DIR_CODE/vls
+sudo rm -rf $DIR_CODE/.vmodules

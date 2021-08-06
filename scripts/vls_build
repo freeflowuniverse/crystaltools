@@ -1,0 +1,42 @@
+#ALWAYS SAME INITIALIZATION 
+set -e
+if [[ -z "${DIR_CT}" ]]; then 
+    echo 'DIR_CT needs to be set'
+    exit 1
+else
+    pushd $DIR_CT/scripts
+    source ct_init
+    popd "$@" > /dev/null
+fi
+
+rm -f /usr/local/bin/vls
+
+if [[ -d "~/.vmodules/tree_sitter_v" ]]; then
+    pushd ~/.vmodules/tree_sitter_v
+    git pull
+    popd "$@" > /dev/null
+else
+    git clone https://github.com/nedpals/tree-sitter-v ~/.vmodules/tree_sitter_v
+fi
+
+
+
+if [[ -d "$DIR_CODE/vls" ]]; then
+    pushd $DIR_CODE/vls
+    git pull
+    popd "$@" > /dev/null
+else
+    pushd $DIR_CODE
+    git clone https://github.com/vlang/vls.git --branch use-tree-sitter
+    popd "$@" > /dev/null
+fi
+
+pushd $DIR_CODE/vls
+v -gc boehm cmd/vls
+sudo cp cmd/vls/vls /usr/local/bin/vls
+popd "$@" > /dev/null
+
+if ! [ -x "$(command -v vls)" ]; then
+  echo 'vls is not installed.' >&2
+  exit 1
+fi
