@@ -56,3 +56,10 @@ export DIR_CT=$CDIR
 export PATH=$DIR_CT/scripts:$PATH
 
 github_keyscan
+
+# function exists {
+#     if [[ -L "$1" && -d "$1" ]]
+#     then
+#         export EXISTS=true
+#     fi
+# }
