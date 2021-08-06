@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+#ALWAYS SAME INITIALIZATION 
+set -e
+if [[ -z "${DIR_CT}" ]]; then 
+    echo 'DIR_CT needs to be set'
+    exit 1
+else
+    pushd $DIR_CT/scripts
+    source ct_init
+    popd "$@" > /dev/null
+fi
+
+
+if ! [ -x "$(command -v rmb)" ]; then
+  rmb_build
+fi

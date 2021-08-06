@@ -15,10 +15,17 @@ v_check
 rm -rf ~/.vmodules/despiegk/crystallib
 
 #CHECK IF DIR EXISTS, IF NOT CLONE
-if ! [ -d "$DIR_CODE/crystallib" ] 
+if ! [[-d "$HOME/.vmodules/despiegk/crystallib"]]
 then
     pushd $DIR_CODE
-    git clone https://github.com/crystaluniverse/crystallib
+    if [[ -d "$DIR_CODE/crystallib" ]]
+    then        
+        cd $DIR_CODE/crystallib
+        git pull
+        cd ..
+    else
+        git clone https://github.com/crystaluniverse/crystallib
+    fi
     # cd crystallib
     # git checkout refactor_publish_config
     # cd ..

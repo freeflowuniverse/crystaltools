@@ -1,19 +1,52 @@
 set -ex
 
 if [[ -d "/workspace" ]]
-    if [[ -z "${DIR_CODE}" ]]; then DIR_CODE="/workspace/code"; fi
-    if [[ -z "${DIR_BIN}" ]]; then DIR_BIN="/usr/local/bin"; fi
-    if [[ -z "${DIR_BUILD}" ]]; then DIR_BUILD="/workspace/build"; fi
+    if [[ -z "${DIR_CODE}" ]]; then export DIR_CODE="/workspace/code"; fi
+    if [[ -z "${DIR_CODE_INT}" ]]; then export DIR_CODE_INT="/workspace/_code"; fi
+    if [[ -z "${DIR_BIN}" ]]; then export DIR_BIN="/usr/local/bin"; fi
+    if [[ -z "${DIR_BUILD}" ]]; then export DIR_BUILD="/workspace/build"; fi
 then
-    if [[ -z "${DIR_CODE}" ]]; then DIR_CODE="~/code"; fi
-    if [[ -z "${DIR_BIN}" ]]; then DIR_BIN="/usr/local/bin"; fi
-    if [[ -z "${DIR_BUILD}" ]]; then DIR_BUILD="/tmp"; fi
+    if [[ -z "${DIR_CODE}" ]]; then export DIR_CODE="$HOME/code"; fi
+    if [[ -z "${DIR_CODE_INT}" ]]; then export DIR_CODE_INT="$HOME/_code"; fi
+    if [[ -z "${DIR_BIN}" ]]; then export DIR_BIN="/usr/local/bin"; fi
+    if [[ -z "${DIR_BUILD}" ]]; then export DIR_BUILD="/tmp"; fi
 fi
 
 mkdir -p $DIR_CODE
+mkdir -p $DIR_CODE_INT
 mkdir -p $DIR_BUILD
 
 git config --global pull.rebase false
 
 github_keyscan
 
+#2 arguments
+#e.g. git_get github.com/crystaluniverse publishtools 
+#return is in $CDIR
+function git_get {
+    set -ex
+    echo "git get for account:'$1' repo:'$2'"
+    if [[ -d "/workspace/publishtools" ]] && ! [[ $2=="publishtools" ]]
+    then
+        CDIR="/workspace/publishtools"
+    else
+        if [[ -d "/workspace" ]]
+        then
+            CDIR="/workspace/code"
+        else
+            CDIR=$DIR_CODE
+        fi
+
+        if [[ -d "$CDIR/$2" ]]
+        then
+            pushd $CDIR/$2
+            git pull
+            popd
+        else
+            pushd $CDIR
+            git clone https://$1/$2
+            popd 
+        fi
+        CDIR="$CDIR/$2"
+    fi
+}

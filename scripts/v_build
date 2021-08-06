@@ -19,13 +19,13 @@ then
 fi
 
 #Check v already exists, if not then compile
-if [[ -d "$DIR_CODE/v" ]]; then
-    pushd $DIR_CODE/v
+if [[ -d "$DIR_CODE_INT/v" ]]; then
+    pushd $DIR_CODE_INT/v
     git pull
     popd "$@" > /dev/null
 else
-    pushd $DIR_CODE
-    sudo rm -rf $DIR_CODE/v
+    pushd $DIR_CODE_INT
+    sudo rm -rf $DIR_CODE_INT/v
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then 
         sudo apt update
         sudo apt install libgc-dev -y

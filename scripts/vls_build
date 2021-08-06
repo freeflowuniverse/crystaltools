@@ -28,17 +28,17 @@ fi
 
 
 
-if [[ -d "$DIR_CODE/vls" ]]; then
-    pushd $DIR_CODE/vls
+if [[ -d "$DIR_CODE_INT/vls" ]]; then
+    pushd $DIR_CODE_INT/vls
     git pull
     popd "$@" > /dev/null
 else
-    pushd $DIR_CODE
+    pushd $DIR_CODE_INT
     git clone https://github.com/vlang/vls.git --branch $BRANCH
     popd "$@" > /dev/null
 fi
 
-pushd $DIR_CODE/vls
+pushd $DIR_CODE_INT/vls
 v -gc boehm cmd/vls
 sudo cp cmd/vls/vls /usr/local/bin/vls
 popd "$@" > /dev/null

@@ -12,8 +12,13 @@ fi
 
 sudo rm -rf $DIR_CODE/v
 sudo rm -rf $DIR_CODE/vls
-sudo rm -rf $DIR_CODE/.vmodules
+sudo rm -rf $DIR_CODE_INT/v
+sudo rm -rf $DIR_CODE_INT/vls
+sudo rm -rf $HOME/.vmodules
+sudo rm -rf $DIR_CODE/crystallib
 sudo rm -rf /usr/local/bin/vls
 sudo rm -rf /usr/local/bin/v
+sudo rm -rf /usr/local/bin/ct
+sudo rm -rf /usr/local/bin/publishtools
 
-sudo rm -rf ~/.vmodules/despiegk/crystallib
+sudo rm -rf ~/.vmodules

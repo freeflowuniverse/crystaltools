@@ -13,23 +13,17 @@ fi
 sudo rm -f /usr/local/bin/publishtools
 sudo rm -f /opt/homebrew/bin/publishtools
 
-v_check
 #get the crystal libs
 cl_build
 
 
-if [[ -d "/workspace/publishtools" ]]
-then
-    pushd /workspace/publishtools/publishtools
-else
-    pushd $DIR_CODE/publishtools/publishtools
-fi
+git_get github.com/crystaluniverse publishtools
+pushd $CDIR/publishtools
 
 # v -gc boehm -prod publishtools.v
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # v -d static_boehm  -gc boehm -prod publishtools.v
     v -d net_blocking_sockets -d static_boehm  -gc boehm publishtools.v
-    
 else
     v -d static_boehm  -gc boehm -cflags -static -prod publishtools.v
 fi
