@@ -18,7 +18,6 @@ sudo rm -f /opt/homebrew/bin/publishtools
 #get the crystal libs
 cl_build
 
-
 git_get github.com/crystaluniverse crystaltools
 pushd $CDIR/crystaltools
 
