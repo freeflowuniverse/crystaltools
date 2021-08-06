@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+#ALWAYS SAME INITIALIZATION 
+set -e
+if [[ -z "${DIR_CT}" ]]; then 
+    echo 'Make sure to source ct_init before calling this script.'
+    exit 1
+fi
+source $DIR_CT/scripts/ct_init
+
+
+sudo rm -f /usr/local/bin/publishtools
+sudo rm -f /opt/homebrew/bin/publishtools
+sudo rm -f /usr/local/bin/publishtools
+sudo rm -f /opt/homebrew/bin/publishtools
+
+#get the crystal libs
+cl_build
+
+git_get github.com/crystaluniverse publishtools
+pushd $CDIR/crystaltools 2>&1 >> /dev/null
+
+# v -gc boehm -prod publishtools.v
+echo " - COMPILE"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # v -d static_boehm  -gc boehm -prod publishtools.v
+    v -d net_blocking_sockets -d static_boehm  -gc boehm publishtools.v
+else
+    # v -d static_boehm  -gc boehm -cflags -static -prod publishtools.v
+    # v -d static_boehm  -gc boehm -cflags -static publishtools.v
+    v -d static_boehm  -gc boehm publishtools.v
+fi
+   
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    if [[ `uname -m` == 'arm64' ]]; then
+        sudo cp publishtools /opt/homebrew/bin/publishtools
+        sudo chmod 770 /opt/homebrew/bin/publishtools
+        #to prepare for upload to our releases
+        cp publishtools ~/Downloads/publishtools_osx_arm
+    else        
+        sudo cp ct /usr/local/bin/publishtools
+        sudo chmod 770 /usr/local/bin/publishtools    
+        #to prepare for upload to our releases
+        cp publishtools ~/Downloads/publishtools_osx
+    fi
+else
+    #for linux
+    sudo cp publishtools /usr/local/bin/publishtools
+    sudo chmod 777 /usr/local/bin/publishtools    
+fi
+
+
+popd "$@" > /dev/null
+
+echo " - publishtools build ok"
