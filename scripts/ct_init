@@ -1,4 +1,4 @@
-
+set -e
 if [[ -d "/workspace" ]]
     if [[ -z "${DIR_CODE}" ]]; then export DIR_CODE="/workspace/code"; fi
     if [[ -z "${DIR_CODE_INT}" ]]; then export DIR_CODE_INT="/workspace/_code"; fi
