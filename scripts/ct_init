@@ -25,8 +25,9 @@ git config --global pull.rebase false
 #return is in $CDIR
 function git_get {
     # echo "git get for account:'$1' repo:'$2'"
-    if [[ -d "/workspace/crystaltools" ]] && [[ $2=="crystaltools" ]]
+    if [[ -d "/workspace/crystaltools" ]] && [[ "${2}" == "crystaltools" ]]
     then
+        echo [[ "${2}" = "crystaltools" ]]
         CDIR="/workspace/crystaltools"
     else
         if [[ -d "/workspace" ]]

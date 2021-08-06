@@ -1,4 +1,3 @@
-set -e
 if [[ -d "/workspace" ]]
 then
     if [[ -z "${DIR_CODE}" ]]; then export DIR_CODE="/workspace/code"; fi

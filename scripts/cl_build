@@ -11,9 +11,10 @@ v_check
 #CHECK IF DIR EXISTS, IF NOT CLONE
 if ! [[ -f "$HOME/.vmodules/done_crystallib" ]]
 then
-    git_get github.com/crystaluniverse crystallib
     sudo rm -rf ~/.vmodules/despiegk/
     mkdir -p ~/.vmodules/despiegk/    
+
+    git_get github.com/crystaluniverse crystallib
     ln -s "$CDIR/src" "$HOME/.vmodules/despiegk/crystallib"
 
     v install patrickpissurno.redis
