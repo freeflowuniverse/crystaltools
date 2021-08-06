@@ -15,3 +15,5 @@ mkdir -p $DIR_BUILD
 
 git config --global pull.rebase false
 
+# ssh-keyscan github.com >> ~/.ssh/known_hosts
+

@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 #ALWAYS SAME INITIALIZATION 
 set -e
 if [[ -z "${DIR_CT}" ]]; then 
@@ -29,8 +30,7 @@ else
         sudo apt update
         sudo apt install libgc-dev -y
     elif [[ "$OSTYPE" == "darwin"* ]]; then
-        echo "DARWIN IMPLEMENT"
-        exit 1
+        brew install bdw-gc
     else
         echo "ONLY SUPPORT OSX AND LINUX FOR NOW"
         exit 1

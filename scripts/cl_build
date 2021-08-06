@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 #ALWAYS SAME INITIALIZATION 
 set -e
 if [[ -z "${DIR_CT}" ]]; then 
@@ -9,61 +10,26 @@ else
     popd "$@" > /dev/null
 fi
 
-if ! [ -x "$(command -v v)" ]; then
-    
-fi
-
-if [ foo ]; then a 
-
-#Check v already exists, if not then compile
-if [[ -d "$DIR_CODE/v" ]]; then
-    cd $DIR_CODE/v
-    git pull
-else
-    pushd $DIR_CODE
-    sudo rm -rf $DIR_CODE/v
-    if [[ "$OSTYPE" == "linux-gnu"* ]]; then 
-        sudo apt update
-        sudo apt install libgc-dev -y
-    elif [[ "$OSTYPE" == "darwin"* ]]; then
-        echo "DARWIN IMPLEMENT"
-        exit 1
-    else
-        echo "ONLY SUPPORT OSX AND LINUX FOR NOW"
-        exit 1
-    fi    
-    git clone https://github.com/vlang/v
-    cd v
-    sudo make
-    sudo ./v symlink
-    popd "$@" > /dev/null
-fi
-
 
 #CHECK IF DIR EXISTS, IF NOT CLONE
-if [ -d "/workspace/crystallib" ] 
+if ! [ -d "$DIR_CODE/crystallib" ] 
 then
-    echo "Directory /workspace/crystallib exists." 
-else
-    pushd /workspace
+    pushd $DIR_CODE
     git clone https://github.com/crystaluniverse/crystallib
-    cd crystallib
+    # cd crystallib
     # git checkout refactor_publish_config
-    cd ..
-    sudo rm -rf ~/.vmodules
+    # cd ..
+    sudo rm -rf ~/.vmodules/despiegk/
     mkdir -p ~/.vmodules/despiegk/
     popd "$@" > /dev/null
 fi
 
-rm -rf ~/.vmodules
-mkdir -p ~/.vmodules/despiegk
 ln -s /workspace/crystallib ~/.vmodules/despiegk/crystallib
 
 v install patrickpissurno.redis
 v install despiegk.crystallib
 v install nedpals.vex
 
-# ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 if [ -d "/workspace/publishtools" ] 
 then

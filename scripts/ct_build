@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 #ALWAYS SAME INITIALIZATION 
 set -e
 if [[ -z "${DIR_CT}" ]]; then 
@@ -12,10 +13,14 @@ fi
 sudo rm -f /usr/local/bin/publishtools
 sudo rm -f /opt/homebrew/bin/publishtools
 
+v_check
 
-set -ex
+v install patrickpissurno.redis
+v install despiegk.crystallib
+v install nedpals.vex
 
-pushd ../publishtools "$@" > /dev/null
+
+pushd $DIR_CODE/publishtools "$@" > /dev/null
 
 # v -gc boehm -prod publishtools.v
 if [[ "$OSTYPE" == "darwin"* ]]; then

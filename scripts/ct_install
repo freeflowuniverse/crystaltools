@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 #ALWAYS SAME INITIALIZATION 
 set -e
 if [[ -z "${DIR_CT}" ]]; then 
@@ -9,11 +10,6 @@ else
     popd "$@" > /dev/null
 fi
 
-
-set -e
-# set -x
-
-# INSTALL PUBLISH TOOLS
 
 rm -f /usr/local/bin/publishtools
 

@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 #ALWAYS SAME INITIALIZATION 
 set -e
 if [[ -z "${DIR_CT}" ]]; then 
