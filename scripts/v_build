@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 #ALWAYS SAME INITIALIZATION 
 set -e
-
+if [[ -z "${DIR_CT}" ]]; then 
+    echo 'Make sure to source ct_init before calling this script.'
+    exit 1
+else
 #Check v already exists, if not then compile
 if [ -d "~/.vmodules" ]
 then
