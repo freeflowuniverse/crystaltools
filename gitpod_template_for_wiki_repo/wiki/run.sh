@@ -1,5 +1,0 @@
-set -e
-
-publishtools develop
-
-

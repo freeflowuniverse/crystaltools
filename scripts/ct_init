@@ -1,10 +1,11 @@
 set -e
 if [[ -d "/workspace" ]]
+then
     if [[ -z "${DIR_CODE}" ]]; then export DIR_CODE="/workspace/code"; fi
     if [[ -z "${DIR_CODE_INT}" ]]; then export DIR_CODE_INT="/workspace/_code"; fi
     if [[ -z "${DIR_BIN}" ]]; then export DIR_BIN="/usr/local/bin"; fi
     if [[ -z "${DIR_BUILD}" ]]; then export DIR_BUILD="/workspace/build"; fi
-then
+else
     if [[ -z "${DIR_CODE}" ]]; then export DIR_CODE="$HOME/code"; fi
     if [[ -z "${DIR_CODE_INT}" ]]; then export DIR_CODE_INT="$HOME/_code"; fi
     if [[ -z "${DIR_BIN}" ]]; then export DIR_BIN="/usr/local/bin"; fi
@@ -55,3 +56,10 @@ export DIR_CT=$CDIR
 export PATH=$DIR_CT/scripts:$PATH
 
 github_keyscan
+
+# function exists {
+#     if [[ -L "$1" && -d "$1" ]]
+#     then
+#         export EXISTS=true
+#     fi
+# }

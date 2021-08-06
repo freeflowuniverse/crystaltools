@@ -31,13 +31,13 @@ fi
    
 if [[ "$OSTYPE" == "darwin"* ]]; then
     if [[ `uname -m` == 'arm64' ]]; then
-        sudo cp ct /opt/homebrew/bin/crystaltools
-        chmod 770 /opt/homebrew/bin/crystaltools
+        sudo cp crystaltools /opt/homebrew/bin/crystaltools
+        sudo chmod 770 /opt/homebrew/bin/crystaltools
         #to prepare for upload to our releases
         cp crystaltools ~/Downloads/crystaltools_osx_arm
     else        
         sudo cp ct /usr/local/bin/crystaltools
-        chmod 770 /usr/local/bin/crystaltools    
+        sudo chmod 770 /usr/local/bin/crystaltools    
         #to prepare for upload to our releases
         cp crystaltools ~/Downloads/crystaltools_osx
     fi

@@ -11,24 +11,10 @@ v_check
 #CHECK IF DIR EXISTS, IF NOT CLONE
 if ! [[ -f "$HOME/.vmodules/done_crystallib" ]]
 then
-    rm -rf ~/.vmodules/despiegk/crystallib
-    pushd $DIR_CODE
-    if [[ -d "$DIR_CODE/crystallib" ]]
-    then        
-        cd $DIR_CODE/crystallib
-        git pull
-        cd ..
-    else
-        git clone https://github.com/crystaluniverse/crystallib
-    fi
-    # cd crystallib
-    # git checkout refactor_publish_config
-    # cd ..
+    git_get github.com/crystaluniverse crystallib
     sudo rm -rf ~/.vmodules/despiegk/
-    mkdir -p ~/.vmodules/despiegk/
-    popd "$@" > /dev/null
-
-    ln -s "$DIR_CODE/crystallib" "$HOME/.vmodules/despiegk/crystallib"
+    mkdir -p ~/.vmodules/despiegk/    
+    ln -s "$CDIR/src" "$HOME/.vmodules/despiegk/crystallib"
 
     v install patrickpissurno.redis
     v install despiegk.crystallib

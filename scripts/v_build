@@ -1,16 +1,19 @@
 #!/usr/bin/env bash
 #ALWAYS SAME INITIALIZATION 
-set -e
+set -ex
 if [[ -z "${DIR_CT}" ]]; then 
     echo 'Make sure to source ct_init before calling this script.'
     exit 1
 fi
 source $DIR_CT/scripts/ct_init
 
-if [ -d "~/.vmodules" ]
+if [ -d "$HOME/.vmodules" ]
 then
     if [[ -z "${USER}" ]]; then
         sudo chown -R $USER:$USER ~/.vmodules
+    else
+        USER="$(whoami)"
+        sudo chown -R $USER ~/.vmodules
     fi
 fi
 
