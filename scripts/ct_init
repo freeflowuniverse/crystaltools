@@ -18,13 +18,13 @@ mkdir -p $DIR_BUILD
 git config --global pull.rebase false
 
 #2 arguments
-#e.g. git_get github.com/crystaluniverse publishtools 
+#e.g. git_get github.com/crystaluniverse crystaltools 
 #return is in $CDIR
 function git_get {
     # echo "git get for account:'$1' repo:'$2'"
-    if [[ -d "/workspace/publishtools" ]] && [[ $2=="publishtools" ]]
+    if [[ -d "/workspace/crystaltools" ]] && [[ $2=="crystaltools" ]]
     then
-        CDIR="/workspace/publishtools"
+        CDIR="/workspace/crystaltools"
     else
         if [[ -d "/workspace" ]]
         then
@@ -47,7 +47,7 @@ function git_get {
     fi
 }
 
-git_get github.com/crystaluniverse publishtools
+git_get github.com/crystaluniverse crystaltools
 
 #DIR_CT is directory of crystal tools (old publishing tools)
 export DIR_CT=$CDIR
@@ -55,7 +55,3 @@ export DIR_CT=$CDIR
 export PATH=$DIR_CT/scripts:$PATH
 
 github_keyscan
-
-echo 
-echo "  .... CT TOOLS ACTIVATED .... "
-echo

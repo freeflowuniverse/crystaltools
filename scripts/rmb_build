@@ -32,9 +32,9 @@ ct_check
 
 pushd $RMB_DIR/msgbusd
 
-# v -gc boehm -prod publishtools.v
+# v -gc boehm -prod crystaltools.v
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    # v -d static_boehm  -gc boehm -prod publishtools.v
+    # v -d static_boehm  -gc boehm -prod crystaltools.v
     v -d net_blocking_sockets -d static_boehm  -gc boehm msgbusd.v
     
 else

@@ -4,7 +4,7 @@
 when using following env arguments need to be set
 
 ```bash
-export DIR_CT=/workspace/publishtools
+export DIR_CT=/workspace/crystaltools
 export DIR_CODE=/workspace/code
 export DIR_BIN=/usr/local/bin/
 export DIR_BUILD=/workspace/build

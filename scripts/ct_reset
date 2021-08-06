@@ -19,6 +19,6 @@ sudo rm -rf $DIR_CODE/crystallib
 sudo rm -rf /usr/local/bin/vls
 sudo rm -rf /usr/local/bin/v
 sudo rm -rf /usr/local/bin/ct
-sudo rm -rf /usr/local/bin/publishtools
+sudo rm -rf /usr/local/bin/crystaltools
 
 sudo rm -rf ~/.vmodules
