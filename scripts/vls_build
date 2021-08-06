@@ -9,7 +9,7 @@ source $DIR_CT/scripts/ct_init
 #######CHOOSE YOUR BRANCH homebrew###########
 export BRANCH="reimplement-autocompletion-ts"
 # export BRANCH="use-tree-sitter"
-rm -f /usr/local/bin/vls
+sudo rm -f /usr/local/bin/vls
 
 v_check
 
