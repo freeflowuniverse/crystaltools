@@ -11,7 +11,9 @@ fi
 
 rm -f /usr/local/bin/vls
 
-if [[ -d "~/.vmodules/tree_sitter_v" ]]; then
+v_check
+
+if [[ -d "$HOME/.vmodules/tree_sitter_v" ]]; then
     pushd ~/.vmodules/tree_sitter_v
     git pull
     popd "$@" > /dev/null
