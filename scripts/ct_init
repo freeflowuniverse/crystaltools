@@ -12,6 +12,8 @@ else
     if [[ -z "${DIR_BUILD}" ]]; then export DIR_BUILD="/tmp"; fi
 fi
 
+#!/usr/bin/env bash
+
 mkdir -p $DIR_CODE
 mkdir -p $DIR_CODE_INT
 mkdir -p $DIR_BUILD
@@ -36,11 +38,11 @@ function git_get {
 
         if [[ -d "$CDIR/$2" ]]
         then
-            pushd $CDIR/$2
-            git pull
+            pushd $CDIR/$2 2>&1 >> /dev/null
+            # git pull
             popd 2>&1 >> /dev/null
         else
-            pushd $CDIR
+            pushd $CDIR 2>&1 >> /dev/null
             git clone https://$1/$2
             popd 2>&1 >> /dev/null
         fi
