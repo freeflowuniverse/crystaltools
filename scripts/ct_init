@@ -65,3 +65,5 @@ github_keyscan
 #         export EXISTS=true
 #     fi
 # }
+
+set +e
