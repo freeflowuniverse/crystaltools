@@ -1,4 +1,3 @@
-set -ex
 
 if [[ -d "/workspace" ]]
     if [[ -z "${DIR_CODE}" ]]; then export DIR_CODE="/workspace/code"; fi
@@ -18,15 +17,12 @@ mkdir -p $DIR_BUILD
 
 git config --global pull.rebase false
 
-github_keyscan
-
 #2 arguments
 #e.g. git_get github.com/crystaluniverse publishtools 
 #return is in $CDIR
 function git_get {
-    set -ex
-    echo "git get for account:'$1' repo:'$2'"
-    if [[ -d "/workspace/publishtools" ]] && ! [[ $2=="publishtools" ]]
+    # echo "git get for account:'$1' repo:'$2'"
+    if [[ -d "/workspace/publishtools" ]] && [[ $2=="publishtools" ]]
     then
         CDIR="/workspace/publishtools"
     else
@@ -50,3 +46,16 @@ function git_get {
         CDIR="$CDIR/$2"
     fi
 }
+
+git_get github.com/crystaluniverse publishtools
+
+#DIR_CT is directory of crystal tools (old publishing tools)
+export DIR_CT=$CDIR
+
+export PATH=$DIR_CT/scripts:$PATH
+
+github_keyscan
+
+echo 
+echo "  .... CT TOOLS ACTIVATED .... "
+echo

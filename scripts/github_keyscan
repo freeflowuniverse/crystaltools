@@ -1,3 +1,4 @@
+mkdir -p ~/.ssh
 if ! grep github.com ~/.ssh/known_hosts > /dev/null
 then
     ssh-keyscan github.com >> ~/.ssh/known_hosts
