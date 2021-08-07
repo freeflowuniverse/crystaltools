@@ -28,8 +28,10 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 else
     # v -d static_boehm  -gc boehm -cflags -static -prod crystaltools.v
     # v -d static_boehm  -gc boehm -cflags -static crystaltools.v
-    v -d static_boehm -cc gcc -cg  -gc boehm  crystaltools.v
+    # v -d static_boehm -cc gcc -cg  -gc boehm  crystaltools.v
+    v -cflags "-lpthread" -cc gcc -cg  -gc boehm  crystaltools.v
 fi
+echo "DONE"
    
 if [[ "$OSTYPE" == "darwin"* ]]; then
     if [[ `uname -m` == 'arm64' ]]; then
