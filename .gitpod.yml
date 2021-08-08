@@ -6,8 +6,7 @@ tasks:
       command: source /workspace/crystaltools/env.sh && sudo /etc/init.d/redis-server start && clear && ct_help
     - name: Build
       openMode: split-right
-      init: sleep 2 && curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/development/scripts/ct_init | bash
-      command: source /workspace/crystaltools/env.sh && ct_build && reset && ct_help
+      command: sleep 2 && source /workspace/crystaltools/env.sh && ct_build
 
 ports:
   - port: 9998
