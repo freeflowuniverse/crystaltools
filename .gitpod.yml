@@ -3,14 +3,12 @@ image:
 tasks:
     - name: WIKI
       command: |
-        sleep 2
         curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/development/scripts/ct_init | bash
         curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/development/env.sh > /workspace/env.sh
         source /workspace/env.sh
         ct_build
         clear
         ct_help
-
 ports:
   - port: 9998
     onOpen: open-browser
