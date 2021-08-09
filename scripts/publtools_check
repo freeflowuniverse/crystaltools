@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+#ALWAYS SAME INITIALIZATION 
+set -e
+
+if ! [ -x "$(command -v publishtools)" ]; then
+  publtools_build
+fi
