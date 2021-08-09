@@ -1,3 +1,4 @@
-cd wiki
-./run.sh
+publtools_check
+cd wiki_config
+publishtools develop
 
