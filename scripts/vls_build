@@ -34,7 +34,7 @@ else
 fi
 
 pushd $DIR_CODE_INT/vls
-v -gc boehm cmd/vls
+v -gc boehm -cc clang  cmd/vls
 sudo cp cmd/vls/vls /usr/local/bin/vls
 popd "$@" > /dev/null
 
