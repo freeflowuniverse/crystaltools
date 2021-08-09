@@ -1,4 +1,4 @@
-![](img/pubish.png)
+![](img/publish.png )
 
 # Quick Docs For Publishing Tools:
 
