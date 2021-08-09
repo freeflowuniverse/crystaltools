@@ -38,21 +38,24 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         sudo cp crystaltools /opt/homebrew/bin/crystaltools
         sudo chmod 770 /opt/homebrew/bin/crystaltools
         #to prepare for upload to our releases
-        mv crystaltools ~/Downloads/crystaltools_osx_arm
+        cp crystaltools ~/Downloads/crystaltools_osx_arm
     else        
         sudo cp ct /usr/local/bin/crystaltools
         sudo chmod 770 /usr/local/bin/crystaltools    
         #to prepare for upload to our releases
-        mv crystaltools ~/Downloads/crystaltools_osx
+        cp crystaltools ~/Downloads/crystaltools_osx
     fi
 else
     #for linux
     sudo cp crystaltools /usr/local/bin/crystaltools
     sudo chmod 777 /usr/local/bin/crystaltools
-    mv crystaltools crystaltools_linux
+    cp crystaltools crystaltools_linux
+    
 fi
 
-sudo cp crystaltools_linux /usr/local/bin/ct
+sudo cp crystaltools /usr/local/bin/ct
+
+
 
 popd "$@" > /dev/null
 
