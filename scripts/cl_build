@@ -14,9 +14,9 @@ then
     sudo rm -rf ~/.vmodules/despiegk/
     mkdir -p ~/.vmodules/despiegk/    
 
-    git_get github.com/crystaluniverse crystallib
-    ln -s "$CDIR/src" "$HOME/.vmodules/despiegk/crystallib"
-
+#     git_get github.com/crystaluniverse crystallib
+#     ln -s "$CDIR" "$HOME/.vmodules/despiegk/crystallib"
+    v install despiegk.crystallib
     v install patrickpissurno.redis
     v install despiegk.crystallib
     v install nedpals.vex
