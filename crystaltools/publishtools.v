@@ -610,14 +610,14 @@ fn main() {
 					println('     (**) $c')
 				}
 				configsstr = configs.join(' ')
-				process.execute_stdout('rsync --progress -ra --human-readable $configsstr root@$ip:/root/.publisher/config') ?
+				process.execute_stdout('rsync --progress -ra --human-readable $configsstr root@$ip:/root/.publisher/config -yes') ?
 			}
 		}
 
 		if syncstr != '' {
 			println(' (*) Rsyncing')
 			println(syncstr)
-			process.execute_stdout('rsync -v --stats --progress -ra --delete --human-readable $syncstr root@$ip:/root/.publisher/publish/') or {
+			process.execute_stdout('rsync -v --stats --progress -ra --delete --human-readable $syncstr root@$ip:/root/.publisher/publish/ -yes') or {
 				println("************** WARNING ****************")
 				println("Could not rsync:")
 				println(err)
@@ -637,10 +637,10 @@ fn main() {
 		
 		if syncstr != '' || publishedwikis.len > 0 {
 			println(' (*) updating static files')
-			process.execute_stdout('ssh root@$ip -yes "cd ~/.publisher/config && publishtools staticfiles update"') ?
+			process.execute_stdout('ssh root@$ip "cd ~/.publisher/config && publishtools staticfiles update"') ?
 			
 			println(' (*) Restarting digitaltwin')
-			process.execute_stdout('ssh root@$ip -yes "cd ~/.publisher/config && source ~/.bashrc && publishtools digitaltwin restart"') ?
+			process.execute_stdout('ssh root@$ip "cd ~/.publisher/config && source ~/.bashrc && publishtools digitaltwin restart"') ?
 		}
 	}
 
