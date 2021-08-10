@@ -610,14 +610,14 @@ fn main() {
 					println('     (**) $c')
 				}
 				configsstr = configs.join(' ')
-				process.execute_stdout('rsync --progress -ra --human-readable $configsstr root@$ip:/root/.publisher/config -yes') ?
+				process.execute_stdout('rsync --progress -ra --human-readable $configsstr root@$ip:/root/.publisher/config') ?
 			}
 		}
 
 		if syncstr != '' {
 			println(' (*) Rsyncing')
 			println(syncstr)
-			process.execute_stdout('rsync -v --stats --progress -ra --delete --human-readable $syncstr root@$ip:/root/.publisher/publish/ -yes') or {
+			process.execute_stdout('rsync -v --stats --progress -ra --delete --human-readable $syncstr root@$ip:/root/.publisher/publish/') or {
 				println("************** WARNING ****************")
 				println("Could not rsync:")
 				println(err)
