@@ -636,7 +636,9 @@ fn main() {
 
 		
 		if syncstr != '' || publishedwikis.len > 0 {
-		
+			println(' (*) install config files')
+			process.execute_stdout('ssh root@$ip "cd ~/.publisher/config && publishtools install"')
+
 			println(' (*) updating static files')
 			process.execute_stdout('ssh root@$ip "cd ~/.publisher/config && publishtools staticfiles update"') ?
 			
