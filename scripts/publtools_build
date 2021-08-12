@@ -30,7 +30,7 @@ else
     ##GOOD ONE:
     # v -d static_boehm  -gc boehm publishtools.v
     ##FOR DEBUG:
-    v -d static_boehm  -g -keepc -gc boehm publishtools.v
+    v -d net_blocking_sockets -d static_boehm  -g -keepc -gc boehm publishtools.v
 fi
    
 if [[ "$OSTYPE" == "darwin"* ]]; then
