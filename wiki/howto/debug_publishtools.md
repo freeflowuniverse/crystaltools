@@ -1,4 +1,6 @@
 
+## OSX
+
 ``` bash
 lldb publishtools develop
 ```
@@ -18,3 +20,6 @@ bt
 ```
 
 to see backtrace
+
+
+## LINUX

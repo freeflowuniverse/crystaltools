@@ -27,7 +27,10 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 else
     # v -d static_boehm  -gc boehm -cflags -static -prod publishtools.v
     # v -d static_boehm  -gc boehm -cflags -static publishtools.v
-    v -d static_boehm  -gc boehm publishtools.v
+    ##GOOD ONE:
+    # v -d static_boehm  -gc boehm publishtools.v
+    ##FOR DEBUG:
+    v -d static_boehm  -g -keepc -gc boehm publishtools.v
 fi
    
 if [[ "$OSTYPE" == "darwin"* ]]; then
