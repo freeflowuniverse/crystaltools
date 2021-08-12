@@ -20,9 +20,15 @@ else
     sudo curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
     sudo apt-get install -y nodejs
 fi
-  
+
+if [[ -d "/workspace" ]]; then
+sudo node -v
+sudo npm install --global yarn
+else
 node -v
 npm install --global yarn
+fi
+
 
 
 
