@@ -6,7 +6,7 @@ tasks:
         curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/development/install.sh > /tmp/install.sh
         bash /tmp/install.sh
         source /workspace/env.sh
-        echo ' - do "wiki_run.sh" to run wiki'
+        echo ' - do "./wiki_run.sh" to run wiki'
 ports:
   - port: 9998
     onOpen: open-browser
