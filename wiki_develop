@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+source env.sh
+publtools_build
+cd wiki_config
+publishtools develop
+
