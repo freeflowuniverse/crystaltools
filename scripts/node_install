@@ -1,9 +1,29 @@
 #!/bin/bash
 
-set -ex
-sudo chown gitpod:gitpod -R /tmp
+set -e
 
-sudo curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
-sudo apt-get install -y nodejs
+if [[ -d "/workspace" ]]; then
+sudo chown gitpod:gitpod -R /tmp
+fi
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # export base=~/.publisher
+    # rm -f $base/nvm.sh
+    # curl -s -o $base/nvm.sh https://raw.githubusercontent.com/nvm-sh/nvm/master/nvm.sh
+    # export NVM_DIR=$base
+    # source $base/nvm.sh
+    # nvm install --lts
+    brew install node
+    npm install --global yarn
+    npm install pm2 -g    
+else
+    sudo curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+fi
+  
 node -v
+npm install --global yarn
+
+
+
 
