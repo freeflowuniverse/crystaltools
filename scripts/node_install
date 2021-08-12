@@ -17,7 +17,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     npm install --global yarn
     npm install pm2 -g    
 else
-    sudo curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+    # sudo curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+    sudo curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
     sudo apt-get install -y nodejs
 fi
 
