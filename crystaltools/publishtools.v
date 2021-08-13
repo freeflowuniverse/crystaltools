@@ -104,38 +104,38 @@ fn main() {
 		if webrepo == '' {
 			println(' - develop for wikis')
 			// installers.sites_download(cmd, false) ?
-			mut publ := publisher_core.new(&cfg)or {
-				println("Could not load publisher for wiki.\nError:\n$err")
+			mut publ := publisher_core.new(cfg) or {
+				println('Could not load publisher for wiki.\nError:\n$err')
 				exit(1)
 			}
 			publ.develop = true
 			publisher_core.webserver_run(mut &publ) or {
-				println("Could not run webserver for wiki.\nError:\n$err")
+				println('Could not run webserver for wiki.\nError:\n$err')
 				exit(1)
 			}
 		} else {
 			println(' - develop website: $webrepo')
-			installers.website_develop(&cmd, mut &cfg) or {
-				println("Could not develop wiki.Error:\n$err")
+			installers.website_develop(&cmd, mut cfg) or {
+				println('Could not develop wiki.Error:\n$err')
 				exit(1)
 			}
 		}
 	}
-	
+
 	mut develop_cmd := cli.Command{
 		name: 'develop'
 		usage: 'specify name of website to develop on, if not specified will show the wiki'
 		execute: develop_exec
 	}
-	
+
 	develop_cmd.add_flag(repoflag)
 
 	// RUN
 	run_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, false) ?
 		cfg := publisher_config.get()
-		mut publ := publisher_core.new(&cfg)?
-		publisher_core.webserver_run(mut &publ)?
+		mut publ := publisher_core.new(cfg) ?
+		publisher_core.webserver_run(mut &publ) ?
 	}
 	mut run_cmd := cli.Command{
 		description: 'run all websites & wikis, they need to be build first'
@@ -148,7 +148,7 @@ fn main() {
 	flatten_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, false) ?
 		cfg := publisher_config.get()
-		mut publ := publisher_core.new(&cfg) ?
+		mut publ := publisher_core.new(cfg) ?
 		publ.flatten() ?
 	}
 	mut flatten_cmd := cli.Command{
@@ -163,7 +163,7 @@ fn main() {
 	build_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, true) ?
 		// cfg := publisher_config.get()
-		// mut publ := publisher_core.new(&cfg) ?
+		// mut publ := publisher_core.new(cfg) ?
 		installers.website_build(&cmd) ?
 	}
 	mut build_cmd := cli.Command{
@@ -290,35 +290,35 @@ fn main() {
 		mut cfg := installers.config_get(cmd) ?
 
 		if install {
-			installers.digitaltwin_install(mut &cfg, false) or {
+			installers.digitaltwin_install(mut cfg, false) or {
 				panic(' ** ERROR: cannot install digital twin. Error was:\n$err')
 			}
 		} else if update {
-			installers.digitaltwin_install(mut &cfg, true) or {
+			installers.digitaltwin_install(mut cfg, true) or {
 				panic(' ** ERROR: cannot update digital twin. Error was:\n$err')
 			}
 		} else if start {
-			installers.digitaltwin_start(mut &cfg, production, false) or {
+			installers.digitaltwin_start(mut cfg, production, false) or {
 				panic(' ** ERROR: cannot start digital twin. Error was:\n$err')
 			}
 		} else if restart {
-			installers.digitaltwin_restart(mut &cfg, production) or {
+			installers.digitaltwin_restart(mut cfg, production) or {
 				panic(' ** ERROR: cannot restart digital twin. Error was:\n$err')
 			}
 		} else if reload {
-			installers.digitaltwin_reload(mut &cfg, production) or {
+			installers.digitaltwin_reload(mut cfg, production) or {
 				panic(' ** ERROR: cannot reload digital twin. Error was:\n$err')
 			}
 		} else if stop {
-			installers.digitaltwin_stop(mut &cfg, production) or {
+			installers.digitaltwin_stop(mut cfg, production) or {
 				panic(' ** ERROR: cannot stop digital twin. Error was:\n$err')
 			}
 		} else if status {
-			installers.digitaltwin_status(mut &cfg, production) or {
+			installers.digitaltwin_status(mut cfg, production) or {
 				panic(' ** ERROR: cannot get status for digital twin. Error was:\n$err')
 			}
 		} else if logs {
-			installers.digitaltwin_logs(mut &cfg, production) or {
+			installers.digitaltwin_logs(mut cfg, production) or {
 				panic(' ** ERROR: cannot get logs for digital twin. Error was:\n$err')
 			}
 		} else {
@@ -382,13 +382,12 @@ fn main() {
 
 	// publish
 	publish_exec := fn (cmd cli.Command) ? {
-		
 		mut args := os.args.clone()
 		mut cfg := publisher_config.get()
 		mut env := 'staging'
 
 		mut production := cmd.flags.get_bool('production') or { false }
-		
+
 		mut updatepubtools := cmd.flags.get_bool('update_pubtools') or { false }
 		// mut update_digitaltwin := cmd.flags.get_bool('update_digitaltwin') or { false }
 		if production {
@@ -397,9 +396,9 @@ fn main() {
 
 		mut prefix := cfg.publish.paths.publish + '/'
 
-		println("\n**********************")
-		println("Publishing to $env")
-		println("**********************")
+		println('\n**********************')
+		println('Publishing to $env')
+		println('**********************')
 
 		mut ip := ''
 
@@ -409,7 +408,6 @@ fn main() {
 			ip = '161.35.109.242'
 		}
 
-		
 		args.delete(0)
 		args.delete(0)
 
@@ -418,19 +416,19 @@ fn main() {
 			args.delete(idx)
 		}
 
-		idx =args.index('--update_pubtools')
+		idx = args.index('--update_pubtools')
 		if idx != -1 {
 			args.delete(idx)
 		}
 
-		idx =args.index('--update_digitaltwin')
+		idx = args.index('--update_digitaltwin')
 		if idx != -1 {
 			args.delete(idx)
 		}
 
 		mut sync := []string{}
 
-		if updatepubtools{
+		if updatepubtools {
 			println(' (*) updating publishtools')
 			process.execute_stdout('ssh root@$ip "publishtools update"') ?
 		}
@@ -438,30 +436,28 @@ fn main() {
 		mut configs := os.ls('.') or { panic(err) }
 		mut configsstr := ''
 		// name: config file name so we can later decides which configs will be synced according to what dirs will be synced from fs
-		mut configdict := map[string]string
+		mut configdict := map[string]string{}
 
 		mut websites := []string{}
 		mut wikis := []string{}
 
-		for item in configs{
-			if !item.ends_with('.json') || item in  ['config.json', 'groups_a.json', 'nodejs.json']{
+		for item in configs {
+			if !item.ends_with('.json') || item in ['config.json', 'groups_a.json', 'nodejs.json'] {
 				continue
 			}
 
-			content := os.read_file(item) or {
-				return error('Failed to load  config file $item')
-			}
+			content := os.read_file(item) or { return error('Failed to load  config file $item') }
 			siteconf := json.decode(publisher_config.SiteConfig, content) or {
 				println(err)
 				return error('Failed to decode json for  config file $item')
 			}
-			
+
 			configdict[siteconf.name] = item
 
 			// wikis
-			if siteconf.cat ==  publisher_config.SiteCat.wiki{
+			if siteconf.cat == publisher_config.SiteCat.wiki {
 				wikis << '$siteconf.name'
-			}else if siteconf.cat ==  publisher_config.SiteCat.web{
+			} else if siteconf.cat == publisher_config.SiteCat.web {
 				websites << '$siteconf.name'
 			}
 		}
@@ -470,7 +466,7 @@ fn main() {
 		mut skip_wikis := false
 
 		if 'wikis' in args {
-			for i in wikis{
+			for i in wikis {
 				sync << i
 			}
 			args.delete(args.index('wikis'))
@@ -478,7 +474,7 @@ fn main() {
 		}
 
 		if 'sites' in args {
-			for i in websites{
+			for i in websites {
 				sync << i
 			}
 
@@ -493,68 +489,62 @@ fn main() {
 			} else if arg in wikis && skip_wikis {
 				continue
 			} else {
-				if !(arg in websites) && !(arg in wikis){
+				if !(arg in websites) && !(arg in wikis) {
 					err = true
 					println(' (*) Skipping ($arg) name not found in wikis or websites')
 					continue
 				}
-					sync << arg
+				sync << arg
 			}
 		}
 
-		
 		mut skipped := []string{}
-		
-		if sync.len == 0 && err == false{
-			for i in wikis{
+
+		if sync.len == 0 && err == false {
+			for i in wikis {
 				sync << i
 			}
-			for i in websites{
+			for i in websites {
 				sync << i
 			}
 		}
-		
+
 		mut syncstr := ''
 		mut publishedwikis := []string{}
-		
+
 		mut tosync := []string{}
 
-		if sync.len > 0{
-			
-			for item in sync{
-				
-				if item in wikis{ // track published wikis regardless what
+		if sync.len > 0 {
+			for item in sync {
+				if item in wikis { // track published wikis regardless what
 					publishedwikis << item
 				}
 
 				if os.exists('$prefix$item') {
 					tosync << item
-					syncstr += '$prefix$item ' 
-					
-				}else if os.exists('$prefix' + 'wiki_' + '$item'){
-						tosync << item
-						syncstr += '$prefix' + 'wiki_' + '$item '
-				}else{
+					syncstr += '$prefix$item '
+				} else if os.exists('$prefix' + 'wiki_' + '$item') {
+					tosync << item
+					syncstr += '$prefix' + 'wiki_' + '$item '
+				} else {
 					skipped << item
 				}
 			}
 		}
 
-		if tosync.len > 0{
+		if tosync.len > 0 {
 			println(' (*) syncing the following ....')
-			for item in tosync{
+			for item in tosync {
 				println('     (**) $item')
 			}
 		}
-		
-		if skipped.len > 0{
-				println(' (*) Skipping the  following [Not Found in filesystem] in $prefix')
-				for item in skipped {
-					println('     (**) $item')
-				}
 
+		if skipped.len > 0 {
+			println(' (*) Skipping the  following [Not Found in filesystem] in $prefix')
+			for item in skipped {
+				println('     (**) $item')
+			}
 		}
-
 
 		/*
 		We don't need to force pull repos again on staging/production
@@ -571,42 +561,43 @@ fn main() {
 		// force pull wikis (remote server may be running publishtools server)
 		mut command := ''
 		cmdprefix := 'publishtools pull --repo'
-		for wiki in publishedwikis{
+		for wiki in publishedwikis {
 			command += ' $cmdprefix $wiki && '
 		}
 
 		command = command.trim_right(' &&')
 
-		if syncstr != '' || publishedwikis.len > 0{
-			
+		if syncstr != '' || publishedwikis.len > 0 {
 			configs = []string{}
 
-			if syncstr != ''{
-				for item in syncstr.split(" "){
-					mut item2 := item.trim(" ")
-					if item2 != ""{
-						item2 = item2.replace(prefix, '').trim(" ")
+			if syncstr != '' {
+				for item in syncstr.split(' ') {
+					mut item2 := item.trim(' ')
+					if item2 != '' {
+						item2 = item2.replace(prefix, '').trim(' ')
 						configs << configdict[item2]
 					}
 				}
 			}
 
-			if publishedwikis.len > 0{
-				for item in publishedwikis{
-					item2 := item.trim(" ")
+			if publishedwikis.len > 0 {
+				for item in publishedwikis {
+					item2 := item.trim(' ')
 
-					if item2 != ""{
-						if !(item2 in configs){
+					if item2 != '' {
+						if !(item2 in configs) {
 							configs << configdict[item2]
 						}
 					}
 				}
 			}
-			
-			if configs.len > 0{
+
+			if configs.len > 0 {
 				print(' (*) uploading configuration files  to root@$ip:/root/.publisher/config\n')
 				for c in configs {
-					if c.trim(" ") == "" {continue}
+					if c.trim(' ') == '' {
+						continue
+					}
 					println('     (**) $c')
 				}
 				configsstr = configs.join(' ')
@@ -618,12 +609,11 @@ fn main() {
 			println(' (*) Rsyncing')
 			println(syncstr)
 			process.execute_stdout('rsync -v --stats --progress -ra --delete --human-readable $syncstr root@$ip:/root/.publisher/publish/') or {
-				println("************** WARNING ****************")
-				println("Could not rsync:")
+				println('************** WARNING ****************')
+				println('Could not rsync:')
 				println(err)
-			}	
+			}
 		}
-		
 
 		/*
 		We don't need to force pull repos again on staging/production
@@ -634,11 +624,10 @@ fn main() {
 		// 	process.execute_stdout(command)?
 		// }
 
-		
 		if syncstr != '' || publishedwikis.len > 0 {
 			println(' (*) updating static files')
 			process.execute_stdout('ssh root@$ip "cd ~/.publisher/config && publishtools staticfiles update"') ?
-			
+
 			println(' (*) Restarting digitaltwin')
 			process.execute_stdout('ssh root@$ip "cd ~/.publisher/config && source ~/.bashrc && publishtools digitaltwin restart"') ?
 		}
@@ -677,13 +666,12 @@ publishtools publish --production wikis  \t  		 publish wikis only but on produc
 	publis_cmd.add_flag(update_publishtools)
 	publis_cmd.add_flag(update_digitaltwin)
 
-
 	// MAIN
 	mut main_cmd := cli.Command{
 		name: 'installer'
 		commands: [install_cmd, run_cmd, build_cmd, list_cmd, develop_cmd, twin_cmd, pull_cmd,
-			commit_cmd, push_cmd, pushcommit_cmd, edit_cmd, update_cmd, version_cmd, removechangese_cmd,
-			dns_cmd, flatten_cmd, publis_cmd, staticfilesupdate_cmd]
+			commit_cmd, push_cmd, pushcommit_cmd, edit_cmd, update_cmd, version_cmd,
+			removechangese_cmd, dns_cmd, flatten_cmd, publis_cmd, staticfilesupdate_cmd]
 		description: '
 
         Publishing Tool Installer
