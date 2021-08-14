@@ -34,6 +34,10 @@ export DIR_CODEWIKI="$HOME/codewiki"
 export DIR_CODE_INT="$HOME/_code"
 export DIR_BIN="/usr/local/bin"
 
+mkdir -p $DIR_CODE
+mkdir -p $DIR_CODE_INT
+mkdir -p $DIR_BUILD
+
 
 if [[ -d "/workspace/crystaltools" ]]
 then
@@ -48,9 +52,6 @@ fi
 
 
 
-mkdir -p $DIR_CODE
-mkdir -p $DIR_CODE_INT
-mkdir -p $DIR_BUILD
 
 git config --global pull.rebase false
 
