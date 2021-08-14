@@ -4,10 +4,16 @@
 			"path": "."
 		},
 		{
-			"path": "../../home/gitpod/codewiki"
+			"path": "/workspace/codewiki"
 		},
 		{
-			"path": "../code"
+			"path": "/workspace/code/crystaltools"
+		},
+		{
+			"path": "/workspace/.vmodules/despiegk/crystallib"
+		},
+		{
+			"path": "/workspace/code/github"
 		}
 	],
 	"settings": {
