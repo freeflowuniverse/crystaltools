@@ -28,6 +28,12 @@ else
     export DIR_BASE="$HOME/.publisher"
 fi
 
+export DIR_BUILD="/tmp"
+export DIR_CODE="$HOME/code"
+export DIR_CODEWIKI="$HOME/codewiki"
+export DIR_CODE_INT="$HOME/_code"
+export DIR_BIN="/usr/local/bin"
+
 
 if [[ -d "/workspace/crystaltools" ]]
 then
@@ -40,11 +46,7 @@ else
 fi
 
 
-export DIR_BUILD="/tmp"
-export DIR_CODE="$HOME/code"
-export DIR_CODEWIKI="$HOME/codewiki"
-export DIR_CODE_INT="$HOME/_code"
-export DIR_BIN="/usr/local/bin"
+
 
 mkdir -p $DIR_CODE
 mkdir -p $DIR_CODE_INT
