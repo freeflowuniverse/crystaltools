@@ -1,4 +1,4 @@
-set -e
+set -ex
 sudo /etc/init.d/redis-server start
 curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/development/env.sh > /workspace/env.sh
 bash -ex /workspace/env.sh
