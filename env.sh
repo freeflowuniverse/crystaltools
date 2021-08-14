@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# set -x
 
 #2 arguments
 #e.g. git_get github.com/crystaluniverse crystaltools 
