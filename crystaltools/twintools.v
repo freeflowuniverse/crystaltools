@@ -56,6 +56,12 @@ fn main() {
 		flag: cli.FlagType.bool
 	}
 
+	development_flag := cli.Flag{
+		name: 'development'
+		abbrev: 'd'
+		description: 'Run digitaltwin in dev mode locally (no pm2)'
+		flag: cli.FlagType.bool
+	}
 
 	publish_prod_flag := cli.Flag{
 		name: 'production'
@@ -77,6 +83,13 @@ fn main() {
 		name: 'update_pubtools'
 		abbrev: 'u'
 		description: 'update publishtools'
+		flag: cli.FlagType.bool
+	}
+
+	update_digitaltwin := cli.Flag{
+		name: 'update_digitaltwin'
+		abbrev: 't'
+		description: 'update digitaltwin'
 		flag: cli.FlagType.bool
 	}
 
@@ -239,6 +252,87 @@ fn main() {
 	push_cmd.add_flag(resetflag)
 	push_cmd.add_flag(repoflag)
 
+	// // DIGITAL TWIN
+	// twin_exec := fn (cmd cli.Command) ? {
+	// 	mut args := os.args.clone()
+	// 	mut install := false
+	// 	mut update := false
+	// 	mut start := false
+	// 	mut restart := false
+	// 	mut reload := false
+	// 	mut stop := false
+	// 	mut status := false
+	// 	mut logs := false
+
+	// 	for arg in args {
+	// 		if arg == 'install' {
+	// 			install = true
+	// 		} else if arg == 'update' {
+	// 			update = true
+	// 		} else if arg == 'reload' {
+	// 			reload = true
+	// 		} else if arg == 'restart' {
+	// 			restart = true
+	// 		} else if arg == 'start' {
+	// 			start = true
+	// 		} else if arg == 'stop' {
+	// 			stop = true
+	// 		} else if arg == 'status' {
+	// 			status = true
+	// 		} else if arg == 'logs' {
+	// 			logs = true
+	// 		}
+	// 	}
+
+	// 	mut development := cmd.flags.get_bool('development') or { false }
+	// 	mut production := !development
+
+	// 	mut cfg := installers.config_get(cmd) ?
+
+	// 	if install {
+	// 		installers.digitaltwin_install(mut cfg, false) or {
+	// 			panic(' ** ERROR: cannot install digital twin. Error was:\n$err')
+	// 		}
+	// 	} else if update {
+	// 		installers.digitaltwin_install(mut cfg, true) or {
+	// 			panic(' ** ERROR: cannot update digital twin. Error was:\n$err')
+	// 		}
+	// 	} else if start {
+	// 		installers.digitaltwin_start(mut cfg, production, false) or {
+	// 			panic(' ** ERROR: cannot start digital twin. Error was:\n$err')
+	// 		}
+	// 	} else if restart {
+	// 		installers.digitaltwin_restart(mut cfg, production) or {
+	// 			panic(' ** ERROR: cannot restart digital twin. Error was:\n$err')
+	// 		}
+	// 	} else if reload {
+	// 		installers.digitaltwin_reload(mut cfg, production) or {
+	// 			panic(' ** ERROR: cannot reload digital twin. Error was:\n$err')
+	// 		}
+	// 	} else if stop {
+	// 		installers.digitaltwin_stop(mut cfg, production) or {
+	// 			panic(' ** ERROR: cannot stop digital twin. Error was:\n$err')
+	// 		}
+	// 	} else if status {
+	// 		installers.digitaltwin_status(mut cfg, production) or {
+	// 			panic(' ** ERROR: cannot get status for digital twin. Error was:\n$err')
+	// 		}
+	// 	} else if logs {
+	// 		installers.digitaltwin_logs(mut cfg, production) or {
+	// 			panic(' ** ERROR: cannot get logs for digital twin. Error was:\n$err')
+	// 		}
+	// 	} else {
+	// 		println('usage: publishtools digitaltwin --help')
+	// 	}
+	// }
+	// mut twin_cmd := cli.Command{
+	// 	name: 'digitaltwin'
+	// 	usage: '<start|restart|stop|reload|update|status|logs|install>'
+	// 	execute: twin_exec
+	// }
+
+	// twin_cmd.add_flag(development_flag)
+
 	// UPDATE
 	update_exec := fn (cmd cli.Command) ? {
 		installers.publishtools_update() ?
@@ -264,6 +358,7 @@ fn main() {
 	}
 
 	// DNS
+
 	dns_execute := fn (cmd cli.Command) ? {
 		mut args := os.args.clone()
 		if args.len == 3 {
@@ -557,29 +652,26 @@ fn main() {
 		execute: staticfilesupdate_execute
 	}
 
-	mut publish_cmd := cli.Command{
+	mut publis_cmd := cli.Command{
 		name: 'publish'
 		description: 'Publish websites/wikis to production/staging'
-		usage: '
-		Examples		
-			publishtools publish wikis
-			publish wikis only
-			publishtools publish sites
-			publish sites only
-			publishtools publish wikis  www_threefold_farming	publish wikis and certain website
-			publishtools publish --production wikis		  		publish wikis only but on production
-		'
+		usage: '\n\nExamples\npublishtools publish wikis  \t\t  		 publish wikis only
+publishtools publish sites  \t\t  		 publish sites only
+publishtools publish wikis  www_threefold_farming\t publish wikis and certain website
+publishtools publish --production wikis  \t  		 publish wikis only but on production'
+		execute: publish_exec
 	}
 
-	publish_cmd.add_flag(publish_prod_flag)
-	publish_cmd.add_flag(update_publishtools)
+	publis_cmd.add_flag(publish_prod_flag)
+	publis_cmd.add_flag(update_publishtools)
+	publis_cmd.add_flag(update_digitaltwin)
 
 	// MAIN
 	mut main_cmd := cli.Command{
 		name: 'installer'
-		commands: [install_cmd, run_cmd, build_cmd, list_cmd, develop_cmd, pull_cmd,
+		commands: [install_cmd, run_cmd, build_cmd, list_cmd, develop_cmd, twin_cmd, pull_cmd,
 			commit_cmd, push_cmd, pushcommit_cmd, edit_cmd, update_cmd, version_cmd,
-			removechangese_cmd, dns_cmd, flatten_cmd, publish_cmd, staticfilesupdate_cmd]
+			removechangese_cmd, dns_cmd, flatten_cmd, publis_cmd, staticfilesupdate_cmd]
 		description: '
 
         Publishing Tool Installer
