@@ -1,5 +1,7 @@
 # Tools to run ThreeFold web environment
 
+- [PLANNING/ISSUES SEE HERE](https://circles.threefold.me/project/despiegk-product_publisher/issues)
+
 ## Experiment
 
 - install gitpod on your machine as extension to your browser
