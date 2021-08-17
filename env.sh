@@ -53,7 +53,7 @@ fi
 
 
 
-git config --global pull.rebase false
+# git config --global pull.rebase false
 
 export PATH=$DIR_CT/scripts:$PATH
 
