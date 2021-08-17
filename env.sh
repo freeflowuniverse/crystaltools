@@ -22,16 +22,17 @@ function git_get {
 #means we are in gitpod
 if [[ -d "/workspace" ]]
 then
-    export HOME="/workspace"
+    export PUBLISH_HOME="/workspace"
     export DIR_BASE="/workspace/publisher"    
 else
-    export DIR_BASE="$HOME/.publisher"
+    export PUBLISH_HOME="$HOME"
+    export DIR_BASE="$PUBLISH_HOME/.publisher"
 fi
 
 export DIR_BUILD="/tmp"
-export DIR_CODE="$HOME/code"
-export DIR_CODEWIKI="$HOME/codewiki"
-export DIR_CODE_INT="$HOME/_code"
+export DIR_CODE="$PUBLISH_HOME/code"
+export DIR_CODEWIKI="$PUBLISH_HOME/codewiki"
+export DIR_CODE_INT="$PUBLISH_HOME/_code"
 export DIR_BIN="/usr/local/bin"
 
 mkdir -p $DIR_CODE
@@ -44,7 +45,7 @@ then
     #this means we are booting in gitpod from crystal tools itself
     export DIR_CT="/workspace/crystaltools"
 else    
-    export DIR_CT="$HOME/code/crystaltools"
+    export DIR_CT="$PUBLISH_HOME/code/crystaltools"
     #get the crystal tools
     git_get github.com/crystaluniverse crystaltools
 fi
@@ -53,7 +54,7 @@ fi
 
 
 
-# git config --global pull.rebase false
+git config --global pull.rebase false
 
 export PATH=$DIR_CT/scripts:$PATH
 
