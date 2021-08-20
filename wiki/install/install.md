@@ -24,6 +24,6 @@ website_run
 
 ## Platform Specific
 
-- [GITPOD for a website](install_gitpod_website)
-- [GITPOD for a wiki](install_gitpod_wiki)
-- [OSX](install_osx)
+- [GITPOD for a website](install_gitpod_website.md)
+- [GITPOD for a wiki](install_gitpod_wiki.md)
+- [OSX](install_osx.md)
