@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # set -x
 
+if [[ -z "${PBRANCH}" ]]; then 
+export PBRANCH="development"
+fi
+
 #2 arguments
 #e.g. git_get github.com/crystaluniverse crystaltools 
 #return is in $CDIR
@@ -36,12 +40,11 @@ function git_get {
 if [[ -d "/workspace" ]]
 then
     export PUBLISH_HOME="/workspace"
-    export DIR_BASE="/workspace/publisher"    
 else
     export PUBLISH_HOME="$HOME"
-    export DIR_BASE="$PUBLISH_HOME/.publisher"
 fi
 
+export DIR_BASE="$PUBLISH_HOME/publisher"
 export DIR_BUILD="/tmp"
 export DIR_CODE="$PUBLISH_HOME/code"
 export DIR_CODEWIKI="$PUBLISH_HOME/codewiki"
