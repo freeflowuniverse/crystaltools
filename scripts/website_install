@@ -33,6 +33,7 @@ rm -f yarn.lock
 rm -rf .cache
 
 npm install
+npm install --global @gridsome/cli
 
 rm -f content/blog
 ln -s  /workspace/code/threefold_data/content/blog content/blog
