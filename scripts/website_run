@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -e
+
+# export PATH=$base/bin:$PATH
+
+source $DIR_BASE/nvm.sh
+
+nvm use --lts
+
+
+if [ -f vue.config.js ]; then
+npm run-script serve
+else
+gridsome develop
+fi
+
+
+
+
+
