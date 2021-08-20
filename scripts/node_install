@@ -2,32 +2,34 @@
 
 set -e
 
+#WHY DO WE HAVE THIS?
 if [[ -d "/workspace" ]]; then
 sudo chown gitpod:gitpod -R /tmp
 fi
 
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    # export base=~/.publisher
-    # rm -f $base/nvm.sh
-    # curl -s -o $base/nvm.sh https://raw.githubusercontent.com/nvm-sh/nvm/master/nvm.sh
-    # export NVM_DIR=$base
-    # source $base/nvm.sh
-    # nvm install --lts
-    brew install node
-    npm install --global yarn
-    npm install pm2 -g    
-else
-    # sudo curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
-    sudo curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
-    sudo apt-get install -y nodejs
-fi
+rm -f $DIR_BASE/nvm.sh
+curl -s -o $DIR_BASE/nvm.sh https://raw.githubusercontent.com/nvm-sh/nvm/master/nvm.sh
+export NVM_DIR=$DIR_BASE
+source $DIR_BASE/nvm.sh
+
+# if [[ "$OSTYPE" == "darwin"* ]]; then
+#     # brew install node
+# else
+#     # sudo curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+#     sudo curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+#     sudo apt-get install -y nodejs
+# fi
 
 if [[ -d "/workspace" ]]; then
+nvm install --lts
 sudo node -v
 sudo npm install --global yarn
+sudo npm install pm2 -g    
 else
+nvm install --lts
 node -v
 npm install --global yarn
+npm install pm2 -g    
 fi
 
 
