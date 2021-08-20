@@ -1,34 +1,29 @@
+# Install
 
-# install
-
-copy the following in your terminal, will install the tools (OSX only for now).
-
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/crystaluniverse/publishtools/master/scripts/install.sh)"
-```
-
-## Requirements
-
-- make sure you have brew installed (if not see [brew install](brew))
-- Make sure your ssh-key is loaded and you have it in your github account
-
-
-## work with your ssh keys
-
-see [instructions](sshkey)
-
-## recommended tools
-
-- [sourcetree](https://www.sourcetreeapp.com/) (manage your git repositories and branches)
-- ms [visual studio code](https://code.visualstudio.com/)
-- iterm2: https://iterm2.com/  (its a better terminal tool)
-
-## clean up install
+generic way how to get the publishtools in your computer or gitpod using an install script
 
 ```bash
-#will go over all repo's and update the repo's after cleaning up e.g. the wiki's
-#a lot of automation happens here, be careful
-publishtools install -clean
+#if you need specific branch for your installer & publishtools
+export PBRANCH=development_scriptsnew
+curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/$PBRANCH/install.sh > /tmp/install.sh
+bash /tmp/install.sh
+#use your environment
+source /workspace/env.sh
+#next will check publishtools are installed and usable
+publtools_check
+# example for running development server wiki, go to wiki
+cd wiki_config
+publishtools develop
+publishtools flatten 
+# example to run install/run website based on gridsome
+# cd a_website_dir
+web_install
+website_install
+website_run
 ```
 
-.
+## Platform Specific
+
+- [GITPOD for a website](install_gitpod_website)
+- [GITPOD for a wiki](install_gitpod_wiki)
+- [OSX](install_osx)
