@@ -1,0 +1,26 @@
+#!/bin/bash
+
+set -e
+
+# export PATH=$base/bin:$PATH
+
+source $DIR_BASE/nvm.sh
+
+nvm use --lts
+
+if ! [ -x "$(command -v node)" ]; then
+    web_install
+fi
+
+# if [ -f vue.config.js ]; then
+# npm run-script serve
+# else
+# gridsome develop
+# fi
+
+rm -f yarn.lock
+rm -rf .cache
+
+npm install
+
+
