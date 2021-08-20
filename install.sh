@@ -1,6 +1,7 @@
 set -ex
 sudo /etc/init.d/redis-server start
-curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/development_scriptsnew/env.sh > /workspace/env.sh
+export PBRANCH="development_scriptsnew"
+curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/$PBRANCH/env.sh > /workspace/env.sh
 bash -ex /workspace/env.sh
 source /workspace/env.sh
 ct_build

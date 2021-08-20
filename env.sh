@@ -10,15 +10,26 @@ function git_get {
     then
         pushd $DIR_CODE/$2 2>&1 >> /dev/null
         git pull
-        git checkout development_scriptsnew
         popd 2>&1 >> /dev/null
     else
         pushd $DIR_CODE 2>&1 >> /dev/null
         git clone https://$1/$2
-        git checkout development_scriptsnew
         popd 2>&1 >> /dev/null
     fi
     CDIR="$DIR_CODE/$2"
+
+    if [[ -z "${PBRANCH}" ]]; then 
+    echo ' - no branch set'
+    else
+        if [[ "$PBRANCH" == "development" ]]; then 
+        echo ' - switch to branch $PBRANCH for publishtools'
+        else
+            pushd $DIR_CODE/$2 2>&1 >> /dev/null
+            git checkout $PBRANCH
+            git pull
+            popd 2>&1 >> /dev/null
+        fi
+    fi
 }
 
 #means we are in gitpod
@@ -41,6 +52,8 @@ mkdir -p $DIR_CODE
 mkdir -p $DIR_CODE_INT
 mkdir -p $DIR_BUILD
 
+git config --global pull.rebase false
+
 
 if [[ -d "/workspace/crystaltools" ]]
 then
@@ -51,12 +64,6 @@ else
     #get the crystal tools
     git_get github.com/crystaluniverse crystaltools
 fi
-
-
-
-
-
-git config --global pull.rebase false
 
 export PATH=$DIR_CT/scripts:$PATH
 
