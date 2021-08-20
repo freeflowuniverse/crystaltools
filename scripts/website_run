@@ -9,6 +9,13 @@ source $DIR_BASE/nvm.sh
 nvm use --lts
 
 
+if [ -d node_modules ]; then
+echo "node modules exists"
+else
+website_install
+fi
+
+
 if [ -f vue.config.js ]; then
 npm run-script serve
 else

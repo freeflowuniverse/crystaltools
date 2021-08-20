@@ -12,6 +12,17 @@ if ! [ -x "$(command -v node)" ]; then
     web_install
 fi
 
+if [[ -f "gridsome.server.js" ]]; then
+    echo "website found"
+else
+    echo "ERROR: could not find threefold web (gridsome enabled) directory, make sure you run this command from a web directory."
+    exit 1
+fi
+
+
+
+
+
 # if [ -f vue.config.js ]; then
 # npm run-script serve
 # else
@@ -23,4 +34,12 @@ rm -rf .cache
 
 npm install
 
+rm -f content/blog
+ln -s  /workspace/code/threefold_data/content/blog content/blog
+rm -f content/news
+ln -s  /workspace/code/threefold_data/content/news content/news
+rm -f content/person
+ln -s  /workspace/code/threefold_data/content/person content/person
+rm -f content/project
+ln -s  /workspace/code/threefold_data/content/project content/project
 
