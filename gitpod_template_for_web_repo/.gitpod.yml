@@ -3,7 +3,7 @@ image:
 tasks:
     - name: WIKI
       command: |
-        export PBRANCH=development_scriptsnew
+        export PBRANCH=development
         curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/$PBRANCH/install.sh > /tmp/install.sh
         bash /tmp/install.sh
         source /workspace/env.sh
