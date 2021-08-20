@@ -10,10 +10,12 @@ function git_get {
     then
         pushd $DIR_CODE/$2 2>&1 >> /dev/null
         git pull
+        git checkout development_scriptsnew
         popd 2>&1 >> /dev/null
     else
         pushd $DIR_CODE 2>&1 >> /dev/null
         git clone https://$1/$2
+        git checkout development_scriptsnew
         popd 2>&1 >> /dev/null
     fi
     CDIR="$DIR_CODE/$2"
