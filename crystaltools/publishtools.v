@@ -63,6 +63,13 @@ fn main() {
 		flag: cli.FlagType.bool
 	}
 
+	publish_prod_flag := cli.Flag{
+		name: 'production'
+		abbrev: 'p'
+		description: 'publish production'
+		flag: cli.FlagType.bool
+	}	
+
 
 	// INSTALL
 	install_exec := fn (cmd cli.Command) ? {
