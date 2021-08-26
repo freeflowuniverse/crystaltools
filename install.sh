@@ -16,8 +16,8 @@ export DIR_BASE="$PUBLISH_HOME/publisher"
 mkdir -p $DIR_BASE
 
 if [[ -f "env.sh" ]]; then 
-rm -f $DIR_BASE/env.sh
-ln -sfv $PWD/env.sh $DIR_BASE/env.sh 
+rm -f $PUBLISH_HOME/env.sh
+ln -sfv $PWD/env.sh $PUBLISH_HOME/env.sh 
 else
 curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/$PBRANCH/env.sh > $PUBLISH_HOME/env.sh
 fi
@@ -39,3 +39,8 @@ ct_build
 publtools_build
 clear
 ct_help
+
+
+echo PUBLISH_HOME: $PUBLISH_HOME
+echo DIR_BASE: $DIR_BASE
+
