@@ -56,31 +56,22 @@ fn main() {
 		flag: cli.FlagType.bool
 	}
 
-	publish_prod_flag := cli.Flag{
-		name: 'production'
-		abbrev: 'p'
-		description: 'publish production'
-		flag: cli.FlagType.bool
-	}
-
-	// INSTALL
-
-	install_exec := fn (cmd cli.Command) ? {
-		installers.web(cmd) ?
-	}
-
-	mut install_cmd := cli.Command{
-		name: 'install'
-		execute: install_exec
-	}
-
-	update_publishtools := cli.Flag{
+	update_publishtools_flag := cli.Flag{
 		name: 'update_pubtools'
 		abbrev: 'u'
 		description: 'update publishtools'
 		flag: cli.FlagType.bool
 	}
 
+
+	// INSTALL
+	install_exec := fn (cmd cli.Command) ? {
+		installers.web(cmd) ?
+	}
+	mut install_cmd := cli.Command{
+		name: 'install'
+		execute: install_exec
+	}
 	install_cmd.add_flag(pullflag)
 	install_cmd.add_flag(resetflag)
 	install_cmd.add_flag(cleanflag)
@@ -120,13 +111,13 @@ fn main() {
 
 	// RUN
 	run_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(cmd, false) ?
+		// installers.sites_download(cmd, false) ?
 		cfg := publisher_config.get()
 		mut publ := publisher_core.new(cfg) ?
 		publisher_core.webserver_run(mut &publ) ?
 	}
 	mut run_cmd := cli.Command{
-		description: 'run all websites & wikis, they need to be build first'
+		description: 'run found wikis'
 		name: 'run'
 		execute: run_exec
 		required_args: 0
@@ -573,7 +564,7 @@ fn main() {
 	}
 
 	publish_cmd.add_flag(publish_prod_flag)
-	publish_cmd.add_flag(update_publishtools)
+	publish_cmd.add_flag(update_publishtools_flag)
 
 	// MAIN
 	mut main_cmd := cli.Command{
