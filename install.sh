@@ -19,10 +19,18 @@ export DIR_BASE="$PUBLISH_HOME/publisher"
 mkdir -p $DIR_BASE
 
 if [[ -f "env.sh" ]]; then 
-rm -f $PUBLISH_HOME/env.sh
-ln -sfv $PWD/env.sh $PUBLISH_HOME/env.sh 
+    rm -f $PUBLISH_HOME/env.sh
+    ln -sfv $PWD/env.sh $PUBLISH_HOME/env.sh 
+    if [[ -d "/workspace" ]]
+    then
+        ln -sfv $PWD/env.sh /workspace/env.sh 
+    fi
 else
-curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/$PBRANCH/env.sh > $PUBLISH_HOME/env.sh
+    curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/$PBRANCH/env.sh > $PUBLISH_HOME/env.sh
+    if [[ -d "/workspace" ]]
+    then
+        cp $PUBLISH_HOME/env.sh /workspace/env.sh 
+    fi
 fi
 
 bash -ex $PUBLISH_HOME/env.sh
