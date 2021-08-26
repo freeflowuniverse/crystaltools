@@ -19,11 +19,11 @@ if [[ -f "env.sh" ]]; then
 rm -f $DIR_BASE/env.sh
 ln -sfv $PWD/env.sh $DIR_BASE/env.sh 
 else
-curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/$PBRANCH/env.sh > $DIR_BASE/env.sh
+curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/$PBRANCH/env.sh > $PUBLISH_HOME/env.sh
 fi
 
-bash -ex $DIR_BASE/env.sh
-source $DIR_BASE/env.sh
+bash -ex $PUBLISH_HOME/env.sh
+source $PUBLISH_HOME/env.sh
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then 
     sudo /etc/init.d/redis-server start
