@@ -2,11 +2,11 @@ module main
 
 import despiegk.crystallib.installers
 import os
-import despiegk.crystallib.process
+// import despiegk.crystallib.process
 import cli
 import despiegk.crystallib.publisher_core
 import despiegk.crystallib.publisher_config
-import json
+// import json
 
 fn flatten(mut publ publisher_core.Publisher) bool {
 	publ.flatten() or { return false }
@@ -56,7 +56,6 @@ fn main() {
 		flag: cli.FlagType.bool
 	}
 
-
 	publish_prod_flag := cli.Flag{
 		name: 'production'
 		abbrev: 'p'
@@ -64,8 +63,10 @@ fn main() {
 		flag: cli.FlagType.bool
 	}
 
+	// INSTALL
+
 	install_exec := fn (cmd cli.Command) ? {
-		installers.main(cmd) ?
+		installers.web(cmd) ?
 	}
 
 	mut install_cmd := cli.Command{
@@ -203,7 +204,7 @@ fn main() {
 		execute: version_exec
 	}
 
-	// pushcommit
+	// PUSHCOMMIT
 	pushcommit_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(&cmd, false) ?
 		installers.sites_pushcommit(&cmd) ?
@@ -215,7 +216,7 @@ fn main() {
 	pushcommit_cmd.add_flag(messageflag)
 	pushcommit_cmd.add_flag(repoflag)
 
-	// commit
+	// COMMIT
 	commit_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(&cmd, false) ?
 		installers.sites_commit(&cmd) ?
@@ -285,258 +286,258 @@ fn main() {
 		execute: dns_execute
 	}
 
-	// publish
-	publish_exec := fn (cmd cli.Command) ? {
-		mut args := os.args.clone()
-		mut cfg := publisher_config.get()
-		mut env := 'staging'
+	// PUBLISH
+	// publish_exec := fn (cmd cli.Command) ? {
+	// 	mut args := os.args.clone()
+	// 	mut cfg := publisher_config.get()
+	// 	mut env := 'staging'
 
-		mut production := cmd.flags.get_bool('production') or { false }
+	// 	mut production := cmd.flags.get_bool('production') or { false }
 
-		mut updatepubtools := cmd.flags.get_bool('update_pubtools') or { false }
-		// mut update_digitaltwin := cmd.flags.get_bool('update_digitaltwin') or { false }
-		if production {
-			env = 'production'
-		}
+	// 	mut updatepubtools := cmd.flags.get_bool('update_pubtools') or { false }
+	// 	// mut update_digitaltwin := cmd.flags.get_bool('update_digitaltwin') or { false }
+	// 	if production {
+	// 		env = 'production'
+	// 	}
 
-		mut prefix := cfg.publish.paths.publish + '/'
+	// 	mut prefix := cfg.publish.paths.publish + '/'
 
-		println('\n**********************')
-		println('Publishing to $env')
-		println('**********************')
+	// 	println('\n**********************')
+	// 	println('Publishing to $env')
+	// 	println('**********************')
 
-		mut ip := ''
+	// 	mut ip := ''
 
-		if production {
-			ip = '104.131.122.247'
-		} else {
-			ip = '161.35.109.242'
-		}
+	// 	if production {
+	// 		ip = '104.131.122.247'
+	// 	} else {
+	// 		ip = '161.35.109.242'
+	// 	}
 
-		args.delete(0)
-		args.delete(0)
+	// 	args.delete(0)
+	// 	args.delete(0)
 
-		mut idx := args.index('--production')
-		if idx != -1 {
-			args.delete(idx)
-		}
+	// 	mut idx := args.index('--production')
+	// 	if idx != -1 {
+	// 		args.delete(idx)
+	// 	}
 
-		idx = args.index('--update_pubtools')
-		if idx != -1 {
-			args.delete(idx)
-		}
+	// 	idx = args.index('--update_pubtools')
+	// 	if idx != -1 {
+	// 		args.delete(idx)
+	// 	}
 
-		idx = args.index('--update_digitaltwin')
-		if idx != -1 {
-			args.delete(idx)
-		}
+	// 	idx = args.index('--update_digitaltwin')
+	// 	if idx != -1 {
+	// 		args.delete(idx)
+	// 	}
 
-		mut sync := []string{}
+	// 	mut sync := []string{}
 
-		if updatepubtools {
-			println(' (*) updating publishtools')
-			process.execute_stdout('ssh root@$ip "publishtools update"') ?
-		}
+	// 	if updatepubtools {
+	// 		println(' (*) updating publishtools')
+	// 		process.execute_stdout('ssh root@$ip "publishtools update"') ?
+	// 	}
 
-		mut configs := os.ls('.') or { panic(err) }
-		mut configsstr := ''
-		// name: config file name so we can later decides which configs will be synced according to what dirs will be synced from fs
-		mut configdict := map[string]string{}
+	// 	mut configs := os.ls('.') or { panic(err) }
+	// 	mut configsstr := ''
+	// 	// name: config file name so we can later decides which configs will be synced according to what dirs will be synced from fs
+	// 	mut configdict := map[string]string{}
 
-		mut websites := []string{}
-		mut wikis := []string{}
+	// 	mut websites := []string{}
+	// 	mut wikis := []string{}
 
-		for item in configs {
-			if !item.ends_with('.json') || item in ['config.json', 'groups_a.json', 'nodejs.json'] {
-				continue
-			}
+	// 	for item in configs {
+	// 		if !item.ends_with('.json') || item in ['config.json', 'groups_a.json', 'nodejs.json'] {
+	// 			continue
+	// 		}
 
-			content := os.read_file(item) or { return error('Failed to load  config file $item') }
-			siteconf := json.decode(publisher_config.SiteConfig, content) or {
-				println(err)
-				return error('Failed to decode json for  config file $item')
-			}
+	// 		content := os.read_file(item) or { return error('Failed to load  config file $item') }
+	// 		siteconf := json.decode(publisher_config.SiteConfig, content) or {
+	// 			println(err)
+	// 			return error('Failed to decode json for  config file $item')
+	// 		}
 
-			configdict[siteconf.name] = item
+	// 		configdict[siteconf.name] = item
 
-			// wikis
-			if siteconf.cat == publisher_config.SiteCat.wiki {
-				wikis << '$siteconf.name'
-			} else if siteconf.cat == publisher_config.SiteCat.web {
-				websites << '$siteconf.name'
-			}
-		}
+	// 		// wikis
+	// 		if siteconf.cat == publisher_config.SiteCat.wiki {
+	// 			wikis << '$siteconf.name'
+	// 		} else if siteconf.cat == publisher_config.SiteCat.web {
+	// 			websites << '$siteconf.name'
+	// 		}
+	// 	}
 
-		mut skip_sites := false
-		mut skip_wikis := false
+	// 	mut skip_sites := false
+	// 	mut skip_wikis := false
 
-		if 'wikis' in args {
-			for i in wikis {
-				sync << i
-			}
-			args.delete(args.index('wikis'))
-			skip_wikis = true
-		}
+	// 	if 'wikis' in args {
+	// 		for i in wikis {
+	// 			sync << i
+	// 		}
+	// 		args.delete(args.index('wikis'))
+	// 		skip_wikis = true
+	// 	}
 
-		if 'sites' in args {
-			for i in websites {
-				sync << i
-			}
+	// 	if 'sites' in args {
+	// 		for i in websites {
+	// 			sync << i
+	// 		}
 
-			args.delete(args.index('sites'))
-			skip_sites = true
-		}
+	// 		args.delete(args.index('sites'))
+	// 		skip_sites = true
+	// 	}
 
-		mut err := false
-		for arg in args {
-			if arg in websites && skip_sites {
-				continue
-			} else if arg in wikis && skip_wikis {
-				continue
-			} else {
-				if !(arg in websites) && !(arg in wikis) {
-					err = true
-					println(' (*) Skipping ($arg) name not found in wikis or websites')
-					continue
-				}
-				sync << arg
-			}
-		}
+	// 	mut err := false
+	// 	for arg in args {
+	// 		if arg in websites && skip_sites {
+	// 			continue
+	// 		} else if arg in wikis && skip_wikis {
+	// 			continue
+	// 		} else {
+	// 			if !(arg in websites) && !(arg in wikis) {
+	// 				err = true
+	// 				println(' (*) Skipping ($arg) name not found in wikis or websites')
+	// 				continue
+	// 			}
+	// 			sync << arg
+	// 		}
+	// 	}
 
-		mut skipped := []string{}
+	// 	mut skipped := []string{}
 
-		if sync.len == 0 && err == false {
-			for i in wikis {
-				sync << i
-			}
-			for i in websites {
-				sync << i
-			}
-		}
+	// 	if sync.len == 0 && err == false {
+	// 		for i in wikis {
+	// 			sync << i
+	// 		}
+	// 		for i in websites {
+	// 			sync << i
+	// 		}
+	// 	}
 
-		mut syncstr := ''
-		mut publishedwikis := []string{}
+	// 	mut syncstr := ''
+	// 	mut publishedwikis := []string{}
 
-		mut tosync := []string{}
+	// 	mut tosync := []string{}
 
-		if sync.len > 0 {
-			for item in sync {
-				if item in wikis { // track published wikis regardless what
-					publishedwikis << item
-				}
+	// 	if sync.len > 0 {
+	// 		for item in sync {
+	// 			if item in wikis { // track published wikis regardless what
+	// 				publishedwikis << item
+	// 			}
 
-				if os.exists('$prefix$item') {
-					tosync << item
-					syncstr += '$prefix$item '
-				} else if os.exists('$prefix' + 'wiki_' + '$item') {
-					tosync << item
-					syncstr += '$prefix' + 'wiki_' + '$item '
-				} else {
-					skipped << item
-				}
-			}
-		}
+	// 			if os.exists('$prefix$item') {
+	// 				tosync << item
+	// 				syncstr += '$prefix$item '
+	// 			} else if os.exists('$prefix' + 'wiki_' + '$item') {
+	// 				tosync << item
+	// 				syncstr += '$prefix' + 'wiki_' + '$item '
+	// 			} else {
+	// 				skipped << item
+	// 			}
+	// 		}
+	// 	}
 
-		if tosync.len > 0 {
-			println(' (*) syncing the following ....')
-			for item in tosync {
-				println('     (**) $item')
-			}
-		}
+	// 	if tosync.len > 0 {
+	// 		println(' (*) syncing the following ....')
+	// 		for item in tosync {
+	// 			println('     (**) $item')
+	// 		}
+	// 	}
 
-		if skipped.len > 0 {
-			println(' (*) Skipping the  following [Not Found in filesystem] in $prefix')
-			for item in skipped {
-				println('     (**) $item')
-			}
-		}
+	// 	if skipped.len > 0 {
+	// 		println(' (*) Skipping the  following [Not Found in filesystem] in $prefix')
+	// 		for item in skipped {
+	// 			println('     (**) $item')
+	// 		}
+	// 	}
 
-		/*
-		We don't need to force pull repos again on staging/production
-		we build from gitpod or DO machine
-		*/
+	// 	/*
+	// 	We don't need to force pull repos again on staging/production
+	// 	we build from gitpod or DO machine
+	// 	*/
 
-		// if publishedwikis.len > 0{
-		// 	println(' (*) Force pull these wikis on the remote machine')
-		// 	for item in publishedwikis{
-		// 		println('     (**) $item')
-		// 	}
-		// }
+	// 	// if publishedwikis.len > 0{
+	// 	// 	println(' (*) Force pull these wikis on the remote machine')
+	// 	// 	for item in publishedwikis{
+	// 	// 		println('     (**) $item')
+	// 	// 	}
+	// 	// }
 
-		// force pull wikis (remote server may be running publishtools server)
-		mut command := ''
-		cmdprefix := 'publishtools pull --repo'
-		for wiki in publishedwikis {
-			command += ' $cmdprefix $wiki && '
-		}
+	// 	// force pull wikis (remote server may be running publishtools server)
+	// 	mut command := ''
+	// 	cmdprefix := 'publishtools pull --repo'
+	// 	for wiki in publishedwikis {
+	// 		command += ' $cmdprefix $wiki && '
+	// 	}
 
-		command = command.trim_right(' &&')
+	// 	command = command.trim_right(' &&')
 
-		if syncstr != '' || publishedwikis.len > 0 {
-			configs = []string{}
+	// 	if syncstr != '' || publishedwikis.len > 0 {
+	// 		configs = []string{}
 
-			if syncstr != '' {
-				for item in syncstr.split(' ') {
-					mut item2 := item.trim(' ')
-					if item2 != '' {
-						item2 = item2.replace(prefix, '').trim(' ')
-						configs << configdict[item2]
-					}
-				}
-			}
+	// 		if syncstr != '' {
+	// 			for item in syncstr.split(' ') {
+	// 				mut item2 := item.trim(' ')
+	// 				if item2 != '' {
+	// 					item2 = item2.replace(prefix, '').trim(' ')
+	// 					configs << configdict[item2]
+	// 				}
+	// 			}
+	// 		}
 
-			if publishedwikis.len > 0 {
-				for item in publishedwikis {
-					item2 := item.trim(' ')
+	// 		if publishedwikis.len > 0 {
+	// 			for item in publishedwikis {
+	// 				item2 := item.trim(' ')
 
-					if item2 != '' {
-						if !(item2 in configs) {
-							configs << configdict[item2]
-						}
-					}
-				}
-			}
+	// 				if item2 != '' {
+	// 					if !(item2 in configs) {
+	// 						configs << configdict[item2]
+	// 					}
+	// 				}
+	// 			}
+	// 		}
 
-			if configs.len > 0 {
-				print(' (*) uploading configuration files  to root@$ip:/root/.publisher/config\n')
-				for c in configs {
-					if c.trim(' ') == '' {
-						continue
-					}
-					println('     (**) $c')
-				}
-				configsstr = configs.join(' ')
-				process.execute_stdout('rsync --progress -ra --human-readable $configsstr root@$ip:/root/.publisher/config') ?
-			}
-		}
+	// 		if configs.len > 0 {
+	// 			print(' (*) uploading configuration files  to root@$ip:/root/.publisher/config\n')
+	// 			for c in configs {
+	// 				if c.trim(' ') == '' {
+	// 					continue
+	// 				}
+	// 				println('     (**) $c')
+	// 			}
+	// 			configsstr = configs.join(' ')
+	// 			process.execute_stdout('rsync --progress -ra --human-readable $configsstr root@$ip:/root/.publisher/config') ?
+	// 		}
+	// 	}
 
-		if syncstr != '' {
-			println(' (*) Rsyncing')
-			println(syncstr)
-			process.execute_stdout('rsync -v --stats --progress -ra --delete --human-readable $syncstr root@$ip:/root/.publisher/publish/') or {
-				println('************** WARNING ****************')
-				println('Could not rsync:')
-				println(err)
-			}
-		}
+	// 	if syncstr != '' {
+	// 		println(' (*) Rsyncing')
+	// 		println(syncstr)
+	// 		process.execute_stdout('rsync -v --stats --progress -ra --delete --human-readable $syncstr root@$ip:/root/.publisher/publish/') or {
+	// 			println('************** WARNING ****************')
+	// 			println('Could not rsync:')
+	// 			println(err)
+	// 		}
+	// 	}
 
-		/*
-		We don't need to force pull repos again on staging/production
-		we build from gitpod or DO machine
-		*/
-		// if publishedwikis.len > 0{
-		// 	println(' (*) pull wikis on remote server')
-		// 	process.execute_stdout(command)?
-		// }
+	// 	/*
+	// 	We don't need to force pull repos again on staging/production
+	// 	we build from gitpod or DO machine
+	// 	*/
+	// 	// if publishedwikis.len > 0{
+	// 	// 	println(' (*) pull wikis on remote server')
+	// 	// 	process.execute_stdout(command)?
+	// 	// }
 
-		if syncstr != '' || publishedwikis.len > 0 {
-			println(' (*) updating static files')
-			process.execute_stdout('ssh root@$ip "cd ~/.publisher/config && publishtools staticfiles update"') ?
+	// 	if syncstr != '' || publishedwikis.len > 0 {
+	// 		println(' (*) updating static files')
+	// 		process.execute_stdout('ssh root@$ip "cd ~/.publisher/config && publishtools staticfiles update"') ?
 
-			println(' (*) Restarting digitaltwin')
-			process.execute_stdout('ssh root@$ip "cd ~/.publisher/config && source ~/.bashrc && publishtools digitaltwin restart"') ?
-		}
-	}
+	// 		println(' (*) Restarting digitaltwin')
+	// 		process.execute_stdout('ssh root@$ip "cd ~/.publisher/config && source ~/.bashrc && publishtools digitaltwin restart"') ?
+	// 	}
+	// }
 
 	staticfilesupdate_execute := fn (cmd cli.Command) ? {
 		mut args := os.args.clone()
@@ -577,9 +578,9 @@ fn main() {
 	// MAIN
 	mut main_cmd := cli.Command{
 		name: 'installer'
-		commands: [install_cmd, run_cmd, build_cmd, list_cmd, develop_cmd, pull_cmd,
-			commit_cmd, push_cmd, pushcommit_cmd, edit_cmd, update_cmd, version_cmd,
-			removechangese_cmd, dns_cmd, flatten_cmd, publish_cmd, staticfilesupdate_cmd]
+		commands: [install_cmd, run_cmd, build_cmd, list_cmd, develop_cmd, pull_cmd, commit_cmd,
+			push_cmd, pushcommit_cmd, edit_cmd, update_cmd, version_cmd, removechangese_cmd, dns_cmd,
+			flatten_cmd, publish_cmd, staticfilesupdate_cmd]
 		description: '
 
         Publishing Tool Installer

@@ -25,6 +25,16 @@ fi
 bash -ex $DIR_BASE/env.sh
 source $DIR_BASE/env.sh
 
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then 
+    sudo /etc/init.d/redis-server start
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    if ! [ -x "$(command -v redis-server)" ]; then
+        brew install redis
+    fi
+    brew services start redis
+fi
+
+
 ct_build
 publtools_build
 clear

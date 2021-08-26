@@ -13,7 +13,7 @@ function git_get {
     if [[ -d "$DIR_CODE/$2" ]]
     then
         pushd $DIR_CODE/$2 2>&1 >> /dev/null
-        git pull
+        # git pull
         popd 2>&1 >> /dev/null
     else
         pushd $DIR_CODE 2>&1 >> /dev/null
@@ -26,8 +26,9 @@ function git_get {
     echo ' - no branch set'
     else
         if [[ "$PBRANCH" == "development" ]]; then 
-        echo ' - switch to branch $PBRANCH for publishtools'
+            echo
         else
+            echo ' - switch to branch ${PBRANCH} for publishtools'
             pushd $DIR_CODE/$2 2>&1 >> /dev/null
             git checkout $PBRANCH
             git pull

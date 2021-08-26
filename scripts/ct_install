@@ -13,6 +13,9 @@ rm -f /usr/local/bin/crystaltools
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then 
     curl -L https://github.com/crystaluniverse/crystaltools/releases/download/first/crystaltools_linux > /usr/local/bin/crystaltools  
     chmod +x /usr/local/bin/crystaltools
+
+    sudo /etc/init.d/redis-server start
+
 elif [[ "$OSTYPE" == "darwin"* ]]; then
 
     if ! [ -x "$(command -v mc)" ]; then
@@ -22,6 +25,8 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     if ! [ -x "$(command -v redis-server)" ]; then
         brew install redis
     fi
+
+    brew services start redis
     
     if [[ `uname -m` == 'arm64' ]]; then
         rm -f /usr/local/bin/crystaltools
