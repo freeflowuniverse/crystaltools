@@ -41,6 +41,7 @@ function git_get {
 if [[ -d "/workspace" ]]
 then
     export PUBLISH_HOME="/workspace"
+    export HOME="/workspace"
 else
     export PUBLISH_HOME="$HOME"
 fi
