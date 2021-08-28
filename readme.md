@@ -2,6 +2,14 @@
 
 - [PLANNING/ISSUES SEE HERE](https://circles.threefold.me/project/despiegk-product_publisher/issues)
 
+
+## Getting Started, Deploy Crystal Tools
+
+```bash
+curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/development/install2.sh | bash
+```
+
+
 ## Develop/Play
 
 - install gitpod extension to your browser
