@@ -21,11 +21,11 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     
     if [[ `uname -m` == 'arm64' ]]; then
         rm -f /usr/local/bin/publishtools
-        curl -L https://github.com/crystaluniverse/publishtools/releases/download/first/publishtools_osx_arm > /opt/homebrew/bin/publishtools
+        curl -L https://github.com/crystaluniverse/publishtools/releases/download/first/publishtools_osx_arm --output /opt/homebrew/bin/publishtools
         chmod 770 /opt/homebrew/bin/publishtools
     else
         rm -f /opt/homebrew/bin/publishtools
-        curl -L https://github.com/crystaluniverse/publishtools/releases/download/first/publishtools_osx > /usr/local/bin/publishtools
+        curl -L https://github.com/crystaluniverse/publishtools/releases/download/first/publishtools_osx --output /usr/local/bin/publishtools
         chmod 770 /usr/local/bin/publishtools
     fi
 fi
