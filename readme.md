@@ -12,7 +12,8 @@ curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/development/
 to get a specific wiki environment
 
 ```bash
-publishtools get https://github.com/threefoldfoundation/info_threefold/tree/development/wiki_config
+export PUBSITE=https://github.com/threefoldfoundation/info_threefold/tree/development/wiki_config
+publishtools develop
 ```
 
 
