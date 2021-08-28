@@ -22,8 +22,8 @@ pushd $CDIR/crystaltools 2>&1 >> /dev/null
 # v -gc boehm -prod publishtools.v
 echo " - COMPILE"
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    # v -d static_boehm  -gc boehm -prod publishtools.v
-    v -v -d net_blocking_sockets -d static_boehm  -g -keepc  -gc boehm publishtools.v
+    # v -v -d static_boehm  -gc boehm -prod publishtools.v
+    v -d net_blocking_sockets -d static_boehm  -g -keepc  -gc boehm publishtools.v
 else
     # v -d static_boehm  -gc boehm -cflags -static -prod publishtools.v
     # v -d static_boehm  -gc boehm -cflags -static publishtools.v

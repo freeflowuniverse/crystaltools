@@ -51,7 +51,3 @@ publtools_build
 clear
 ct_help
 
-
-echo PUBLISH_HOME: $PUBLISH_HOME
-echo DIR_BASE: $DIR_BASE
-
