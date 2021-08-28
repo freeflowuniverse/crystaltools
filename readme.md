@@ -3,10 +3,16 @@
 - [PLANNING/ISSUES SEE HERE](https://circles.threefold.me/project/despiegk-product_publisher/issues)
 
 
-## Getting Started, Deploy Crystal Tools
+## Getting Started, Deploy Publishingtools
 
 ```bash
 curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/development/install2.sh | bash
+```
+
+to get a specific wiki environment
+
+```bash
+publishtools get https://github.com/threefoldfoundation/info_threefold/tree/development/wiki_config
 ```
 
 
