@@ -7,6 +7,9 @@
 
 ```bash
 curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/development/install2.sh | bash
+
+#or if sudo needed
+curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/development/install2.sh | sudo bash
 ```
 
 to get a specific wiki environment
