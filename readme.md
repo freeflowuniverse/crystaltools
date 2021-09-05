@@ -2,6 +2,24 @@
 
 - [PLANNING/ISSUES SEE HERE](https://circles.threefold.me/project/despiegk-product_publisher/issues)
 
+
+## Getting Started, Deploy Publishingtools
+
+```bash
+curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/development/install2.sh | bash
+
+#or if sudo needed
+curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/development/install2.sh | sudo bash
+```
+
+to get a specific wiki environment
+
+```bash
+export PUBSITE=https://github.com/threefoldfoundation/info_threefold/tree/development/wiki_config
+publishtools develop
+```
+
+
 ## Develop/Play
 
 - install gitpod extension to your browser

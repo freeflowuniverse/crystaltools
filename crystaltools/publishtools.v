@@ -6,11 +6,27 @@ import os
 import cli
 import despiegk.crystallib.publisher_core
 import despiegk.crystallib.publisher_config
+import readline
 // import json
 
 fn flatten(mut publ publisher_core.Publisher) bool {
 	publ.flatten() or { return false }
 	return true
+}
+
+fn flag_message_get(cmd cli.Command) string {
+	flags := cmd.flags.get_all_found()
+	msg := flags.get_string('message') or {
+		msg := readline.read_line('Message for commit?:') or { panic(err) }
+		return msg
+	}
+	return msg
+}
+
+fn flag_names_get(cmd cli.Command) []string {
+	flags := cmd.flags.get_all_found()
+    repo := flags.get_string('repo') or { return []string{} }
+	return [repo]
 }
 
 fn main() {
@@ -56,42 +72,43 @@ fn main() {
 		flag: cli.FlagType.bool
 	}
 
-	publish_prod_flag := cli.Flag{
-		name: 'production'
-		abbrev: 'p'
-		description: 'publish production'
-		flag: cli.FlagType.bool
-	}
-
-	// INSTALL
-
-	install_exec := fn (cmd cli.Command) ? {
-		installers.web(cmd) ?
-	}
-
-	mut install_cmd := cli.Command{
-		name: 'install'
-		execute: install_exec
-	}
-
-	update_publishtools := cli.Flag{
+	update_publishtools_flag := cli.Flag{
 		name: 'update_pubtools'
 		abbrev: 'u'
 		description: 'update publishtools'
 		flag: cli.FlagType.bool
 	}
 
+	publish_prod_flag := cli.Flag{
+		name: 'production'
+		abbrev: 'p'
+		description: 'publish production'
+		flag: cli.FlagType.bool
+	}	
+
+	// INSTALL
+	install_exec := fn (cmd cli.Command) ? {
+		flags := cmd.flags.get_all_found()
+		ourreset := flags.get_bool('reset') or { false }
+		clean := flags.get_bool('clean') or { false }
+		installers.web(ourreset,clean) ?
+	}
+	mut install_cmd := cli.Command{
+		name: 'install'
+		execute: install_exec
+	}
 	install_cmd.add_flag(pullflag)
 	install_cmd.add_flag(resetflag)
 	install_cmd.add_flag(cleanflag)
 
 	// DEVELOP
 	develop_exec := fn (cmd cli.Command) ? {
-		webrepo := cmd.flags.get_string('repo') or { '' }
+		flags := cmd.flags.get_all_found()
+		webrepo := flags.get_string('repo') or { '' }
 		mut cfg := publisher_config.get()
 		if webrepo == '' {
 			println(' - develop for wikis')
-			// installers.sites_download(cmd, false) ?
+
 			mut publ := publisher_core.new(cfg) or {
 				println('Could not load publisher for wiki.\nError:\n$err')
 				exit(1)
@@ -103,7 +120,7 @@ fn main() {
 			}
 		} else {
 			println(' - develop website: $webrepo')
-			installers.website_develop(&cmd, mut cfg) or {
+			installers.website_develop([webrepo]) or {
 				println('Could not develop wiki.Error:\n$err')
 				exit(1)
 			}
@@ -120,13 +137,13 @@ fn main() {
 
 	// RUN
 	run_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(cmd, false) ?
+
 		cfg := publisher_config.get()
 		mut publ := publisher_core.new(cfg) ?
 		publisher_core.webserver_run(mut &publ) ?
 	}
 	mut run_cmd := cli.Command{
-		description: 'run all websites & wikis, they need to be build first'
+		description: 'run found wikis'
 		name: 'run'
 		execute: run_exec
 		required_args: 0
@@ -134,7 +151,7 @@ fn main() {
 
 	// FLATTEN
 	flatten_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(cmd, false) ?
+
 		cfg := publisher_config.get()
 		mut publ := publisher_core.new(cfg) ?
 		publ.flatten() ?
@@ -149,10 +166,10 @@ fn main() {
 
 	// BUILD
 	build_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(cmd, true) ?
+		flags := cmd.flags.get_all_found()
 		// cfg := publisher_config.get()
 		// mut publ := publisher_core.new(cfg) ?
-		installers.website_build(&cmd) ?
+		installers.website_build(flags.get_bool('reset') or { false },flag_names_get(cmd)) ?
 	}
 	mut build_cmd := cli.Command{
 		name: 'build'
@@ -165,8 +182,7 @@ fn main() {
 
 	// LIST
 	list_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(&cmd, false) ?
-		installers.sites_list(&cmd) ?
+		installers.sites_list([]) ?
 	}
 	mut list_cmd := cli.Command{
 		name: 'list'
@@ -175,8 +191,7 @@ fn main() {
 
 	// PULL
 	pull_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(cmd, false) ?
-		installers.sites_pull(&cmd) ?
+		installers.sites_pull(flag_names_get(cmd)) ?
 	}
 	mut pull_cmd := cli.Command{
 		name: 'pull'
@@ -187,7 +202,8 @@ fn main() {
 
 	// EDIT
 	edit_exec := fn (cmd cli.Command) ? {
-		installers.site_edit(&cmd) ?
+		flags := cmd.flags.get_all_found()
+		installers.site_edit(flags.get_string('repo') or { '' }) ?
 	}
 	mut edit_cmd := cli.Command{
 		name: 'edit'
@@ -197,7 +213,7 @@ fn main() {
 
 	// VERSION
 	version_exec := fn (cmd cli.Command) ? {
-		println('1.0.20')
+		println('1.0.21')
 	}
 	mut version_cmd := cli.Command{
 		name: 'version'
@@ -206,8 +222,7 @@ fn main() {
 
 	// PUSHCOMMIT
 	pushcommit_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(&cmd, false) ?
-		installers.sites_pushcommit(&cmd) ?
+		installers.sites_pushcommit(flag_message_get(cmd),flag_names_get(cmd)) ?
 	}
 	mut pushcommit_cmd := cli.Command{
 		name: 'pushcommit'
@@ -218,8 +233,9 @@ fn main() {
 
 	// COMMIT
 	commit_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(&cmd, false) ?
-		installers.sites_commit(&cmd) ?
+		// flags := cmd.flags.get_all_found()
+		msg := flag_message_get(cmd)
+		installers.sites_commit(msg,flag_names_get(cmd)) ?
 	}
 	mut commit_cmd := cli.Command{
 		name: 'commit'
@@ -230,8 +246,7 @@ fn main() {
 
 	// PUSH
 	push_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(&cmd, false) ?
-		installers.sites_push(&cmd) ?
+		installers.sites_push(flag_names_get(cmd)) ?
 	}
 	mut push_cmd := cli.Command{
 		name: 'push'
@@ -243,7 +258,7 @@ fn main() {
 	// UPDATE
 	update_exec := fn (cmd cli.Command) ? {
 		installers.publishtools_update() ?
-		installers.sites_download(&cmd, false) ?
+
 	}
 	mut update_cmd := cli.Command{
 		name: 'update'
@@ -254,8 +269,8 @@ fn main() {
 
 	// REMOVE CHANGES
 	removechanges_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(cmd, false) ?
-		installers.sites_removechanges(&cmd) ?
+
+		installers.sites_removechanges(flag_names_get(cmd)) ?
 	}
 	mut removechangese_cmd := cli.Command{
 		name: 'removechanges'
@@ -573,7 +588,7 @@ fn main() {
 	}
 
 	publish_cmd.add_flag(publish_prod_flag)
-	publish_cmd.add_flag(update_publishtools)
+	publish_cmd.add_flag(update_publishtools_flag)
 
 	// MAIN
 	mut main_cmd := cli.Command{

@@ -37,13 +37,15 @@ function git_get {
     fi
 }
 
-#means we are in gitpod
-if [[ -d "/workspace" ]]
-then
-    export PUBLISH_HOME="/workspace"
-else
-    export PUBLISH_HOME="$HOME"
-fi
+# #means we are in gitpod
+# if [[ -d "/workspace" ]]
+# then
+#     export PUBLISH_HOME="/workspace"
+# else
+#     export PUBLISH_HOME="$HOME"
+# fi
+
+export PUBLISH_HOME="$HOME"
 
 export DIR_BASE="$PUBLISH_HOME/publisher"
 export DIR_BUILD="/tmp"
