@@ -234,7 +234,7 @@ fn main() {
 	// COMMIT
 	commit_exec := fn (cmd cli.Command) ? {
 		// flags := cmd.flags.get_all_found()
-		msg := flag_message_get()
+		msg := flag_message_get(cmd)
 		installers.sites_commit(msg,flag_names_get(cmd)) ?
 	}
 	mut commit_cmd := cli.Command{
