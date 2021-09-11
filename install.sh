@@ -26,7 +26,7 @@ if [[ -f "env.sh" ]]; then
         ln -sfv $PWD/env.sh /workspace/env.sh 
     fi
 else
-    curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/$PBRANCH/env.sh > $PUBLISH_HOME/env.sh
+    curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/$PBRANCH/env.sh > $DIR_BASE/env.sh
     if [[ -d "/workspace" ]]
     then
         cp $PUBLISH_HOME/env.sh /workspace/env.sh 
