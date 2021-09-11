@@ -24,7 +24,7 @@ Example with line in between
 - [**Home**](readme)
 -----------
 
-- [Release Notes](releasenotes)
+- [Release Notes](cloud:releasenotes)
 - [Team](team)
 
 ```
