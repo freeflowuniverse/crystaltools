@@ -244,6 +244,17 @@ fn main() {
 	commit_cmd.add_flag(messageflag)
 	commit_cmd.add_flag(repoflag)
 
+	// DISCARD
+	discard_exec := fn (cmd cli.Command) ? {
+		installers.sites_discard(flag_names_get(cmd)) ?
+	}
+	mut discard_cmd := cli.Command{
+		name: 'discard'
+		execute: discard_exec
+	}
+	discard_cmd.add_flag(repoflag)
+
+
 	// PUSH
 	push_exec := fn (cmd cli.Command) ? {
 		installers.sites_push(flag_names_get(cmd)) ?
@@ -593,7 +604,7 @@ fn main() {
 	// MAIN
 	mut main_cmd := cli.Command{
 		name: 'installer'
-		commands: [install_cmd, run_cmd, build_cmd, list_cmd, develop_cmd, pull_cmd, commit_cmd,
+		commands: [install_cmd, run_cmd, build_cmd, list_cmd, develop_cmd, pull_cmd, commit_cmd,discard_cmd,
 			push_cmd, pushcommit_cmd, edit_cmd, update_cmd, version_cmd, removechangese_cmd, dns_cmd,
 			flatten_cmd, publish_cmd, staticfilesupdate_cmd]
 		description: '
