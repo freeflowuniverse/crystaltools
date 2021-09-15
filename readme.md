@@ -6,7 +6,9 @@
 
 ```bash
 curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/development/install.sh | bash
+```
 
+```bash
 #or if sudo needed
 curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/development/install.sh > /tmp/install.sh
 sudo bash /tmp/install.sh
