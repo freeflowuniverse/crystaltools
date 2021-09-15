@@ -20,6 +20,7 @@ if [[ -f "env.sh" ]]; then
         ln -sfv $PWD/env.sh /workspace/env.sh 
     fi
 else
+    rm -f  $PUBLISH_HOME/env.sh
     curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/$PBRANCH/env.sh > $PUBLISH_HOME/env.sh
     if [[ -d "/workspace" ]]
     then
