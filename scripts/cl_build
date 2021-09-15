@@ -19,6 +19,14 @@ then
     v install despiegk.crystallib
     v install nedpals.vex
 
+    if ! if [[ "$PBRANCH" == "development" ]]; then
+        echo " - THERE IS BRANCH FOR CRYSTAL LIB"
+        pushd ~/.vmodules/despiegk/crystallib
+		git checkout $PBRANCH
+        popd
+        
+    fi
+
     touch "$HOME/.vmodules/done_crystallib"
 fi
 

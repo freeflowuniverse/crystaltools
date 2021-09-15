@@ -1,7 +1,9 @@
 set -ex
 if [[ -z "${PBRANCH}" ]]; then 
     echo " - DEFAULT BRANCH WILL BE SET."
-    export PBRANCH="development"
+    ####THIS IS THE BRANCH TO BE USED FOR CRYSTAL TOOLS
+    ####NEED TO BE SAME FOR CRYYSTALTOOLS AND CRYSTALLIB
+    export PBRANCH="development_vlssupport"
 fi
 
 export PUBLISH_HOME="$HOME"
@@ -41,7 +43,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 fi
 
 
-# ct_build
+ct_build
 build
 clear
 ct_help
