@@ -31,12 +31,12 @@ fn flag_names_get(cmd cli.Command) []string {
 fn main() {
 
 
-	resetflag := cli.Flag{
-		name: 'reset'
-		abbrev: 'r'
-		description: 'will reset the env before installing or pulling'
-		flag: cli.FlagType.bool
-	}
+	// resetflag := cli.Flag{
+	// 	name: 'reset'
+	// 	abbrev: 'r'
+	// 	description: 'will reset the env before installing or pulling'
+	// 	flag: cli.FlagType.bool
+	// }
 
 	messageflag := cli.Flag{
 		name: 'message'
@@ -53,12 +53,12 @@ fn main() {
 	}
 
 
-	repoflag := cli.Flag{
-		name: 'repo'
-		abbrev: 'r'
-		description: 'repository name, can be part of name'
-		flag: cli.FlagType.string
-	}
+	// repoflag := cli.Flag{
+	// 	name: 'repo'
+	// 	abbrev: 'r'
+	// 	description: 'repository name, can be part of name'
+	// 	flag: cli.FlagType.string
+	// }
 
 	// VERSION
 	version_exec := fn (cmd cli.Command) ? {
