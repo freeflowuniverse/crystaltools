@@ -1,4 +1,5 @@
 module main
+
 // import despiegk.crystallib.installers
 import os
 // import despiegk.crystallib.process
@@ -11,13 +12,11 @@ import cli
 
 const version = '1.0.21'
 
-
 fn main() {
-
 	// VERSION
 	version_exec := fn (cmd cli.Command) ? {
 		// println(main.version)
-		println("s")
+		println('s')
 	}
 	mut version_cmd := cli.Command{
 		name: 'version'
@@ -26,9 +25,8 @@ fn main() {
 
 	// LIST
 	list_exec := fn (cmd cli.Command) ? {
-		gs := gittools.new("",false) or {panic("init. $err")}
+		gs := gittools.new()
 		println(gs)
-
 	}
 	mut list_cmd := cli.Command{
 		name: 'list'
@@ -46,8 +44,6 @@ fn main() {
 	// }
 	// pull_cmd.add_flag(resetflag)
 	// pull_cmd.add_flag(repoflag)
-
-
 
 	// // pushcommit
 	// pushcommit_exec := fn (cmd cli.Command) ? {
@@ -85,7 +81,6 @@ fn main() {
 	// push_cmd.add_flag(resetflag)
 	// push_cmd.add_flag(repoflag)
 
-
 	// // UPDATE
 	// update_exec := fn (cmd cli.Command) ? {
 	// 	installers.publishtools_update() ?
@@ -112,7 +107,7 @@ fn main() {
 
 	mut main_cmd := cli.Command{
 		name: 'crystaltools'
-		commands: [version_cmd,list_cmd]
+		commands: [version_cmd, list_cmd]
 		description: '
 
 		Crystal Tools
@@ -121,6 +116,5 @@ fn main() {
 	}
 
 	main_cmd.setup()
-	main_cmd.parse(os.args)	
-
+	main_cmd.parse(os.args)
 }
