@@ -1,9 +1,7 @@
 set -ex
 if [[ -z "${PBRANCH}" ]]; then 
     echo " - DEFAULT BRANCH WILL BE SET."
-    ####THIS IS THE BRANCH TO BE USED FOR CRYSTAL TOOLS
-    ####NEED TO BE SAME FOR CRYYSTALTOOLS AND CRYSTALLIB
-    export PBRANCH="development_vlssupport"
+    export PBRANCH="development"
 fi
 
 export PUBLISH_HOME="$HOME"
