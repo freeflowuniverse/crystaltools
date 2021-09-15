@@ -10,7 +10,7 @@ bash /tmp/install.sh
 #use your environment
 source /workspace/env.sh
 #next will check publishtools are installed and usable
-publtools_check
+check
 # example for running development server wiki, go to wiki
 cd wiki_config
 publishtools develop

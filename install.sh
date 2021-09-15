@@ -42,7 +42,7 @@ fi
 
 
 # ct_build
-publtools_build
+builld
 clear
 ct_help
 

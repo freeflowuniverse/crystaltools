@@ -6,6 +6,7 @@ export PBRANCH="development"
 fi
 
 function crystal_tools_get {
+    mkdir -p $DIR_CODE/github/freeflowuniverse
     if [[ -d "$DIR_CODE/github/freeflowuniverse/crystaltools" ]]
     then
         pushd $DIR_CODE/$2 2>&1 >> /dev/null
