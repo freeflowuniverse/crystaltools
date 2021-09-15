@@ -5,11 +5,11 @@
 ## Getting Started, Deploy Publishingtools
 
 ```bash
-curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/development/install2.sh | bash
+curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/development/install.sh | bash
 
 #or if sudo needed
-curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/development/install2.sh > /tmp/install2.sh
-sudo bash /tmp/install2.sh
+curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/development/install.sh > /tmp/install.sh
+sudo bash /tmp/install.sh
 ```
 
 to get a specific wiki environment
