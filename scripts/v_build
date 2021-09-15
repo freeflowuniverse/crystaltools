@@ -39,7 +39,11 @@ fi
 
 pushd $DIR_CODE_INT/v
 make
-./v symlink
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then 
+    sudo ./v symlink
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    ./v symlink
+fi
 popd "$@" > /dev/null
 
 
