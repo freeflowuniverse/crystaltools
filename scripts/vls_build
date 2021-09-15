@@ -34,8 +34,9 @@ else
 fi
 
 pushd $DIR_CODE_INT/vls
-v -gc boehm -cc clang  cmd/vls
-sudo cp cmd/vls/vls /usr/local/bin/vls
+v run build.vsh clang
+# v -gc boehm -cc clang  cmd/vls
+sudo cp vls /usr/local/bin/vls
 popd "$@" > /dev/null
 
 if ! [ -x "$(command -v vls)" ]; then
