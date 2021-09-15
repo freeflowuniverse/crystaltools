@@ -25,8 +25,8 @@ fn main() {
 
 	// LIST
 	list_exec := fn (cmd cli.Command) ? {
-		gs := gittools.new()
-		println(gs)
+		mut gs := gittools.new()
+		gs.list()
 	}
 	mut list_cmd := cli.Command{
 		name: 'list'

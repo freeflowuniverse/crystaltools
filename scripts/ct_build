@@ -16,7 +16,7 @@ sudo rm -f /opt/homebrew/bin/publishtools
 #get the crystal libs
 cl_build
 
-cd $DIR_CT/crystaltools
+pushd $DIR_CT/crystaltools
 
 # v -gc boehm -prod crystaltools.v
 echo " - COMPILE3"

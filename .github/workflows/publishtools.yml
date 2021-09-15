@@ -26,7 +26,7 @@ jobs:
         run: cd
       - name: Build pubtools with sanitizers
         run: |
-          rm -rf publishtools 2>&1
+          rm -rf crystaltools 2>&1
           git clone https://github.com/freeflowuniverse/crystaltools
           cd publishtools/crystaltools
           v -cc gcc -gc boehm -cflags "-fsanitize=undefined" -d net_blocking_sockets -d static_boehm publishtools.v
