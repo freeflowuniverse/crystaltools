@@ -38,8 +38,8 @@ else
 fi
 
 pushd $DIR_CODE_INT/v
-sudo make
-sudo ./v symlink
+make
+./v symlink
 popd "$@" > /dev/null
 
 
