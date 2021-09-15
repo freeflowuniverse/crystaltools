@@ -10,17 +10,17 @@ export DIR_BASE="$PUBLISH_HOME/publisher"
 
 mkdir -p $DIR_BASE
 
+#important to first remove
+rm -f $PUBLISH_HOME/env.sh
 
 if [[ -f "env.sh" ]]; then 
     #means we are working from an environment where env is already there e.g. when debug in publishing tools itself
-    rm -f $PUBLISH_HOME/env.sh
     ln -sfv $PWD/env.sh $PUBLISH_HOME/env.sh 
     if [[ -d "/workspace" ]]
     then
         ln -sfv $PWD/env.sh /workspace/env.sh 
     fi
 else
-    rm -f  $PUBLISH_HOME/env.sh
     curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/$PBRANCH/env.sh > $PUBLISH_HOME/env.sh
     if [[ -d "/workspace" ]]
     then
