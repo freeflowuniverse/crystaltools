@@ -6,7 +6,7 @@ export PBRANCH="development"
 fi
 
 #2 arguments
-#e.g. git_get github.com/crystaluniverse crystaltools 
+#e.g. git_get github.com/freeflowuniverse crystaltools 
 #return is in $CDIR
 function git_get {
     # echo "git get for account:'$1' repo:'$2'"
@@ -37,13 +37,6 @@ function git_get {
     fi
 }
 
-# #means we are in gitpod
-# if [[ -d "/workspace" ]]
-# then
-#     export PUBLISH_HOME="/workspace"
-# else
-#     export PUBLISH_HOME="$HOME"
-# fi
 
 export PUBLISH_HOME="$HOME"
 
@@ -68,7 +61,7 @@ then
 else    
     export DIR_CT="$PUBLISH_HOME/code/crystaltools"
     #get the crystal tools
-    git_get github.com/crystaluniverse crystaltools
+    git_get github.com/freeflowuniverse crystaltools
 fi
 
 export PATH=$DIR_CT/scripts:$PATH

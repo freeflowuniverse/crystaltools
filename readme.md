@@ -6,10 +6,10 @@
 ## Getting Started, Deploy Publishingtools
 
 ```bash
-curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/development/install2.sh | bash
+curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/development/install2.sh | bash
 
 #or if sudo needed
-curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/development/install2.sh | sudo bash
+curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/development/install2.sh | sudo bash
 ```
 
 to get a specific wiki environment
@@ -34,7 +34,7 @@ https://info.threefold.io/info/crystaltools#/crystaltools__install
 short
 
 ```bash
-curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/development/scripts/ct_init > /tmp/ct_init
+curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/development/scripts/ct_init > /tmp/ct_init
 source /tmp/ct_init
 ct_help
 ```
@@ -44,7 +44,7 @@ will print which commands are available.
 oneliner:
 
 ```bash
-curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/development/scripts/ct_init > /tmp/ct_init && source /tmp/ct_init && ct_help
+curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/development/scripts/ct_init > /tmp/ct_init && source /tmp/ct_init && ct_help
 ```
 
 

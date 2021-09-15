@@ -3,7 +3,7 @@
 ## to get started
 
 - execute install.sh
-- uses library crystaluniverse/crystallib
+- uses library freeflowuniverse/crystallib
 
 ## publisher
 

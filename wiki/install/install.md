@@ -5,7 +5,7 @@ generic way how to get the publishtools in your computer or gitpod using an inst
 ```bash
 #if you need specific branch for your installer & publishtools
 export PBRANCH=development_scriptsnew
-curl https://raw.githubusercontent.com/crystaluniverse/crystaltools/$PBRANCH/install.sh > /tmp/install.sh
+curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/$PBRANCH/install.sh > /tmp/install.sh
 bash /tmp/install.sh
 #use your environment
 source /workspace/env.sh

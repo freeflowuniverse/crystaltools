@@ -5,7 +5,7 @@ export PBRANCH="development"
 fi
 
 #2 arguments
-#e.g. git_get github.com/crystaluniverse crystaltools 
+#e.g. git_get github.com/freeflowuniverse crystaltools 
 #return is in $CDIR
 function git_get {
     # echo "git get for account:'$1' repo:'$2'"

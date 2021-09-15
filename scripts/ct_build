@@ -16,7 +16,7 @@ sudo rm -f /opt/homebrew/bin/publishtools
 #get the crystal libs
 cl_build
 
-git_get github.com/crystaluniverse crystaltools
+git_get github.com/freeflowuniverse crystaltools
 pushd $CDIR/crystaltools 2>&1 >> /dev/null
 
 # v -gc boehm -prod crystaltools.v

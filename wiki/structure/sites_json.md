@@ -125,7 +125,7 @@ example
   },
   {
     "name": "info_publishtools",
-    "url": "https://github.com/crystaluniverse/publishtools",
+    "url": "https://github.com/freeflowuniverse/crystaltools",
     "branch": "",
     "pull": false,
     "reset": false,

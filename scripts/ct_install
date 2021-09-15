@@ -11,7 +11,7 @@ source $DIR_CT/scripts/ct_init
 rm -f /usr/local/bin/crystaltools
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then 
-    curl -L https://github.com/crystaluniverse/crystaltools/releases/download/first/crystaltools_linux > /usr/local/bin/crystaltools  
+    curl -L https://github.com/freeflowuniverse/crystaltools/releases/download/first/crystaltools_linux > /usr/local/bin/crystaltools  
     chmod +x /usr/local/bin/crystaltools
 
     sudo /etc/init.d/redis-server start
@@ -30,11 +30,11 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     
     if [[ `uname -m` == 'arm64' ]]; then
         rm -f /usr/local/bin/crystaltools
-        curl -L https://github.com/crystaluniverse/crystaltools/releases/download/first/crystaltools_osx_arm > /opt/homebrew/bin/crystaltools
+        curl -L https://github.com/freeflowuniverse/crystaltools/releases/download/first/crystaltools_osx_arm > /opt/homebrew/bin/crystaltools
         chmod 770 /opt/homebrew/bin/crystaltools
     else
         rm -f /opt/homebrew/bin/crystaltools
-        curl -L https://github.com/crystaluniverse/crystaltools/releases/download/first/crystaltools_osx > /usr/local/bin/crystaltools
+        curl -L https://github.com/freeflowuniverse/crystaltools/releases/download/first/crystaltools_osx > /usr/local/bin/crystaltools
         chmod 770 /usr/local/bin/crystaltools
     fi
 fi

@@ -4,10 +4,10 @@ set -e
 
 # INSTALL PUBLISH TOOLS
 
-rm -f /usr/local/bin/publishtools
+rm -f /usr/local/bin/crystaltools
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then 
-    curl -L https://github.com/crystaluniverse/publishtools/releases/download/first/publishtools_linux > /usr/local/bin/publishtools  
+    curl -L https://github.com/freeflowuniverse/crystaltools/releases/download/first/publishtools_linux > /usr/local/bin/publishtools  
     chmod +x /usr/local/bin/publishtools
 elif [[ "$OSTYPE" == "darwin"* ]]; then
 
@@ -21,11 +21,11 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     
     if [[ `uname -m` == 'arm64' ]]; then
         rm -f /usr/local/bin/publishtools
-        curl -L https://github.com/crystaluniverse/publishtools/releases/download/first/publishtools_osx_arm > /opt/homebrew/bin/publishtools
+        curl -L https://github.com/freeflowuniverse/crystaltools/releases/download/first/publishtools_osx_arm > /opt/homebrew/bin/publishtools
         chmod 770 /opt/homebrew/bin/publishtools
     else
         rm -f /opt/homebrew/bin/publishtools
-        curl -L https://github.com/crystaluniverse/publishtools/releases/download/first/publishtools_osx > /usr/local/bin/publishtools
+        curl -L https://github.com/freeflowuniverse/crystaltools/releases/download/first/publishtools_osx > /usr/local/bin/publishtools
         chmod 770 /usr/local/bin/publishtools
     fi
 fi
