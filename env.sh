@@ -14,7 +14,7 @@ function crystal_tools_get {
         popd 2>&1 >> /dev/null
     else
         pushd $DIR_CODE/github/freeflowuniverse 2>&1 >> /dev/null
-        git clone https://github.com/freeflowuniverse/crystaltools.git
+        git clone --depth 1 --no-single-branch https://github.com/freeflowuniverse/crystaltools.git
         popd 2>&1 >> /dev/null
     fi
     if [[ -z "${PBRANCH}" ]]; then 
