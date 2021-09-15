@@ -24,8 +24,6 @@ jobs:
         run: rm -rf publishtools 2>&1 && git clone https://github.com/crystaluniverse/publishtools && cd publishtools/crystaltools && v -cc gcc -gc boehm -cflags -static -d net_blocking_sockets -d static_boehm publishtools.v && sudo mv publishtools /usr/local/bin && sudo chmod u+x /usr/local/bin/publishtools
       - name: change dir to home
         run: cd
-      - name: Run publishtools
-        run: publishtools
       - name: Build pubtools with sanitizers
         run: |
           rm -rf publishtools 2>&1
@@ -37,9 +35,10 @@ jobs:
       - name: create sites.json at home
         uses: finnp/create-file-action@1.0.0
         env:
-            FILE_NAME: sites.json
-            FILE_DATA: '[{\n                "name": "info_publishtools",\n                "git_url":  "https://github.com/crystaluniverse/info_publishtools",\n                "branch":       "",\n                "pull": false,\n                "reset":        false,\n                "cat":  0,\n                "shortname":    "publishtools",\n                "path_code":    "",\n                "domains":      ["publishtools-info.threefold.io"],\n                "descr":        "Publishtools Info",\n                "groups":       [],\n                "acl":  [],\n                "trackingid":   "",\n                "opengraph":    {\n                        "title":        "",\n                        "description":  "",\n                        "url":  "",\n                        "type_":        "article",\n                        "image":        "",\n                        "image_width":  "1200",\n                        "image_height": "630"\n                }\n        }]'
-
+            FILE_NAME: site_wiki.json
+            FILE_DATA: '{\n                "name": "info_publishtools",\n                "git_url":  "https://github.com/freeflowuniverse/crystaltools/tree/development/wiki",\n                "pull": false,\n                "reset":        false,\n                "cat":  "wiki",\n                "domains":      ["publishtools-info.threefold.io"],\n                "descr":        "Publishtools Info"\n        }'
+      - name: Run publishtools install
+        run: publishtools install
       - name: Run publishtools flatten
         run: publishtools flatten
       - name: cleaning
