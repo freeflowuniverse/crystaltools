@@ -10,7 +10,7 @@ tasks:
         cd wiki_config && publishtools flatten 
         cd ..
         echo ' - do "./wiki_run" to run wiki.'
-        echo ' - do "open workspace.code_workspace" to open all relevant dirs in your editor.'
+        echo ' - do "open workspace.code-workspace" to open all relevant dirs in your editor.'
 ports:
   - port: 9998
     onOpen: open-browser
