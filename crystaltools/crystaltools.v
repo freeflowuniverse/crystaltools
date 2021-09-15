@@ -52,6 +52,15 @@ fn main() {
 		flag: cli.FlagType.string
 	}
 
+	pullflag := cli.Flag{
+		name: 'pull'
+		abbrev: 'p'
+		description: 'pull git when doing commit or push'
+		flag: cli.FlagType.string
+	}
+
+
+
 
 	// repoflag := cli.Flag{
 	// 	name: 'repo'
@@ -87,7 +96,8 @@ fn main() {
 		message := flag_message_get(cmd)
 		mut gs := gittools.new()
 		filter := cmd.flags.get_string('filter') or {""}
-		gs.commit(filter:filter,message:message)?	
+		pull := cmd.flags.get_bool('pull') or {false}
+		gs.commit(filter:filter,message:message,pull:pull)?	
 
 	}
 	mut commit_cmd := cli.Command{
@@ -96,13 +106,15 @@ fn main() {
 	}
 	commit_cmd.add_flag(messageflag)
 	commit_cmd.add_flag(filterflag)
+	commit_cmd.add_flag(pullflag)
 
 	// pushcommit
 	pushcommit_exec := fn (cmd cli.Command) ? {
 		message := flag_message_get(cmd)
 		mut gs := gittools.new()
 		filter := cmd.flags.get_string('filter') or {""}
-		gs.pushcommit(filter:filter,message:message)?	
+		pull := cmd.flags.get_bool('pull') or {false}
+		gs.pushcommit(filter:filter,message:message,pull:pull)?	
 
 	}
 	mut pushcommit_cmd := cli.Command{
@@ -111,6 +123,7 @@ fn main() {
 	}
 	pushcommit_cmd.add_flag(messageflag)
 	pushcommit_cmd.add_flag(filterflag)
+	pushcommit_cmd.add_flag(pullflag)
 
 	// push
 	push_exec := fn (cmd cli.Command) ? {
