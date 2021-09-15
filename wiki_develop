@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 source env.sh
-builld
+build
 cd wiki_config
 publishtools develop
 

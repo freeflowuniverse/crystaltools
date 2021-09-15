@@ -1,6 +1,6 @@
 # Crystal & Publish Tools Commands
 
-- builld   : build the publishing tools
+- build   : build the publishing tools
 - publishtools help
 - publishtools develop
 
