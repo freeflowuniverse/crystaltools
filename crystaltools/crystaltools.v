@@ -26,7 +26,7 @@ fn main() {
 	// LIST
 	list_exec := fn (cmd cli.Command) ? {
 		mut gs := gittools.new()
-		gs.list()
+		gs.list(filter:"")
 	}
 	mut list_cmd := cli.Command{
 		name: 'list'

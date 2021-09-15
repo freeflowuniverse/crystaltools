@@ -9,6 +9,7 @@ source $DIR_CT/scripts/ct_init
 
 
 sudo rm -f /usr/local/bin/crystaltools
+sudo rm -f /usr/local/bin/ct
 sudo rm -f /opt/homebrew/bin/crystaltools
 sudo rm -f /usr/local/bin/publishtools
 sudo rm -f /opt/homebrew/bin/publishtools
