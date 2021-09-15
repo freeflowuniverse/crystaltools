@@ -14,8 +14,6 @@ then
     sudo rm -rf ~/.vmodules/despiegk/
     mkdir -p ~/.vmodules/despiegk/    
 
-#     git_get github.com/freeflowuniverse crystallib
-#     ln -s "$CDIR" "$HOME/.vmodules/despiegk/crystallib"
     v install despiegk.crystallib
     v install patrickpissurno.redis
     v install despiegk.crystallib

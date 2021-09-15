@@ -5,3 +5,10 @@ set -e
 if ! [ -x "$(command -v publishtools)" ]; then
   publtools_build
 fi
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    brew services start redis
+else
+    sudo /etc/init.d/redis-server start
+fi
+   

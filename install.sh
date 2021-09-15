@@ -28,7 +28,7 @@ else
     fi
 fi
 
-bash -ex $PUBLISH_HOME/env.sh
+bash -e $PUBLISH_HOME/env.sh
 source $PUBLISH_HOME/env.sh
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then 

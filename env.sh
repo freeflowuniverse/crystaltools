@@ -5,23 +5,17 @@ if [[ -z "${PBRANCH}" ]]; then
 export PBRANCH="development"
 fi
 
-#2 arguments
-#e.g. git_get github.com/freeflowuniverse crystaltools 
-#return is in $CDIR
-function git_get {
-    # echo "git get for account:'$1' repo:'$2'"
-    if [[ -d "$DIR_CODE/$2" ]]
+function crystal_tools_get {
+    if [[ -d "$DIR_CODE/github/freeflowuniverse/crystaltools" ]]
     then
         pushd $DIR_CODE/$2 2>&1 >> /dev/null
         # git pull
         popd 2>&1 >> /dev/null
     else
-        pushd $DIR_CODE 2>&1 >> /dev/null
-        git clone https://$1/$2
+        pushd $DIR_CODE/github/freeflowuniverse 2>&1 >> /dev/null
+        git clone https://github.com/freeflowuniverse/crystaltools.git
         popd 2>&1 >> /dev/null
     fi
-    CDIR="$DIR_CODE/$2"
-
     if [[ -z "${PBRANCH}" ]]; then 
     echo ' - no branch set'
     else
@@ -29,7 +23,7 @@ function git_get {
             echo
         else
             echo ' - switch to branch ${PBRANCH} for publishtools'
-            pushd $DIR_CODE/$2 2>&1 >> /dev/null
+            pushd $DIR_CODE/github/freeflowuniverse/crystaltools 2>&1 >> /dev/null
             git checkout $PBRANCH
             git pull
             popd 2>&1 >> /dev/null
@@ -59,9 +53,9 @@ then
     #this means we are booting in gitpod from crystal tools itself
     export DIR_CT="/workspace/crystaltools"
 else    
-    export DIR_CT="$PUBLISH_HOME/code/crystaltools"
+    export DIR_CT="$DIR_CODE/github/freeflowuniverse/crystaltools"
     #get the crystal tools
-    git_get github.com/freeflowuniverse crystaltools
+    crystal_tools_get
 fi
 
 export PATH=$DIR_CT/scripts:$PATH

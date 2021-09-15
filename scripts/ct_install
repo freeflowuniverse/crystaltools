@@ -1,18 +1,17 @@
 #!/usr/bin/env bash
 #ALWAYS SAME INITIALIZATION 
-set -e
+set -ex
 if [[ -z "${DIR_CT}" ]]; then 
     echo 'Make sure to source /workspace/env before calling this script.'
     exit 1
 fi
 source $DIR_CT/scripts/ct_init
 
-
-rm -f /usr/local/bin/crystaltools
-
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then 
-    curl -L https://github.com/freeflowuniverse/crystaltools/releases/download/first/crystaltools_linux > /usr/local/bin/crystaltools  
-    chmod +x /usr/local/bin/crystaltools
+
+    sudo rm -f /usr/local/bin/publishtools
+    sudo bash -c 'curl -L https://github.com/freeflowuniverse/crystaltools/releases/download/first/publishtools_linux > /usr/local/bin/publishtools'
+    sudo chmod +x /usr/local/bin/publishtools
 
     sudo /etc/init.d/redis-server start
 
@@ -29,13 +28,14 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     brew services start redis
     
     if [[ `uname -m` == 'arm64' ]]; then
-        rm -f /usr/local/bin/crystaltools
-        curl -L https://github.com/freeflowuniverse/crystaltools/releases/download/first/crystaltools_osx_arm > /opt/homebrew/bin/crystaltools
-        chmod 770 /opt/homebrew/bin/crystaltools
+        sudo rm -f /usr/local/bin/publishtools
+        # https://github.com/freeflowuniverse/crystaltools/releases/download/first/publishtools_osx_arm
+        curl -L https://github.com/freeflowuniverse/crystaltools/releases/download/first/publishtools_osx_arm > /opt/homebrew/bin/publishtools
+        chmod 770 /opt/homebrew/bin/publishtools
     else
-        rm -f /opt/homebrew/bin/crystaltools
-        curl -L https://github.com/freeflowuniverse/crystaltools/releases/download/first/crystaltools_osx > /usr/local/bin/crystaltools
-        chmod 770 /usr/local/bin/crystaltools
+        rm -f /opt/homebrew/bin/publishtools
+        curl -L https://github.com/freeflowuniverse/crystaltools/releases/download/first/publishtools_osx> /usr/local/bin/publishtools
+        chmod 770 /usr/local/bin/publishtools
     fi
 fi
 

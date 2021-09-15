@@ -4,6 +4,11 @@ if ! [ -x "$(command -v crystaltools)" ]; then
   ct_build
 fi
 
+if ! [ -x "$(command -v crystaltools)" ]; then
+  ct_build
+fi
+
+
 if [[ "$OSTYPE" == "darwin"* ]]; then
     brew services start redis
 else
