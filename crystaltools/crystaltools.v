@@ -56,7 +56,7 @@ fn main() {
 		name: 'pull'
 		abbrev: 'p'
 		description: 'pull git when doing commit or push'
-		flag: cli.FlagType.string
+		flag: cli.FlagType.bool
 	}
 
 

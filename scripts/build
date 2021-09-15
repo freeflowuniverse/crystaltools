@@ -22,6 +22,7 @@ echo " - COMPILE"
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # v -v -d static_boehm  -gc boehm -prod publishtools.v
     v -d net_blocking_sockets -d static_boehm  -g -keepc  -gc boehm publishtools.v
+    ulimit -n 10000
 else
     # v -d static_boehm  -gc boehm -cflags -static -prod publishtools.v
     # v -d static_boehm  -gc boehm -cflags -static publishtools.v

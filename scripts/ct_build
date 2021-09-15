@@ -25,6 +25,7 @@ echo " - COMPILE3"
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # v -d static_boehm  -gc boehm -prod crystaltools.v
     v -d net_blocking_sockets -d static_boehm  -gc boehm crystaltools.v
+    ulimit -n 10000
 else
     # v -d static_boehm  -gc boehm -cflags -static -prod crystaltools.v
     # v -d static_boehm  -gc boehm -cflags -static crystaltools.v
