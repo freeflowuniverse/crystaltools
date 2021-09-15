@@ -21,6 +21,7 @@ if ! [[ -f "$HOME/.vmodules/done_crystallib" ]]; then
     if ! [[ "$PBRANCH" == "development" ]]; then
         echo " - THERE IS BRANCH FOR CRYSTAL LIB"
         pushd ~/.vmodules/despiegk/crystallib
+        git fetch origin $PBRANCH:$PBRANCH
 		git checkout $PBRANCH
         popd
     fi
