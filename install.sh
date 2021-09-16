@@ -41,7 +41,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 fi
 
 
-# ct_build
+ct_build
 build
 clear
 ct_help

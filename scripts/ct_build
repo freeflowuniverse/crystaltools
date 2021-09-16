@@ -9,6 +9,7 @@ source $DIR_CT/scripts/ct_init
 
 
 sudo rm -f /usr/local/bin/crystaltools
+sudo rm -f /usr/local/bin/ct
 sudo rm -f /opt/homebrew/bin/crystaltools
 sudo rm -f /usr/local/bin/publishtools
 sudo rm -f /opt/homebrew/bin/publishtools
@@ -24,6 +25,7 @@ echo " - COMPILE3"
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # v -d static_boehm  -gc boehm -prod crystaltools.v
     v -d net_blocking_sockets -d static_boehm  -gc boehm crystaltools.v
+    ulimit -n 10000
 else
     # v -d static_boehm  -gc boehm -cflags -static -prod crystaltools.v
     # v -d static_boehm  -gc boehm -cflags -static crystaltools.v

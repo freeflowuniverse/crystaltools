@@ -9,8 +9,7 @@ source $DIR_CT/scripts/ct_init
 v_check
 
 #CHECK IF DIR EXISTS, IF NOT CLONE
-if ! [[ -f "$HOME/.vmodules/done_crystallib" ]]
-then
+if ! [[ -f "$HOME/.vmodules/done_crystallib" ]]; then
     sudo rm -rf ~/.vmodules/despiegk/
     mkdir -p ~/.vmodules/despiegk/    
 
@@ -18,6 +17,14 @@ then
     v install patrickpissurno.redis
     v install despiegk.crystallib
     v install nedpals.vex
+
+    if ! [[ "$PBRANCH" == "development" ]]; then
+        echo " - THERE IS BRANCH FOR CRYSTAL LIB"
+        pushd ~/.vmodules/despiegk/crystallib
+        git fetch origin $PBRANCH:$PBRANCH
+		git checkout $PBRANCH
+        popd
+    fi
 
     touch "$HOME/.vmodules/done_crystallib"
 fi
