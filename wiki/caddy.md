@@ -11,7 +11,6 @@ apt install libssl-dev -y
 curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/development/install.sh | bash
 
 # get main repo's
-
 mkdir -p /root/code/github/threefoldfoundation/
 cd -p /root/code/github/threefoldfoundation/
 git clone https://github.com/threefoldfoundation/info_threefold
@@ -106,7 +105,7 @@ scp /tmp/Caddyfile root@164.90.195.7:/etc/caddy/Caddyfile && ssh root@164.90.195
 ## pull repos & reload
 
 ```
-ssh -A root@164.90.195.7  'cd /root/code/info_threefold/wiki_config && publishtools pull -r && cd /etc/caddy && caddy reload'
+ssh -A root@164.90.195.7  '/root/code/github/threefoldfoundation/wiki_config && publishtools pull -r && cd /etc/caddy && caddy reload'
 ```
 
 ### see log
