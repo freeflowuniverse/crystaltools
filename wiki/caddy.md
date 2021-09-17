@@ -22,11 +22,21 @@ cd /root/code/github/threefoldfoundation/wiki_config
 publishtools develop
 
 #install caddy
-apt install -y debian-keyring debian-archive-keyring apt-transport-https -y
-curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo tee /etc/apt/trusted.gpg.d/caddy-stable.asc
-curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
-apt update -y
-apt install caddy -y
+# apt install -y debian-keyring debian-archive-keyring apt-transport-https -y
+# curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo tee /etc/apt/trusted.gpg.d/caddy-stable.asc
+# curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
+# apt update -y
+# apt install caddy -y
+
+#install caddy
+cd /tmp
+apt install -y debian-keyring debian-archive-keyring apt-transport-https golang -y
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/xcaddy/gpg.key' | sudo tee /etc/apt/trusted.gpg.d/caddy-xcaddy.asc
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/xcaddy/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-xcaddy.list
+apt update
+apt install xcaddy
+xcaddy build --with github.com/baldinof/caddy-supervisor
+cp xcaddy /usr/bin/xcaddy
 
 ```
 
