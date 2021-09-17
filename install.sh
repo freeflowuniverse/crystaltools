@@ -32,6 +32,9 @@ bash -e $PUBLISH_HOME/env.sh
 source $PUBLISH_HOME/env.sh
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then 
+    apt install libssl-dev
+    apt install redis -y
+    apt install gcc make -y
     sudo /etc/init.d/redis-server start
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     if ! [ -x "$(command -v redis-server)" ]; then
