@@ -105,11 +105,31 @@ scp /tmp/Caddyfile root@164.90.195.7:/etc/caddy/Caddyfile && ssh root@164.90.195
 ## pull repos & reload
 
 ```
-ssh -A root@164.90.195.7  '/root/code/github/threefoldfoundation/wiki_config && publishtools pull -r && cd /etc/caddy && caddy reload'
+ssh -A root@164.90.195.7  '/root/code/github/threefoldfoundation/wiki_config && publishtools pull -r && cd /etc/caddy && caddy reload --config Caddyfile'
 ```
 
 ### see log
 
 ```
 ssh root@164.90.195.7 'tail -f /var/log/publish.log'
+```
+
+### Mount remote
+
+```bash
+mkdir -p  /tmp/caddy
+#sshfs root@164.90.195.7:/etc/caddy /tmp/caddy
+sshfs root@164.90.195.7:/root/www_config_private /tmp/caddy
+```
+
+### Remote Access
+
+```
+ssh -A root@164.90.195.7
+```
+
+### create passwd 
+
+```
+caddy hash-password --plaintext apasswd
 ```
