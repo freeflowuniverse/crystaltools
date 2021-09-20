@@ -23,7 +23,7 @@ example
     "reset": false,
     "cat": 0,
     "shortname": "threefold",
-    "domains": ["info.threefold.io", "wiki.threefold.io"],
+    "domains": ["library.threefold.me", "library.threefold.me"],
     "descr": "wiki for foundation, collaborate, what if farmings, tokens",
     "circles": [],
     "acl": []
@@ -64,8 +64,8 @@ example
     "shortname": "legal",
     "domains": [
       "legal.threefold.io",
-      "legal-info.threefold.io",
-      "legal-wiki.threefold.io"
+      "legal-library.threefold.me",
+      "legal-library.threefold.me"
     ],
     "descr": "",
     "circles": [],
@@ -79,7 +79,7 @@ example
     "reset": false,
     "cat": 0,
     "shortname": "cloud",
-    "domains": ["cloud-info.threefold.io", "cloud-wiki.threefold.io"],
+    "domains": ["cloud-library.threefold.me", "cloud-library.threefold.me"],
     "descr": "how to use the cloud for deploying apps: evdc, kubernetes, planetary fs, ... + marketplace solutions ",
     "circles": [],
     "acl": []
@@ -118,7 +118,7 @@ example
     "reset": false,
     "cat": 0,
     "shortname": "bt",
-    "domains": ["bt-info.threefold.io"],
+    "domains": ["bt-library.threefold.me"],
     "descr": "",
     "circles": [],
     "acl": []
