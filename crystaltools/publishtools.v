@@ -39,7 +39,7 @@ fn main() {
 
 	resetflag := cli.Flag{
 		name: 'reset'
-		abbrev: 'r'
+		abbrev: 'd'
 		description: 'will reset the env before installing or pulling'
 		flag: cli.FlagType.bool
 	}
@@ -191,7 +191,8 @@ fn main() {
 
 	// PULL
 	pull_exec := fn (cmd cli.Command) ? {
-		installers.sites_pull(flag_names_get(cmd)) ?
+		flags := cmd.flags.get_all_found()
+		installers.sites_pull(flag_names_get(cmd),flags.get_bool('reset') or { false }) ?
 	}
 	mut pull_cmd := cli.Command{
 		name: 'pull'
