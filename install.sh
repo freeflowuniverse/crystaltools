@@ -32,7 +32,7 @@ bash -e $PUBLISH_HOME/env.sh
 source $PUBLISH_HOME/env.sh
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then 
-    sudo apt install libssl-dev
+    sudo apt install libssl-dev -y
     sudo apt install redis -y
     sudo apt install gcc make -y
     sudo /etc/init.d/redis-server start
