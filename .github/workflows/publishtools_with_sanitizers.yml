@@ -1,4 +1,4 @@
-name: publishtools
+name: publishtools_with_sanitizers
 on:
   push:
   workflow_dispatch:
@@ -20,17 +20,15 @@ jobs:
         run:  rm -rf v 2>&1 && rm -rf ~/.vmodules  2>&1 && git clone https://github.com/vlang/v && cd v && make && sudo ./v symlink && cd ..
       - name: Install pubtools dependecncies
         run:  v install patrickpissurno.redis && v install despiegk.crystallib && v install nedpals.vex && sudo apt install mc git rsync curl -y
-      - name: Build pubtools
+      - name: Build pubtools with sanitizers
         run: |
           rm -rf crystaltools 2>&1
           git clone https://github.com/freeflowuniverse/crystaltools
           cd crystaltools/crystaltools
-          v -cc gcc -gc boehm -cflags -static -d net_blocking_sockets -d static_boehm publishtools.v
+          v -cc gcc -gc boehm -cflags "-fsanitize=undefined" -d net_blocking_sockets -d static_boehm publishtools.v
           sudo mv publishtools /usr/local/bin
           sudo chmod u+x /usr/local/bin/publishtools
-      - name: change dir to home
-        run: cd
-      - name: create site_wiki.json at home
+      - name: create sites.json at home
         uses: finnp/create-file-action@1.0.0
         env:
             FILE_NAME: site_wiki.json
