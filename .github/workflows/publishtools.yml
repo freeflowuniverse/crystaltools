@@ -21,18 +21,16 @@ jobs:
       - name: Install pubtools dependecncies
         run:  v install patrickpissurno.redis && v install despiegk.crystallib && v install nedpals.vex
       - name: Build pubtools
-        run: rm -rf publishtools 2>&1 && git clone https://github.com/freeflowuniverse/crystaltools && cd publishtools/crystaltools && v -cc gcc -gc boehm -cflags -static -d net_blocking_sockets -d static_boehm publishtools.v && sudo mv publishtools /usr/local/bin && sudo chmod u+x /usr/local/bin/publishtools
-      - name: change dir to home
-        run: cd
-      - name: Build pubtools with sanitizers
         run: |
           rm -rf crystaltools 2>&1
           git clone https://github.com/freeflowuniverse/crystaltools
-          cd publishtools/crystaltools
-          v -cc gcc -gc boehm -cflags "-fsanitize=undefined" -d net_blocking_sockets -d static_boehm publishtools.v
+          cd crystaltools/crystaltools
+          v -cc gcc -gc boehm -cflags -static -d net_blocking_sockets -d static_boehm publishtools.v
           sudo mv publishtools /usr/local/bin
           sudo chmod u+x /usr/local/bin/publishtools
-      - name: create sites.json at home
+      - name: change dir to home
+        run: cd
+      - name: create site_wiki.json at home
         uses: finnp/create-file-action@1.0.0
         env:
             FILE_NAME: site_wiki.json
