@@ -36,7 +36,7 @@ jobs:
       - name: Run publishtools install
         run: publishtools install
       - name: Run publishtools flatten
-        run: publishtools flatten
+        run: publishtools flatten || publishtools flatten
       - name: cleaning
         run: |
           rm -rf ~/codewww
