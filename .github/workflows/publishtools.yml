@@ -19,7 +19,7 @@ jobs:
       - name: Install V lang
         run:  rm -rf v 2>&1 && rm -rf ~/.vmodules  2>&1 && git clone https://github.com/vlang/v && cd v && make && sudo ./v symlink && cd ..
       - name: Install pubtools dependecncies
-        run:  v install patrickpissurno.redis && v install despiegk.crystallib && v install nedpals.vex
+        run:  v install patrickpissurno.redis && v install despiegk.crystallib && v install nedpals.vex && sudo apt install mc git rsync curl -y
       - name: Build pubtools
         run: |
           rm -rf crystaltools 2>&1
