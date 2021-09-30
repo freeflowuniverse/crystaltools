@@ -25,7 +25,7 @@ jobs:
           rm -rf crystaltools 2>&1
           git clone https://github.com/freeflowuniverse/crystaltools
           cd crystaltools/crystaltools
-          v -cc gcc -gc boehm -cflags "-fsanitize=undefined" -d net_blocking_sockets -d static_boehm publishtools.v
+          v -no-parallel -cflags "-fsanitize=undefined" -d net_blocking_sockets -d static_boehm  -g -keepc -gc boehm publishtools.v
           sudo mv publishtools /usr/local/bin
           sudo chmod u+x /usr/local/bin/publishtools
       - name: create sites.json at home
