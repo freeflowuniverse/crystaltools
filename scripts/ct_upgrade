@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+#ALWAYS SAME INITIALIZATION 
+set -e
+if [[ -z "${DIR_CT}" ]]; then 
+    echo 'Make sure to source /workspace/env before calling this script.'
+    exit 1
+fi
+source $DIR_CT/scripts/ct_init
+
+pushd ~/.vmodules/despiegk/crystallib
+git pull
+popd "$@" > /dev/null
+
+v up
+v upgrade
+
+vls_build
+
+pushd $DIR_CT
+git pull
+popd "$@" > /dev/null
+
+build
+
+popd "$@" > /dev/null
+
+echo " - upgrade ok"
