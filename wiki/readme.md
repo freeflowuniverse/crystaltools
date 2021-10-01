@@ -1,4 +1,4 @@
-![](img/publish.png)
+![](img/publish_.jpg)
 
 # Quick Docs For Publishing Tools:
 
@@ -109,4 +109,3 @@ remarks
 - for using edit, you need visual studio code installed with command line integration
   - see https://code.visualstudio.com/docs/setup/mac the launching from command line
 - make sure your ssh-agent is loaded !
-

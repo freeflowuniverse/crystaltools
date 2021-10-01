@@ -12,7 +12,7 @@ ssh-keygen -t ed25519 -f ~/.ssh/sam
 
 > MAKE SURE TO USE A PASSPHRASE
 
-![](img/ssh1.png)
+![](img/ssh1_.jpg)
 
 see instructions above
 
@@ -34,7 +34,7 @@ ssh-add -l
 
 ## step 2: add to github 
 
-![](img/ssh2.png)
+![](img/ssh2_.jpg)
 
 this needs to be added in https://github.com/settings/keys
 

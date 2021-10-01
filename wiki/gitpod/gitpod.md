@@ -10,7 +10,7 @@
 
 ![](img/gitpod_authorize.png)
 
-![](img/gitpod_security.png)
+![](img/gitpod_security_.jpg)
 
 
 ### see more here

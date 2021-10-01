@@ -15,4 +15,4 @@ show a list of definitions
 
 the result looks as:
 
-![](img/defs_list.png)
+![](img/defs_list_.jpg)

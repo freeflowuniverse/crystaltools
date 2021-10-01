@@ -7,7 +7,7 @@ is the top navigation element
 ```markdown
 - ThreeFold
   - [ThreeFold Website](https://threefold.io)
-  - [ThreeFold Blog](https://threefold.io/blog)
+  - [ThreeFold Blog](!https://threefold.io/blog)
   - [TF Knowledge Base](https://threefold.io/info/threefold)
   - [TFGrid Capacity Explorer](https://explorer.threefold.io/)
   - [TF Token Stats](https://tokenstats.threefoldtoken.com/)
@@ -15,50 +15,49 @@ is the top navigation element
 
 ```
 
+- note the 2nd line, will use new tab because of !
+
 ## sidebar.md
 
 Example with line in between
 
 ```markdown
 
-- [**Home**](readme)
+- [**Home**](@threefold_home)
 -----------
 
-- [Release Notes](cloud:releasenotes)
-- [Team](team)
+- [Release Notes](threefold:releasenotes)
+- [Team](funding:team)
 
 ```
 
-## sidebar/navbar different per subdir
-
-the sidebar & navbar can be on sub directories
+## how to work with @ and !
 
 ```markdown
-- [Home](readme)
-- [P2P Cloud Concepts](cloud:cloud_home)
-- [TFGrid 2.0 Manual](tfgrid2)
-- [TFGrid 3.0 Manual](/tfgrid3/tfgrid3)
+- [**Home**](@threefold_home)
+- [**Team**](!Team)
 ```
 
-> note how to use /$dirname/$name_of_home_page_in_dir
+- '''@''' means we jump to the page and the sidebar we show is the bar from that location (or parent of that location)
+- default the sidebar stays the same, if a page is linked too we show the page with the sidebar of where we jump from
+- '''!''' means we open the page in a new tab
 
-important to start the link to a subdir with separate sidebar with / and name of the dir
+## use different navigation/sidebar depending sub directories
 
-so in this case  is a subdir and has page with name tfgrid2
+- the sidebar & navbar can be on sub directories
+- if you jump to a page which is in  a dir which has a sidebar.md, that one will be shown (if you used @)
+
 
 ```markdown
-- [**Home**](readme)
------------
-**Manual v2.0**
-- [eVDC](evdc_overview)
-  - [What is eVDC?](evdc)
-  - [Get Started](evdc_getting_started)
-    - [Create](evdc_create)
-    - [Access](evdc_access)
-    - [My VDC](evdc_my_evdc)
-    - [Manage Compute Nodes](evdc_
+- [**Home**](@threefold_home)
+--------
+- [P2P Cloud Concepts](@threefold:cloud_home)
+- [TFGrid 2.0 Manual](@tfgrid2)
+- [TFGrid 3.0 Manual](@tfgrid3)
 ```
 
-> note the trick how we link back to home
+- note: trick with use to allow user to go back to home easily
+- note we use @ to make sure we show the sidebar of that location
 
-> carefull: all links on this section too need to start with  otherwise you will jump back to navigation on root
+
+

@@ -1,7 +1,7 @@
 
 # Code Wiki Tricks
 
-![](img/filemgmr_wiki.png)
+![](img/filemgmr_wiki_.jpg)
 
 See how in a dir right there is a sites.json
 
@@ -24,9 +24,8 @@ code .
 
 it will open visual studio code 
 
-![](img/visualstudio_code.png)
+![](img/visualstudio_code_.jpg)
 
 Here you now have all directories together for editing purposes.
 
 This allows easy search & replace.
-
