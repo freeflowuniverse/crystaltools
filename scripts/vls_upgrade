@@ -10,15 +10,12 @@ source $DIR_CT/scripts/ct_init
 v up
 v upgrade
 
-pushd ~/.vmodules/despiegk/crystallib
-git pull
-popd "$@" > /dev/null
 
 pushd $DIR_CT
 git pull
 popd "$@" > /dev/null
 
-build
+vls_build
 
 popd "$@" > /dev/null
 
