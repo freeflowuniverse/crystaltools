@@ -7,7 +7,7 @@ is the top navigation element
 ```markdown
 - ThreeFold
   - [ThreeFold Website](https://threefold.io)
-  - [ThreeFold Blog](!https://threefold.io/blog)
+  - [ThreeFold Blog](threefold:blog)
   - [TF Knowledge Base](https://threefold.io/info/threefold)
   - [TFGrid Capacity Explorer](https://explorer.threefold.io/)
   - [TF Token Stats](https://tokenstats.threefoldtoken.com/)
@@ -23,7 +23,7 @@ Example with line in between
 
 ```markdown
 
-- [**Home**](@threefold_home)
+- [**Home**](@threefold:threefold_home)
 -----------
 
 - [Release Notes](threefold:releasenotes)
@@ -34,7 +34,7 @@ Example with line in between
 ## how to work with @ and !
 
 ```markdown
-- [**Home**](@threefold_home)
+- [**Home**](@threefold:threefold_home)
 - [**Team**](!Team)
 ```
 
@@ -49,15 +49,14 @@ Example with line in between
 
 
 ```markdown
-- [**Home**](@threefold_home)
+- [**Home**](@threefold:threefold_home)
 --------
 - [P2P Cloud Concepts](@threefold:cloud_home)
 - [TFGrid 2.0 Manual](@tfgrid2)
-- [TFGrid 3.0 Manual](@tfgrid3)
+- [TFGrid 3.0 Manual](@threefold:tfgrid3)
 ```
 
 - note: trick with use to allow user to go back to home easily
 - note we use @ to make sure we show the sidebar of that location
-
 
 
