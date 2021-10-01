@@ -20,6 +20,4 @@ popd "$@" > /dev/null
 
 build
 
-popd "$@" > /dev/null
-
 echo " - upgrade ok"
