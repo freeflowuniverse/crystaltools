@@ -32,6 +32,9 @@ function crystal_tools_get {
     fi
 }
 
+if [ -z "$TERM" ]; then
+    export TERM=xterm
+fi
 
 export PUBLISH_HOME="$HOME"
 
