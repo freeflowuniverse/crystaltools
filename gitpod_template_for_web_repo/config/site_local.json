@@ -5,7 +5,7 @@
     "fs_path": "..",
     "pull": false,
     "reset": false,
-    "cat": 2,
+    "cat": "web",
     "domains": [
         "www.local.io"
     ],
