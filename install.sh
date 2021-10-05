@@ -43,6 +43,15 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     brew services start redis
 fi
 
+pushd $DIR_CT
+git pull
+popd "$@" > /dev/null
+
+if [[ -f "$HOME/.vmodules/done_crystallib" ]]; then
+pushd ~/.vmodules/despiegk/crystallib
+git pull
+popd "$@" > /dev/null
+fi
 
 ct_build
 build
