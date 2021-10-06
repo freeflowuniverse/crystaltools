@@ -8,10 +8,10 @@ is the top navigation element
 - ThreeFold
   - [ThreeFold Website](https://threefold.io)
   - [ThreeFold Blog](threefold:blog)
-  - [TF Knowledge Base](https://threefold.io/info/threefold)
+  - [TF Knowledge Base](@threefold:threefold_home)
   - [TFGrid Capacity Explorer](https://explorer.threefold.io/)
   - [TF Token Stats](https://tokenstats.threefoldtoken.com/)
-  - [TFGrid Manual](https://threefold.io/info/sdk)
+  - [TFGrid Manual](@threefold:manual3_home)
 
 ```
 
@@ -52,11 +52,9 @@ Example with line in between
 - [**Home**](@threefold:threefold_home)
 --------
 - [P2P Cloud Concepts](@threefold:cloud_home)
-- [TFGrid 2.0 Manual](@tfgrid2)
-- [TFGrid 3.0 Manual](@threefold:tfgrid3)
+- [TFGrid 2.0 Manual](@manual2_home)
+- [TFGrid 3.0 Manual](@manual3_home)
 ```
 
 - note: trick with use to allow user to go back to home easily
 - note we use @ to make sure we show the sidebar of that location
-
-
