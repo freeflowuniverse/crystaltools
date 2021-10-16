@@ -52,8 +52,8 @@ Example with line in between
 - [**Home**](@threefold:threefold_home)
 --------
 - [P2P Cloud Concepts](@threefold:cloud_home)
-- [TFGrid 2.0 Manual](@manual2_home)
-- [TFGrid 3.0 Manual](@manual3_home)
+- [TFGrid 2.0 Manual](@threefold:manual2_home)
+- [TFGrid 3.0 Manual](@threefold:manual3_home)
 ```
 
 - note: trick with use to allow user to go back to home easily

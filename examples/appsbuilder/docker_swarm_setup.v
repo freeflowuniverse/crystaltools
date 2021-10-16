@@ -15,11 +15,13 @@ fn do()?{
 	mut home := builder.node_get(ipaddr:"192.168.10.254",name:"home",debug:true,reset:reset)?
 
 	app1.node_install_docker_swarm(reset:reset)?
-	app2.node_install_docker_swarm_add(master:app1)?
-	home.node_install_docker_swarm_add(master:app1)?
+	app2.node_install_docker_swarm_add(mut master:app1)?
+	home.node_install_docker_swarm_add(mut master:app1)?
+
+	//will also install the portainer agents on the other 2 nodes
+	app1.install_portainer()?
 
 	//now we have a swarm cluster operational
-
 
 
 
