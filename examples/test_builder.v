@@ -11,7 +11,7 @@ fn do()?{
 	home.executor.debug_on()
 
 	// home.shell()?
-	println(home.db.environment)
+	// println(home.db.environment)
 
 	assert home.cmd_exists("mc")==true
 	assert home.cmd_exists("cmdnotexist")==false
