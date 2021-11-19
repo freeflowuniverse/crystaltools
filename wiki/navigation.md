@@ -11,7 +11,7 @@ is the top navigation element
   - [TF Knowledge Base](@threefold:threefold_home)
   - [TFGrid Capacity Explorer](https://explorer.threefold.io/)
   - [TF Token Stats](https://tokenstats.threefoldtoken.com/)
-  - [TFGrid Manual](@threefold:manual3_home)
+  - [TFGrid Manual](@manual:manual3_home_new)
 
 ```
 
@@ -53,7 +53,7 @@ Example with line in between
 --------
 - [P2P Cloud Concepts](@threefold:cloud_home)
 - [TFGrid 2.0 Manual](@threefold:manual2_home)
-- [TFGrid 3.0 Manual](@threefold:manual3_home)
+- [TFGrid 3.0 Manual](@manual:manual3_home_new)
 ```
 
 - note: trick with use to allow user to go back to home easily
