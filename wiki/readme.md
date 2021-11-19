@@ -5,6 +5,8 @@
 
 ## quick instructions
 
+> When running the publishtools the wiki's are under ~/code_wiki
+
 ### install & run
 
 ```bash
