@@ -27,7 +27,7 @@ Example with line in between
 -----------
 
 - [Release Notes](threefold:releasenotes)
-- [Team](funding:team)
+- [Team](threefold:team)
 
 ```
 
@@ -35,7 +35,7 @@ Example with line in between
 
 ```markdown
 - [**Home**](@threefold:threefold_home)
-- [**Team**](!Team)
+- [**Team**](!threefold:team)
 ```
 
 - '''@''' means we jump to the page and the sidebar we show is the bar from that location (or parent of that location)
