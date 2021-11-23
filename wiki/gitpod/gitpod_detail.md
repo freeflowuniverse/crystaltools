@@ -8,7 +8,7 @@ To easily collaborate on ThreeFold's websites and wikis use **[Gitpod](https://w
 
 <br/>
 
-2. **[Add Gitpod](https://www.gitpod.io/docs/browser-extension/)** extension to Chrome, or Firefox (won’t work with Safari).
+2. [**Add Gitpod**](https://www.gitpod.io/docs/browser-extension/) extension to Chrome, or Firefox (won’t work with Safari).
 
 <br/>
 
