@@ -24,8 +24,11 @@
 - [howto](@howto)
   - [codewiki trick](@codewiki_dir)
   - [how to work with sshkeys](@sshkey)
-  - [work with custom site configuration](@sites_json)
-  - [work with security](@sites_security)
   - [use redis](@redis_publishtools)
   - [use debug tools publishtools](@debug_publishtools)
   - [Out of Open Handles](outof_open_handles)
+
+
+
+<!-- - [work with custom site configuration](@sites_json)
+- [work with security](@sites_security) -->
