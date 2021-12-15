@@ -9,6 +9,15 @@ bash /tmp/install.sh
 source ~/env.sh
 ```
 
+if it fails Theory
+```bash
+ct_reset
+```
+
+if it ok you should server
+```bash
+*** INSTALL WAS OK ***
+```
 
 
 ## Get your first wiki
