@@ -2,14 +2,22 @@
 
 - [PLANNING/ISSUES SEE HERE](https://circles.threefold.me/project/despiegk-product_publisher/issues)
 
-## Getting Started, Deploy Publishingtools
+## install
 
 ```bash
-curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/development/install.sh | bash
+curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/development/install.sh > /tmp/install.sh
+bash /tmp/install.sh
+#use your environment
+source ~/env.sh
 ```
 
+## Get your first wiki
 
-to get a specific wiki environment
+```bash
+export PUBSITE=https://github.com/threefoldfoundation/info_threefold_pub/tree/development/wiki_config
+publishtools develop
+```
+
 
 ```bash
 export PUBSITE=https://github.com/threefoldfoundation/info_threefold/tree/development/wiki_config
