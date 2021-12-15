@@ -4,11 +4,20 @@ generic way how to get the publishtools in your computer or gitpod using an inst
 
 ```bash
 curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/development/install.sh > /tmp/install.sh
-sudo bash /tmp/install.sh
+bash /tmp/install.sh
 #use your environment
 source ~/env.sh
 ```
 
+if it fails Theory
+```bash
+ct_reset
+```
+
+if it ok you should server
+```bash
+*** INSTALL WAS OK ***
+```
 
 
 ## Get your first wiki

@@ -1,21 +1,14 @@
 # Tools to run ThreeFold web environment
 
-- [PLANNING/ISSUES SEE HERE](https://circles.threefold.me/project/despiegk-product_publisher/issues)
+see https://library.threefold.me/info/publishtools/#/publishtools__install
 
-## Getting Started, Deploy Publishingtools
-
-```bash
-curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/development/install.sh | bash
-```
-
-
-to get a specific wiki environment
+<!-- 
 
 ```bash
 export PUBSITE=https://github.com/threefoldfoundation/info_threefold/tree/development/wiki_config
 publishtools develop
-```
-
+``` -->
+<!-- 
 ## Develop/Play in gitpod
 
 - install gitpod extension to your browser
@@ -42,21 +35,21 @@ oneliner:
 ```bash
 curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/development/scripts/ct_init > /tmp/ct_init && source /tmp/ct_init && ct_help
 ```
+ -->
 
 
-
-### for more info, see crystaltools documentation
+<!-- ### for more info, see crystaltools documentation
 
 https://info.threefold.io/info/crystaltools
 
+ -->
 
-
-### how to work with branches
+<!-- ### how to work with branches
 
 - call install.sh on other branch (the script above in branch)
 - adjust install.sh to point to other branch for 
-- adjust env.sh in git_get to pull the right branch
-
+- adjust env.sh in git_get to pull the right branch -->
+<!-- 
 ## when sudo install
 
 ```bash
@@ -65,5 +58,5 @@ curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/development
 sudo bash /tmp/install.sh
 ```
 
-
+ -->
 

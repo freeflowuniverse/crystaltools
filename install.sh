@@ -56,6 +56,7 @@ git pull
 popd "$@" > /dev/null
 fi
 
+# ct_reset
 ct_build
 build
 clear
