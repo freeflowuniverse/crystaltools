@@ -15,7 +15,7 @@ to get a specific wiki environment
 export PUBSITE=https://github.com/threefoldfoundation/info_threefold/tree/development/wiki_config
 publishtools develop
 ```
-
+<!-- 
 ## Develop/Play in gitpod
 
 - install gitpod extension to your browser
@@ -42,7 +42,7 @@ oneliner:
 ```bash
 curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/development/scripts/ct_init > /tmp/ct_init && source /tmp/ct_init && ct_help
 ```
-
+ -->
 
 
 ### for more info, see crystaltools documentation
