@@ -4,6 +4,9 @@ if [[ -z "${PBRANCH}" ]]; then
     export PBRANCH="development"
 fi
 
+export iam=`whoami`
+sudo chown -R ${iam}:staff ~/code
+
 export PUBLISH_HOME="$HOME"
 
 export DIR_BASE="$PUBLISH_HOME/publisher"
@@ -57,4 +60,7 @@ ct_build
 build
 clear
 ct_help
+
+echo "**** INSTALL WAS OK ****"
+
 
