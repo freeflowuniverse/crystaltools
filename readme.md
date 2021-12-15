@@ -51,11 +51,11 @@ https://info.threefold.io/info/crystaltools
 
 
 
-### how to work with branches
+<!-- ### how to work with branches
 
 - call install.sh on other branch (the script above in branch)
 - adjust install.sh to point to other branch for 
-- adjust env.sh in git_get to pull the right branch
+- adjust env.sh in git_get to pull the right branch -->
 <!-- 
 ## when sudo install
 
