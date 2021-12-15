@@ -12,7 +12,14 @@ sudo rm -rf /usr/local/bin/vls
 sudo rm -rf /usr/local/bin/v
 sudo rm -rf /usr/local/bin/ct
 sudo rm -rf /usr/local/bin/crystaltools
+sudo rm -rf /usr/bin/v
 
 sudo rm -rf ~/.vmodules
 
 sudo rm -rf ~/_code
+
+sudo chown -R ${USER}:staff /usr/local/bin
+sudo chown -R ${USER}:staff ~/Downloads
+
+mkdir -p $DIR_CODE
+
