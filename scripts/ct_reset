@@ -18,8 +18,11 @@ sudo rm -rf ~/.vmodules
 
 sudo rm -rf ~/_code
 
+set +ex
+
 sudo chown -R ${USER}:staff /usr/local/bin
 sudo chown -R ${USER}:staff ~/Downloads
+sudo chown -R ${USER}:staff /opt/homebrew/bin
 
 mkdir -p $DIR_CODE
 
