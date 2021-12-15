@@ -1,22 +1,7 @@
 # Tools to run ThreeFold web environment
 
-- [PLANNING/ISSUES SEE HERE](https://circles.threefold.me/project/despiegk-product_publisher/issues)
+see https://library.threefold.me/info/publishtools/#/publishtools__install
 
-## install
-
-```bash
-curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/development/install.sh > /tmp/install.sh
-bash /tmp/install.sh
-#use your environment
-source ~/env.sh
-```
-
-## Get your first wiki
-
-```bash
-export PUBSITE=https://github.com/threefoldfoundation/info_threefold_pub/tree/development/wiki_config
-publishtools develop
-```
 
 
 ```bash
@@ -53,11 +38,11 @@ curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/development
  -->
 
 
-### for more info, see crystaltools documentation
+<!-- ### for more info, see crystaltools documentation
 
 https://info.threefold.io/info/crystaltools
 
-
+ -->
 
 <!-- ### how to work with branches
 
