@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #ALWAYS SAME INITIALIZATION 
-set -e
+
+set -ex
 if [[ -z "${DIR_CT}" ]]; then 
     echo 'Make sure to source /workspace/env or ~/env.sh before calling this script.'
     exit 1
@@ -37,13 +38,14 @@ echo "DONE"
    
 if [[ "$OSTYPE" == "darwin"* ]]; then
     if [[ `uname -m` == 'arm64' ]]; then
-        sudo cp crystaltools /opt/homebrew/bin/crystaltools
-        sudo chmod 770 /opt/homebrew/bin/crystaltools
+        sudo rm -f /opt/homebrew/bin/crystaltools
+        cp crystaltools /opt/homebrew/bin/crystaltools
+        chmod 770 /opt/homebrew/bin/crystaltools
         #to prepare for upload to our releases
         cp crystaltools ~/Downloads/crystaltools_osx_arm
     else        
-        sudo cp ct /usr/local/bin/crystaltools
-        sudo chmod 770 /usr/local/bin/crystaltools    
+        cp crystaltools /usr/local/bin/crystaltools
+        chmod 770 /usr/local/bin/crystaltools    
         #to prepare for upload to our releases
         cp crystaltools ~/Downloads/crystaltools_osx
     fi
@@ -55,7 +57,7 @@ else
     
 fi
 
-sudo cp crystaltools /usr/local/bin/ct
+cp crystaltools /usr/local/bin/ct
 
 
 
