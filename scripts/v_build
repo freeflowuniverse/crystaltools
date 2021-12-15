@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #ALWAYS SAME INITIALIZATION 
-set -e
+set -ex
 if [[ -z "${DIR_CT}" ]]; then 
     echo 'Make sure to source /workspace/env before calling this script.'
     exit 1
@@ -22,6 +22,7 @@ if [[ -d "$DIR_CODE_INT/v" ]]; then
     git pull
     popd "$@" > /dev/null
 else
+    mkdir -p $DIR_CODE_INT
     pushd $DIR_CODE_INT
     sudo rm -rf $DIR_CODE_INT/v
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then 
