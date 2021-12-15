@@ -2,12 +2,12 @@
 
 see https://library.threefold.me/info/publishtools/#/publishtools__install
 
-
+<!-- 
 
 ```bash
 export PUBSITE=https://github.com/threefoldfoundation/info_threefold/tree/development/wiki_config
 publishtools develop
-```
+``` -->
 <!-- 
 ## Develop/Play in gitpod
 

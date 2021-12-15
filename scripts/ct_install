@@ -19,6 +19,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 
     if ! [ -x "$(command -v mc)" ]; then
         brew install mc
+        brew install openssl
     fi
 
     if ! [ -x "$(command -v redis-server)" ]; then
