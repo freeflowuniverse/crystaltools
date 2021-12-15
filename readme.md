@@ -56,7 +56,7 @@ https://info.threefold.io/info/crystaltools
 - call install.sh on other branch (the script above in branch)
 - adjust install.sh to point to other branch for 
 - adjust env.sh in git_get to pull the right branch
-
+<!-- 
 ## when sudo install
 
 ```bash
@@ -65,5 +65,5 @@ curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/development
 sudo bash /tmp/install.sh
 ```
 
-
+ -->
 
