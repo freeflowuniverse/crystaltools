@@ -3,5 +3,6 @@
 	"name": "publishtools",
 	"domains": [
 		"publishtools.threefold.io"
-	]
+	],
+	"cat": "wiki"
 }

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -ex
 source env.sh
 build
 cd wiki_config
