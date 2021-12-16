@@ -4,14 +4,11 @@ if [[ -z "${PBRANCH}" ]]; then
     export PBRANCH="development"
 fi
 
-export iam=`whoami`
-sudo chown -R ${iam}:staff ~/code
-
 export PUBLISH_HOME="$HOME"
 
+#don't think its used
 export DIR_BASE="$PUBLISH_HOME/publisher"
 
-mkdir -p $DIR_BASE
 
 #important to first remove
 rm -f $PUBLISH_HOME/env.sh

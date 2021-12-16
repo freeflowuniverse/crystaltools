@@ -11,13 +11,13 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     chmod +x /usr/local/bin/publishtools
 elif [[ "$OSTYPE" == "darwin"* ]]; then
 
-    if ! [ -x "$(command -v mc)" ]; then
-        brew install mc
-    fi
+    # if ! [ -x "$(command -v mc)" ]; then
+    #     brew install mc
+    # fi
 
-    if ! [ -x "$(command -v redis-server)" ]; then
-        brew install redis
-    fi
+    # if ! [ -x "$(command -v redis-server)" ]; then
+    #     brew install redis
+    # fi
     
     if [[ `uname -m` == 'arm64' ]]; then
         rm -f /usr/local/bin/publishtools

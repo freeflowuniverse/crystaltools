@@ -3,7 +3,7 @@ image:
 tasks:
     - name: WIKI
       command: |
-        export PBRANCH=development_kristof
+        export PBRANCH=development
         curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/$PBRANCH/install.sh > /tmp/install.sh
         bash /tmp/install.sh
         source /workspace/env.sh

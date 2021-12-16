@@ -3,7 +3,7 @@
 generic way how to get the publishtools in your computer or gitpod using an install script
 
 ```bash
-curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/development/install.sh > /tmp/install.sh
+curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/development/installscripts/install.sh > /tmp/install.sh
 bash /tmp/install.sh
 #use your environment
 source ~/env.sh
