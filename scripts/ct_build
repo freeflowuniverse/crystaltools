@@ -49,15 +49,15 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         #to prepare for upload to our releases
         cp crystaltools ~/Downloads/crystaltools_osx
     fi
+    cp crystaltools /usr/local/bin/ct
 else
     #for linux
     sudo cp crystaltools /usr/local/bin/crystaltools
     sudo chmod 777 /usr/local/bin/crystaltools
+    sudo rm -rf crystaltools_linux
     cp crystaltools crystaltools_linux
-    
+    sudo cp crystaltools /usr/local/bin/ct
 fi
-
-cp crystaltools /usr/local/bin/ct
 
 
 
