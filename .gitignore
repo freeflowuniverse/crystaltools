@@ -3,7 +3,7 @@ examples/docker
 examples/publisher
 examples/texttools
 examples/gittools
-examples/tmux
+examples/tmux/trytmux
 examples/vredis2
 *dSYM/
 publisher/publish
