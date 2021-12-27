@@ -17,9 +17,11 @@ fn do()?{
 	t.list_print()
 
 	for _ in 0 .. 100 {
+		//will only get process info once every 5 sec, otherwise will return from mem
 		pm := process.processmap_get()?
-		println(pm)
+		// println(pm)
 		time.sleep(time.Duration(1000000000))
+		println("s")
 	}
 	
 
