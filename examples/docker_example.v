@@ -1,34 +1,32 @@
 import rand
-import despiegk.crystallib.builder
 import despiegk.crystallib.docker
 
 fn docker1()? {
-	sshkey := "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC/9RNGKRjHvViunSOXhBF7EumrWvmqAAVJSrfGdLaVasgaYK6tkTRDzpZNplh3Tk1aowneXnZffygzIIZ82FWQYBo04IBWwFDOsCawjVbuAfcd9ZslYEYB3QnxV6ogQ4rvXnJ7IHgm3E3SZvt2l45WIyFn6ZKuFifK1aXhZkxHIPf31q68R2idJ764EsfqXfaf3q8H3u4G0NjfWmdPm9nwf/RJDZO+KYFLQ9wXeqRn6u/mRx+u7UD+Uo0xgjRQk1m8V+KuLAmqAosFdlAq0pBO8lEBpSebYdvRWxpM0QSdNrYQcMLVRX7IehizyTt+5sYYbp6f11WWcxLx0QDsUZ/J"
 
-	// mut node := builder.node_get(ipaddr: "", name: "test") ?
+	//get docker engine connection to local machine, will use loaded sshkey
+	mut engine := docker.engine_local() ?
 
-	mut engine := docker.new(sshkeys_allowed:[sshkey])?
+	mut containers := engine.containers_list()?
+
 	engine.reset_all()
 	
-	// mut containers := engine.containers_list()
-	// println(containers)
-	// mut images := engine.images_list()
-	// assert containers.len == 0
-	// assert images.len == 0
+	mut containers := engine.containers_list()?
+	mut images := engine.images_list()?
+	assert containers.len == 0
+	assert images.len == 0
 
-	// name := rand.uuid_v4()
-	// println('creating container : $name')
-	// mut args := docker.DockerContainerCreateArgs{
-	// 	name: name
-	// 	hostname: name
-	// 	mounted_volumes: ['/tmp:/tmp']
-	// 	forwarded_ports: []
-	// 	image_repo: 'ubuntu'
-	// }
+	name := rand.uuid_v4()
+	println('creating container : $name')
+	//create new container
+	mut c := engine.container_create(
+		name: name
+		hostname: name
+		mounted_volumes: ['/tmp:/tmp']
+		forwarded_ports: []
+		image_repo: 'ubuntu'
+		) or { panic(err) }
 
-	// // create new container
-	// mut c := engine.container_create(args) or { panic(err) }
-	// assert c.status == docker.DockerContainerStatus.up
+	assert c.status == docker.DockerContainerStatus.up
 	// c.halt() or { panic(err) }
 	// assert c.status == docker.DockerContainerStatus.down
 	// c.start() or { panic(err) }

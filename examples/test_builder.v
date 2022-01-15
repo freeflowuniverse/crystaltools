@@ -6,7 +6,7 @@ import despiegk.crystallib.builder
 
 
 fn do()?{
-	mut home := builder.node_get(ipaddr:"192.168.10.118")?
+	mut home := builder.node_new(ipaddr:"192.168.10.118")?
 
 	home.executor.debug_on()
 

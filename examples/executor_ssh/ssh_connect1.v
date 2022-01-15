@@ -13,7 +13,7 @@ fn do()?{
 
 	println(t)
 
-	// mut app1 := builder.node_get(ipaddr:"46.101.149.252",name:"app1",debug:true,reset:reset)?
+	// mut app1 := builder.node_new(ipaddr:"46.101.149.252",name:"app1",debug:true,reset:reset)?
 
 
 }

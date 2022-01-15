@@ -10,9 +10,9 @@ fn do()?{
 	reset := false
 
 	//app1 will be the master
-	mut app1 := builder.node_get(ipaddr:"46.101.149.252",name:"app1",debug:true,reset:reset)?
-	mut app2 := builder.node_get(ipaddr:"178.62.204.160",name:"app2",debug:true,reset:reset)?
-	mut home := builder.node_get(ipaddr:"192.168.10.254",name:"home",debug:true,reset:reset)?
+	mut app1 := builder.node_new(ipaddr:"46.101.149.252",name:"app1",debug:true,reset:reset)?
+	mut app2 := builder.node_new(ipaddr:"178.62.204.160",name:"app2",debug:true,reset:reset)?
+	mut home := builder.node_new(ipaddr:"192.168.10.254",name:"home",debug:true,reset:reset)?
 
 	app1.node_install_docker_swarm(reset:reset)?
 	app2.node_install_docker_swarm_add(mut master:app1)?
