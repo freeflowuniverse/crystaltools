@@ -10,7 +10,6 @@ fn docker1()? {
 
 	engine.reset_all()
 	
-	mut containers := engine.containers_list()?
 	mut images := engine.images_list()?
 	assert containers.len == 0
 	assert images.len == 0
