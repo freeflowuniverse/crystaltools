@@ -16,6 +16,6 @@ fn main() {
 	}
 	mut t := taiga.new(url, splitted[0], splitted[1], 100000) // Connect with username and password and cache time in seconds
 	export_dir := '/tmp/taiga' // set export directory
-	t.cache_drop_all() or {panic(err)}
+	// t.cache_drop_all() or {panic(err)}
 	taiga.export(export_dir, url) or {panic(err)}
 }
