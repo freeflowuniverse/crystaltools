@@ -1,0 +1,6 @@
+{
+	"fs_path": "/tmp/taiga",
+	"name": "taiga",
+	"domains": ["taiga"],
+	"cat": "wiki"
+}
