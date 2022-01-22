@@ -7,8 +7,10 @@ tasks:
         curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/$PBRANCH/install.sh > /tmp/install.sh
         bash /tmp/install.sh
         source /workspace/env.sh
-        vls_build
-        bash wiki_develop
+        build
+        # vls_build
+        # bash wiki_develop
+        echo 'DO: bash debug.sh'
 ports:
   - port: 9998
     onOpen: open-browser
