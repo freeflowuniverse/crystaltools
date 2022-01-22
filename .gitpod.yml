@@ -10,6 +10,8 @@ tasks:
         build
         # vls_build
         # bash wiki_develop
+        reset
+        echo 'DO THE EXPORT KRISTOF GAVE YOU: export TAIGA=despiegk:asecret'
         echo 'DO: bash debug.sh'
 ports:
   - port: 9998
