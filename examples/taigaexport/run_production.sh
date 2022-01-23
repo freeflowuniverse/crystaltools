@@ -6,12 +6,12 @@ v -no-parallel -d net_blocking_sockets -d static_boehm  -g -keepc  -gc boehm tai
 # v taiga_export_production.v
 
 # lldb taiga_export_production  --one-line r
-# taiga_export_production
+./taiga_export_production
 
 #build publishtools
-source ~/env.sh
-build
+# source ~/env.sh
+# build
 
 # lldb publishtools develop --one-line r
 
-publishtools develop
+# publishtools develop
