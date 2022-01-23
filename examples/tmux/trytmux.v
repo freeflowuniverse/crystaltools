@@ -1,13 +1,15 @@
 	
 module main
-import despiegk.crystallib.tmux
+import despiegk.crystallib.builder
 import despiegk.crystallib.process
 import time
 
 fn do()?{
 
-	mut t:=tmux.new(name:"testtmux")?
-	// t.stop()?
+	mut n:=builder.node_local()?
+
+	mut t:=n.tmux
+	t.stop()?
 	
 	t.window_new(name:"test1",cmd:"mcs",reset:true)?
 	t.window_new(name:"test2",cmd:"mc",reset:true)?
@@ -21,7 +23,7 @@ fn do()?{
 		pm := process.processmap_get()?
 		// println(pm)
 		time.sleep(time.Duration(1000000000))
-		println("s")
+		println(pm)
 	}
 	
 

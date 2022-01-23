@@ -1,3 +1,4 @@
+module main
 import os
 import tmux
 import builder

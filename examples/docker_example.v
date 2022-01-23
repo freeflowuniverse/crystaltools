@@ -4,11 +4,11 @@ import despiegk.crystallib.docker
 fn docker1()? {
 
 	//get docker engine connection to local machine, will use loaded sshkey
-	mut engine := docker.engine_local() ?
+	mut engine := docker.engine_local([]) ?
 
 	mut containers := engine.containers_list()?
 
-	engine.reset_all()
+	engine.reset_all()?
 	
 	mut images := engine.images_list()?
 	assert containers.len == 0
