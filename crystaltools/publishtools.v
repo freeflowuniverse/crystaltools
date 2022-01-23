@@ -2,12 +2,11 @@ module main
 
 import despiegk.crystallib.installers
 import os
-// import despiegk.crystallib.process
 import cli
 import despiegk.crystallib.publisher_core
 import despiegk.crystallib.publisher_config
+import despiegk.crystallib.gittools
 import readline
-// import json
 
 fn flatten(mut publ publisher_core.Publisher) bool {
 	publ.flatten() or { return false }
@@ -30,6 +29,7 @@ fn flag_names_get(cmd cli.Command) []string {
 }
 
 fn main() {
+
 	pullflag := cli.Flag{
 		name: 'pull'
 		abbrev: 'p'
@@ -84,7 +84,7 @@ fn main() {
 		abbrev: 'p'
 		description: 'publish production'
 		flag: cli.FlagType.bool
-	}	
+	}
 
 	// INSTALL
 	install_exec := fn (cmd cli.Command) ? {
@@ -102,10 +102,15 @@ fn main() {
 	install_cmd.add_flag(cleanflag)
 
 	// DEVELOP
-	develop_exec := fn (cmd cli.Command) ? {
+	develop_exec := fn (cmd cli.Command)? {
 		flags := cmd.flags.get_all_found()
 		webrepo := flags.get_string('repo') or { '' }
-		mut cfg := publisher_config.get()
+		println(1)
+		mut cfg := publisher_config.get() or {
+			println('Could not load config:\n$err')
+			exit(1)
+		}
+		println(2)
 		if webrepo == '' {
 			println(' - develop for wikis')
 
@@ -138,7 +143,7 @@ fn main() {
 	// RUN
 	run_exec := fn (cmd cli.Command) ? {
 
-		cfg := publisher_config.get()
+		cfg := publisher_config.get()?
 		mut publ := publisher_core.new(cfg) ?
 		publisher_core.webserver_run(mut &publ) ?
 	}
@@ -152,7 +157,7 @@ fn main() {
 	// FLATTEN
 	flatten_exec := fn (cmd cli.Command) ? {
 
-		cfg := publisher_config.get()
+		cfg := publisher_config.get()?
 		mut publ := publisher_core.new(cfg) ?
 		publ.flatten() ?
 	}
@@ -167,7 +172,7 @@ fn main() {
 	// BUILD
 	build_exec := fn (cmd cli.Command) ? {
 		flags := cmd.flags.get_all_found()
-		// cfg := publisher_config.get()
+		// cfg := publisher_config.get()?
 		// mut publ := publisher_core.new(cfg) ?
 		installers.website_build(flags.get_bool('reset') or { false },flag_names_get(cmd)) ?
 	}
@@ -296,10 +301,10 @@ fn main() {
 		mut args := os.args.clone()
 		if args.len == 3 {
 			if args[2] == 'off' {
-				publisher_core.dns_off(true)
+				publisher_core.dns_off(true)?
 				return
 			} else if args[2] == 'on' {
-				publisher_core.dns_on(true)
+				publisher_core.dns_on(true)?
 				return
 			}
 		}
@@ -316,7 +321,7 @@ fn main() {
 	// PUBLISH
 	// publish_exec := fn (cmd cli.Command) ? {
 	// 	mut args := os.args.clone()
-	// 	mut cfg := publisher_config.get()
+	// 	mut cfg := publisher_config.get()?
 	// 	mut env := 'staging'
 
 	// 	mut production := cmd.flags.get_bool('production') or { false }
@@ -570,7 +575,7 @@ fn main() {
 		mut args := os.args.clone()
 		if args.len == 3 {
 			if args[2] == 'update' {
-				mut cfg := publisher_config.get()
+				mut cfg := publisher_config.get()?
 				cfg.update_staticfiles(true) ?
 				return
 			}
@@ -615,6 +620,10 @@ fn main() {
 
         '
 	}
+
+	gittools.get() or {panic(err)}
+	publisher_config.get() or {panic(err)}
+	println(22)
 
 	main_cmd.setup()
 	main_cmd.parse(os.args)
