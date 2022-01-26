@@ -59,7 +59,7 @@ fn main() {
 	develop_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd) ?
 		mut arg := false
-		mut cfg := publisher_config.get()
+		mut cfg := publisher_config.get()?
 		for flag in cmd.flags {
 			if flag.name == 'repo' {
 				if flag.value.len > 0 {
@@ -92,7 +92,7 @@ fn main() {
 	// RUN
 	run_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd) ?
-		cfg := publisher_config.get()
+		cfg := publisher_config.get()?
 		mut publ := publisher_core.new(&cfg)?
 		publ.check()?
 		publ.flatten() ?
@@ -108,7 +108,7 @@ fn main() {
 	// BUILD
 	build_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd) ?
-		cfg := publisher_config.get()
+		cfg := publisher_config.get()?
 		mut publ := publisher_core.new(&cfg)?
 		publ.check()?
 		publ.flatten() ?

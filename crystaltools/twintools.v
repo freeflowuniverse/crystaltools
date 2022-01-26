@@ -100,7 +100,7 @@ fn main() {
 	// DEVELOP
 	develop_exec := fn (cmd cli.Command) ? {
 		webrepo := cmd.flags.get_string('repo') or { '' }
-		mut cfg := publisher_config.get()
+		mut cfg := publisher_config.get()?
 		if webrepo == '' {
 			println(' - develop for wikis')
 			// installers.sites_download(cmd, false) ?
@@ -133,7 +133,7 @@ fn main() {
 	// RUN
 	run_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, false) ?
-		cfg := publisher_config.get()
+		cfg := publisher_config.get()?
 		mut publ := publisher_core.new(cfg) ?
 		publisher_core.webserver_run(mut &publ) ?
 	}
@@ -147,7 +147,7 @@ fn main() {
 	// FLATTEN
 	flatten_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, false) ?
-		cfg := publisher_config.get()
+		cfg := publisher_config.get()?
 		mut publ := publisher_core.new(cfg) ?
 		publ.flatten() ?
 	}
@@ -162,7 +162,7 @@ fn main() {
 	// BUILD
 	build_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, true) ?
-		// cfg := publisher_config.get()
+		// cfg := publisher_config.get()?
 		// mut publ := publisher_core.new(cfg) ?
 		installers.website_build(&cmd) ?
 	}
@@ -383,7 +383,7 @@ fn main() {
 	// publish
 	publish_exec := fn (cmd cli.Command) ? {
 		mut args := os.args.clone()
-		mut cfg := publisher_config.get()
+		mut cfg := publisher_config.get()?
 		mut env := 'staging'
 
 		mut production := cmd.flags.get_bool('production') or { false }
@@ -637,7 +637,7 @@ fn main() {
 		mut args := os.args.clone()
 		if args.len == 3 {
 			if args[2] == 'update' {
-				mut cfg := publisher_config.get()
+				mut cfg := publisher_config.get()?
 				cfg.update_staticfiles(true) ?
 				return
 			}
