@@ -81,7 +81,7 @@ fn main() {
 
 	// LIST
 	list_exec := fn (cmd cli.Command) ? {
-		mut gs := gittools.new()
+		mut gs := gittools.get() ?
 		filter := cmd.flags.get_string('filter') or {""}
 		gs.list(filter:filter)?
 	}
@@ -94,7 +94,7 @@ fn main() {
 	// commit
 	commit_exec := fn (cmd cli.Command) ? {
 		message := flag_message_get(cmd)
-		mut gs := gittools.new()
+		mut gs := gittools.get() ?
 		filter := cmd.flags.get_string('filter') or {""}
 		pull := cmd.flags.get_bool('pull') or {false}
 		gs.commit(filter:filter,message:message,pull:pull)?	
@@ -111,7 +111,7 @@ fn main() {
 	// pushcommit
 	pushcommit_exec := fn (cmd cli.Command) ? {
 		message := flag_message_get(cmd)
-		mut gs := gittools.new()
+		mut gs := gittools.get() ?
 		filter := cmd.flags.get_string('filter') or {""}
 		pull := cmd.flags.get_bool('pull') or {false}
 		gs.pushcommit(filter:filter,message:message,pull:pull)?	
@@ -127,9 +127,9 @@ fn main() {
 
 	// push
 	push_exec := fn (cmd cli.Command) ? {
-		mut gs := gittools.new()
+		mut gs := gittools.get() ?
 		filter := cmd.flags.get_string('filter') or {""}
-		gs.push(filter:filter)?	
+		gs.push(filter:filter)?
 
 	}
 	mut push_cmd := cli.Command{
