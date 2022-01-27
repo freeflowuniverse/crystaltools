@@ -5,7 +5,7 @@ examples/texttools
 examples/gittools
 examples/tmux/trytmux
 examples/vredis2
-examples/taigaexports/export_project
+examples/taigaprojectexports/export_project
 *dSYM/
 publisher/publish
 install_publisher
