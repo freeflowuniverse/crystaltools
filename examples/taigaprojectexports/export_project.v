@@ -41,7 +41,7 @@ fn parse_flags(mut fp flag.FlagParser) ?Args {
 
 fn export(args Args) {
     url := args.url
-	mut exporter := taigaexports.new(url, args.username, args.password) or {
+	mut exporter := taigaexports.new_from_credentials(url, args.username, args.password) or {
 		println("cannot get an exporter for $url")
 		panic(err)
 	}
