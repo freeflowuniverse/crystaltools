@@ -622,8 +622,8 @@ fn main() {
 	}
 
 	gittools.get() or {panic(err)}
-	publisher_config.get() or {panic(err)}
-	println(22)
+	// publisher_config.get() or {panic(err)}
+	// println(22)
 
 	main_cmd.setup()
 	main_cmd.parse(os.args)

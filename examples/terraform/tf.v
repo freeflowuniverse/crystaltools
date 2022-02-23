@@ -1,7 +1,5 @@
 module main
 
-// import despiegk.crystallib.fftools
-// import despiegk.crystallib.git3
 import despiegk.crystallib.terraform
 import threefoldtech.vgrid.explorer
 import threefoldtech.vgrid.gridproxy
@@ -14,7 +12,9 @@ fn do()? {
 	//if terraform client not install will do it automatically
 	mut tf := terraform.get()?
 
-	
+	//get client to TFGrid explorer
+	mut explorer := explorer.get(.test)
+
 	// make sure the following env is set  TFGRID_MNEMONIC, is your private key
 	// can also set: TFGRID_SSHKEY as env variable, or specify as in this example
 	//select wich network you want to use, .test or .main or.dev
@@ -24,20 +24,22 @@ fn do()? {
 			tfgridnet:.test
 		)?
 
+	// nodes_available := explorer.nodes_find(region:.europe_west,mem_min_gb:10,ssd_min_gb:100)?
+	nodes_available := explorer.nodes_find(region:.world)?
 	
 	mut vm1 := d.vm_ubuntu_add(
 			name:"kds1",
-			nodeid:14,
-			memory: 8000,
+			nodes:nodes_available,
+			memory_gb: 8,
 			public_ip: true
-			)
+			)?
 
 	mut vm2 := d.vm_ubuntu_add(
 			name:"kds2",
-			nodeid:14,
-			memory: 8000,
-			public_ip: true
-			)
+			nodes:nodes_available,
+			memory_gb: 8000,
+			public_ip: false
+			)?
 
 	//add disk of 10GB mounted on root for vm2
 	vm2.disk_add(10,"/root")
@@ -58,22 +60,24 @@ fn do()? {
 fn do2()? {
 
 	mut explorer := explorer.get(.test)
-	mut gridproxy := gridproxy.get(.test)
-	
-	//TO MAKE SURE CACHE IS EMPTY DO FOLLOWING
-	// explorer.cache_drop_all()?
 
-	// mut r := explorer.twin_list()?
-	mut r := explorer.nodes_list()?
-	println(r)
-	println(r.len)
+	// ns := explorer.nodes_find(mem_min_gb:50,hdd_min_gb:1000,public_ip:true)?
+	// ns := explorer.nodes_find(mem_min_gb:50,public_ip:true)?
+	// ns := explorer.nodes_find(public_ip:true,country:"belgium")?
+	// ns := explorer.nodes_find(public_ip:true,region:.europe_west)?
 
-	ni := gridproxy.node_info(16)?
-	println(ni)
+	// ns := explorer.node_find(public_ip:true,region:.europe_west)?
+
+	//next will give a random node because is region world
+	ns := explorer.node_find(region:.world)?
+
+	//today we only have region:.europe_west and world defined (and even very rough)
+	// ns := explorer.nodes_find(region:.europe_west)?
+	println(ns)
 
 }
 
 fn main() {
 	//main loop, just call our main method & panic if issues
-	do2() or {panic(err)}
+	do() or {panic(err)}
 }

@@ -1,8 +1,5 @@
 {
 	"fs_path": "../wiki",
 	"name": "publishtools",
-	"domains": [
-		"publishtools.threefold.io"
-	],
 	"cat": "wiki"
 }

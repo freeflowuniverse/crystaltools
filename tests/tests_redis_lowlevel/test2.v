@@ -3,7 +3,7 @@ module main
 import redisclient
 
 fn main() {
-	mut redis := redisclient.connect('localhost:6379') or { panic(err) }
+	mut redis := redisclient.get_local()
 
 	println(redis)
 }
