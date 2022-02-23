@@ -8,11 +8,6 @@ import despiegk.crystallib.publisher_config
 import despiegk.crystallib.gittools
 import readline
 
-fn flatten(mut publ publisher_core.Publisher) bool {
-	publ.flatten() or { return false }
-	return true
-}
-
 fn flag_message_get(cmd cli.Command) string {
 	flags := cmd.flags.get_all_found()
 	msg := flags.get_string('message') or {
@@ -145,10 +140,11 @@ fn main() {
 
 		cfg := publisher_config.get()?
 		mut publ := publisher_core.new(cfg) ?
-		publisher_core.webserver_run(mut &publ) ?
+		publ.run()?
+		// publisher_core.webserver_run(mut &publ) ?
 	}
 	mut run_cmd := cli.Command{
-		description: 'run found wikis'
+		description: 'run action commands as found in wikis as specified in EXECUTORSOURCE'
 		name: 'run'
 		execute: run_exec
 		required_args: 0
@@ -621,7 +617,7 @@ fn main() {
         '
 	}
 
-	gittools.get() or {panic(err)}
+	// gittools.get() or {panic(err)}
 	// publisher_config.get() or {panic(err)}
 	// println(22)
 

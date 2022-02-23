@@ -1,7 +1,24 @@
 #!/usr/bin/env bash
 set -ex
 source env.sh
-build
-export 
-publishtools flatten
 
+export PUBSITE='https://github.com/freeflowuniverse/crystaltools/tree/development_a5/wiki_config_simple'
+
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # v -d static_boehm  -gc boehm -prod crystaltools.v
+    v -cg -d net_blocking_sockets -d static_boehm  -d trace_progress -gc boehm crystaltools/publishtools.v 
+    ulimit -n 10000
+else
+    # v -d static_boehm  -gc boehm -cflags -static -prod crystaltools.v
+    # v -d static_boehm  -gc boehm -cflags -static crystaltools.v
+    # v -d static_boehm -cc gcc -cg  -gc boehm  crystaltools.v
+    # v -cflags "-lpthread" -cc gcc -cg  -gc boehm  crystaltools.v
+    v -cg -gc boehm   crystaltools/publishtools.v
+fi
+
+#will need to find commands on the markdown page otherwise cannot do anything
+crystaltools/publishtools run
+rm crystaltools/publishtools
+
+# -d trace_progress is a flag, will be used inside the vlang
