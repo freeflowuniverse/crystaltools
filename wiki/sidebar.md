@@ -22,6 +22,7 @@
 - [navigation](@navigation)
 - [heal](@heal)
 - [howto](@howto)
+  - [tracking with unique id](@tracking_with_unique_id)
   - [codewiki trick](@codewiki_dir)
   - [how to work with sshkeys](@sshkey)
   - [use redis](@redis_publishtools)
