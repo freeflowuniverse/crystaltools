@@ -9,3 +9,4 @@
 - [tabs](tabs)
 - [charts](charts)
 - [mindmaps](mindmaps)
+- [pdf](@pdf)
