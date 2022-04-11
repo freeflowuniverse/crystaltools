@@ -16,6 +16,6 @@ In the simpliest form your config is just couple of lines starting with !!!wiki
 
 was called flattening before
 
-!!publish path:'/tmp/mdbooks/wiki'
+<!-- !!publish path:'/tmp/mdbooks/wiki' -->
 
 

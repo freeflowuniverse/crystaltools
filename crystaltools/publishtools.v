@@ -150,20 +150,20 @@ fn main() {
 		required_args: 0
 	}
 
-	// FLATTEN
-	flatten_exec := fn (cmd cli.Command) ? {
+	// // FLATTEN
+	// flatten_exec := fn (cmd cli.Command) ? {
 
-		cfg := publisher_config.get()?
-		mut publ := publisher_core.new(cfg) ?
-		publ.flatten() ?
-	}
-	mut flatten_cmd := cli.Command{
-		name: 'flatten'
-		usage: 'specify name of website or wiki to flatten'
-		execute: flatten_exec
-		required_args: 0
-	}
-	flatten_cmd.add_flag(repoflag)
+	// 	cfg := publisher_config.get()?
+	// 	mut publ := publisher_core.new(cfg) ?
+	// 	publ.flatten2() ?
+	// }
+	// mut flatten_cmd := cli.Command{
+	// 	name: 'flatten'
+	// 	usage: 'specify name of website or wiki to flatten'
+	// 	execute: flatten_exec
+	// 	required_args: 0
+	// }
+	// flatten_cmd.add_flag(repoflag)
 
 	// BUILD
 	build_exec := fn (cmd cli.Command) ? {
@@ -608,7 +608,7 @@ fn main() {
 		name: 'installer'
 		commands: [install_cmd, run_cmd, build_cmd, list_cmd, develop_cmd, pull_cmd, commit_cmd,discard_cmd,
 			push_cmd, pushcommit_cmd, edit_cmd, update_cmd, version_cmd, removechangese_cmd, dns_cmd,
-			flatten_cmd, publish_cmd, staticfilesupdate_cmd]
+			 publish_cmd, staticfilesupdate_cmd]
 		description: '
 
         Publishing Tool Installer
