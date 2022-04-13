@@ -13,6 +13,7 @@
   - [mindmaps](@mindmaps)
   - [mermaid](@mermaid)
   - [defs_list](@defs_list)
+  - [pdf](@pdf)
 - [gitpod](@gitpod)
 - [markdown](@markdown)
   - [links](@links)
