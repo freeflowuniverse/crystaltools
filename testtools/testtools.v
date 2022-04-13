@@ -89,39 +89,39 @@ fn main() {
 	}
 	develop_cmd.add_flag(repoflag)
 
-	// RUN
-	run_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(cmd) ?
-		cfg := publisher_config.get()?
-		mut publ := publisher_core.new(&cfg)?
-		publ.check()?
-		publ.flatten() ?
-		publisher_core.webserver_run(mut &publ)?
-	}
-	mut run_cmd := cli.Command{
-		description: 'run all websites & wikis, they need to be build first'
-		name: 'run'
-		execute: run_exec
-		required_args: 0
-	}
+	// // RUN
+	// run_exec := fn (cmd cli.Command) ? {
+	// 	installers.sites_download(cmd) ?
+	// 	cfg := publisher_config.get()?
+	// 	mut publ := publisher_core.new(&cfg)?
+	// 	publ.check()?
+	// 	publ.flatten() ?
+	// 	publisher_core.webserver_run(mut &publ)?
+	// }
+	// mut run_cmd := cli.Command{
+	// 	description: 'run all websites & wikis, they need to be build first'
+	// 	name: 'run'
+	// 	execute: run_exec
+	// 	required_args: 0
+	// }
 
-	// BUILD
-	build_exec := fn (cmd cli.Command) ? {
-		installers.sites_download(cmd) ?
-		cfg := publisher_config.get()?
-		mut publ := publisher_core.new(&cfg)?
-		publ.check()?
-		publ.flatten() ?
+	// // BUILD
+	// build_exec := fn (cmd cli.Command) ? {
+	// 	installers.sites_download(cmd) ?
+	// 	cfg := publisher_config.get()?
+	// 	mut publ := publisher_core.new(&cfg)?
+	// 	publ.check()?
+	// 	publ.flatten() ?
 
-		installers.website_build(&cmd) ?
-	}
-	mut build_cmd := cli.Command{
-		name: 'build'
-		usage: 'specify name of website or wiki to build'
-		execute: build_exec
-		required_args: 0
-	}
-	build_cmd.add_flag(repoflag)
+	// 	installers.website_build(&cmd) ?
+	// }
+	// mut build_cmd := cli.Command{
+	// 	name: 'build'
+	// 	usage: 'specify name of website or wiki to build'
+	// 	execute: build_exec
+	// 	required_args: 0
+	// }
+	// build_cmd.add_flag(repoflag)
 
 	// LIST
 	list_exec := fn (cmd cli.Command) ? {

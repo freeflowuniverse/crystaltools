@@ -4,7 +4,7 @@ import digitaltwin
 import redisclient
 
 fn test_anotehr() {
-	mut redis := redisclient.connect('localhost:6379') or { panic(err) }
+	mut redis := redisclient.get_local()
 
 	println('[+] loading local digital twin')
 	mut twin := digitaltwin.factory(42) or { panic(err) }

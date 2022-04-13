@@ -1,2 +1,1 @@
-!!!include:threefold:navbar_include
-
+!!!include:manual:navbar_include

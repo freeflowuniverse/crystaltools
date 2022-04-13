@@ -3,12 +3,17 @@ image:
 tasks:
     - name: WIKI
       command: |
-        export PBRANCH=development
-        curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/$PBRANCH/install.sh > /tmp/install.sh
+        export PBRANCH0=development
+        export PBRANCH=development_full_project_export
+        curl https://raw.githubusercontent.com/freeflowuniverse/crystaltools/$PBRANCH0/install.sh > /tmp/install.sh
         bash /tmp/install.sh
         source /workspace/env.sh
-        vls_build
-        bash wiki_develop
+        build
+        # vls_build
+        # bash wiki_develop
+        reset
+        echo 'DO THE EXPORT KRISTOF GAVE YOU: export TAIGA=despiegk:asecret'
+        echo 'DO: bash debug.sh'
 ports:
   - port: 9998
     onOpen: open-browser
