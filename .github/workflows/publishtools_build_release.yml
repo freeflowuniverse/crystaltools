@@ -38,18 +38,19 @@ jobs:
           sudo mv publishtools /usr/local/bin
           sudo chmod u+x /usr/local/bin/publishtools
 
-      - name: get previous tag version
-        id: previous_tag
-        uses: "WyriHaximus/github-action-get-previous-tag@v1"
-        with:
-          fallback: 0.0.1
+      - name: Get latest release
+        uses: rez0n/actions-github-release@main
+        id: previous_release
+        env:
+          repository: ${{ github.repository }}
+          type: "nodraft"
 
       - name: get new release version for development
         if: ${{ github.ref_name == 'development' }}
         id: feature_version
         uses: christian-draeger/increment-semantic-version@1.0.2
         with:
-          current-version: ${{ steps.previous_tag.outputs.tag }}
+          current-version: ${{ steps.previous_release.outputs.release }}
           version-fragment: "feature"
 
       - name: get new release version for master
@@ -57,7 +58,7 @@ jobs:
         id: major_version
         uses: christian-draeger/increment-semantic-version@1.0.2
         with:
-          current-version: ${{ steps.previous_tag.outputs.tag }}
+          current-version: ${{ steps.previous_release.outputs.release }}
           version-fragment: "major"
 
       - name: Feature Release for publishtools
