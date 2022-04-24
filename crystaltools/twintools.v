@@ -1,11 +1,11 @@
 module main
 
-import despiegk.crystallib.installers
+import freeflowuniverse.crystallib.installers
 import os
-import despiegk.crystallib.process
+import freeflowuniverse.crystallib.process
 import cli
-import despiegk.crystallib.publisher_core
-import despiegk.crystallib.publisher_config
+import freeflowuniverse.crystallib.publisher_core
+import freeflowuniverse.crystallib.publisher_config
 import json
 
 fn flatten(mut publ publisher_core.Publisher) bool {

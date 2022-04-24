@@ -1,7 +1,7 @@
 	
 	
 module main
-import despiegk.crystallib.taiga
+import freeflowuniverse.crystallib.taiga
 import os
 
 fn main() {

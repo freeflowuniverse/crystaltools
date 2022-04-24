@@ -1,5 +1,5 @@
 module main
-import despiegk.crystallib.taiga
+import freeflowuniverse.crystallib.taiga
 // Generate wikis with users, projects, stories, issues and tasks
 fn main() {
 	url := 'https://staging.circles.threefold.me' // Add your taiga url

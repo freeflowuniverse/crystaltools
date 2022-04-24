@@ -1,14 +1,14 @@
 module main
 
-// import despiegk.crystallib.installers
+// import freeflowuniverse.crystallib.installers
 import os
 import readline
-// import despiegk.crystallib.process
-import despiegk.crystallib.gittools
+// import freeflowuniverse.crystallib.process
+import freeflowuniverse.crystallib.gittools
 import cli
 // import ct
-// import despiegk.crystallib.publisher_core
-// import despiegk.crystallib.publisher_config
+// import freeflowuniverse.crystallib.publisher_core
+// import freeflowuniverse.crystallib.publisher_config
 // import json
 
 const version = '1.0.21'

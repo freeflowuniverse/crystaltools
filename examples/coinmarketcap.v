@@ -1,7 +1,7 @@
 	
 	
 module main
-import despiegk.crystallib.coinmarketcap
+import freeflowuniverse.crystallib.coinmarketcap
 
 
 fn main() {

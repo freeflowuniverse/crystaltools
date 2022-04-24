@@ -1,5 +1,5 @@
 module main
-import despiegk.crystallib.ffeditor
+import freeflowuniverse.crystallib.ffeditor
 import os
 
 

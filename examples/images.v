@@ -1,7 +1,7 @@
 	
 	
 module main
-import despiegk.crystallib.imagemagick
+import freeflowuniverse.crystallib.imagemagick
 import os
 
 

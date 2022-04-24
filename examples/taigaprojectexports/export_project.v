@@ -3,7 +3,7 @@ module main
 import os
 import flag
 
-import despiegk.crystallib.taigaexports
+import freeflowuniverse.crystallib.taigaexports
 
 struct Args {
     url string

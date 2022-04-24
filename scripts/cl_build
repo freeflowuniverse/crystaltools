@@ -13,9 +13,9 @@ if ! [[ -f "$HOME/.vmodules/done_crystallib" ]]; then
     sudo rm -rf ~/.vmodules/despiegk/
     mkdir -p ~/.vmodules/despiegk/    
 
-    v install despiegk.crystallib
+    v install freeflowuniverse.crystallib
     v install patrickpissurno.redis
-    v install despiegk.crystallib
+    v install freeflowuniverse.crystallib
     v install nedpals.vex
 
     if ! [[ "$PBRANCH" == "development" ]]; then

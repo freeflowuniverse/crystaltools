@@ -1,7 +1,7 @@
 module main
 
-import despiegk.crystallib.fftools
-import despiegk.crystallib.git3
+import freeflowuniverse.crystallib.fftools
+import freeflowuniverse.crystallib.git3
 
 fn do()? {
 	mut gh := git3.new(3600)?

@@ -1,11 +1,11 @@
 module main
 
-import despiegk.crystallib.installers
+import freeflowuniverse.crystallib.installers
 import os
 import cli
-import despiegk.crystallib.publisher_core
-import despiegk.crystallib.publisher_config
-import despiegk.crystallib.gittools
+import freeflowuniverse.crystallib.publisher_core
+import freeflowuniverse.crystallib.publisher_config
+import freeflowuniverse.crystallib.gittools
 import readline
 
 fn flag_message_get(cmd cli.Command) string {

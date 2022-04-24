@@ -1,5 +1,5 @@
 module main
-import despiegk.crystallib.taiga
+import freeflowuniverse.crystallib.taiga
 import os
 // Generate wikis with users, projects, stories, issues and tasks
 fn main() {
