@@ -1,14 +1,12 @@
 module main
-import despiegk.crystallib.ffeditor
+
+import freeflowuniverse.crystallib.ffeditor
 import os
 
-
-fn do()?{
-
-	println("start")
+fn do() ? {
+	println('start')
 }
 
 fn main() {
-	do() or {panic(err)}
-
+	do() or { panic(err) }
 }

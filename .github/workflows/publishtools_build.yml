@@ -1,8 +1,8 @@
 name: publishtools_build
 on:
   push:
-    branches-ignore: 
-    # Ignore master and development, Because build and release workflow will repeat it again.
+    branches-ignore:
+      # Ignore master and development, Because build and release workflow will repeat it again.
       - "master"
       - "development"
   workflow_dispatch:
@@ -30,7 +30,7 @@ jobs:
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
 
       - name: Install crystallib
-        run: v install despiegk.crystallib
+        run: v install freeflowuniverse.crystallib
 
       - name: Build publishtools
         run: |
