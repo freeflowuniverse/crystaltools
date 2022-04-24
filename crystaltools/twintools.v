@@ -100,7 +100,7 @@ fn main() {
 	// DEVELOP
 	develop_exec := fn (cmd cli.Command) ? {
 		webrepo := cmd.flags.get_string('repo') or { '' }
-		mut cfg := publisher_config.get()?
+		mut cfg := publisher_config.get() ?
 		if webrepo == '' {
 			println(' - develop for wikis')
 			// installers.sites_download(cmd, false) ?
@@ -133,7 +133,7 @@ fn main() {
 	// RUN
 	run_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, false) ?
-		cfg := publisher_config.get()?
+		cfg := publisher_config.get() ?
 		mut publ := publisher_core.new(cfg) ?
 		publisher_core.webserver_run(mut &publ) ?
 	}
@@ -147,7 +147,7 @@ fn main() {
 	// FLATTEN
 	flatten_exec := fn (cmd cli.Command) ? {
 		installers.sites_download(cmd, false) ?
-		cfg := publisher_config.get()?
+		cfg := publisher_config.get() ?
 		mut publ := publisher_core.new(cfg) ?
 		publ.flatten() ?
 	}
@@ -383,7 +383,7 @@ fn main() {
 	// publish
 	publish_exec := fn (cmd cli.Command) ? {
 		mut args := os.args.clone()
-		mut cfg := publisher_config.get()?
+		mut cfg := publisher_config.get() ?
 		mut env := 'staging'
 
 		mut production := cmd.flags.get_bool('production') or { false }
@@ -489,7 +489,7 @@ fn main() {
 			} else if arg in wikis && skip_wikis {
 				continue
 			} else {
-				if !(arg in websites) && !(arg in wikis) {
+				if arg !in websites && arg !in wikis {
 					err = true
 					println(' (*) Skipping ($arg) name not found in wikis or websites')
 					continue
@@ -585,7 +585,7 @@ fn main() {
 					item2 := item.trim(' ')
 
 					if item2 != '' {
-						if !(item2 in configs) {
+						if item2 !in configs {
 							configs << configdict[item2]
 						}
 					}
@@ -637,7 +637,7 @@ fn main() {
 		mut args := os.args.clone()
 		if args.len == 3 {
 			if args[2] == 'update' {
-				mut cfg := publisher_config.get()?
+				mut cfg := publisher_config.get() ?
 				cfg.update_staticfiles(true) ?
 				return
 			}

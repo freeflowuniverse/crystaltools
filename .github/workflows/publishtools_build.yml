@@ -1,8 +1,8 @@
 name: publishtools_build
 on:
   push:
-    branches-ignore: 
-    # Ignore master and development, Because build and release workflow will repeat it again.
+    branches-ignore:
+      # Ignore master and development, Because build and release workflow will repeat it again.
       - "master"
       - "development"
   workflow_dispatch:

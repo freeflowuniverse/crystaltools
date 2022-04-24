@@ -24,13 +24,11 @@ fn flag_message_get(cmd cli.Command) string {
 
 fn flag_names_get(cmd cli.Command) []string {
 	flags := cmd.flags.get_all_found()
-    repo := flags.get_string('repo') or { return []string{} }
+	repo := flags.get_string('repo') or { return []string{} }
 	return [repo]
 }
 
 fn main() {
-
-
 	// resetflag := cli.Flag{
 	// 	name: 'reset'
 	// 	abbrev: 'r'
@@ -59,9 +57,6 @@ fn main() {
 		flag: cli.FlagType.bool
 	}
 
-
-
-
 	// repoflag := cli.Flag{
 	// 	name: 'repo'
 	// 	abbrev: 'r'
@@ -82,8 +77,8 @@ fn main() {
 	// LIST
 	list_exec := fn (cmd cli.Command) ? {
 		mut gs := gittools.get() ?
-		filter := cmd.flags.get_string('filter') or {""}
-		gs.list(filter:filter)?
+		filter := cmd.flags.get_string('filter') or { '' }
+		gs.list(filter: filter) ?
 	}
 	mut list_cmd := cli.Command{
 		name: 'list'
@@ -95,10 +90,9 @@ fn main() {
 	commit_exec := fn (cmd cli.Command) ? {
 		message := flag_message_get(cmd)
 		mut gs := gittools.get() ?
-		filter := cmd.flags.get_string('filter') or {""}
-		pull := cmd.flags.get_bool('pull') or {false}
-		gs.commit(filter:filter,message:message,pull:pull)?	
-
+		filter := cmd.flags.get_string('filter') or { '' }
+		pull := cmd.flags.get_bool('pull') or { false }
+		gs.commit(filter: filter, message: message, pull: pull) ?
 	}
 	mut commit_cmd := cli.Command{
 		name: 'commit'
@@ -112,10 +106,9 @@ fn main() {
 	pushcommit_exec := fn (cmd cli.Command) ? {
 		message := flag_message_get(cmd)
 		mut gs := gittools.get() ?
-		filter := cmd.flags.get_string('filter') or {""}
-		pull := cmd.flags.get_bool('pull') or {false}
-		gs.pushcommit(filter:filter,message:message,pull:pull)?	
-
+		filter := cmd.flags.get_string('filter') or { '' }
+		pull := cmd.flags.get_bool('pull') or { false }
+		gs.pushcommit(filter: filter, message: message, pull: pull) ?
 	}
 	mut pushcommit_cmd := cli.Command{
 		name: 'pushcommit'
@@ -128,17 +121,14 @@ fn main() {
 	// push
 	push_exec := fn (cmd cli.Command) ? {
 		mut gs := gittools.get() ?
-		filter := cmd.flags.get_string('filter') or {""}
-		gs.push(filter:filter)?
-
+		filter := cmd.flags.get_string('filter') or { '' }
+		gs.push(filter: filter) ?
 	}
 	mut push_cmd := cli.Command{
 		name: 'push'
 		execute: push_exec
 	}
 	push_cmd.add_flag(filterflag)
-
-
 
 	// list_cmd.add_flag(resetflag)
 
@@ -216,7 +206,7 @@ fn main() {
 
 	mut main_cmd := cli.Command{
 		name: 'crystaltools'
-		commands: [version_cmd, list_cmd, commit_cmd, pushcommit_cmd,push_cmd]
+		commands: [version_cmd, list_cmd, commit_cmd, pushcommit_cmd, push_cmd]
 		description: '
 
 		Crystal Tools

@@ -1,16 +1,14 @@
 import freeflowuniverse.crystallib.docker
 
-fn docker1()? {
-
-	//get docker engine connection to local machine, will use loaded sshkey
+fn docker1() ? {
+	// get docker engine connection to local machine, will use loaded sshkey
 	mut engine := docker.engine_local([]) ?
 
-	
-	engine.reset_all()?
+	engine.reset_all() ?
 
 	println(engine)
 
-	mut containers := engine.containers_get()?
+	mut containers := engine.containers_get() ?
 	mut images := engine.images
 	assert containers.len == 0
 	assert images.len == 0
@@ -26,23 +24,23 @@ fn docker1()? {
 	// 	command    string = '/bin/bash'
 	// }
 
-	name := "test"
+	name := 'test'
 	println('creating container : $name')
-	//create new container
+	// create new container
 	mut c := engine.container_create(
 		name: name
 		hostname: name
-		mounted_volumes: ['/tmp:/tmp',"/tmp/root:/root"]
-		forwarded_ports: ["80:9000/tcp", "1000:10000/udp"]
+		mounted_volumes: ['/tmp:/tmp', '/tmp/root:/root']
+		forwarded_ports: ['80:9000/tcp', '1000:10000/udp']
 		image_repo: 'ubuntu'
-		) or { panic(err) }
+	) or { panic(err) }
 
 	assert c.status == docker.DockerContainerStatus.up
-	assert c.name == "test"
+	assert c.name == 'test'
 
 	println(engine)
 
-	c.shell("")?
+	c.shell('') ?
 
 	// c.halt() or { panic(err) }
 	// assert c.status == docker.DockerContainerStatus.down
@@ -143,38 +141,34 @@ fn docker1()? {
 // 	c.image.delete(false) or { panic(err) }
 // }
 
-
-
-fn docker3()? {
-
+fn docker3() ? {
 	mut engine := docker.engine_local([]) ?
 
-	name := "test"
+	name := 'test'
 
 	println(engine)
 
-	engine.container_delete(name)?
+	engine.container_delete(name) ?
 
 	println('creating container : $name')
-	//create new container
+	// create new container
 	mut c := engine.container_create(
-			name: name
-			hostname: name
-			mounted_volumes: ['/tmp:/tmp',"/tmp/root:/root"]
-			forwarded_ports: ["80:9000/tcp", "1000:10000/udp"]
-			image_repo: 'ubuntu'
-		) or { panic(err) }
+		name: name
+		hostname: name
+		mounted_volumes: ['/tmp:/tmp', '/tmp/root:/root']
+		forwarded_ports: ['80:9000/tcp', '1000:10000/udp']
+		image_repo: 'ubuntu'
+	) or { panic(err) }
 
 	assert c.status == docker.DockerContainerStatus.up
-	assert c.name == "test"
+	assert c.name == 'test'
 
 	println(engine)
 
-	c.shell("")?
-
+	c.shell('') ?
 }
 
 fn main() {
-	docker3() or { panic(err)}
+	docker3() or { panic(err) }
 	// docker2() or { panic(err)}
 }

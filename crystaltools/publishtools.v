@@ -19,12 +19,11 @@ fn flag_message_get(cmd cli.Command) string {
 
 fn flag_names_get(cmd cli.Command) []string {
 	flags := cmd.flags.get_all_found()
-    repo := flags.get_string('repo') or { return []string{} }
+	repo := flags.get_string('repo') or { return []string{} }
 	return [repo]
 }
 
 fn main() {
-
 	pullflag := cli.Flag{
 		name: 'pull'
 		abbrev: 'p'
@@ -86,7 +85,7 @@ fn main() {
 		flags := cmd.flags.get_all_found()
 		ourreset := flags.get_bool('reset') or { false }
 		clean := flags.get_bool('clean') or { false }
-		installers.web(ourreset,clean) ?
+		installers.web(ourreset, clean) ?
 	}
 	mut install_cmd := cli.Command{
 		name: 'install'
@@ -97,7 +96,7 @@ fn main() {
 	install_cmd.add_flag(cleanflag)
 
 	// DEVELOP
-	develop_exec := fn (cmd cli.Command)? {
+	develop_exec := fn (cmd cli.Command) ? {
 		flags := cmd.flags.get_all_found()
 		webrepo := flags.get_string('repo') or { '' }
 		println(1)
@@ -137,10 +136,9 @@ fn main() {
 
 	// RUN
 	run_exec := fn (cmd cli.Command) ? {
-
-		cfg := publisher_config.get()?
+		cfg := publisher_config.get() ?
 		mut publ := publisher_core.new(cfg) ?
-		publ.run()?
+		publ.run() ?
 		// publisher_core.webserver_run(mut &publ) ?
 	}
 	mut run_cmd := cli.Command{
@@ -170,7 +168,7 @@ fn main() {
 		flags := cmd.flags.get_all_found()
 		// cfg := publisher_config.get()?
 		// mut publ := publisher_core.new(cfg) ?
-		installers.website_build(flags.get_bool('reset') or { false },flag_names_get(cmd)) ?
+		installers.website_build(flags.get_bool('reset') or { false }, flag_names_get(cmd)) ?
 	}
 	mut build_cmd := cli.Command{
 		name: 'build'
@@ -193,7 +191,7 @@ fn main() {
 	// PULL
 	pull_exec := fn (cmd cli.Command) ? {
 		flags := cmd.flags.get_all_found()
-		installers.sites_pull(flag_names_get(cmd),flags.get_bool('reset') or { false }) ?
+		installers.sites_pull(flag_names_get(cmd), flags.get_bool('reset') or { false }) ?
 	}
 	mut pull_cmd := cli.Command{
 		name: 'pull'
@@ -224,7 +222,7 @@ fn main() {
 
 	// PUSHCOMMIT
 	pushcommit_exec := fn (cmd cli.Command) ? {
-		installers.sites_pushcommit(flag_message_get(cmd),flag_names_get(cmd)) ?
+		installers.sites_pushcommit(flag_message_get(cmd), flag_names_get(cmd)) ?
 	}
 	mut pushcommit_cmd := cli.Command{
 		name: 'pushcommit'
@@ -237,7 +235,7 @@ fn main() {
 	commit_exec := fn (cmd cli.Command) ? {
 		// flags := cmd.flags.get_all_found()
 		msg := flag_message_get(cmd)
-		installers.sites_commit(msg,flag_names_get(cmd)) ?
+		installers.sites_commit(msg, flag_names_get(cmd)) ?
 	}
 	mut commit_cmd := cli.Command{
 		name: 'commit'
@@ -256,7 +254,6 @@ fn main() {
 	}
 	discard_cmd.add_flag(repoflag)
 
-
 	// PUSH
 	push_exec := fn (cmd cli.Command) ? {
 		installers.sites_push(flag_names_get(cmd)) ?
@@ -271,7 +268,6 @@ fn main() {
 	// UPDATE
 	update_exec := fn (cmd cli.Command) ? {
 		installers.publishtools_update() ?
-
 	}
 	mut update_cmd := cli.Command{
 		name: 'update'
@@ -282,7 +278,6 @@ fn main() {
 
 	// REMOVE CHANGES
 	removechanges_exec := fn (cmd cli.Command) ? {
-
 		installers.sites_removechanges(flag_names_get(cmd)) ?
 	}
 	mut removechangese_cmd := cli.Command{
@@ -297,10 +292,10 @@ fn main() {
 		mut args := os.args.clone()
 		if args.len == 3 {
 			if args[2] == 'off' {
-				publisher_core.dns_off(true)?
+				publisher_core.dns_off(true) ?
 				return
 			} else if args[2] == 'on' {
-				publisher_core.dns_on(true)?
+				publisher_core.dns_on(true) ?
 				return
 			}
 		}
@@ -571,7 +566,7 @@ fn main() {
 		mut args := os.args.clone()
 		if args.len == 3 {
 			if args[2] == 'update' {
-				mut cfg := publisher_config.get()?
+				mut cfg := publisher_config.get() ?
 				cfg.update_staticfiles(true) ?
 				return
 			}
@@ -606,9 +601,9 @@ fn main() {
 	// MAIN
 	mut main_cmd := cli.Command{
 		name: 'installer'
-		commands: [install_cmd, run_cmd, build_cmd, list_cmd, develop_cmd, pull_cmd, commit_cmd,discard_cmd,
-			push_cmd, pushcommit_cmd, edit_cmd, update_cmd, version_cmd, removechangese_cmd, dns_cmd,
-			 publish_cmd, staticfilesupdate_cmd]
+		commands: [install_cmd, run_cmd, build_cmd, list_cmd, develop_cmd, pull_cmd, commit_cmd,
+			discard_cmd, push_cmd, pushcommit_cmd, edit_cmd, update_cmd, version_cmd,
+			removechangese_cmd, dns_cmd, publish_cmd, staticfilesupdate_cmd]
 		description: '
 
         Publishing Tool Installer
