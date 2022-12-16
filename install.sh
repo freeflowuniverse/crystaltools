@@ -58,12 +58,13 @@ rm -rf $HOME/_code/*
 pushd ~/_code/
 wget https://github.com/vlang/v/releases/download/weekly.2022.16/v_linux.zip
 unzip v_linux.zip
+sudo v/v symlink
 popd "$@" > /dev/null
 
 # Also restore the json config file, only needed for main wiki
-if [[ -f /workspace/info_threefold_pub ]]; then
+if [[ -e /workspace/info_threefold_pub ]]; then
 pushd /workspace/info_threefold_pub/wiki_config
-wget https://github.com/threefoldfoundation/info_threefold_pub/blob/7766a636e33657bdd99c37d5be9e12a20e64b1a4/wiki_config/site_wiki_local.json
+wget https://raw.githubusercontent.com/threefoldfoundation/info_threefold_pub/c708c5d656ace6f8c971234b79e7da5d1872ff5a/wiki_config/site_wiki_local.json
 popd "$@" > /dev/null
 fi
 
