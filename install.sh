@@ -70,10 +70,16 @@ fi
 
 # ct_reset
 ct_build
+
+# Patch crystallib to play nice with .md extensions which are in use in manual
+pushd ~/.vmodules/despiegk/crystallib
+git pull
+sed -i '112d' ./publisher_core/link.v
+sed -i '112s/\///g' ./publisher_core/link.v
+popd "$@" > /dev/null
+
 build
 clear
 ct_help
 
 echo "**** INSTALL WAS OK ****"
-
-
