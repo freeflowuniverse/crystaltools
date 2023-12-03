@@ -1,4 +1,4 @@
-set -e
+set -ex
 if [[ -z "${PBRANCH}" ]]; then 
     echo " - DEFAULT BRANCH WILL BE SET."
     export PBRANCH="development"
