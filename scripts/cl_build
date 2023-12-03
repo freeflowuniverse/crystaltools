@@ -11,20 +11,21 @@ v_check
 #CHECK IF DIR EXISTS, IF NOT CLONE
 if ! [[ -f "$HOME/.vmodules/done_crystallib" ]]; then
     sudo rm -rf ~/.vmodules/despiegk/
-    mkdir -p ~/.vmodules/despiegk/    
-
-    v install despiegk.crystallib
+    mkdir -p ~/.vmodules/despiegk/
+    git clone https://github.com/freeflowuniverse/crystallib.git ~/.vmodules/despiegk/
+    # v install despiegk.crystallib
     v install patrickpissurno.redis
-    v install despiegk.crystallib
+    # v install despiegk.crystallib
     v install nedpals.vex
 
-    if ! [[ "$PBRANCH" == "development" ]]; then
-        echo " - THERE IS BRANCH FOR CRYSTAL LIB"
+    # if ! [[ "$PBRANCH" == "development" ]]; then
+    #     echo " - THERE IS BRANCH FOR CRYSTAL LIB"
         pushd ~/.vmodules/despiegk/crystallib
-        git fetch origin $PBRANCH:$PBRANCH
-		git checkout $PBRANCH
+        git checkout 53fe4e9fe3808c14aa5fb7d7593c87b412ce65d6
+        # git fetch origin $PBRANCH:$PBRANCH
+	# 	git checkout $PBRANCH
         popd
-    fi
+    # fi
 
     touch "$HOME/.vmodules/done_crystallib"
 fi
