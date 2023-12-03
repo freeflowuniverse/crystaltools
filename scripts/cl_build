@@ -11,8 +11,8 @@ v_check
 #CHECK IF DIR EXISTS, IF NOT CLONE
 if ! [[ -f "$HOME/.vmodules/done_crystallib" ]]; then
     sudo rm -rf ~/.vmodules/despiegk/
-    mkdir -p ~/.vmodules/despiegk/
-    git clone https://github.com/freeflowuniverse/crystallib.git ~/.vmodules/despiegk/
+    mkdir -p ~/.vmodules/despiegk/crystallib
+    git clone https://github.com/freeflowuniverse/crystallib.git ~/.vmodules/despiegk/crystallib
     # v install despiegk.crystallib
     v install patrickpissurno.redis
     # v install despiegk.crystallib
