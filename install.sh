@@ -49,7 +49,7 @@ popd "$@" > /dev/null
 
 if [[ -f "$HOME/.vmodules/done_crystallib" ]]; then
 pushd ~/.vmodules/despiegk/crystallib
-git pull
+#git pull
 popd "$@" > /dev/null
 fi
 
